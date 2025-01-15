@@ -1,11 +1,10 @@
 cd benkyo-client
-protected_branches=("main" "dev") # Danh sách các branch được bảo vệ
+protected_branches="main dev" 
 
 # github blocks password-based auth, but still usable via API token
 protected_remote_urls="\
-  git@github.com:duonganh203/test-cicd.git
-  https://github.com/duonganh203/test-cicd.git"
-
+  https://github.com/duonganh203/benkyo.git
+  git@github.com:duonganh203/benkyo.git"
 
 # The pre-push hook [...] receives the name and location of the remote as parameters
 # https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
@@ -33,7 +32,7 @@ fi
 # check if the push is targeting protected branches on the remote
 push_targets_protected_branch=0
 while read -r _local_ref _local_sha remote_ref _remote_sha; do
-  for protected_branch in "${protected_branches[@]}"; do
+  for protected_branch in $protected_branches; do
     protected_ref="refs/heads/$protected_branch"
     if [ "$remote_ref" = "$protected_ref" ]; then
       push_targets_protected_branch=1
