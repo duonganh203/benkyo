@@ -1,0 +1,18 @@
+# Ignore node_modules
+node_modules
+
+# Ignore logs
+logs
+*.log
+
+# Ignore temporary files
+tmp
+temp
+*.tmp
+
+# Ignore editor files
+.vscode
+.idea
+*.sublime*
+
+

@@ -1,0 +1,31 @@
+
+name: ci phase
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches-ignore:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+      - name: Build fe
+        working-directory: benkyo-client
+        run: |
+          npm ci
+          npm run lint
+          npm run build
+      - name: Build fe
+        working-directory: benkyo-server
+        run: |
+          npm ci
+          npm run lint
+          npm run build

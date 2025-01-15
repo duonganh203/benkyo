@@ -1,0 +1,51 @@
+name: cd phase
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+env:
+  HUSKY: 0
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build image
+        run: |
+          docker build ./benkyo-client/ -t ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-fe:latest
+          docker build ./benkyo-server/ -t ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-be:latest
+      - name: Push image to docker dockerhub
+        run: |
+          docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_TOKEN}}
+          docker push ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-fe:latest
+          docker push ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-be:latest
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    needs: publish
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{secrets.SSH_PRIVATE_KEY }}
+
+      - name: Copy docker-compose.yml
+        run: scp -o StrictHostKeyChecking=no -r docker-compose.yml ${{secrets.SSH_USERNAME}}@${{secrets.SSH_HOST}}:/home/${{secrets.SSH_USERNAME}}/benkyo/docker-compose.yml
+
+      - name: Deploy with docker-compose
+        run: |
+          ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd /home/${{ secrets.SSH_USERNAME }}/benkyo
+          sudo docker-compose down --rmi all
+          sudo docker-compose up -d
+          EOF
+
