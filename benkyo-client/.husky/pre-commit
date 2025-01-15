@@ -1,0 +1,3 @@
+cd fe
+npm run lint-staged
+
