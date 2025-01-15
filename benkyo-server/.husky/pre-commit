@@ -1,2 +1,0 @@
-cd benkyo-server
-npm run lint-staged
