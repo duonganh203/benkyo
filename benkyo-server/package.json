@@ -10,8 +10,7 @@
         "lint:fix": "eslint . --fix",
         "prettier": "prettier --check .",
         "prettier:fix": "prettier --write .",
-        "lint-staged": "lint-staged",
-        "prepare": "cd .. && husky benkyo-server/.husky || true"
+        "lint-staged": "lint-staged"
     },
     "keywords": [],
     "author": "",
@@ -24,7 +23,6 @@
         "eslint-config-prettier": "^10.0.1",
         "eslint-plugin-prettier": "^5.2.2",
         "globals": "^15.14.0",
-        "husky": "^9.1.7",
         "lint-staged": "^15.3.0",
         "nodemon": "^3.1.9",
         "prettier": "^3.4.2",
@@ -40,7 +38,9 @@
         "ts-node": "^10.9.2"
     },
     "lint-staged": {
-        "src/**/*.{js,jsx,ts,tsx}": "prettier --write",
-        "src/**/*.{js,ts}": "eslint"
+        "src/**/*.{js,ts}": [
+            "prettier --write",
+            "eslint"
+        ]
     }
 }

@@ -13,19 +13,8 @@ export default [
             prettier: eslintPluginPrettier
         },
         rules: {
-            '@typescript-eslint/no-explicit-any': 'warn',
-            '@typescript-eslint/no-unused-vars': 'warn',
-            'prettier/prettier': ['warn', {}]
-        },
-        ignores: ['**/node_modules/', '**/dist/']
-    },
-    {
-        plugins: {
-            prettier: eslintPluginPrettier
-        },
-        rules: {
-            '@typescript-eslint/no-explicit-any': 'warn',
-            '@typescript-eslint/no-unused-vars': 'warn',
+            //'@typescript-eslint/no-explicit-any': 'warn',
+            //'@typescript-eslint/no-unused-vars': 'warn',
             'prettier/prettier': [
                 'warn',
                 {
