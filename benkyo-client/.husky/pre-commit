@@ -1,0 +1,3 @@
+cd benkyo-client
+npm run lint-staged
+
