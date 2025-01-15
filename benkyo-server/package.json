@@ -40,7 +40,9 @@
         "ts-node": "^10.9.2"
     },
     "lint-staged": {
-        "src/**/*.{js,jsx,ts,tsx}": "prettier --write",
-        "src/**/*.{js,ts}": "eslint"
+        "src/**/*.{js,ts}": [
+            "prettier --write",
+            "eslint"
+        ]
     }
 }
