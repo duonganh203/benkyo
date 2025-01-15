@@ -1,5 +1,5 @@
 #!/bin/sh
-cd fe
+cd benkyo-client
 protected_branch=('main','dev')
 
 # github blocks password-based auth, but still usable via API token
