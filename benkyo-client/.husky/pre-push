@@ -1,11 +1,10 @@
-#!/bin/sh
 cd benkyo-client
-protected_branch=('main','dev')
+protected_branches=("main" "dev") # Danh sách các branch được bảo vệ
 
 # github blocks password-based auth, but still usable via API token
 protected_remote_urls="\
-  https://github.com/duonganh203/benkyo.git
-  git@github.com:duonganh203/benkyo.git"
+  git@github.com:duonganh203/test-cicd.git
+  https://github.com/duonganh203/test-cicd.git"
 
 
 # The pre-push hook [...] receives the name and location of the remote as parameters
@@ -31,19 +30,20 @@ fi
 
 
 
-# check if the push is targeting canary on the remote
-# https://stackoverflow.com/a/44156933
+# check if the push is targeting protected branches on the remote
 push_targets_protected_branch=0
-protected_ref="refs/heads/$protected_branch"
 while read -r _local_ref _local_sha remote_ref _remote_sha; do
-  if [ "$remote_ref" = "$protected_ref" ]; then
-    push_targets_protected_branch=1
-    break
-  fi
+  for protected_branch in "${protected_branches[@]}"; do
+    protected_ref="refs/heads/$protected_branch"
+    if [ "$remote_ref" = "$protected_ref" ]; then
+      push_targets_protected_branch=1
+      break 2
+    fi
+  done
 done
 
 if [ "$push_targets_protected_branch" = "1" ]; then
-  echo "You probably didn't intend to push directly to '$protected_branch' on '$remote_name' ($remote_url)." >&2
+  echo "You probably didn't intend to push directly to a protected branch ('main' or 'dev') on '$remote_name' ($remote_url)." >&2
   echo "If you're sure that that's what you want to do, bypass this check via" >&2
   echo "" >&2
   echo "  git push --no-verify" >&2
