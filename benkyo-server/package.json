@@ -11,7 +11,7 @@
         "prettier": "prettier --check .",
         "prettier:fix": "prettier --write .",
         "lint-staged": "lint-staged",
-        "prepare": "cd .. && husky benkyo-server/.husky"
+        "prepare": "cd .. && husky benkyo-server/.husky || true"
     },
     "keywords": [],
     "author": "",
