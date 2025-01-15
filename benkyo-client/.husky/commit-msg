@@ -1,0 +1,11 @@
+#!/bin/sh
+# Check commit message format
+message=$(cat "$1")
+regex='^#[0-9]+: .+'
+
+if ! echo "$message" | grep -Eq "$regex"; then
+  echo "❌ Invalid commit message format!"
+  echo "✅ The correct format is: #[number]: [message]"
+  exit 1
+fi
+
