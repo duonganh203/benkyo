@@ -8,9 +8,8 @@
         "build": "tsc -b && vite build",
         "lint": "eslint .",
         "lint-staged": "lint-staged",
-        "prepare": "cd .. && husky fe/.husky",
-        "preview": "vite preview",
-        "prepare": "husky"
+        "prepare": "cd .. && husky benkyo-client/.husky",
+        "preview": "vite preview"
     },
     "dependencies": {
         "benkyo-client": "file:",
