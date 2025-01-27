@@ -12,21 +12,23 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@tanstack/react-query": "^5.65.0",
+        "axios": "^1.7.9",
         "benkyo-client": "file:",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1"
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
     },
     "devDependencies": {
         "@eslint/js": "^9.17.0",
-        "@types/react": "^18.3.18",
-        "@types/react-dom": "^18.3.5",
+        "@types/react": "^19.0.8",
+        "@types/react-dom": "^19.0.3",
         "@vitejs/plugin-react": "^4.3.4",
         "autoprefixer": "^10.4.20",
         "eslint": "^9.17.0",
-        "eslint-plugin-react-hooks": "^5.0.0",
-        "eslint-plugin-react-refresh": "^0.4.16",
         "eslint-config-prettier": "^10.0.1",
         "eslint-plugin-prettier": "^5.2.2",
+        "eslint-plugin-react-hooks": "^5.0.0",
+        "eslint-plugin-react-refresh": "^0.4.16",
         "globals": "^15.14.0",
         "husky": "^9.1.7",
         "lint-staged": "^15.3.0",
