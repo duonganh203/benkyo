@@ -4,6 +4,7 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import { connect } from 'mongoose';
 import rootRouter from './routes';
+import { errorMiddleware } from './middlewares/errorsMiddleware';
 
 const app: Express = express();
 const PORT = process.env.PORT;
@@ -17,6 +18,8 @@ connect(MONGO_URI!)
     .catch((err) => console.error(err));
 
 app.use('/', rootRouter);
+
+app.use(errorMiddleware);
 
 app.listen(PORT, () => {
     console.log('Server is running on http://localhost:' + PORT);
