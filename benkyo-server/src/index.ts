@@ -1,11 +1,23 @@
-import express, { Express, Request, Response } from 'express';
+import 'dotenv/config';
+import 'tsconfig-paths/register';
+import express, { Express } from 'express';
+import cors from 'cors';
+import { connect } from 'mongoose';
+import rootRouter from './routes';
 
 const app: Express = express();
+const PORT = process.env.PORT;
+const MONGO_URI = process.env.MONGO_URI;
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World!!');
-});
+app.use(express.json());
+app.use(cors());
 
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:30001');
+connect(MONGO_URI!)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.error(err));
+
+app.use('/', rootRouter);
+
+app.listen(PORT, () => {
+    console.log('Server is running on http://localhost:' + PORT);
 });
