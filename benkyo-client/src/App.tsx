@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './protectedRoute';
 import Home from './pages/home';
 import { AxiosError } from 'axios';
+import Login from './pages/login';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -20,16 +21,12 @@ const App = () => {
         <QueryClientProvider client={queryClient}>
             <Router>
                 <Routes>
-                    {/* <Route path='/login' element={<Login />} /> */}
+                    <Route path='/login' element={<Login />} />
                     {/* <Route path='/register' element={<Register />} /> */}
-                    <Route
-                        path='/'
-                        element={
-                            <ProtectedRoute>
-                                <Home />
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route element={<ProtectedRoute />}>
+                        <Route path='/' element={<Home />} />
+                        <Route path='/home' element={<Home />} />
+                    </Route>
                 </Routes>
             </Router>
         </QueryClientProvider>
