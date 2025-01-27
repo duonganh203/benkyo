@@ -1,6 +1,6 @@
+import { AuthState, User } from '@/types/auth';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AuthState, User } from '../types/auth';
 
 type AuthStore = AuthState & {
     setUser: (user: User | null) => void;
