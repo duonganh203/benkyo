@@ -4,6 +4,7 @@ import ProtectedRoute from './protectedRoute';
 import Home from './pages/home';
 import { AxiosError } from 'axios';
 import Login from './pages/login';
+import UnProtectedRoute from './unprotectedRoute';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -21,8 +22,10 @@ const App = () => {
         <QueryClientProvider client={queryClient}>
             <Router>
                 <Routes>
-                    <Route path='/login' element={<Login />} />
-                    {/* <Route path='/register' element={<Register />} /> */}
+                    <Route element={<UnProtectedRoute />}>
+                        <Route path='/login' element={<Login />} />
+                        {/* <Route path='/register' element={<Register />} /> */}
+                    </Route>
                     <Route element={<ProtectedRoute />}>
                         <Route path='/' element={<Home />} />
                         <Route path='/home' element={<Home />} />
