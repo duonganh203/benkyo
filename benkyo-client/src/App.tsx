@@ -6,6 +6,7 @@ import { AxiosError } from 'axios';
 import UnProtectedRoute from './unprotectedRoute';
 import { RegisterForm } from './components/register-form';
 import { LoginForm } from './components/login-form';
+import Marketing from './pages/marketing';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -24,11 +25,11 @@ const App = () => {
             <Router>
                 <Routes>
                     <Route element={<UnProtectedRoute />}>
+                        <Route path='/' element={<Marketing />} />
                         <Route path='/login' element={<LoginForm />} />
                         <Route path='/register' element={<RegisterForm />} />
                     </Route>
                     <Route element={<ProtectedRoute />}>
-                        <Route path='/' element={<Home />} />
                         <Route path='/home' element={<Home />} />
                     </Route>
                 </Routes>
