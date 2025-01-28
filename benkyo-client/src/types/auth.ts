@@ -15,5 +15,5 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload extends LoginPayload {
-    username: string;
+    name: string;
 }

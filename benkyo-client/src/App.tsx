@@ -1,10 +1,11 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProtectedRoute from './protectedRoute';
 import Home from './pages/home';
 import { AxiosError } from 'axios';
-import Login from './pages/login';
 import UnProtectedRoute from './unprotectedRoute';
+import { RegisterForm } from './components/register-form';
+import { LoginForm } from './components/login-form';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -23,8 +24,8 @@ const App = () => {
             <Router>
                 <Routes>
                     <Route element={<UnProtectedRoute />}>
-                        <Route path='/login' element={<Login />} />
-                        {/* <Route path='/register' element={<Register />} /> */}
+                        <Route path='/login' element={<LoginForm />} />
+                        <Route path='/register' element={<RegisterForm />} />
                     </Route>
                     <Route element={<ProtectedRoute />}>
                         <Route path='/' element={<Home />} />
