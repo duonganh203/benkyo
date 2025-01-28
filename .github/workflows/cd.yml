@@ -6,9 +6,6 @@ on:
 env:
     HUSKY: 0
     VITE_API_URL: ${{secrets.VITE_API_URL}}
-    MONGO_URI: ${{secrets.MONGO_URI}}
-    PORT: ${{secrets.PORT}}
-    JWT_SECRET: $${{secrets.JWT_SECRET}}
 
 jobs:
     publish:
@@ -19,11 +16,6 @@ jobs:
             - name: Pre-build client
               run: |
                   cd benkyo-client
-                  envsubst < .env.example > .env
-                  cat .env
-            - name: Pre-build server
-              run: |
-                  cd benkyo-server
                   envsubst < .env.example > .env
                   cat .env
             - name: Build image
