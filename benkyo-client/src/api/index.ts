@@ -12,3 +12,20 @@ api.interceptors.request.use((config) => {
     }
     return config;
 });
+
+api.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response) {
+            const { status, data } = error.response;
+            const simplifiedError = {
+                status: status,
+                ...data
+            };
+            return Promise.reject(simplifiedError);
+        }
+        return Promise.reject(error);
+    }
+);
