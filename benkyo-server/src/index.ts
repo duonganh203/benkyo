@@ -17,7 +17,7 @@ connect(MONGO_URI!)
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error(err));
 
-app.use('/', rootRouter);
+app.use('/api', rootRouter);
 
 app.use(errorMiddleware);
 
