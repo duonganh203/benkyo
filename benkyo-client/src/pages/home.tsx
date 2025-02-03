@@ -1,4 +1,4 @@
-import useMe from '@/hooks/queries/useMe';
+import useMe from '@/hooks/queries/use-me';
 
 const Home = () => {
     const { data } = useMe();

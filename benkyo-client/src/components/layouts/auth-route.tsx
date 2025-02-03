@@ -1,4 +1,4 @@
-import useAuthStore from '@/hooks/useAuthStore';
+import useAuthStore from '@/hooks/use-auth-store';
 import { Navigate, Outlet } from 'react-router-dom';
 
 const AuthRoute = () => {
