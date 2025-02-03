@@ -3,10 +3,12 @@ import Header from '@/components/shared/header';
 
 const Marketing = () => {
     return (
-        <div>
+        <>
             <Header />
-            <HeroSection />
-        </div>
+            <div className='max-w-[1416px] mx-auto min-h-screen'>
+                <HeroSection />
+            </div>
+        </>
     );
 };
 

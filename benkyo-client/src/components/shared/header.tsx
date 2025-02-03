@@ -2,16 +2,22 @@ import useAuthStore from '@/hooks/use-auth-store';
 import { Button } from '../ui/button';
 import { PlusCircle } from 'lucide-react';
 import { ModeToggle } from '../mode-toggle';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
     const user = useAuthStore((state) => state.user);
     return (
-        <header className='py-2 border-b'>
-            <div className='flex justify-between items-center'>
-                <h3 className='font-bold'>BENKYO</h3>
+        <header className='fixed w-full py-2 border-b'>
+            <div className='max-w-[1416px] mx-auto flex justify-between items-center'>
+                <Link to='#'>
+                    <h3 className='font-bold'>BENKYO</h3>
+                </Link>
                 <div className='flex items-center space-x-4'>
+                    <ModeToggle />
                     {!user ? (
-                        <Button variant='outline'>Get Started</Button>
+                        <Button variant='outline' asChild>
+                            <Link to='/login'>Sign In</Link>
+                        </Button>
                     ) : (
                         <div>
                             <Button>
@@ -20,7 +26,6 @@ const Header = () => {
                             </Button>
                         </div>
                     )}
-                    <ModeToggle />
                 </div>
             </div>
         </header>
