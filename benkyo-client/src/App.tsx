@@ -5,12 +5,12 @@ import { AxiosError } from 'axios';
 import { RegisterForm } from './components/register-form';
 import { LoginForm } from './components/login-form';
 import Marketing from './pages/marketing';
-import ProtectedRoute from './components/layouts/protectedRoute';
-import AuthRoute from './components/layouts/authRoute';
-import GlobalLayout from './components/layouts/globalLayout';
+import ProtectedRoute from './components/layouts/protected-route';
+import AuthRoute from './components/layouts/auth-route';
+import GlobalLayout from './components/layouts/global-layout';
 
 import './index.css';
-import { ThemeProvider } from './components/themeProvider';
+import { ThemeProvider } from './components/theme-provider';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {

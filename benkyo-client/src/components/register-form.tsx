@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { ApiError } from '@/types/api';
 import { AxiosError } from 'axios';
-import useRegister from '@/hooks/queries/useRegister';
+import useRegister from '@/hooks/queries/use-register';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
