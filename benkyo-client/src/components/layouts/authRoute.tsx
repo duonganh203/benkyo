@@ -1,9 +1,9 @@
+import useAuthStore from '@/hooks/useAuthStore';
 import { Navigate, Outlet } from 'react-router-dom';
-import useAuthStore from './hooks/useAuthStore';
 
-const UnProtectedRoute = () => {
+const AuthRoute = () => {
     const user = useAuthStore((state) => state.user);
     return !user ? <Outlet /> : <Navigate to='/home' />;
 };
 
-export default UnProtectedRoute;
+export default AuthRoute;
