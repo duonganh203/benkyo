@@ -1,5 +1,13 @@
+import HeroSection from '@/components/hero';
+import Header from '@/components/shared/header';
+
 const Marketing = () => {
-    return <div>Marketing Page</div>;
+    return (
+        <div>
+            <Header />
+            <HeroSection />
+        </div>
+    );
 };
 
 export default Marketing;
