@@ -1,13 +1,16 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import ProtectedRoute from './protectedRoute';
 import Home from './pages/home';
 import { AxiosError } from 'axios';
-import UnProtectedRoute from './unprotectedRoute';
 import { RegisterForm } from './components/register-form';
 import { LoginForm } from './components/login-form';
 import Marketing from './pages/marketing';
+import ProtectedRoute from './components/layouts/protectedRoute';
+import AuthRoute from './components/layouts/authRoute';
+import GlobalLayout from './components/layouts/globalLayout';
 
+import './index.css';
+import { ThemeProvider } from './components/themeProvider';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -22,18 +25,22 @@ const queryClient = new QueryClient({
 const App = () => {
     return (
         <QueryClientProvider client={queryClient}>
-            <Router>
-                <Routes>
-                    <Route element={<UnProtectedRoute />}>
-                        <Route path='/' element={<Marketing />} />
-                        <Route path='/login' element={<LoginForm />} />
-                        <Route path='/register' element={<RegisterForm />} />
-                    </Route>
-                    <Route element={<ProtectedRoute />}>
-                        <Route path='/home' element={<Home />} />
-                    </Route>
-                </Routes>
-            </Router>
+            <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
+                <Router>
+                    <Routes>
+                        <Route element={<AuthRoute />}>
+                            <Route path='/login' element={<LoginForm />} />
+                            <Route path='/register' element={<RegisterForm />} />
+                        </Route>
+                        <Route element={<GlobalLayout />}>
+                            <Route path='/' element={<Marketing />} />
+                            <Route element={<ProtectedRoute />}>
+                                <Route path='/home' element={<Home />} />
+                            </Route>
+                        </Route>
+                    </Routes>
+                </Router>
+            </ThemeProvider>
         </QueryClientProvider>
     );
 };
