@@ -39,15 +39,16 @@
     },
     "dependencies": {
         "bcrypt": "^5.1.1",
+        "benkyo-server": "file:",
         "cors": "^2.8.5",
         "dotenv": "^16.4.7",
         "express": "^4.21.2",
         "http-status-codes": "^2.3.0",
-        "joi": "^17.13.3",
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.9.5",
         "ts-node": "^10.9.2",
-        "tsconfig-paths": "^4.2.0"
+        "tsconfig-paths": "^4.2.0",
+        "zod": "^3.24.1"
     },
     "lint-staged": {
         "src/**/*.{js,ts}": [
