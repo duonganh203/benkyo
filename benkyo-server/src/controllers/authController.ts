@@ -19,6 +19,6 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const me = async (req: Request, res: Response) => {
-    const { password, ...user } = req.user;
-    res.status(StatusCodes.OK).json(user);
+    const { _id, name, email } = req.user;
+    res.json({ id: _id, name, email });
 };
