@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { ErrorCode, HttpException } from './exceptions/root';
 import { InternalException } from './exceptions/internalException';
-import { ZodError } from 'node_modules/zod/lib/ZodError';
 import { UnprocessableEntity } from './exceptions/unprocessableEntity';
+import { ZodError } from 'zod';
 
 export const errorHandler = (method: (req: Request, res: Response, next: NextFunction) => void) => {
     return async (req: Request, res: Response, next: NextFunction) => {
