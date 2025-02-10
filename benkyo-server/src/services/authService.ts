@@ -2,7 +2,6 @@ import { compare, hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ErrorCode } from '~/exceptions/root';
-import { UnprocessableEntity } from '~/exceptions/unprocessableEntity';
 import { User } from '~/schemas/userSchema';
 import { loginValidation, registerValidation } from '~/validations/authValidation';
 import { z } from 'zod';
