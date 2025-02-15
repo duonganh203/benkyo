@@ -3,6 +3,8 @@ import { Request, Response } from 'express';
 import { loginService, registerService } from '~/services/authService';
 import { loginValidation, registerValidation } from '~/validations/authValidation';
 import { StatusCodes } from 'http-status-codes';
+import passport from 'passport';
+import { generateToken } from '~/utils/generateJwt';
 
 export const register = async (req: Request, res: Response) => {
     const userData = req.body;
@@ -13,12 +15,33 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
     const userData = req.body;
-    loginValidation.safeParse(userData);
+    loginValidation.parse(userData);
     const { token, user } = await loginService(userData);
     res.status(StatusCodes.OK).json({ token, user });
 };
 
 export const me = async (req: Request, res: Response) => {
     const { _id, name, email } = req.user;
+    console.log('User:', req.user);
     res.json({ id: _id, name, email });
+};
+
+export const googleLogin = async (req: Request, res: Response) => {
+    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res);
+};
+
+export const googleCallback = (req: Request, res: Response) => {
+    passport.authenticate('google', { session: false, failureRedirect: process.env.FRONTEND_URI }, (err, user) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (!user) {
+            return res.redirect(`${process.env.FRONTEND_URI}?error=Authentication failed`);
+        }
+
+        const token = generateToken(user._id);
+        return res.redirect(
+            `${process.env.FRONTEND_URI}google?token=${token}&id=${user._id}&name=${user.name}&email=${user.email}`
+        );
+    })(req, res);
 };

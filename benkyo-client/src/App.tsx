@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { AxiosError } from 'axios';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Home from './pages/home';
-import { AxiosError } from 'axios';
 import { RegisterForm } from './components/register-form';
 import { LoginForm } from './components/login-form';
 import Marketing from './pages/marketing';
@@ -11,6 +11,7 @@ import GlobalLayout from './components/layouts/global-layout';
 
 import './index.css';
 import { ThemeProvider } from './components/theme-provider';
+import LoginGoogle from './components/login-google';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -31,6 +32,7 @@ const App = () => {
                         <Route element={<AuthRoute />}>
                             <Route path='/login' element={<LoginForm />} />
                             <Route path='/register' element={<RegisterForm />} />
+                            <Route path='/google' element={<LoginGoogle />} />
                         </Route>
                         <Route element={<GlobalLayout />}>
                             <Route path='/' element={<Marketing />} />
