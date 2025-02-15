@@ -40,7 +40,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
     };
     const onGoogleLogin = (e: React.MouseEvent) => {
         e.preventDefault();
-        const googleAuthUrl = 'http://localhost:3001/api/auth/google';
+        const googleAuthUrl = `${import.meta.env.VITE_API_URL}/auth/google`;
         window.location.href = googleAuthUrl;
     };
 
