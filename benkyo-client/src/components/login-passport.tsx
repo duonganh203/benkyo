@@ -2,7 +2,7 @@ import useAuthStore from '@/hooks/use-auth-store';
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-const LoginGoogle = () => {
+const LoginPassport = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { setUser, setToken } = useAuthStore();
@@ -17,7 +17,7 @@ const LoginGoogle = () => {
             navigate('/home', { replace: true });
         }
     }, [searchParams, navigate]);
-    return <div>LoginGoogle</div>;
+    return <div>LoginPassport</div>;
 };
 
-export default LoginGoogle;
+export default LoginPassport;

@@ -1,5 +1,13 @@
 import { Router } from 'express';
-import { googleCallback, googleLogin, login, me, register } from '~/controllers/authController';
+import {
+    facebookCallback,
+    facebookLogin,
+    googleCallback,
+    googleLogin,
+    login,
+    me,
+    register
+} from '~/controllers/authController';
 import { errorHandler } from '~/errorHandler';
 import authMiddleware from '~/middlewares/authMiddleware';
 
@@ -10,4 +18,6 @@ authRoutes.post('/register', errorHandler(register));
 authRoutes.get('/me', [authMiddleware], errorHandler(me));
 authRoutes.get('/google', errorHandler(googleLogin));
 authRoutes.get('/google/callback', errorHandler(googleCallback));
+authRoutes.get('/facebook', errorHandler(facebookLogin));
+authRoutes.get('/facebook/callback', errorHandler(facebookCallback));
 export default authRoutes;

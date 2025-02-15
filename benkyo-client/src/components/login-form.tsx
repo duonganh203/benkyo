@@ -43,6 +43,11 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
         const googleAuthUrl = `${import.meta.env.VITE_API_URL}/auth/google`;
         window.location.href = googleAuthUrl;
     };
+    const onFacebookLogin = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const facebookAuthUrl = `${import.meta.env.VITE_API_URL}/auth/facebook`;
+        window.location.href = facebookAuthUrl;
+    };
 
     return (
         <div className={cn('h-screen flex flex-col gap-6 justify-center items-center', className)} {...props}>
@@ -122,7 +127,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                                 </svg>
                                 Continue with Google
                             </Button>
-                            <Button variant='outline' className='w-full'>
+                            <Button onClick={(e) => onFacebookLogin(e)} variant='outline' className='w-full'>
                                 <LucideFacebook />
                                 Continue with Facebook
                             </Button>
