@@ -28,6 +28,8 @@
         --chart-4: 43 74% 66%;
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
+        --color-yellow-600: #f59e0b;
+        --color-blue-400: #60a5fa;
     }
     .dark {
         --background: 0 0% 3.9%;
