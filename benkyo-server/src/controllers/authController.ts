@@ -22,7 +22,6 @@ export const login = async (req: Request, res: Response) => {
 
 export const me = async (req: Request, res: Response) => {
     const { _id, name, email } = req.user;
-    console.log('User:', req.user);
     res.json({ id: _id, name, email });
 };
 
@@ -41,7 +40,31 @@ export const googleCallback = (req: Request, res: Response) => {
 
         const token = generateToken(user._id);
         return res.redirect(
-            `${process.env.FRONTEND_URI}google?token=${token}&id=${user._id}&name=${user.name}&email=${user.email}`
+            `${process.env.FRONTEND_URI}passport?token=${token}&id=${user._id}&name=${user.name}&email=${user.email}`
         );
     })(req, res);
+};
+
+export const facebookLogin = (req: Request, res: Response) => {
+    passport.authenticate('facebook', { scope: ['public_profile'] })(req, res);
+};
+
+export const facebookCallback = (req: Request, res: Response) => {
+    passport.authenticate(
+        'facebook',
+        { session: false, failureRedirect: process.env.FRONTEND_URI },
+        (err: any, user: any) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            if (!user) {
+                return res.redirect(`${process.env.FRONTEND_URI}?error=Authentication failed`);
+            }
+
+            const token = generateToken(user._id);
+            return res.redirect(
+                `${process.env.FRONTEND_URI}passport?token=${token}&id=${user._id}&name=${user.name}&email=${user.email}`
+            );
+        }
+    )(req, res);
 };

@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import 'tsconfig-paths/register';
-import './auth';
+import './authPassport';
 import express, { Express } from 'express';
 import cors from 'cors';
 import { connect } from 'mongoose';
