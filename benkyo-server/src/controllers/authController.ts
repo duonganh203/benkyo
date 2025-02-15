@@ -35,12 +35,12 @@ export const googleCallback = (req: Request, res: Response) => {
             return res.status(500).json({ error: err.message });
         }
         if (!user) {
-            return res.redirect(`${process.env.FRONTEND_DOMAIN_URI}?error=Authentication failed`);
+            return res.redirect(`${process.env.FRONTEND_URI}?error=Authentication failed`);
         }
 
         const token = generateToken(user._id);
         return res.redirect(
-            `${process.env.FRONTEND_DOMAIN_URI}passport?token=${token}&id=${user._id}&name=${user.name}&email=${user.email}`
+            `${process.env.FRONTEND_URI}passport?token=${token}&id=${user._id}&name=${user.name}&email=${user.email}`
         );
     })(req, res);
 };
@@ -58,12 +58,12 @@ export const facebookCallback = (req: Request, res: Response) => {
                 return res.status(500).json({ error: err.message });
             }
             if (!user) {
-                return res.redirect(`${process.env.FRONTEND_DOMAIN_URI}?error=Authentication failed`);
+                return res.redirect(`${process.env.FRONTEND_URI}?error=Authentication failed`);
             }
 
             const token = generateToken(user._id);
             return res.redirect(
-                `${process.env.FRONTEND_DOMAIN_URI}passport?token=${token}&id=${user._id}&name=${user.name}&email=${user.email}`
+                `${process.env.FRONTEND_URI}passport?token=${token}&id=${user._id}&name=${user.name}&email=${user.email}`
             );
         }
     )(req, res);

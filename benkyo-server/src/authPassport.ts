@@ -8,12 +8,13 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
 const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET;
+const FRONTEND_URI = process.env.FRONTEND_URI;
 passport.use(
     new GoogleStrategy(
         {
             clientID: GOOGLE_CLIENT_ID!,
             clientSecret: GOOGLE_CLIENT_SECRET!,
-            callbackURL: '/api/auth/google/callback'
+            callbackURL: FRONTEND_URI + 'api/auth/google/callback'
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
