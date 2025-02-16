@@ -42,7 +42,7 @@ passport.use(
         {
             clientID: FACEBOOK_APP_ID!,
             clientSecret: FACEBOOK_APP_SECRET!,
-            callbackURL: '/api/auth/facebook/callback',
+            callbackURL: FRONTEND_URI + '/api/auth/facebook/callback',
             profileFields: ['id', 'displayName', 'photos', 'email', 'gender', 'name']
         },
         async (accessToken, refreshToken, profile, done) => {

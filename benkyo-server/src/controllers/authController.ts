@@ -46,7 +46,7 @@ export const googleCallback = (req: Request, res: Response) => {
 };
 
 export const facebookLogin = (req: Request, res: Response) => {
-    passport.authenticate('facebook', { scope: ['public_profile'] })(req, res);
+    passport.authenticate('facebook', { scope: ['public_profile, email'] })(req, res);
 };
 
 export const facebookCallback = (req: Request, res: Response) => {
