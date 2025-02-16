@@ -9,7 +9,8 @@ const Header = () => {
     return (
         <header className='fixed w-full py-2 border-b'>
             <div className='max-w-[1416px] mx-auto flex justify-between items-center'>
-                <Link to='#'>
+                <Link to='#' className='flex items-center gap-2'>
+                    <img src='/images/logo.png' className='size-5' />
                     <h3 className='font-bold'>BENKYO</h3>
                 </Link>
                 <div className='flex items-center space-x-4'>
