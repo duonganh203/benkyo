@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { AxiosError } from 'axios';
 
 import { cn } from '@/lib/utils';
