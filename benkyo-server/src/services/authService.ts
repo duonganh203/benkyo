@@ -1,9 +1,9 @@
+import { z } from 'zod';
 import { compare, hash } from 'bcrypt';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ErrorCode } from '~/exceptions/root';
-import { User } from '~/schemas/userSchema';
+import { User } from '~/schemas';
 import { loginValidation, registerValidation } from '~/validations/authValidation';
-import { z } from 'zod';
 import { generateToken } from '~/utils/generateJwt';
 export const registerService = async (userData: z.infer<typeof registerValidation>) => {
     const { name, email, password } = userData;
@@ -13,7 +13,6 @@ export const registerService = async (userData: z.infer<typeof registerValidatio
     }
     const hashedPassword = await hash(password, 10);
     user = await User.create({ name, email, password: hashedPassword });
-
     return user;
 };
 
@@ -24,7 +23,6 @@ export const loginService = async (userData: z.infer<typeof loginValidation>) =>
 
     const isMatch = await compare(password, user.password);
     if (!isMatch) throw new BadRequestsException('Email or password is not correct!', ErrorCode.INVALID_CREDENTIALS);
-    console.log(email);
     const token = generateToken(user._id);
     return { token, user: { id: user._id, username: user.name, email: user.email } };
 };

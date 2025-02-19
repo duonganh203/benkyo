@@ -14,6 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ApiError } from '@/types/api';
 import useRegister from '@/hooks/queries/use-register';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { getToast } from '@/utils/getToast';
 
 export function RegisterForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
     const { mutate: register, isPending } = useRegister();
@@ -37,12 +38,11 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
         };
         register(payload, {
             onSuccess: () => {
-                toast.success('Account created successfully!', {
-                    description: 'You can now login to your account.'
-                });
+                getToast('success', 'Account created successfully!!!', 'Now you can login with your credentials');
                 navigate('/login');
             },
             onError: (error) => {
+                getToast('error', error.message || 'Something went wrong!!!');
                 setError(error);
             }
         });

@@ -13,6 +13,7 @@ import './index.css';
 import { ThemeProvider } from './components/providers/theme-provider';
 import DeckDetail from './pages/deck-detail';
 import ModalProvider from './components/providers/modal-provider';
+import { Toaster } from './components/ui/sonner';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -45,6 +46,7 @@ const App = () => {
                     </Routes>
                     <ModalProvider />
                 </Router>
+                <Toaster closeButton richColors position='top-right' />
             </ThemeProvider>
         </QueryClientProvider>
     );

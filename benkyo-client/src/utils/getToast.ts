@@ -1,0 +1,21 @@
+import { toast } from 'sonner';
+
+type ToastState = 'success' | 'error' | 'warning' | 'info';
+
+export const getToast = (state: ToastState, value: string, description?: string) => {
+    const msgDescription = description ?? new Date().toLocaleString();
+    switch (state) {
+        case 'success':
+            toast.success(value, { description: msgDescription });
+            break;
+        case 'error':
+            toast.error(value, { description: msgDescription });
+            break;
+        case 'warning':
+            toast.warning(value, { description: msgDescription });
+            break;
+        default:
+            toast(value, { description: msgDescription });
+            break;
+    }
+};

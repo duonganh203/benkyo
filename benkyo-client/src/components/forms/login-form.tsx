@@ -13,6 +13,7 @@ import useAuthStore from '@/hooks/stores/use-auth-store';
 import { LoginSchema } from '@/schemas/authSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ApiError } from '@/types/api';
+import { getToast } from '@/utils/getToast';
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
     const { mutate: login, isPending } = useLogin();
@@ -32,8 +33,10 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
             onSuccess: (data) => {
                 setUser(data.user);
                 setToken(data.token);
+                getToast('success', 'Login successful!!!');
             },
             onError: (error) => {
+                getToast('error', error.message || 'Something went wrong!!!');
                 setError(error);
             }
         });

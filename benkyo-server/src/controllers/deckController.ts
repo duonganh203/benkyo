@@ -5,6 +5,6 @@ import { createDeckValidation } from '~/validations/deckValidation';
 export const createDeck = async (req: Request, res: Response) => {
     const deckData = req.body;
     createDeckValidation.parse(deckData);
-    const deck = await createDeckService(req.user.id, deckData);
-    res.json(deck);
+    const deckId = await createDeckService(req.user.id, deckData);
+    res.json(deckId);
 };
