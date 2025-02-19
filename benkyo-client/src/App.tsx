@@ -11,6 +11,8 @@ import AuthRoute from './components/layouts/auth-route';
 import GlobalLayout from './components/layouts/global-layout';
 import './index.css';
 import { ThemeProvider } from './components/providers/theme-provider';
+import DeckDetail from './pages/deck-detail';
+import ModalProvider from './components/providers/modal-provider';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -37,9 +39,11 @@ const App = () => {
                             <Route path='/' element={<Marketing />} />
                             <Route element={<ProtectedRoute />}>
                                 <Route path='/home' element={<Home />} />
+                                <Route path='/deck/:id' element={<DeckDetail />} />
                             </Route>
                         </Route>
                     </Routes>
+                    <ModalProvider />
                 </Router>
             </ThemeProvider>
         </QueryClientProvider>

@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import useLogin from '@/hooks/queries/use-login';
 import useAuthStore from '@/hooks/stores/use-auth-store';
-import { LoginSchema } from '@/schemas/auth';
+import { LoginSchema } from '@/schemas/authSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ApiError } from '@/types/api';
 
