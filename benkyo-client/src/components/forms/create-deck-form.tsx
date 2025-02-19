@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { CreateDeckSchema } from '@/schemas/deckSchema';
@@ -9,10 +8,11 @@ import useCreateDeck from '@/hooks/queries/use-create-deck';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { getToast } from '@/utils/getToast';
 
 export function CreateDeckForm() {
     const { close } = useCreateDeckModal((store) => store);
-    const { mutate: createDeck, isPending } = useCreateDeck();
+    const { mutateAsync: createDeck, isPending } = useCreateDeck();
     const navigate = useNavigate();
     const form = useForm<z.infer<typeof CreateDeckSchema>>({
         resolver: zodResolver(CreateDeckSchema),
@@ -24,12 +24,12 @@ export function CreateDeckForm() {
     const onSubmit = (data: z.infer<typeof CreateDeckSchema>) => {
         createDeck(data, {
             onSuccess: (res) => {
-                toast.success('Deck created successfully');
+                getToast('success', 'Deck created successfully!!!');
                 close();
-                navigate(`/deck/${res._id}`);
+                navigate(`/deck/${res.id}`);
             },
             onError: (error) => {
-                toast.error(error.message);
+                getToast('error', error.message || 'Something went wrong!!!');
             }
         });
     };

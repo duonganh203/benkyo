@@ -3,7 +3,7 @@ import 'dotenv/config';
 import bcrypt from 'bcrypt';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { User } from './schemas/userSchema';
+import { User } from './schemas';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
@@ -24,6 +24,7 @@ passport.use(
                     user = new User({
                         name: profile.displayName,
                         email: profile.emails?.[0].value,
+                        avatar: profile.photos?.[0].value,
                         password: hashedPassword
                     });
                     await user.save();

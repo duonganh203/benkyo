@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import { Request, Response } from 'express';
-import { loginService, registerService } from '~/services/authService';
-import { loginValidation, registerValidation } from '~/validations/authValidation';
 import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
+import { loginService, registerService } from '~/services/authService';
+import { loginValidation, registerValidation } from '~/validations/authValidation';
 import { generateToken } from '~/utils/generateJwt';
 
 export const register = async (req: Request, res: Response) => {
