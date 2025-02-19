@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
-import { useTheme } from './theme-provider';
+import { useTheme } from './providers/theme-provider';
 
 export function ModeToggle() {
     const { setTheme, theme } = useTheme();

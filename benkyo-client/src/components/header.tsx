@@ -1,11 +1,13 @@
-import useAuthStore from '@/hooks/use-auth-store';
-import { Button } from '../ui/button';
+import useAuthStore from '@/hooks/stores/use-auth-store';
+import { Button } from './ui/button';
 import { PlusCircle } from 'lucide-react';
-import { ModeToggle } from '../mode-toggle';
+import { ModeToggle } from './mode-toggle';
 import { Link } from 'react-router-dom';
+import { useCreateDeckModal } from '@/hooks/stores/use-create-deck-modal';
 
 const Header = () => {
     const user = useAuthStore((state) => state.user);
+    const { open } = useCreateDeckModal((store) => store);
     return (
         <header className='fixed w-full py-2 border-b'>
             <div className='max-w-[1416px] mx-auto flex justify-between items-center'>
@@ -21,7 +23,7 @@ const Header = () => {
                         </Button>
                     ) : (
                         <div>
-                            <Button>
+                            <Button onClick={open}>
                                 <PlusCircle />
                                 Create deck
                             </Button>
