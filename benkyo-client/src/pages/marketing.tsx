@@ -1,5 +1,5 @@
 import HeroSection from '@/components/hero';
-import Header from '@/components/shared/header';
+import Header from '@/components/header';
 
 const Marketing = () => {
     return (

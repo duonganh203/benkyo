@@ -2,15 +2,15 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Home from './pages/home';
-import { RegisterForm } from './components/register-form';
-import { LoginForm } from './components/login-form';
+import { RegisterForm } from './components/forms/register-form';
+import { LoginForm } from './components/forms/login-form';
 import LoginPassport from './components/login-passport';
 import Marketing from './pages/marketing';
 import ProtectedRoute from './components/layouts/protected-route';
 import AuthRoute from './components/layouts/auth-route';
 import GlobalLayout from './components/layouts/global-layout';
 import './index.css';
-import { ThemeProvider } from './components/theme-provider';
+import { ThemeProvider } from './components/providers/theme-provider';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {

@@ -1,4 +1,4 @@
-import useAuthStore from '@/hooks/use-auth-store';
+import useAuthStore from '@/hooks/stores/use-auth-store';
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 

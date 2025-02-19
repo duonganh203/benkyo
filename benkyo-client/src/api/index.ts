@@ -1,5 +1,5 @@
 import axios from 'axios';
-import useAuthStore from '../hooks/use-auth-store';
+import useAuthStore from '../hooks/stores/use-auth-store';
 const API_URL = import.meta.env.VITE_API_URL;
 export const api = axios.create({
     baseURL: API_URL
