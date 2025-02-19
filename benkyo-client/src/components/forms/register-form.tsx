@@ -2,18 +2,18 @@ import { GalleryVerticalEnd, LucideFacebook } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { AxiosError } from 'axios';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RegisterSchema } from '@/schemas/auth';
+import { RegisterSchema } from '@/schemas/authSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { ApiError } from '@/types/api';
-import { AxiosError } from 'axios';
 import useRegister from '@/hooks/queries/use-register';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 
 export function RegisterForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
     const { mutate: register, isPending } = useRegister();

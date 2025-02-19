@@ -1,14 +1,19 @@
 import { z } from 'zod';
+import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
-import { CreateDeckSchema } from '@/schemas/deck';
+import { useNavigate } from 'react-router-dom';
+import { CreateDeckSchema } from '@/schemas/deckSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { useCreateDeckModal } from '@/hooks/stores/use-create-deck-modal';
+import useCreateDeck from '@/hooks/queries/use-create-deck';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { useCreateDeckModal } from '@/hooks/stores/use-create-deck-modal';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 
 export function CreateDeckForm() {
     const { close } = useCreateDeckModal((store) => store);
+    const { mutate: createDeck, isPending } = useCreateDeck();
+    const navigate = useNavigate();
     const form = useForm<z.infer<typeof CreateDeckSchema>>({
         resolver: zodResolver(CreateDeckSchema),
         defaultValues: {
@@ -16,7 +21,18 @@ export function CreateDeckForm() {
             description: ''
         }
     });
-    const onSubmit = (data: z.infer<typeof CreateDeckSchema>) => {};
+    const onSubmit = (data: z.infer<typeof CreateDeckSchema>) => {
+        createDeck(data, {
+            onSuccess: (res) => {
+                toast.success('Deck created successfully');
+                close();
+                navigate(`/deck/${res._id}`);
+            },
+            onError: (error) => {
+                toast.error(error.message);
+            }
+        });
+    };
     return (
         <div>
             <Form {...form}>
@@ -59,10 +75,10 @@ export function CreateDeckForm() {
                         />
                     </div>
                     <div className='flex items-center justify-end mt-4 space-x-4'>
-                        <Button type='button' variant='outline' onClick={close}>
+                        <Button type='button' variant='outline' onClick={close} disabled={isPending}>
                             Cancel
                         </Button>
-                        <Button type='submit' variant='default'>
+                        <Button type='submit' variant='default' disabled={isPending}>
                             Create Deck
                         </Button>
                     </div>
