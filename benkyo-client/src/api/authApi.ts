@@ -11,6 +11,6 @@ export const register = async (payload: RegisterPayload) => {
 };
 
 export const me = async () => {
-    const { data } = await api.get('auth/me');
+    const { data } = await api.get('auth/me' );
     return data;
 };
