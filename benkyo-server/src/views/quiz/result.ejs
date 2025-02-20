@@ -1,0 +1,13 @@
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
+        <h1 class="text-3xl font-bold mb-6">Quiz Result</h1>
+        <div class="text-center">
+            <p class="text-6xl font-bold text-blue-500 mb-4"><%= quizResult.score %></p>
+            <p class="text-xl text-gray-600">Score</p>
+            <p class="mt-4 text-gray-500">Completed on: <%= new Date(quizResult.takeDate).toLocaleDateString() %></p>
+        </div>
+        <div class="mt-8 text-center">
+            <a href="/quiz" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"> Take Another Quiz </a>
+        </div>
+    </div>
+</div>

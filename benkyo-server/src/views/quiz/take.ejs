@@ -1,0 +1,62 @@
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6"><%= quiz.title %></h1>
+    <form id="quizForm" class="space-y-6">
+        <% quiz.questions.forEach((question, index) => { %>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl mb-4">Question <%= index + 1 %>: <%= question.text %></h3>
+                <div class="space-y-2">
+                    <% question.options.forEach((option, optionIndex) => { %>
+                        <div class="flex items-center">
+                            <input 
+                                type="<%= Array.isArray(question.correctAnswerIndex) && question.correctAnswerIndex.length > 1 ? 'checkbox' : 'radio' %>"
+                                name="answers[<%= index %>][]"
+                                value="<%= optionIndex %>"
+                                id="q<%= index %>_<%= optionIndex %>"
+                                class="mr-2"
+                            >
+                            <label for="q<%= index %>_<%= optionIndex %>"><%= option %></label>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        <% }); %>
+        <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
+            Submit Quiz
+        </button>
+    </form>
+</div>
+
+<script>
+document.getElementById('quizForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const answers = {};
+    
+    formData.forEach((value, key) => {
+        const match = key.match(/answers\[(\d+)\]/);
+        if (match) {
+            const index = match[1];
+            if (!answers[index]) answers[index] = [];
+            answers[index].push(parseInt(value));
+        }
+    });
+
+    try {
+        const response = await fetch('/quiz/<%= quiz._id %>/test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ answers: Object.values(answers) })
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            window.location.href = `/quiz/result/${result._id}`;
+        }
+    } catch (error) {
+        console.error('Error submitting quiz:', error);
+    }
+});
+</script>
