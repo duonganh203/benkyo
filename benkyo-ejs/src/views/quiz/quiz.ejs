@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes | Benkyo</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/quiz.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">Benkyo</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/quiz" class="active">Quizzes</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Available Quizzes</h1>
+        
+        <div class="quiz-list">
+            <% if (quizes && quizes.length > 0) { %>
+                <% quizes.forEach(quiz => { %>
+                    <div class="quiz-card">
+                        <h2><%= quiz.title %></h2>
+                        <p><%= quiz.description %></p>
+                        <p><strong>Questions:</strong> <%= quiz.questions.length %></p>
+                        <div class="quiz-actions">
+                            <a href="/quiz/<%= quiz._id %>/take" class="btn primary">Take Quiz</a>
+                            <a href="/quiz/<%= quiz._id %>/edit" class="btn secondary">Edit</a>
+                            <button onclick="deleteQuiz('<%= quiz._id %>')" class="btn danger">Delete</button>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p class="no-data">No quizzes available</p>
+            <% } %>
+        </div>
+        
+        <div class="actions">
+            <a href="/quiz/new" class="btn primary">Create New Quiz</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; <%= new Date().getFullYear() %> Benkyo - Learning Management System</p>
+    </footer>
+
+    <script>
+        function deleteQuiz(id) {
+            if (confirm('Are you sure you want to delete this quiz?')) {
+                fetch(`/quiz/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Failed to delete quiz');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the quiz');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

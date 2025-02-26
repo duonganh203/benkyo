@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login Page</title>
+        <link rel="stylesheet" href="main.css" />
+        <link rel="stylesheet" href="login.css" />
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <div class="login-container">
+            <form id="loginForm" class="login-form">
+                <h2>Login</h2>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required />
+                </div>
+                <div id="errorMessage" class="error-message" style="color: red; display: none"></div>
+                <button type="submit" class="btn">Login</button>
+                <p class="signup-link">Don't have an account? <a href="/signup">Sign up</a></p>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById('loginForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const errorMessage = document.getElementById('errorMessage');
+
+                errorMessage.style.display = 'none';
+
+                if (typeof axios === 'undefined') {
+                    errorMessage.textContent = 'Error: Axios library is not loaded';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+
+                try {
+                    console.log('Attempting login for:', email);
+                    const response = await axios.post(
+                        'http://localhost:3000/api/auth/login',
+                        {
+                            email,
+                            password
+                        },
+                        {
+                            timeout: 10000,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+
+                    console.log('Login response received:', response.status);
+
+                    if (response.data && response.data.token) {
+                        localStorage.setItem('token', response.data.token);
+
+                        if (response.data.user) {
+                            localStorage.setItem('user', JSON.stringify(response.data.user));
+                        }
+
+                        api.interceptors.request.use((config) => {
+                            const token = response.data.token;
+                            if (token) {
+                                config.headers.Authorization = token;
+                            }
+                            return config;
+                        });
+
+                        window.location.href = '/quiz';
+                    } else {
+                        errorMessage.textContent = 'Invalid response from server. Missing token.';
+                        errorMessage.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Login error details:', error);
+                    errorMessage.style.display = 'block';
+                }
+            });
+        </script>
+    </body>
+</html>
