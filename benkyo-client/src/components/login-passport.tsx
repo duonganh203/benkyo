@@ -11,8 +11,9 @@ const LoginPassport = () => {
         const id = searchParams.get('id');
         const email = searchParams.get('email');
         const name = searchParams.get('name');
-        if (token && id && email && name) {
-            setUser({ _id: id, email, username: name });
+        const avatar = searchParams.get('avatar');
+        if (token && id && email && name && avatar) {
+            setUser({ _id: id, email, username: name, avatar: avatar });
             setToken(token);
             navigate('/home', { replace: true });
         }
