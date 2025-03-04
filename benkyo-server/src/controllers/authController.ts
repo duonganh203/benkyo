@@ -40,7 +40,7 @@ export const googleCallback = (req: Request, res: Response) => {
 
         const token = generateToken(user._id);
         return res.redirect(
-            `${process.env.FRONTEND_URI}passport?token=${token}&id=${user._id}&name=${user.name}&email=${user.email}`
+            `${process.env.FRONTEND_URI}passport?token=${token}&id=${user._id}&name=${user.name}&email=${user.email}&avatar=${user.avatar}`
         );
     })(req, res);
 };
