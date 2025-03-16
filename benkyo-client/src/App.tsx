@@ -14,6 +14,7 @@ import { ThemeProvider } from './components/providers/theme-provider';
 import DeckDetail from './pages/deck-detail';
 import ModalProvider from './components/providers/modal-provider';
 import { Toaster } from './components/ui/sonner';
+import EditProfilePage from './components/user-profile';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -41,6 +42,7 @@ const App = () => {
                             <Route element={<ProtectedRoute />}>
                                 <Route path='/home' element={<Home />} />
                                 <Route path='/deck/:id' element={<DeckDetail />} />
+                                <Route path='/profile' element={<EditProfilePage />} />
                             </Route>
                         </Route>
                     </Routes>

@@ -9,8 +9,10 @@ const ProtectedRoute = () => {
     return (
         <SidebarProvider>
             <AppSidebar />
-            <main>
-                <Outlet />
+            <main className='w-full'>
+                <div className='flex justify-center items-center'>
+                    <Outlet />
+                </div>
             </main>
         </SidebarProvider>
     );
