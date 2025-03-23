@@ -11,6 +11,39 @@ export const getCardsByIds = async (cardIds: string[]) => {
     return cards;
 };
 
+export const getCardByIdService = async (cardId: string) => {
+    const card = await Card.findById(cardId);
+    if (!card) {
+        throw new NotFoundException('Card not found', ErrorCode.NOT_FOUND);
+    }
+    return card;
+};
+
+export const updateCard = async (cardId: string, userId: string, cardData: z.infer<typeof createCardValidation>) => {
+    const { front, back, tags, deckId, media } = cardData;
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+    if (!deck.owner.equals(userId)) {
+        throw new UnauthorizedException(
+            'You do not have permission to update cards to this deck',
+            ErrorCode.UNAUTHORIZED
+        );
+    }
+    const updateCard = await Card.findByIdAndUpdate(cardId, {
+        front,
+        back,
+        tags: tags || [],
+        media: media || [],
+        updatedAt: new Date()
+    });
+    await Deck.findByIdAndUpdate(deckId, {
+        $set: { updatedAt: new Date() }
+    });
+    return updateCard;
+};
+
 export const getDeckCardsService = async (userId: string, deckId: string) => {
     const deck = await Deck.findById(deckId);
     if (!deck) {
