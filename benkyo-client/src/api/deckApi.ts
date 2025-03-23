@@ -1,5 +1,5 @@
 import { CardInterface } from '@/types/card';
-import { CreateDeckPayload, DeckDetails } from '@/types/deck';
+import { CreateDeckPayload, DeckDetails, DeckInterface } from '@/types/deck';
 import { api } from '.';
 
 export const createDeck = async (deck: CreateDeckPayload) => {
@@ -15,4 +15,9 @@ export const getDeckById = async (deckId: string) => {
 export const getDeckCards = async (deckId: string) => {
     const { data } = await api.get(`decks/${deckId}/cards`);
     return data.cards as CardInterface[];
+};
+
+export const getUserDecks = async () => {
+    const { data } = await api.get('/decks/my-decks');
+    return data as DeckInterface[];
 };
