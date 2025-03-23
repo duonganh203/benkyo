@@ -20,3 +20,9 @@ export const getDeckService = async (userId: string, deckId: string) => {
     }
     return deck;
 };
+
+export const getAllDecksService = async (userId: string) => {
+    const decks = await Deck.find({ owner: userId }).populate('owner');
+    const publicDeck = await Deck.find({ owner: { $ne: userId }, isPublic: true }).populate('owner');
+    return [...decks, ...publicDeck];
+};
