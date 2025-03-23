@@ -9,7 +9,7 @@ const Header = () => {
     const user = useAuthStore((state) => state.user);
     const { open } = useCreateDeckModal((store) => store);
     return (
-        <header className='fixed w-full py-2 border-b'>
+        <header className='fixed w-full py-2 border-b z-10 bg-white dark:bg-[#0a0a0a]'>
             <div className='max-w-[1416px] mx-auto flex justify-between items-center'>
                 <Link to='#' className='flex items-center gap-2'>
                     <img src='/images/logo.png' className='size-5' />
