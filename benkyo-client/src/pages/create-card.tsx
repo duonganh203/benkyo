@@ -34,7 +34,6 @@ const CreateCard = () => {
     const queryClient = useQueryClient();
 
     const [tagInput, setTagInput] = useState<string>('');
-    const [importMode, setImportMode] = useState<boolean>(false);
     const [importContent, setImportContent] = useState<string>('');
     const [delimiter, setDelimiter] = useState<string>(';'); // Default to semicolon delimiter
     const [importCards, setImportCards] = useState<BatchImportCard[]>([]);
@@ -199,12 +198,8 @@ const CreateCard = () => {
 
             <Tabs defaultValue='manual' className='w-full'>
                 <TabsList className='grid w-full grid-cols-2 mb-6'>
-                    <TabsTrigger value='manual' onClick={() => setImportMode(false)}>
-                        Manual Entry
-                    </TabsTrigger>
-                    <TabsTrigger value='import' onClick={() => setImportMode(true)}>
-                        Batch Import
-                    </TabsTrigger>
+                    <TabsTrigger value='manual'>Manual Entry</TabsTrigger>
+                    <TabsTrigger value='import'>Batch Import</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value='manual' className='space-y-4'>

@@ -13,8 +13,7 @@ import {
     Book,
     RefreshCcw
 } from 'lucide-react';
-import { format, formatDistanceToNow, isBefore } from 'date-fns';
-import { useQueryClient } from '@tanstack/react-query';
+import { formatDistanceToNow, isBefore } from 'date-fns';
 import useGetDeckById from '@/hooks/queries/use-get-deck-id';
 import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
 import { Button } from '../components/ui/button';
@@ -29,18 +28,11 @@ import {
     DropdownMenuTrigger
 } from '../components/ui/dropdown-menu';
 import { Skeleton } from '../components/ui/skeleton';
-
-enum State {
-    NEW = 0,
-    LEARNING = 1,
-    REVIEW = 2,
-    RELEARNING = 3
-}
+import { CardInterface, State } from '@/types/card';
 
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -103,7 +95,7 @@ const DeckDetail = () => {
         setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
     };
 
-    const getLearningStatus = (card: any) => {
+    const getLearningStatus = (card: CardInterface) => {
         const { state, due } = card.learning;
         const dueDate = new Date(due);
         const now = new Date();

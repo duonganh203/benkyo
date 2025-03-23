@@ -1,4 +1,4 @@
-import { CreateCardRes } from '@/types/card';
+import { CardInterface } from '@/types/card';
 import { CreateDeckPayload, DeckDetails } from '@/types/deck';
 import { api } from '.';
 
@@ -14,5 +14,5 @@ export const getDeckById = async (deckId: string) => {
 
 export const getDeckCards = async (deckId: string) => {
     const { data } = await api.get(`decks/${deckId}/cards`);
-    return data.cards as CreateCardRes[];
+    return data.cards as CardInterface[];
 };
