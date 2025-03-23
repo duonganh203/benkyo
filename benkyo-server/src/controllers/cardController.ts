@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { batchCreateCardsService, createCardService, getCardsByIds, getDeckCardsService } from '~/services/cardService';
+import { getDeckService } from '~/services/deckService';
 import { batchCreateCardsValidation, createCardValidation } from '~/validations/cardValidation';
 
 export const getCards = async (req: Request, res: Response) => {
     const userId = req.user._id;
-    const cardId = req.params.cardId;
-    const cards = await getDeckCardsService(userId, cardId);
-    res.status(200).json(cards);
+    const deckId = req.params.id;
+    const cards = await getDeckCardsService(userId, deckId);
+    res.json(cards);
 };
 
 export const getCard = async (req: Request, res: Response) => {
@@ -18,14 +19,9 @@ export const getCard = async (req: Request, res: Response) => {
 export const createCard = async (req: Request, res: Response) => {
     const cardData = req.body;
     const userId = req.user._id;
-
     createCardValidation.parse(cardData);
-
     const newCard = await createCardService(userId, cardData);
-
-    res.json({
-        card: newCard
-    });
+    res.json(newCard);
 };
 
 export const createMultipleCards = async (req: Request, res: Response) => {
@@ -36,9 +32,18 @@ export const createMultipleCards = async (req: Request, res: Response) => {
 
     const insertedCards = await batchCreateCardsService(userId, batchData);
 
-    res.status(201).json({
+    res.json({
         message: `Successfully created ${insertedCards.length} cards`,
         cardsCreated: insertedCards.length,
         cards: insertedCards
     });
+};
+
+export const getDeck = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    const result = await getDeckService(userId, id);
+
+    res.json(result);
 };

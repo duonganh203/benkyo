@@ -5,3 +5,8 @@ export interface CreateDeckPayload {
 export interface CreateDeckRes {
     id: string;
 }
+export interface DeckDetails {
+    _id: string;
+    name: string;
+    description?: string;
+}
