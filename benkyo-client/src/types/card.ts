@@ -41,9 +41,21 @@ export interface CardLearning {
     stability: number;
     difficulty: number;
 }
+
+export interface StudyStats {
+    studied: number;
+    total: number;
+    started: Date;
+}
 export enum State {
     NEW = 0,
     LEARNING = 1,
     REVIEW = 2,
     RELEARNING = 3
+}
+export enum Rating {
+    AGAIN = 1,
+    HARD = 2,
+    GOOD = 3,
+    EASY = 4
 }
