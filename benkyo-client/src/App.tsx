@@ -15,6 +15,7 @@ import DeckDetail from './pages/deck-detail';
 import ModalProvider from './components/providers/modal-provider';
 import { Toaster } from './components/ui/sonner';
 import CreateCard from './pages/create-card';
+import StudyCard from './pages/study-card';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -43,6 +44,7 @@ const App = () => {
                                 <Route path='/home' element={<Home />} />
                                 <Route path='/deck/:id' element={<DeckDetail />} />
                                 <Route path='/deck/:deckId/create-card' element={<CreateCard />} />
+                                <Route path='/study/:id' element={<StudyCard />} />
                             </Route>
                         </Route>
                     </Routes>
