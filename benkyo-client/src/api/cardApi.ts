@@ -10,3 +10,8 @@ export const batchCreateCards = async (data: { cards: BatchImportCard[]; deckId:
     const res = await api.post('cards/batch', data);
     return res.data;
 };
+
+export const deleteCard = async (id: string) => {
+    const res = await api.delete(`cards/${id}`);
+    return res.data;
+};

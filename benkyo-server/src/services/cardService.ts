@@ -171,3 +171,34 @@ export const batchCreateCardsService = async (
 
     return insertedCards;
 };
+export const deleteCardService = async (userId: string, cardId: string) => {
+    const card = await Card.findById(cardId);
+    if (!card) {
+        throw new NotFoundException('Card not found', ErrorCode.NOT_FOUND);
+    }
+    const deck = await Deck.findById(card.deck);
+    if (!deck) {
+        throw new NotFoundException('Associated deck not found', ErrorCode.NOT_FOUND);
+    }
+    if (!deck.owner.equals(userId)) {
+        throw new UnauthorizedException(
+            'You do not have permission to delete cards from this deck',
+            ErrorCode.UNAUTHORIZED
+        );
+    }
+    await Card.findByIdAndDelete(cardId);
+    await Deck.findByIdAndUpdate(card.deck, {
+        $inc: { cardCount: -1 },
+        $set: { updatedAt: new Date() }
+    });
+    await Revlog.updateMany({ card: cardId }, { $set: { deleted: true } });
+    await UserDeckState.updateMany(
+        { deck: card.deck },
+        {
+            $inc: {
+                'stats.totalCards': -1
+            }
+        }
+    );
+    return { success: true, message: 'Card deleted successfully' };
+};
