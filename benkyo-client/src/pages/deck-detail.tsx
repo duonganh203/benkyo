@@ -16,6 +16,9 @@ import {
 import { formatDistanceToNow, isBefore } from 'date-fns';
 import useGetDeckById from '@/hooks/queries/use-get-deck-id';
 import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
+import { CardInterface, State } from '@/types/card';
+import useDeleteCard from '@/hooks/queries/use-delete-card';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -28,7 +31,6 @@ import {
     DropdownMenuTrigger
 } from '../components/ui/dropdown-menu';
 import { Skeleton } from '../components/ui/skeleton';
-import { CardInterface, State } from '@/types/card';
 
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -40,6 +42,8 @@ const DeckDetail = () => {
 
     const { data: deckData, isLoading: isDeckLoading } = useGetDeckById(id!);
     const { data: cardsData, isLoading: isCardsLoading } = useGetDeckCards(id!);
+    const { mutateAsync: deleteCardMutate } = useDeleteCard();
+    const queryClient = useQueryClient();
 
     const allTags = useMemo(() => {
         if (!cardsData) return [];
@@ -127,7 +131,18 @@ const DeckDetail = () => {
 
         return { stateText, stateColor, dueText, isDue };
     };
-
+    const handleDelete = (cardId: string) => {
+        deleteCardMutate(
+            { cardId },
+            {
+                onSuccess: () => {
+                    toast.success('Card deleted successfully');
+                    queryClient.invalidateQueries({ queryKey: ['deckCards', id] });
+                },
+                onError: (error) => toast.error(error!.response!.data.message)
+            }
+        );
+    };
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
@@ -351,7 +366,7 @@ const DeckDetail = () => {
                                                                     </DropdownMenuItem>
                                                                     <DropdownMenuItem
                                                                         onClick={() => {
-                                                                            console.log('Delete');
+                                                                            handleDelete(card._id);
                                                                         }}
                                                                     >
                                                                         <Trash2 className='mr-2 h-4 w-4' />

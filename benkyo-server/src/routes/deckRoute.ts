@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getCards, getDeck } from '~/controllers/cardController';
-import { createDeck, getAllDecks } from '~/controllers/deckController';
+import { getCards } from '~/controllers/cardController';
+import { createDeck, getAllDecks, getDeck } from '~/controllers/deckController';
 import { errorHandler } from '~/errorHandler';
 import authMiddleware from '~/middlewares/authMiddleware';
 

@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
-import { batchCreateCardsService, createCardService, getCardsByIds, getDeckCardsService } from '~/services/cardService';
-import { getDeckService } from '~/services/deckService';
+import {
+    batchCreateCardsService,
+    createCardService,
+    deleteCardService,
+    getCardsByIds,
+    getDeckCardsService
+} from '~/services/cardService';
 import { batchCreateCardsValidation, createCardValidation } from '~/validations/cardValidation';
 
 export const getCards = async (req: Request, res: Response) => {
@@ -39,11 +44,9 @@ export const createMultipleCards = async (req: Request, res: Response) => {
     });
 };
 
-export const getDeck = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const userId = req.user._id;
-
-    const result = await getDeckService(userId, id);
-
+export const deleteCard = async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const cardId = req.params.id;
+    const result = await deleteCardService(userId, cardId);
     res.json(result);
 };
