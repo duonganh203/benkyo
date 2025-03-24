@@ -1,5 +1,4 @@
 import z from 'zod';
-import mongoose from 'mongoose';
 import { Card, Deck, DeckRating, Revlog, StudySession, User, UserDeckState } from '~/schemas';
 import { createDeckValidation } from '~/validations/deckValidation';
 import { NotFoundException } from '~/exceptions/notFound';
@@ -9,6 +8,18 @@ export const createDeckService = async (userId: string, deckData: z.infer<typeof
     const { name, description } = deckData;
     const deck = await Deck.create({ name, description, owner: userId });
     await User.findByIdAndUpdate(userId, { $push: { decks: deck._id } });
+    const userDeckState = new UserDeckState({
+        user: userId,
+        deck: deck._id,
+        stats: {
+            reviewCards: 0,
+            learningCards: 0,
+            newCards: 0,
+            totalCards: 0
+        },
+        lastStudied: null
+    });
+    await userDeckState.save();
     const { _id: id } = deck.toObject();
     return { id };
 };

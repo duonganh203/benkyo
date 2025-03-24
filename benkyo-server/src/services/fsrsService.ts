@@ -1,4 +1,4 @@
-import { User, Card, Revlog, Rating, State } from '~/schemas';
+import { User, Card, Revlog, Rating, State, UserDeckState } from '~/schemas';
 import mongoose from 'mongoose';
 
 interface FSRSParams {
@@ -247,7 +247,6 @@ export const processReview = async (
     const card = await Card.findById(cardId);
     if (card) {
         const deckId = card.deck;
-
         if (lastReview) {
             const updateObj: any = {
                 'stats.newCards': 0,
@@ -255,7 +254,6 @@ export const processReview = async (
                 'stats.reviewCards': 0
             };
             const dateFields = { lastStudied: now };
-
             switch (state) {
                 case State.NEW:
                     updateObj['stats.newCards'] = -1;
@@ -281,14 +279,15 @@ export const processReview = async (
                     updateObj['stats.reviewCards'] = updateObj['stats.reviewCards'] + 1;
                     break;
             }
-
-            await mongoose.model('UserDeckState').findOneAndUpdate(
+            const test = await mongoose.model('UserDeckState').findOneAndUpdate(
                 { user: userId, deck: deckId },
                 {
                     $inc: updateObj,
                     $set: dateFields
-                }
+                },
+                { new: true }
             );
+            console.log(test);
         } else {
             const updateObj: any = { 'stats.newCards': -1 };
             const dateFields = { lastStudied: now };
@@ -434,4 +433,38 @@ export const getUserFSRSParams = async (userId: string): Promise<FSRSParams> => 
     }
 
     return user.fsrsParams as unknown as FSRSParams;
+};
+
+export const getUserProgressService = async (userId: string) => {
+    const totalReviews = await Revlog.countDocuments({ user: userId });
+
+    const userDecks = await UserDeckState.find({ user: userId });
+
+    let totalFlashcards = 0,
+        masteredFlashcards = 0,
+        studyingFlashcards = 0,
+        newFlashcards = 0;
+    userDecks.forEach((deck) => {
+        totalFlashcards += deck.stats?.totalCards || 0;
+        masteredFlashcards += deck.stats?.reviewCards || 0;
+        studyingFlashcards += deck.stats?.learningCards || 0;
+        newFlashcards += deck.stats?.newCards || 0;
+    });
+
+    const completionRate = totalFlashcards > 0 ? (masteredFlashcards / totalFlashcards) * 100 : 0;
+
+    const recommendedDecks = await UserDeckState.find({
+        user: userId,
+        lastStudied: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+    }).populate('deck', 'name description');
+
+    return {
+        totalReviews,
+        totalFlashcards,
+        masteredFlashcards,
+        studyingFlashcards,
+        newFlashcards,
+        completionRate,
+        recommendedDecks
+    };
 };

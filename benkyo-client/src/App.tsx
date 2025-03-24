@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Home from './pages/home';
 import { RegisterForm } from './components/forms/register-form';
 import { LoginForm } from './components/forms/login-form';
 import LoginPassport from './components/login-passport';
@@ -19,6 +18,7 @@ import StudyCard from './pages/study-card';
 import Library from './components/library';
 import UpdateCard from './pages/update-card';
 import Profile from './pages/profile';
+import ProgressPage from './pages/progress';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -44,7 +44,7 @@ const App = () => {
                         <Route element={<GlobalLayout />}>
                             <Route path='/' element={<Marketing />} />
                             <Route element={<ProtectedRoute />}>
-                                <Route path='/home' element={<Home />} />
+                                <Route path='/home' element={<ProgressPage />} />
                                 <Route path='/deck/:id' element={<DeckDetail />} />
                                 <Route path='/deck/:deckId/create-card' element={<CreateCard />} />
                                 <Route path='/deck/:deckId/edit-card/:cardId' element={<UpdateCard />} />
