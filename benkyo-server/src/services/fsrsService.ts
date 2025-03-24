@@ -94,7 +94,7 @@ const calculateInterval = (stability: number, targetRetention: number, rating: R
         return Math.round(interval * fuzz);
     }
 
-    return interval;
+    return Math.abs(interval);
 };
 
 export const processReview = async (
