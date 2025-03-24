@@ -46,16 +46,15 @@ export const deleteDeckService = async (userId: string, deckId: string) => {
     if (!deck) {
         throw new NotFoundException('Deck not found or you do not have permission to delete it', ErrorCode.NOT_FOUND);
     }
-    const session = await mongoose.startSession();
-    await Card.deleteMany({ deck: deckId }, { session });
-    await UserDeckState.deleteMany({ deck: deckId }, { session });
-    await DeckRating.deleteMany({ deck: deckId }, { session });
-    await StudySession.deleteMany({ deck: deckId }, { session });
+    await Card.deleteMany({ deck: deckId });
+    await UserDeckState.deleteMany({ deck: deckId });
+    await DeckRating.deleteMany({ deck: deckId });
+    await StudySession.deleteMany({ deck: deckId });
     const cardIds = await Card.find({ deck: deckId }, '_id').lean();
     if (cardIds.length > 0) {
-        await Revlog.deleteMany({ card: { $in: cardIds.map((card) => card._id) } }, { session });
+        await Revlog.deleteMany({ card: { $in: cardIds.map((card) => card._id) } });
     }
-    await Deck.findByIdAndDelete(deckId, { session });
-    await User.updateOne({ _id: userId }, { $pull: { decks: deckId } }, { session });
+    await Deck.findByIdAndDelete(deckId);
+    await User.updateOne({ _id: userId }, { $pull: { decks: deckId } });
     return { message: 'Deck and all associated data deleted successfully' };
 };
