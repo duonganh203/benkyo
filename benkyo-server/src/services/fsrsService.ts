@@ -279,7 +279,7 @@ export const processReview = async (
                     updateObj['stats.reviewCards'] = updateObj['stats.reviewCards'] + 1;
                     break;
             }
-            const test = await mongoose.model('UserDeckState').findOneAndUpdate(
+            await mongoose.model('UserDeckState').findOneAndUpdate(
                 { user: userId, deck: deckId },
                 {
                     $inc: updateObj,
@@ -287,7 +287,6 @@ export const processReview = async (
                 },
                 { new: true }
             );
-            console.log(test);
         } else {
             const updateObj: any = { 'stats.newCards': -1 };
             const dateFields = { lastStudied: now };
