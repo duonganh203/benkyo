@@ -76,7 +76,7 @@ const UpdateCard = () => {
             },
             {
                 onSuccess: () => {
-                    toast.success('Card updated successfully');
+                    toast.success('Card created successfully');
                     queryClient.invalidateQueries({ queryKey: ['deckCards', deckId] });
                     form.reset({ front: '', back: '', tags: [] });
                 },
