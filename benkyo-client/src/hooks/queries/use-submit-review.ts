@@ -10,13 +10,13 @@ interface SubmitReviewProps {
     reviewTime: number;
 }
 
-const useSubmitReview = (cardId: string) => {
+const useSubmitReview = (deckId: string) => {
     const queryClient = useQueryClient();
 
     return useMutation<ReviewResult, AxiosError<ApiError>, SubmitReviewProps>({
         mutationFn: submitCardReview,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['deckCards', cardId] });
+            queryClient.invalidateQueries({ queryKey: ['deckCards', deckId] });
         }
     });
 };
