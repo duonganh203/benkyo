@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -30,7 +31,6 @@ import {
     DropdownMenuTrigger
 } from '../components/ui/dropdown-menu';
 import { Skeleton } from '../components/ui/skeleton';
-import { getToast } from '@/utils/getToast';
 
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -136,10 +136,10 @@ const DeckDetail = () => {
             { cardId },
             {
                 onSuccess: () => {
-                    getToast('success', 'Card deleted successfully');
+                    toast.success('Card deleted successfully');
                     queryClient.invalidateQueries({ queryKey: ['deckCards', id] });
                 },
-                onError: (error) => getToast('error', error!.response!.data.message)
+                onError: (error) => toast.error(error!.response!.data.message)
             }
         );
     };
@@ -374,8 +374,7 @@ const DeckDetail = () => {
                                                                     </DropdownMenuItem>
                                                                     <DropdownMenuItem
                                                                         onClick={() => {
-                                                                            getToast(
-                                                                                'success',
+                                                                            toast.success(
                                                                                 'Card progress has been reset'
                                                                             );
                                                                         }}
