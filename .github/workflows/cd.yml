@@ -8,6 +8,7 @@ env:
     VITE_API_URL: ${{secrets.VITE_API_URL}}
     VITE_CLOUDINARY_CLOUD_NAME: ${{secrets.VITE_CLOUDINARY_CLOUD_NAME}}
     VITE_UPLOAD_PRESET_AVATAR: ${{secrets.VITE_UPLOAD_PRESET_AVATAR}}
+    VITE_GOOGLE_AI_KEY: ${{secrets.VITE_GOOGLE_AI_KEY}}
 
 jobs:
     publish:
