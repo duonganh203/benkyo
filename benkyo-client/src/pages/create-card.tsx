@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { ChevronLeft, Save, Plus, XCircle, Upload, FileText, Check, UploadCloud, Trash2 } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -11,6 +10,7 @@ import useCreateCard from '@/hooks/queries/use-create-card';
 import useBatchCreateCards from '@/hooks/queries/use-batch-create-cards';
 import { BatchImportCard } from '@/types/card';
 import { CardSchema } from '@/schemas/cardSchema';
+import { getToast } from '@/utils/getToast';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -99,12 +99,12 @@ const CreateCard = () => {
             },
             {
                 onSuccess: () => {
-                    toast.success('Card created successfully');
+                    getToast('success', 'Card created successfully');
                     queryClient.invalidateQueries({ queryKey: ['deckCards', deckId] });
                     form.reset({ front: '', back: '', tags: [] });
                 },
                 onError: (error) => {
-                    toast.error(error.message || 'Failed to create card');
+                    getToast('error', error.message || 'Failed to create card');
                     console.error(error);
                 }
             }
@@ -156,7 +156,7 @@ const CreateCard = () => {
 
     const handleBatchImport = async () => {
         if (importCards.length === 0) {
-            toast.error('No valid cards to import');
+            getToast('error', 'No valid cards to import');
             return;
         }
 
@@ -168,13 +168,13 @@ const CreateCard = () => {
             },
             {
                 onSuccess: (data) => {
-                    toast.success(`Successfully created ${data.cardsCreated} cards`);
+                    getToast('success', `Successfully created ${data.cardsCreated} cards`);
                     queryClient.invalidateQueries({ queryKey: ['deckCards', deckId] });
                     resetImportForm();
                     setImportDialogOpen(false);
                 },
                 onError: (error) => {
-                    toast.error(error.message || 'Failed to import cards');
+                    getToast('error', error.message || 'Failed to import cards');
                     console.error(error);
                     setIsSubmitting(false);
                 }
