@@ -20,6 +20,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../components/ui/form';
+import AIFlashcardGenerator from '@/components/ai-flashcard-generator';
 
 interface ImportStats {
     total: number;
@@ -46,6 +47,7 @@ const CreateCard = () => {
         processed: 0
     });
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [activeTab, setActiveTab] = useState<string>('manual');
 
     const { data: deckData } = useGetDeckById(deckId!);
 
@@ -196,10 +198,11 @@ const CreateCard = () => {
                 </div>
             </div>
 
-            <Tabs defaultValue='manual' className='w-full'>
-                <TabsList className='grid w-full grid-cols-2 mb-6'>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
+                <TabsList className='grid w-full grid-cols-3 mb-6'>
                     <TabsTrigger value='manual'>Manual Entry</TabsTrigger>
                     <TabsTrigger value='import'>Batch Import</TabsTrigger>
+                    <TabsTrigger value='ai'>AI Generator</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value='manual' className='space-y-4'>
@@ -312,7 +315,7 @@ const CreateCard = () => {
                     </Card>
                 </TabsContent>
 
-                <TabsContent value='import' className='space-y-4'>
+                <TabsContent value='import' className='space-y-4' id='import-section'>
                     <Card className='border-none shadow-none'>
                         <CardContent className='p-0'>
                             <div className='space-y-6'>
@@ -439,6 +442,14 @@ const CreateCard = () => {
                                     </div>
                                 )}
                             </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value='ai' className='space-y-4'>
+                    <Card className='border-none shadow-none'>
+                        <CardContent className='p-0'>
+                            <AIFlashcardGenerator />
                         </CardContent>
                     </Card>
                 </TabsContent>
