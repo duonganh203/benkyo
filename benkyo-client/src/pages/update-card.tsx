@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { ChevronLeft, Save, Plus, XCircle } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -8,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
 import useGetDeckById from '@/hooks/queries/use-get-deck-id';
 import { CardSchema } from '@/schemas/cardSchema';
+import { getToast } from '@/utils/getToast';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
@@ -76,12 +76,12 @@ const UpdateCard = () => {
             },
             {
                 onSuccess: () => {
-                    toast.success('Card updated successfully');
+                    getToast('success', 'Card updated successfully');
                     queryClient.invalidateQueries({ queryKey: ['deckCards', deckId] });
                     form.reset({ front: '', back: '', tags: [] });
                 },
                 onError: (error) => {
-                    toast.error(error.message || 'Failed to create card');
+                    getToast('error', error.message || 'Failed to create card');
                     console.error(error);
                 }
             }
