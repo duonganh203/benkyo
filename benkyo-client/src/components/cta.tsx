@@ -29,7 +29,7 @@ const CTASection = () => {
                         'delay-200'
                     )}
                 >
-                    <Link to='/my-decks' className='w-full sm:w-auto'>
+                    <Link to='/flashcards' className='w-full sm:w-auto'>
                         <Button
                             size='lg'
                             className='w-full bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-500 dark:text-white'
@@ -38,7 +38,7 @@ const CTASection = () => {
                             <ArrowRight className='ml-2 h-4 w-4' />
                         </Button>
                     </Link>
-                    <Link to='/home' className='w-full sm:w-auto'>
+                    <Link to='/dashboard' className='w-full sm:w-auto'>
                         <Button
                             size='lg'
                             variant='outline'

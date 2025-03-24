@@ -22,7 +22,7 @@ const HeroSection = () => {
                 </p>
 
                 <div className='mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0 animate-fade-up animation-delay-400'>
-                    <Link to='/home' className='w-full sm:w-auto'>
+                    <Link to='/flashcards' className='w-full sm:w-auto'>
                         <Button
                             size='lg'
                             className='w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-500 dark:text-white'
@@ -32,7 +32,7 @@ const HeroSection = () => {
                         </Button>
                     </Link>
 
-                    <Link to='/my-decks' className='w-full sm:w-auto'>
+                    <Link to='/flashcards/create' className='w-full sm:w-auto'>
                         <Button
                             size='lg'
                             variant='outline'
