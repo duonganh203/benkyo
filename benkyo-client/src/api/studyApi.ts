@@ -35,3 +35,8 @@ export const submitCardReview = async ({
     });
     return response.data as ReviewResult;
 };
+
+export const skipCard = async (cardId: string) => {
+    const response = await api.post('fsrs/skip', { cardId });
+    return response.data;
+};

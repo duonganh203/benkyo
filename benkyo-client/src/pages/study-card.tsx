@@ -17,6 +17,7 @@ import { CardInterface, Rating, StudyStats } from '@/types/card';
 import useGetDueCards from '@/hooks/queries/use-get-due-cards';
 import useSubmitReview from '@/hooks/queries/use-submit-review';
 import { getToast } from '@/utils/getToast';
+import useSkipCard from '@/hooks/queries/use-skip-card';
 
 const StudyCard = () => {
     const { id: deckId } = useParams<{ id: string }>();
@@ -87,6 +88,7 @@ const StudyCard = () => {
             }
         );
     };
+    const { mutate: skipCard } = useSkipCard(deckId!);
 
     const nextCard = () => {
         const nextIndex = currentCardIndex + 1;
@@ -116,6 +118,23 @@ const StudyCard = () => {
 
     const handleExit = () => {
         setExitDialog(true);
+    };
+
+    const handleSkip = () => {
+        if (!cards.length || currentCardIndex >= cards.length) return;
+
+        const currentCard = cards[currentCardIndex];
+        skipCard(
+            { cardId: currentCard._id },
+            {
+                onSuccess: () => {
+                    nextCard();
+                },
+                onError: () => {
+                    getToast('error', 'Failed to skip card');
+                }
+            }
+        );
     };
 
     const endStudySession = () => {
@@ -280,9 +299,20 @@ const StudyCard = () => {
                 </div>
 
                 {!showAnswer ? (
-                    <Button onClick={handleShowAnswer} className='w-full'>
-                        Show Answer
-                    </Button>
+                    <div className='flex gap-5'>
+                        <Button
+                            variant='secondary'
+                            onClick={() => {
+                                handleSkip();
+                            }}
+                            className='w-full'
+                        >
+                            Skip
+                        </Button>
+                        <Button onClick={handleShowAnswer} className='w-full'>
+                            Show Answer
+                        </Button>
+                    </div>
                 ) : (
                     <>
                         <div className='border-t border-border pt-4 mb-4 flex-1'>
