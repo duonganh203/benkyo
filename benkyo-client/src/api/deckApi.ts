@@ -18,6 +18,11 @@ export const getDeckCards = async (deckId: string) => {
 };
 
 export const getUserDecks = async () => {
-    const { data } = await api.get('/decks/my-decks');
+    const { data } = await api.get('decks/my-decks');
     return data as DeckInterface[];
+};
+
+export const deleteDeck = async (deckId: string) => {
+    const response = await api.delete(`decks/${deckId}`);
+    return response.data;
 };
