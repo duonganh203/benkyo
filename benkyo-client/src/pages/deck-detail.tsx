@@ -10,7 +10,8 @@ import {
     ExternalLink,
     Calendar,
     Book,
-    RefreshCcw
+    RefreshCcw,
+    AlertCircle
 } from 'lucide-react';
 import { formatDistanceToNow, isBefore } from 'date-fns';
 import useGetDeckById from '@/hooks/queries/use-get-deck-id';
@@ -31,6 +32,7 @@ import {
 } from '../components/ui/dropdown-menu';
 import { Skeleton } from '../components/ui/skeleton';
 import { getToast } from '@/utils/getToast';
+import useDeleteDeck from '@/hooks/queries/use-delete-deck';
 
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -39,10 +41,13 @@ const DeckDetail = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState('cards');
+    const [confirmDelete, setConfirmDelete] = useState(false);
 
     const { data: deckData, isLoading: isDeckLoading } = useGetDeckById(id!);
     const { data: cardsData, isLoading: isCardsLoading } = useGetDeckCards(id!);
     const { mutateAsync: deleteCardMutate } = useDeleteCard();
+    const { mutateAsync: deleteDeckMutate, isPending: isDeletingDeck } = useDeleteDeck(id!);
+
     const queryClient = useQueryClient();
 
     const allTags = useMemo(() => {
@@ -118,7 +123,7 @@ const DeckDetail = () => {
                 stateColor = 'bg-yellow-500';
                 break;
             case State.REVIEW:
-                stateText = 'Review';
+                stateText = isDue ? 'Due now' : formatDistanceToNow(dueDate, { addSuffix: true });
                 stateColor = isDue ? 'bg-green-500' : 'bg-green-300';
                 break;
             case State.RELEARNING:
@@ -140,6 +145,21 @@ const DeckDetail = () => {
                     queryClient.invalidateQueries({ queryKey: ['deckCards', id] });
                 },
                 onError: (error) => getToast('error', error!.response!.data.message)
+            }
+        );
+    };
+    const handleDeleteDeck = async () => {
+        await deleteDeckMutate(
+            { deckId: id! },
+            {
+                onSuccess: () => {
+                    setConfirmDelete(false);
+                    getToast('success', 'Deck deleted successfully');
+                    navigate('/my-decks');
+                },
+                onError: (error) => {
+                    getToast('error', error?.response?.data?.message || 'Failed to delete deck');
+                }
             }
         );
     };
@@ -202,7 +222,13 @@ const DeckDetail = () => {
                                         <ExternalLink className='mr-2 h-4 w-4' />
                                         <span>Share Deck</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem className='text-destructive'>
+                                    <DropdownMenuItem
+                                        className='text-destructive'
+                                        onClick={() => {
+                                            setActiveTab('settings');
+                                            setConfirmDelete(true);
+                                        }}
+                                    >
                                         <Trash2 className='mr-2 h-4 w-4' />
                                         <span>Delete Deck</span>
                                     </DropdownMenuItem>
@@ -410,9 +436,76 @@ const DeckDetail = () => {
                             <Card>
                                 <CardContent className='p-6'>
                                     <h2 className='text-xl font-semibold mb-4'>Deck Settings</h2>
-                                    <p className='text-muted-foreground'>
-                                        Deck settings coming soon. This feature is under development.
-                                    </p>
+
+                                    <div className='space-y-6'>
+                                        <div>
+                                            <h3 className='text-md font-medium mb-2'>General Settings</h3>
+                                            <p className='text-muted-foreground mb-4'>
+                                                General settings coming soon. This feature is under development.
+                                            </p>
+                                        </div>
+
+                                        <div className='border-t pt-6'>
+                                            <h3 className='text-md font-medium text-destructive flex items-center mb-4'>
+                                                <Trash2 className='h-4 w-4 mr-2' />
+                                                Delete Deck
+                                            </h3>
+
+                                            {!isDeletingDeck ? (
+                                                <div>
+                                                    <p className='text-muted-foreground mb-4'>
+                                                        Deleting a deck will permanently remove it and all its cards.
+                                                        This action cannot be undone.
+                                                    </p>
+
+                                                    {confirmDelete ? (
+                                                        <div className='bg-destructive/10 border border-destructive/30 rounded-lg p-4 mb-4'>
+                                                            <div className='flex items-start'>
+                                                                <AlertCircle className='h-5 w-5 text-destructive mt-0.5 mr-3 flex-shrink-0' />
+                                                                <div>
+                                                                    <h4 className='font-medium text-destructive'>
+                                                                        Are you absolutely sure?
+                                                                    </h4>
+                                                                    <p className='text-sm text-muted-foreground mb-3'>
+                                                                        This will delete "{deckData?.name}" and all{' '}
+                                                                        {cardsData?.length || 0} cards. You cannot
+                                                                        recover this data.
+                                                                    </p>
+                                                                    <div className='flex gap-2'>
+                                                                        <Button
+                                                                            variant='destructive'
+                                                                            onClick={handleDeleteDeck}
+                                                                        >
+                                                                            Yes, Delete Deck
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant='outline'
+                                                                            onClick={() => setConfirmDelete(false)}
+                                                                        >
+                                                                            Cancel
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <Button
+                                                            variant='destructive'
+                                                            onClick={() => setConfirmDelete(true)}
+                                                        >
+                                                            Delete Deck
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className='flex items-center gap-2'>
+                                                    <Button variant='destructive' disabled>
+                                                        <span className='animate-pulse'>Deleting...</span>
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </CardContent>
                             </Card>
                         </TabsContent>
