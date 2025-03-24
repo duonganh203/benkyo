@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ArrowRight, Check, X, Clock, BarChart, PenIcon } from 'lucide-react';
-import { toast } from 'sonner';
-
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { CardInterface, Rating, StudyStats } from '@/types/card';
 import useGetDueCards from '@/hooks/queries/use-get-due-cards';
 import useSubmitReview from '@/hooks/queries/use-submit-review';
+import { getToast } from '@/utils/getToast';
 
 const StudyCard = () => {
     const { id: deckId } = useParams<{ id: string }>();
@@ -83,7 +82,7 @@ const StudyCard = () => {
                     nextCard();
                 },
                 onError: () => {
-                    toast.error('Failed to submit rating');
+                    getToast('error', 'Failed to submit rating');
                 }
             }
         );
