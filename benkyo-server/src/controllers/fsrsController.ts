@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
-import { processReview, getDueCards, updateFSRSParams, getUserFSRSParams } from '~/services/fsrsService';
+import {
+    processReview,
+    getDueCards,
+    updateFSRSParams,
+    getUserFSRSParams,
+    getUserProgressService
+} from '~/services/fsrsService';
 import { Rating } from '~/schemas';
 
 export const reviewCard = async (req: Request, res: Response) => {
@@ -43,4 +49,10 @@ export const getFSRSParams = async (req: Request, res: Response) => {
     const params = await getUserFSRSParams(userId);
 
     res.json(params);
+};
+
+export const getUserProgress = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const progress = await getUserProgressService(userId);
+    res.json(progress);
 };
