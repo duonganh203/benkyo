@@ -6,6 +6,8 @@ on:
 env:
     HUSKY: 0
     VITE_API_URL: ${{secrets.VITE_API_URL}}
+    VITE_CLOUDINARY_CLOUD_NAME: ${{secrets.VITE_CLOUDINARY_CLOUD_NAME}}
+    VITE_UPLOAD_PRESET_AVATAR: ${{secrets.VITE_UPLOAD_PRESET_AVATAR}}
 
 jobs:
     publish:
