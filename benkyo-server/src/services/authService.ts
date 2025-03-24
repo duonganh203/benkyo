@@ -20,9 +20,8 @@ export const loginService = async (userData: z.infer<typeof loginValidation>) =>
     const { email, password } = userData;
     const user = await User.findOne({ email });
     if (!user) throw new BadRequestsException('Email or password is not correct!', ErrorCode.INVALID_CREDENTIALS);
-
     const isMatch = await compare(password, user.password);
     if (!isMatch) throw new BadRequestsException('Email or password is not correct!', ErrorCode.INVALID_CREDENTIALS);
     const token = generateToken(user._id);
-    return { token, user: { id: user._id, username: user.name, email: user.email } };
+    return { token, user: { id: user._id, username: user.name, email: user.email, avatar: user.avatar } };
 };
