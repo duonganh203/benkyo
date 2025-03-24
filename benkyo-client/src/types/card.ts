@@ -5,6 +5,14 @@ export interface CreateCardRes {
     tags: string[];
     deckId: string;
 }
+
+export interface updateCardRes {
+    id: string;
+    front: string;
+    back: string;
+    tags: string[];
+    deckId: string;
+}
 export interface CardFormData {
     front: string;
     back: string;

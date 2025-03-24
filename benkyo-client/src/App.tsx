@@ -17,6 +17,7 @@ import { Toaster } from './components/ui/sonner';
 import CreateCard from './pages/create-card';
 import StudyCard from './pages/study-card';
 import Library from './components/library';
+import UpdateCard from './pages/update-card';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -45,6 +46,7 @@ const App = () => {
                                 <Route path='/home' element={<Home />} />
                                 <Route path='/deck/:id' element={<DeckDetail />} />
                                 <Route path='/deck/:deckId/create-card' element={<CreateCard />} />
+                                <Route path='/deck/:deckId/edit-card/:cardId' element={<UpdateCard />} />
                                 <Route path='/my-decks' element={<Library />} />
                                 <Route path='/study/:id' element={<StudyCard />} />
                             </Route>
