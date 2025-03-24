@@ -167,11 +167,7 @@ export default function Profile() {
                                 )}
                             />
                             <CardFooter className='flex justify-end gap-2 px-0'>
-                                <Button
-                                    variant='outline'
-                                    type='button'
-                                    onClick={() => form.reset({ name: user?.username || '', email: user?.email || '' })}
-                                >
+                                <Button variant='outline' type='button' onClick={() => form.reset()}>
                                     Cancel
                                 </Button>
                                 <Button type='submit' disabled={isPending || isLoading}>
