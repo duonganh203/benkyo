@@ -4,7 +4,8 @@ import {
     getDueCards,
     updateFSRSParams,
     getUserFSRSParams,
-    getUserProgressService
+    getUserProgressService,
+    skipCardService
 } from '~/services/fsrsService';
 import { Rating } from '~/schemas';
 
@@ -32,6 +33,16 @@ export const getDueCardsForDeck = async (req: Request, res: Response) => {
     const dueCardIds = await getDueCards(userId, deckId);
 
     res.json({ dueCardIds });
+};
+
+export const skipCard = async (req: Request, res: Response) => {
+    const { cardId } = req.body;
+    const userId = req.user._id;
+    if (!cardId) {
+        return res.json({ error: 'Card ID is required' });
+    }
+    const result = await skipCardService(userId, cardId);
+    res.json(result);
 };
 
 export const updateUserFSRSParams = async (req: Request, res: Response) => {

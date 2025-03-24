@@ -4,7 +4,8 @@ import {
     getDueCardsForDeck,
     updateUserFSRSParams,
     getFSRSParams,
-    getUserProgress
+    getUserProgress,
+    skipCard
 } from '~/controllers/fsrsController';
 import { errorHandler } from '~/errorHandler';
 import authMiddleware from '~/middlewares/authMiddleware';
@@ -16,5 +17,6 @@ fsrsRoutes.get('/due-cards/:deckId', [authMiddleware], errorHandler(getDueCardsF
 fsrsRoutes.put('/params', [authMiddleware], errorHandler(updateUserFSRSParams));
 fsrsRoutes.get('/params', [authMiddleware], errorHandler(getFSRSParams));
 fsrsRoutes.get('/progress', [authMiddleware], errorHandler(getUserProgress));
+fsrsRoutes.post('/skip', [authMiddleware], errorHandler(skipCard));
 
 export default fsrsRoutes;

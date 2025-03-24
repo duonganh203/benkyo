@@ -467,3 +467,50 @@ export const getUserProgressService = async (userId: string) => {
         recommendedDecks
     };
 };
+
+export const skipCardService = async (userId: string, cardId: string) => {
+    const revlog = await Revlog.findOne({ user: userId, card: cardId, deleted: false }, {}, { sort: { review: -1 } });
+    const now = new Date();
+    const dueDate = new Date(now);
+    dueDate.setDate(dueDate.getDate() + 100000);
+
+    if (!revlog) {
+        const newRevlog = new Revlog({
+            user: userId,
+            card: cardId,
+            grade: Rating.EASY,
+            state: State.REVIEW,
+            due: dueDate,
+            stability: 100,
+            difficulty: 1,
+            elapsed_days: 0,
+            last_elapsed_days: 0,
+            scheduled_days: 1,
+            review: now,
+            duration: 0,
+            deleted: false,
+            created_at: now
+        });
+        newRevlog.save();
+        return 'success';
+    }
+
+    const newRevlog = new Revlog({
+        user: userId,
+        card: cardId,
+        grade: Rating.EASY,
+        state: State.REVIEW,
+        due: dueDate,
+        stability: revlog.stability,
+        difficulty: revlog.difficulty,
+        elapsed_days: revlog.elapsed_days,
+        last_elapsed_days: revlog.last_elapsed_days,
+        scheduled_days: 1,
+        review: now,
+        duration: 0,
+        deleted: false,
+        created_at: now
+    });
+    await newRevlog.save();
+    return 'success';
+};
