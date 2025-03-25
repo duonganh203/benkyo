@@ -15,7 +15,7 @@ import ModalProvider from './components/providers/modal-provider';
 import { Toaster } from './components/ui/sonner';
 import CreateCard from './pages/create-card';
 import StudyCard from './pages/study-card';
-import Library from './components/library';
+import Library from './pages/library';
 import UpdateCard from './pages/update-card';
 import Profile from './pages/profile';
 import ProgressPage from './pages/progress';

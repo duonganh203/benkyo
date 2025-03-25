@@ -6,9 +6,11 @@ import { PieChart } from '@/components/progress-charts';
 import { Activity, BookOpen } from 'lucide-react';
 import useGetUserProgress from '@/hooks/queries/use-get-user-progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useGenerateQuizModal } from '@/hooks/stores/use-generate-quiz-modal';
 
 const ProgressPage = () => {
     const { data: progressStats, isPending } = useGetUserProgress();
+    const { open } = useGenerateQuizModal();
 
     const pieData = [
         { name: 'Mastered', value: progressStats?.masteredFlashcards ?? 0, color: '#16a34a' },
@@ -86,9 +88,7 @@ const ProgressPage = () => {
                                         <Button variant='outline' asChild>
                                             <Link to={`/deck/${deck.deck._id}`}>Study</Link>
                                         </Button>
-                                        <Button asChild>
-                                            <Link to={`/home`}>Quiz</Link>
-                                        </Button>
+                                        <Button onClick={() => open(deck.deck._id)}>Quiz</Button>
                                     </CardContent>
                                 </Card>
                             ))}
