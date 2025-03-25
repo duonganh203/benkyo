@@ -80,6 +80,7 @@ const DeckDetail = () => {
         if (!filteredCards.length) return { new: 0, learning: 0, review: 0, relearning: 0, dueToday: 0 };
 
         const now = new Date();
+        now.setMinutes(now.getMinutes() + 1);
         const counts = filteredCards.reduce(
             (acc, card) => {
                 if (card.learning.state === State.NEW) acc.new++;
