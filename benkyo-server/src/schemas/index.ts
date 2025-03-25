@@ -104,6 +104,38 @@ const UserDeckStateSchema = new Schema({
         reviewCards: { type: Number, default: 0 }
     }
 });
+const QuizSchema = new Schema({
+    deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: true },
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    createdAt: { type: Date, default: Date.now },
+    questions: [
+        {
+            questionText: { type: String, required: true },
+            choices: [
+                {
+                    text: { type: String, required: true }
+                }
+            ],
+            correctAnswer: { type: Number, required: true }
+        }
+    ]
+});
+
+const QuizAttemptSchema = new Schema({
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    quiz: { type: Schema.Types.ObjectId, ref: 'Quiz', required: true },
+    startTime: { type: Date, default: Date.now },
+    endTime: { type: Date },
+    score: { type: Number, default: 0 },
+    totalQuestions: { type: Number, required: true },
+    correctAnswers: { type: Number, default: 0 },
+    responses: [
+        {
+            questionIndex: { type: Number, required: true },
+            selectedChoice: { type: Number, required: true }
+        }
+    ]
+});
 
 const DeckRatingSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
@@ -131,6 +163,8 @@ export const Deck = model('Deck', DeckSchema);
 export const Card = model('Card', CardSchema);
 export const Revlog = model('Revlog', RevlogSchema);
 export const UserDeckState = model('UserDeckState', UserDeckStateSchema);
+export const Quiz = model('Quiz', QuizSchema);
+export const QuizAttempt = model('QuizAttempt', QuizAttemptSchema);
 export const DeckRating = model('DeckRating', DeckRatingSchema);
 export const StudySession = model('StudySession', StudySessionSchema);
 export { Rating, State };
