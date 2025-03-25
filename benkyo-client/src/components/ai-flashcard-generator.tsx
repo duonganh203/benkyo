@@ -8,7 +8,6 @@ import { Slider } from '@/components/ui/slider';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import { toast } from 'sonner';
 import { generateFlashcardsFromFile } from '@/utils/getAIFlashcard';
 import { BatchImportCard } from '@/types/card';
 import { useQueryClient } from '@tanstack/react-query';
@@ -101,12 +100,12 @@ const AIFlashcardGenerator = () => {
             const selectedFile = e.target.files[0];
 
             if (!allowedFileTypes.includes(selectedFile.type)) {
-                toast.error('Unsupported file type. Please upload a PDF, DOC, DOCX, or TXT file.');
+                getToast('error', 'Unsupported file type. Please upload a PDF, DOC, DOCX, or TXT file.');
                 return;
             }
 
             if (selectedFile.size > 15 * 1024 * 1024) {
-                toast.error('File is too large. Maximum size is 15MB.');
+                getToast('error', 'File is too large. Maximum size is 15MB.');
                 return;
             }
 
@@ -123,14 +122,14 @@ const AIFlashcardGenerator = () => {
 
     const generateFlashcards = async () => {
         if (!file) {
-            toast.error('Please upload a document first');
+            getToast('error', 'Please upload a document first');
             return;
         }
 
         setIsGenerating(true);
         setGenerationProgress(0);
         setGenerationStage('preparing');
-        toast.loading('Generating flashcards from your document...');
+        getToast('loading', 'Generating flashcards from your document...');
 
         setTimeout(() => {
             const memoryGameElement = document.getElementById('memory-game');
@@ -152,19 +151,18 @@ const AIFlashcardGenerator = () => {
                 tags: ['AI-generated']
             }));
 
-            // Set progress to 100% when complete
             setGenerationProgress(100);
             setGenerationStage('complete');
 
-            toast.success(`Successfully generated ${formattedCards.length} flashcards`);
+            getToast('success', `Successfully generated ${formattedCards.length} flashcards`);
             setGeneratedCards(formattedCards);
             setShowPreviewDialog(true);
         } catch (error) {
-            toast.error('Failed to generate flashcards. Please try again.');
+            getToast('error', 'Failed to generate flashcards. Please try again.');
             console.error('Error generating flashcards:', error);
         } finally {
             setIsGenerating(false);
-            toast.dismiss();
+            getToast('dismiss');
         }
     };
 
@@ -260,7 +258,7 @@ const AIFlashcardGenerator = () => {
         const validCards = generatedCards.filter((card) => card.front.trim() && card.back.trim());
 
         if (validCards.length === 0) {
-            toast.error('Please provide content for at least one card');
+            getToast('error', 'Please provide content for at least one card');
             return;
         }
 

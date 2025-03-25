@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { PieChart } from '@/components/progress-charts';
 import { Activity, BookOpen } from 'lucide-react';
 import useGetUserProgress from '@/hooks/queries/use-get-user-progress';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const ProgressPage = () => {
     const { data: progressStats, isPending } = useGetUserProgress();
@@ -14,7 +15,9 @@ const ProgressPage = () => {
         { name: 'Studying', value: progressStats?.studyingFlashcards ?? 0, color: '#0ea5e9' },
         { name: 'New', value: progressStats?.newFlashcards ?? 0, color: '#6b7280' }
     ];
-    if (isPending) return <div>Loading...</div>;
+    if (isPending) {
+        return <SkeletonProgressPage />;
+    }
     return (
         <div className='min-h-screen flex flex-col mx-auto max-w-[1200px]'>
             <main className='container flex-1 py-8 px-4 md:px-6'>
@@ -106,5 +109,62 @@ const ProgressPage = () => {
         </div>
     );
 };
+
+function SkeletonProgressPage() {
+    return (
+        <div className='min-h-screen flex flex-col mx-auto max-w-[1200px]'>
+            <main className='container flex-1 py-8 px-4 md:px-6'>
+                <div className='mb-8 flex flex-col items-center space-y-2 text-center'>
+                    <h1 className='text-3xl md:text-4xl font-medium tracking-tight animate-fade-in'>
+                        Your Learning Progress
+                    </h1>
+                    <p className='text-muted-foreground max-w-[700px] animate-fade-in'>
+                        Track your flashcard study progress and see your improvement over time
+                    </p>
+                </div>
+
+                <div className='grid gap-6 md:grid-cols-2 mb-8'>
+                    <Card>
+                        <CardHeader className='pb-2'>
+                            <Skeleton className='h-6 w-32' />
+                        </CardHeader>
+                        <CardContent>
+                            <Skeleton className='h-8 w-24 mb-2' />
+                            <Skeleton className='h-4 w-40' />
+                            <Skeleton className='h-2 w-full mt-4' />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className='pb-2'>
+                            <Skeleton className='h-6 w-32' />
+                        </CardHeader>
+                        <CardContent className='h-[180px] flex items-center justify-center'>
+                            <Skeleton className='h-24 w-24 rounded-full' />
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <div className='mb-8'>
+                    <h2 className='text-xl font-medium mb-4'>Recommended for Review</h2>
+                    <div className='grid gap-4 md:grid-cols-2'>
+                        {[...Array(4)].map((_, index) => (
+                            <Card key={index}>
+                                <CardHeader className='pb-2'>
+                                    <Skeleton className='h-6 w-40' />
+                                    <Skeleton className='h-4 w-60 mt-2' />
+                                </CardHeader>
+                                <CardContent className='pt-0 flex justify-end gap-2'>
+                                    <Skeleton className='h-10 w-20' />
+                                    <Skeleton className='h-10 w-20' />
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+}
 
 export default ProgressPage;
