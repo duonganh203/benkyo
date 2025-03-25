@@ -108,6 +108,7 @@ const DeckDetail = () => {
         const { state, due } = card.learning;
         const dueDate = new Date(due);
         const now = new Date();
+        now.setMinutes(now.getMinutes() + 1);
         const isDue = isBefore(dueDate, now);
 
         let stateText = '';
