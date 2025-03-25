@@ -11,7 +11,8 @@ import {
     Calendar,
     Book,
     RefreshCcw,
-    AlertCircle
+    AlertCircle,
+    NotebookPen
 } from 'lucide-react';
 import { formatDistanceToNow, isBefore } from 'date-fns';
 import useGetDeckById from '@/hooks/queries/use-get-deck-id';
@@ -33,6 +34,7 @@ import {
 import { Skeleton } from '../components/ui/skeleton';
 import { getToast } from '@/utils/getToast';
 import useDeleteDeck from '@/hooks/queries/use-delete-deck';
+import { useGenerateQuizModal } from '@/hooks/stores/use-generate-quiz-modal';
 
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -42,6 +44,7 @@ const DeckDetail = () => {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState('cards');
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const { open } = useGenerateQuizModal((store) => store);
 
     const { data: deckData, isLoading: isDeckLoading } = useGetDeckById(id!);
     const { data: cardsData, isLoading: isCardsLoading } = useGetDeckCards(id!);
@@ -208,6 +211,14 @@ const DeckDetail = () => {
                             <Button onClick={() => navigate(`/study/${id}`)}>
                                 <GraduationCap className='mr-2 h-5 w-5' />
                                 Study Now
+                            </Button>
+                            <Button
+                                onClick={() => open(id!)}
+                                className=' hover:bg-blue-500 hover:text-white'
+                                variant='outline'
+                            >
+                                <NotebookPen className='mr-2 h-5 w-5' />
+                                Do Quiz
                             </Button>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
