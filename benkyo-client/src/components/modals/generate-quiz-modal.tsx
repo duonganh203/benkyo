@@ -116,6 +116,7 @@ export const GenerateQuizModal = () => {
                         setGenerationProgress(100);
                         setGenerationStage('complete');
                         getToast('success', `Successfully generated Quiz`);
+                        close();
                         navigate(`/do-quiz/${data.id}`);
                     },
                     onError: (error) => {
