@@ -123,7 +123,7 @@ const DeckDetail = () => {
                 stateColor = 'bg-yellow-500';
                 break;
             case State.REVIEW:
-                stateText = isDue ? 'Due now' : formatDistanceToNow(dueDate, { addSuffix: true });
+                stateText = 'Review';
                 stateColor = isDue ? 'bg-green-500' : 'bg-green-300';
                 break;
             case State.RELEARNING:
