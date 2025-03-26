@@ -1,5 +1,4 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import { useGenerateQuizModal } from '@/hooks/stores/use-generate-quiz-modal';
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '../ui/card';
 import { FileText, Loader2, Upload } from 'lucide-react';
@@ -7,6 +6,7 @@ import { Progress } from '../ui/progress';
 import { Button } from '../ui/button';
 import { Label } from '../ui/label';
 import { Slider } from '../ui/slider';
+import { useGenerateQuizModal } from '@/hooks/stores/use-generate-quiz-modal';
 import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
 import { generateQuizFromFlashcards } from '@/utils/genAIQuiz';
 import { getToast } from '@/utils/getToast';
@@ -150,7 +150,7 @@ export const GenerateQuizModal = () => {
                                 <div className='text-center'>
                                     <h3 className='text-lg font-medium'>Generating Quiz</h3>
                                     <p className='text-sm text-muted-foreground mt-1'>
-                                        AI is analyzing your document and creating Quiz
+                                        AI is analyzing and creating Quiz
                                     </p>
                                 </div>
 
