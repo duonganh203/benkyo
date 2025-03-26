@@ -19,6 +19,8 @@ import Library from './pages/library';
 import UpdateCard from './pages/update-card';
 import Profile from './pages/profile';
 import ProgressPage from './pages/progress';
+import Quiz from './pages/do-quiz';
+import QuizResults from './pages/quiz-attempt-detail';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -51,6 +53,8 @@ const App = () => {
                                 <Route path='/profile' element={<Profile />} />
                                 <Route path='/my-decks' element={<Library />} />
                                 <Route path='/study/:id' element={<StudyCard />} />
+                                <Route path='do-quiz/:quizId' element={<Quiz />} />
+                                <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />
                             </Route>
                         </Route>
                     </Routes>

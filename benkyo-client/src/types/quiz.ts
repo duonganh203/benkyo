@@ -9,6 +9,53 @@ export interface Question {
     correctAnswer: number;
 }
 
+export interface QuizRes {
+    _id: string;
+    deck: {
+        _id: string;
+        name: string;
+    };
+    createdBy: string;
+    createdAt: string;
+    questions: Question[];
+}
+
+export interface QuizAttemptPayload {
+    quizId: string;
+    score: number;
+    startTime: string;
+    endTime: string;
+    totalQuestions: number;
+    correctAnswers: number;
+    responses: Response[];
+}
+
+export interface QuizAttemptRes {
+    quiz: {
+        _id: string;
+        deck: {
+            _id: string;
+            name: string;
+        };
+        questions: Question[];
+    };
+    score: number;
+    startTime: string;
+    endTime: string;
+    totalQuestions: number;
+    correctAnswers: number;
+    responses: Response[];
+}
+
+export interface QuizAttemptRes {
+    id: string;
+}
+
+export interface Response {
+    questionIndex: number;
+    selectedChoice: number;
+}
+
 export interface CreateQuizRes {
     id: string;
 }

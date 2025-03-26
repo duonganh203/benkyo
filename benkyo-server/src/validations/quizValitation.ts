@@ -20,26 +20,17 @@ export const createQuizValidation = z.object({
 });
 
 export const saveQuizAttemptValidation = z.object({
-    quizId: z.string().min(1, 'Quiz ID is required'),
+    score: z.number().int().min(0, 'Score must be at least 0'),
+    startTime: z.string(),
+    endTime: z.string(),
+    totalQuestions: z.number().int().min(1, 'Total questions must be at least 5'),
+    correctAnswers: z.number().int().min(0, 'Correct answers must be at least 0'),
     responses: z
         .array(
             z.object({
                 questionIndex: z.number().int().min(0, 'Question index must be at least 0'),
-                selectedChoice: z.number().int().min(0, 'Selected choice must be at least 0')
+                selectedChoice: z.number().int().min(-1, 'Selected choice must be at least 0')
             })
         )
         .min(1, 'At least one response is required')
 });
-// const QuizAttemptSchema = new Schema({
-//     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-//     quiz: { type: Schema.Types.ObjectId, ref: 'Quiz', required: true },
-//     score: { type: Number, default: 0 },
-//     totalQuestions: { type: Number, required: true },
-//     correctAnswers: { type: Number, default: 0 },
-//     responses: [
-//         {
-//             questionIndex: { type: Number, required: true },
-//             selectedChoice: { type: Number, required: true }
-//         }
-//     ]
-// });
