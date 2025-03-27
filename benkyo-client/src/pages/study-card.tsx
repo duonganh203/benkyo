@@ -231,9 +231,13 @@ const StudyCard = () => {
     }
 
     return (
-        <div className='max-w-3xl h-full flex flex-col justify-center mx-auto py-8 px-4'>
+        <div className='max-w-3xl h-full flex flex-col justify-center mx-auto py-8 px-4 animate-fade-in'>
             <div className='flex items-center justify-between mb-2'>
-                <Button variant='ghost' onClick={handleExit}>
+                <Button
+                    variant='ghost'
+                    onClick={handleExit}
+                    className='transition-all duration-200 hover:-translate-x-1'
+                >
                     <ChevronLeft className='h-4 w-4 mr-2' />
                     Exit
                 </Button>
@@ -244,23 +248,27 @@ const StudyCard = () => {
                     </p>
                 </div>
                 <div className='flex items-center text-sm text-muted-foreground'>
-                    <Clock className='h-4 w-4 mr-1' />
+                    <Clock className='h-4 w-4 mr-1 animate-pulse' />
                     {formatTime(currentCardTime)}
                 </div>
             </div>
 
             <div className='w-full h-2 bg-muted rounded-full mb-6'>
                 <div
-                    className='h-2 bg-primary rounded-full'
+                    className='h-2 bg-primary rounded-full transition-all duration-700 ease-in-out'
                     style={{ width: `${(currentCardIndex / cards.length) * 100}%` }}
                 ></div>
             </div>
 
-            <Card className='p-6 mb-6 min-h-[700px] flex flex-col'>
+            <Card
+                className={`p-6 mb-6 min-h-[700px] flex flex-col shadow-md hover:shadow-lg transition-all duration-300 ${
+                    showAnswer ? 'animate-card-flip' : 'animate-slide-up'
+                }`}
+            >
                 {currentCard.tags && currentCard.tags.length > 0 && (
                     <div className='flex flex-wrap gap-1 mb-4'>
                         {currentCard.tags.map((tag) => (
-                            <Badge key={tag} variant='secondary'>
+                            <Badge key={tag} variant='secondary' className='animate-fade-in'>
                                 {tag}
                             </Badge>
                         ))}
@@ -269,7 +277,7 @@ const StudyCard = () => {
 
                 <div className={cn('mb-4', !showAnswer && 'flex-grow')}>
                     <div
-                        className='prose dark:prose-invert max-w-none'
+                        className='prose dark:prose-invert max-w-none animate-fade-in'
                         dangerouslySetInnerHTML={{ __html: currentCard.front }}
                     />
 
@@ -299,33 +307,36 @@ const StudyCard = () => {
                 </div>
 
                 {!showAnswer ? (
-                    <div className='flex gap-5'>
+                    <div className='flex gap-5 animate-slide-up'>
                         <Button
                             variant='secondary'
                             onClick={() => {
                                 handleSkip();
                             }}
-                            className='w-full'
+                            className='w-full transition-all hover:bg-gray-200 active:scale-95'
                         >
                             Skip
                         </Button>
-                        <Button onClick={handleShowAnswer} className='w-full'>
+                        <Button
+                            onClick={handleShowAnswer}
+                            className='w-full transition-all hover:brightness-110 active:scale-95'
+                        >
                             Show Answer
                         </Button>
                     </div>
                 ) : (
                     <>
-                        <div className='border-t border-border pt-4 mb-4 flex-1'>
+                        <div className='border-t border-border pt-4 mb-4 flex-1 animate-fade-in'>
                             <div
                                 className='prose dark:prose-invert max-w-none'
                                 dangerouslySetInnerHTML={{ __html: currentCard.back }}
                             />
                         </div>
 
-                        <div className='grid grid-cols-2 gap-2 mt-auto'>
+                        <div className='grid grid-cols-2 gap-2 mt-auto animate-slide-up'>
                             <Button
                                 variant='outline'
-                                className='border-red-400 text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950'
+                                className='border-red-400 text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 transition-all active:scale-95'
                                 onClick={() => handleRate(Rating.AGAIN)}
                             >
                                 <X className='h-4 w-4 mr-2' />
@@ -334,7 +345,7 @@ const StudyCard = () => {
 
                             <Button
                                 variant='outline'
-                                className='border-orange-400 text-orange-500 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-950'
+                                className='border-orange-400 text-orange-500 hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-950 transition-all active:scale-95'
                                 onClick={() => handleRate(Rating.HARD)}
                             >
                                 <PenIcon className='h-4 w-4 mr-2' />
@@ -343,7 +354,7 @@ const StudyCard = () => {
 
                             <Button
                                 variant='outline'
-                                className='border-green-400 text-green-500 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-950'
+                                className='border-green-400 text-green-500 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-950 transition-all active:scale-95'
                                 onClick={() => handleRate(Rating.GOOD)}
                             >
                                 <Check className='h-4 w-4 mr-2' />
@@ -352,7 +363,7 @@ const StudyCard = () => {
 
                             <Button
                                 variant='outline'
-                                className='border-blue-400 text-blue-500 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950'
+                                className='border-blue-400 text-blue-500 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950 transition-all active:scale-95'
                                 onClick={() => handleRate(Rating.EASY)}
                             >
                                 <ArrowRight className='h-4 w-4 mr-2' />
@@ -363,7 +374,7 @@ const StudyCard = () => {
                 )}
             </Card>
 
-            <div className='text-sm text-muted-foreground text-center'>
+            <div className='text-sm text-muted-foreground text-center animate-fade-in'>
                 {stats.studied} of {stats.total} studied • {cards.length - currentCardIndex} remaining
             </div>
 

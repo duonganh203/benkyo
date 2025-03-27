@@ -128,7 +128,7 @@ const DeckDetail = () => {
                 stateColor = 'bg-yellow-500';
                 break;
             case State.REVIEW:
-                stateText = 'Review';
+                stateText = isDue ? 'Due now' : formatDistanceToNow(dueDate, { addSuffix: true });
                 stateColor = isDue ? 'bg-green-500' : 'bg-green-300';
                 break;
             case State.RELEARNING:
@@ -172,15 +172,15 @@ const DeckDetail = () => {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
                 <div className='flex items-center gap-2 mb-8'>
-                    <Skeleton className='h-10 w-10 rounded-full' />
-                    <Skeleton className='h-8 w-64' />
+                    <Skeleton className='h-10 w-10 rounded-full animate-pulse' />
+                    <Skeleton className='h-8 w-64 animate-pulse animation-delay-100' />
                 </div>
-                <Skeleton className='h-40 w-full mb-8' />
-                <Skeleton className='h-8 w-32 mb-4' />
+                <Skeleton className='h-40 w-full mb-8 animate-pulse animation-delay-200' />
+                <Skeleton className='h-8 w-32 mb-4 animate-pulse animation-delay-300' />
                 <div className='grid gap-4'>
-                    <Skeleton className='h-24 w-full' />
-                    <Skeleton className='h-24 w-full' />
-                    <Skeleton className='h-24 w-full' />
+                    <Skeleton className='h-24 w-full animate-pulse animation-delay-400' />
+                    <Skeleton className='h-24 w-full animate-pulse animation-delay-500' />
+                    <Skeleton className='h-24 w-full animate-pulse animation-delay-600' />
                 </div>
             </div>
         );
@@ -189,16 +189,24 @@ const DeckDetail = () => {
     return (
         <>
             {!deckData ? (
-                <div className='max-w-5xl mx-auto py-8 px-4 text-center'>
+                <div className='max-w-5xl mx-auto py-8 px-4 text-center animate-fade-in'>
                     <h1 className='text-2xl font-bold mb-4'>Deck not found</h1>
                     <p className='mb-4'>The deck you're looking for doesn't exist or you don't have access to it.</p>
-                    <Button onClick={() => navigate('/home')}>Back to Home</Button>
+                    <Button onClick={() => navigate('/home')} className='animate-slide-up'>
+                        Back to Home
+                    </Button>
                 </div>
             ) : (
-                <div className=' max-w-5xl mx-auto py-8 px-4'>
-                    <div className='flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8'>
+                <div className='max-w-5xl mx-auto py-8 px-4 animate-fade-in'>
+                    {/* Header */}
+                    <div className='flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 animate-slide-down'>
                         <div className='flex items-center gap-2'>
-                            <Button variant='outline' size='icon' onClick={() => navigate('/home')}>
+                            <Button
+                                variant='outline'
+                                size='icon'
+                                onClick={() => navigate('/home')}
+                                className='hover:scale-105 active:scale-95 transition-transform'
+                            >
                                 <ChevronLeft className='h-5 w-5' />
                             </Button>
                             <div>
@@ -208,13 +216,16 @@ const DeckDetail = () => {
                         </div>
 
                         <div className='flex items-center gap-2'>
-                            <Button onClick={() => navigate(`/study/${id}`)}>
+                            <Button
+                                onClick={() => navigate(`/study/${id}`)}
+                                className='hover:scale-105 active:scale-95 transition-transform'
+                            >
                                 <GraduationCap className='mr-2 h-5 w-5' />
                                 Study Now
                             </Button>
                             <Button
                                 onClick={() => open(id!)}
-                                className=' hover:bg-blue-500 hover:text-white'
+                                className='hover:scale-105 active:scale-95 transition-transform hover:bg-blue-500 hover:text-white'
                                 variant='outline'
                             >
                                 <NotebookPen className='mr-2 h-5 w-5' />
@@ -250,65 +261,88 @@ const DeckDetail = () => {
                         </div>
                     </div>
 
+                    {/* Stats Cards */}
                     <div className='grid grid-cols-2 md:grid-cols-4 gap-4 mb-8'>
-                        <Card>
+                        <Card className='animate-scale-in hover:shadow-md transition-shadow'>
                             <CardContent className='flex flex-col items-center justify-center p-6'>
-                                <div className='text-3xl font-bold'>{cardStats.dueToday}</div>
+                                <div className='text-3xl font-bold animate-fade-in'>{cardStats.dueToday}</div>
                                 <p className='text-muted-foreground'>Due Today</p>
                             </CardContent>
                         </Card>
-                        <Card>
+                        <Card className='animate-scale-in animation-delay-100 hover:shadow-md transition-shadow'>
                             <CardContent className='flex flex-col items-center justify-center p-6'>
-                                <div className='text-3xl font-bold'>{cardStats.new}</div>
+                                <div className='text-3xl font-bold animate-fade-in animation-delay-100'>
+                                    {cardStats.new}
+                                </div>
                                 <p className='text-muted-foreground'>New</p>
                             </CardContent>
                         </Card>
-                        <Card>
+                        <Card className='animate-scale-in animation-delay-200 hover:shadow-md transition-shadow'>
                             <CardContent className='flex flex-col items-center justify-center p-6'>
-                                <div className='text-3xl font-bold'>{cardStats.learning + cardStats.relearning}</div>
+                                <div className='text-3xl font-bold animate-fade-in animation-delay-200'>
+                                    {cardStats.learning + cardStats.relearning}
+                                </div>
                                 <p className='text-muted-foreground'>Learning</p>
                             </CardContent>
                         </Card>
-                        <Card>
+                        <Card className='animate-scale-in animation-delay-300 hover:shadow-md transition-shadow'>
                             <CardContent className='flex flex-col items-center justify-center p-6'>
-                                <div className='text-3xl font-bold'>{cardStats.review}</div>
+                                <div className='text-3xl font-bold animate-fade-in animation-delay-300'>
+                                    {cardStats.review}
+                                </div>
                                 <p className='text-muted-foreground'>Review</p>
                             </CardContent>
                         </Card>
                     </div>
 
-                    <Tabs defaultValue='cards' className='w-full' value={activeTab} onValueChange={setActiveTab}>
+                    {/* Tabs */}
+                    <Tabs
+                        defaultValue='cards'
+                        className='w-full animate-fade-in animation-delay-400'
+                        value={activeTab}
+                        onValueChange={setActiveTab}
+                    >
                         <TabsList className='mb-6'>
-                            <TabsTrigger value='cards'>Cards</TabsTrigger>
-                            <TabsTrigger value='stats'>Statistics</TabsTrigger>
-                            <TabsTrigger value='settings'>Settings</TabsTrigger>
+                            <TabsTrigger value='cards' className='transition-all'>
+                                Cards
+                            </TabsTrigger>
+                            <TabsTrigger value='stats' className='transition-all'>
+                                Statistics
+                            </TabsTrigger>
+                            <TabsTrigger value='settings' className='transition-all'>
+                                Settings
+                            </TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value='cards'>
-                            <div className='flex flex-col md:flex-row justify-between mb-4 gap-4'>
+                        <TabsContent value='cards' className='animate-fade-in'>
+                            {/* Search and Add button */}
+                            <div className='flex flex-col md:flex-row justify-between mb-4 gap-4 animate-slide-up'>
                                 <div className='flex-1'>
                                     <Input
                                         placeholder='Search cards...'
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className='w-full'
+                                        className='w-full transition-all focus:ring-2 focus:ring-blue-500'
                                     />
                                 </div>
-                                <Button onClick={() => navigate(`/deck/${id}/create-card`)}>
+                                <Button
+                                    onClick={() => navigate(`/deck/${id}/create-card`)}
+                                    className='hover:scale-105 active:scale-95 transition-transform'
+                                >
                                     <Plus className='mr-2 h-4 w-4' />
                                     Add Card
                                 </Button>
                             </div>
 
                             {allTags.length > 0 && (
-                                <div className='mb-6'>
+                                <div className='mb-6 animate-slide-up animation-delay-100'>
                                     <h3 className='text-sm font-medium mb-2'>Filter by tags:</h3>
                                     <div className='flex flex-wrap gap-2'>
-                                        {allTags.map((tag) => (
+                                        {allTags.map((tag, index) => (
                                             <Badge
                                                 key={tag}
                                                 variant={selectedTags.includes(tag) ? 'default' : 'outline'}
-                                                className='cursor-pointer'
+                                                className={`cursor-pointer hover:scale-105 active:scale-95 transition-transform animation-delay-${Math.min(100 * index, 900)}`}
                                                 onClick={() => toggleTag(tag)}
                                             >
                                                 {tag}
@@ -318,15 +352,16 @@ const DeckDetail = () => {
                                 </div>
                             )}
 
+                            {/* Card list */}
                             {isCardsLoading ? (
                                 <div className='grid gap-4'>
-                                    <Skeleton className='h-24 w-full' />
-                                    <Skeleton className='h-24 w-full' />
-                                    <Skeleton className='h-24 w-full' />
+                                    <Skeleton className='h-24 w-full animate-pulse' />
+                                    <Skeleton className='h-24 w-full animate-pulse animation-delay-100' />
+                                    <Skeleton className='h-24 w-full animate-pulse animation-delay-200' />
                                 </div>
                             ) : filteredCards.length === 0 ? (
-                                <div className='text-center py-12'>
-                                    <Book className='h-12 w-12 mx-auto text-muted-foreground mb-2' />
+                                <div className='text-center py-12 animate-fade-in'>
+                                    <Book className='h-12 w-12 mx-auto text-muted-foreground mb-2 animate-bounce-small' />
                                     <h3 className='text-lg font-medium'>No cards found</h3>
                                     <p className='text-muted-foreground mb-4'>
                                         {cardsData?.length === 0
@@ -334,7 +369,10 @@ const DeckDetail = () => {
                                             : 'No cards match your search criteria.'}
                                     </p>
                                     {cardsData?.length === 0 && (
-                                        <Button onClick={() => navigate(`/deck/${id}/create-card`)}>
+                                        <Button
+                                            onClick={() => navigate(`/deck/${id}/create-card`)}
+                                            className='hover:scale-105 active:scale-95 transition-transform animate-slide-up'
+                                        >
                                             <Plus className='mr-2 h-4 w-4' />
                                             Add Your First Card
                                         </Button>
@@ -342,11 +380,15 @@ const DeckDetail = () => {
                                 </div>
                             ) : (
                                 <div className='grid gap-4'>
-                                    {filteredCards.map((card) => {
+                                    {filteredCards.map((card, index) => {
                                         const status = getLearningStatus(card);
+                                        const delay = Math.min(index * 100, 900);
 
                                         return (
-                                            <Card key={card._id} className='overflow-hidden'>
+                                            <Card
+                                                key={card._id}
+                                                className={`overflow-hidden hover:shadow-md transition-all animate-slide-up animation-delay-${delay}`}
+                                            >
                                                 <CardContent className='p-0'>
                                                     <div className='grid grid-cols-1 md:grid-cols-2'>
                                                         <div className='p-4 md:border-r'>
@@ -434,8 +476,8 @@ const DeckDetail = () => {
                             )}
                         </TabsContent>
 
-                        <TabsContent value='stats'>
-                            <Card>
+                        <TabsContent value='stats' className='animate-fade-in'>
+                            <Card className='hover:shadow-md transition-shadow'>
                                 <CardContent className='p-6'>
                                     <h2 className='text-xl font-semibold mb-4'>Deck Statistics</h2>
                                     <p className='text-muted-foreground'>
@@ -445,8 +487,8 @@ const DeckDetail = () => {
                             </Card>
                         </TabsContent>
 
-                        <TabsContent value='settings'>
-                            <Card>
+                        <TabsContent value='settings' className='animate-fade-in'>
+                            <Card className='hover:shadow-md transition-shadow'>
                                 <CardContent className='p-6'>
                                     <h2 className='text-xl font-semibold mb-4'>Deck Settings</h2>
 
