@@ -11,19 +11,11 @@ import {
 import useGetAllAttempts from '@/hooks/queries/use-get-all-quiz-attempt';
 import { ChevronLeft, NotebookPen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Quizzes = () => {
     const { data: quizAttempts, isLoading } = useGetAllAttempts();
-
     const navigate = useNavigate();
-
-    if (isLoading) {
-        return (
-            <div className='min-h-screen w-full flex items-center justify-center'>
-                <p className='text-lg text-muted-foreground'>Loading...</p>
-            </div>
-        );
-    }
 
     const calculateTimeTaken = (startTime: string, endTime: string) => {
         if (!startTime || !endTime) return 'N/A';
@@ -43,8 +35,67 @@ const Quizzes = () => {
         return `${formattedMinutes}:${formattedSeconds}`;
     };
 
+    // Skeleton loading state
+    if (isLoading) {
+        return (
+            <div className='min-h-screen w-full'>
+                <div className='max-w-4xl mx-auto px-4 py-12 sm:px-6 sm:py-16'>
+                    <div className='space-y-4 mb-8'>
+                        <Skeleton className='h-8 w-64' />
+                        <Skeleton className='h-4 w-80' />
+                    </div>
+
+                    <div className='space-y-6'>
+                        <div className='rounded-lg border shadow-sm overflow-hidden'>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className='w-[300px]'>
+                                            <Skeleton className='h-4 w-24' />
+                                        </TableHead>
+                                        <TableHead>
+                                            <Skeleton className='h-4 w-24' />
+                                        </TableHead>
+                                        <TableHead>
+                                            <Skeleton className='h-4 w-24' />
+                                        </TableHead>
+                                        <TableHead className='text-right'>
+                                            <Skeleton className='h-4 w-24' />
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {[...Array(5)].map((_, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell>
+                                                <Skeleton className='h-4 w-48' />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className='h-4 w-8' />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Skeleton className='h-4 w-8' />
+                                            </TableCell>
+                                            <TableCell className='text-right'>
+                                                <Skeleton className='h-4 w-16 ml-auto' />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+
+                        <div className='flex justify-center'>
+                            <Skeleton className='h-10 w-64' />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className='min-h-screen w-full bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950'>
+        <div className='min-h-screen w-full'>
             <div className='max-w-4xl mx-auto px-4 py-12 sm:px-6 sm:py-16'>
                 <div className=''>
                     <h1 className='text-3xl font-semibold tracking-tight'>Quiz Results</h1>
