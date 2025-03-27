@@ -11,29 +11,6 @@ const QuizResults = () => {
     const { quizAttemptId } = useParams<{ quizAttemptId: string }>();
     const { data: quizAttempt, isLoading } = useGetQuizAttempt(quizAttemptId!);
 
-    if (!quizAttempt) {
-        return (
-            <div className='max-w-xl w-full mx-auto p-8 rounded-xl text-center'>
-                <h2 className='text-xl font-bold mb-4'>Quiz Attempt Not Found</h2>
-                <p className='text-muted-foreground mb-6'>
-                    The quiz attempt you're looking for doesn't exist or may have been deleted.
-                </p>
-                <Button asChild>
-                    <Link to='/home'>Back to Home</Link>
-                </Button>
-            </div>
-        );
-    }
-
-    const percentage = Math.round((quizAttempt.score / quizAttempt.totalQuestions) * 100);
-
-    const getScoreMessage = () => {
-        if (percentage === 100) return 'Perfect score! Amazing job!';
-        if (percentage >= 80) return "Excellent work! You're doing great!";
-        if (percentage >= 60) return 'Good job! Keep practicing to improve.';
-        if (percentage >= 40) return 'Nice effort! Keep studying to improve.';
-        return 'Keep practicing to improve your score.';
-    };
     if (isLoading) {
         return (
             <div className='max-w-3xl w-full flex flex-col justify-center mx-auto p-8 rounded-xl animate-scale-in'>
@@ -66,6 +43,31 @@ const QuizResults = () => {
             </div>
         );
     }
+
+    if (!quizAttempt) {
+        return (
+            <div className='max-w-xl w-full mx-auto p-8 rounded-xl text-center'>
+                <h2 className='text-xl font-bold mb-4'>Quiz Attempt Not Found</h2>
+                <p className='text-muted-foreground mb-6'>
+                    The quiz attempt you're looking for doesn't exist or may have been deleted.
+                </p>
+                <Button asChild>
+                    <Link to='/home'>Back to Home</Link>
+                </Button>
+            </div>
+        );
+    }
+
+    const percentage = Math.round((quizAttempt.score / quizAttempt.totalQuestions) * 100);
+
+    const getScoreMessage = () => {
+        if (percentage === 100) return 'Perfect score! Amazing job!';
+        if (percentage >= 80) return "Excellent work! You're doing great!";
+        if (percentage >= 60) return 'Good job! Keep practicing to improve.';
+        if (percentage >= 40) return 'Nice effort! Keep studying to improve.';
+        return 'Keep practicing to improve your score.';
+    };
+
     return (
         <div className='max-w-3xl w-full flex flex-col justify-center mx-auto p-8 rounded-xl animate-scale-in'>
             <h2 className='text-2xl font-bold mb-4 text-center'>Quiz Results</h2>
