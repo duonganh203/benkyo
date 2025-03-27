@@ -49,6 +49,23 @@ export interface QuizAttemptRes {
     id: string;
 }
 
+export interface QuizAllAttemptRes {
+    _id: string;
+    quiz: {
+        _id: string;
+        deck: {
+            _id: string;
+            name: string;
+        };
+        questions: Question[];
+    };
+    startTime: string;
+    endTime: string;
+    totalQuestions: number;
+    correctAnswers: number;
+    responses: Response[];
+}
+
 export interface Response {
     questionIndex: number;
     selectedChoice: number;

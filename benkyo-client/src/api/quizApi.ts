@@ -21,3 +21,8 @@ export const getQuizAttemptById = async (quizAttemptId: string) => {
     const { data } = await api.get(`/quiz/attempt/${quizAttemptId}`);
     return data;
 };
+
+export const getAllQuizAttempts = async () => {
+    const { data } = await api.get(`/quiz/attempts`);
+    return data;
+};
