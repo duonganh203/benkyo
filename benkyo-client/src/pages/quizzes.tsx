@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { mockQuizResults } from '@/utils/mockData';
+import { Link, useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
     Pagination,
@@ -10,100 +8,108 @@ import {
     PaginationNext,
     PaginationPrevious
 } from '@/components/ui/pagination';
+import useGetAllAttempts from '@/hooks/queries/use-get-all-quiz-attempt';
 
 const Quizzes = () => {
-    const [isLoaded, setIsLoaded] = useState(false);
+    const { data: quizAttempts, isLoading } = useGetAllAttempts();
 
-    useEffect(() => {
-        // Simulate loading data
-        const timer = setTimeout(() => {
-            setIsLoaded(true);
-        }, 200);
+    const navigate = useNavigate();
 
-        return () => clearTimeout(timer);
-    }, []);
+    if (isLoading) {
+        return (
+            <div className='min-h-screen w-full flex items-center justify-center'>
+                <p className='text-lg text-muted-foreground'>Loading...</p>
+            </div>
+        );
+    }
+
+    const calculateTimeTaken = (startTime: string, endTime: string) => {
+        if (!startTime || !endTime) return 'N/A';
+
+        const start = new Date(startTime).getTime();
+        const end = new Date(endTime).getTime();
+
+        const durationMs = end - start;
+        if (durationMs <= 0) return 'Invalid Time';
+
+        const minutes = Math.floor(durationMs / 60000);
+        const seconds = Math.floor((durationMs % 60000) / 1000);
+
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+
+        return `${formattedMinutes}:${formattedSeconds}`;
+    };
 
     return (
         <div className='min-h-screen w-full bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950'>
             <div className='max-w-4xl mx-auto px-4 py-12 sm:px-6 sm:py-16'>
-                <div className='flex items-center mb-8'>
-                    <div className=''>
-                        <h1 className='text-3xl font-semibold tracking-tight'>Quiz Results</h1>
-                        <p className='mt-1 text-muted-foreground'>View and analyze your past quiz performances</p>
-                    </div>
+                <div className=''>
+                    <h1 className='text-3xl font-semibold tracking-tight'>Quiz Results</h1>
+                    <p className='mt-1 text-muted-foreground'>View and analyze your past quiz performances</p>
                 </div>
 
-                {isLoaded ? (
+                {quizAttempts && quizAttempts.length > 0 ? (
                     <div className='space-y-6'>
-                        {mockQuizResults.length > 0 ? (
-                            <>
-                                <div className='rounded-lg border shadow-sm overflow-hidden'>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead className='w-[300px]'>Quiz Name</TableHead>
-                                                <TableHead>Correct Answers</TableHead>
-                                                <TableHead>Incorrect Answers</TableHead>
-                                                <TableHead className='text-right'>Time Taken</TableHead>
+                        <div className='rounded-lg border shadow-sm overflow-hidden'>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className='w-[300px]'>Quiz Name</TableHead>
+                                        <TableHead>Correct Answers</TableHead>
+                                        <TableHead>Incorrect Answers</TableHead>
+                                        <TableHead className='text-right'>Time Taken</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {quizAttempts.map((result) => {
+                                        const incorrectCount = result.totalQuestions - result.correctAnswers;
+                                        return (
+                                            <TableRow
+                                                key={result._id}
+                                                className='hover:bg-muted/50 cursor-pointer'
+                                                onClick={() => navigate(`/quiz/attempt/${result._id}`)}
+                                            >
+                                                <TableCell className='font-medium'>{result.quiz.deck.name}</TableCell>
+                                                <TableCell className='text-green-600'>
+                                                    {result.correctAnswers}
+                                                </TableCell>
+                                                <TableCell className='text-red-600'>{incorrectCount}</TableCell>
+                                                <TableCell className='text-right'>
+                                                    {calculateTimeTaken(result.startTime, result.endTime)}
+                                                </TableCell>
                                             </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {mockQuizResults.map((result) => {
-                                                const incorrectCount = result.totalQuestions - result.score;
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </div>
 
-                                                return (
-                                                    <TableRow
-                                                        key={result.id}
-                                                        className='hover:bg-muted/50 cursor-pointer'
-                                                        onClick={() => {
-                                                            // Future implementation: Navigate to detailed view
-                                                            console.log(`View details for quiz: ${result.id}`);
-                                                        }}
-                                                    >
-                                                        <TableCell className='font-medium'>{result.title}</TableCell>
-                                                        <TableCell className='text-green-600'>{result.score}</TableCell>
-                                                        <TableCell className='text-red-600'>{incorrectCount}</TableCell>
-                                                        <TableCell className='text-right'>{result.timeTaken}</TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-
-                                <Pagination>
-                                    <PaginationContent>
-                                        <PaginationItem>
-                                            <PaginationPrevious href='#' />
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationLink href='#' isActive>
-                                                1
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationNext href='#' />
-                                        </PaginationItem>
-                                    </PaginationContent>
-                                </Pagination>
-                            </>
-                        ) : (
-                            <div className='text-center py-12'>
-                                <p className='text-lg text-muted-foreground'>You haven't taken any quizzes yet.</p>
-                                <Link
-                                    to='/'
-                                    className='inline-block mt-4 py-2 px-4 rounded bg-primary text-white hover:bg-primary/90 transition-colors'
-                                >
-                                    Start a Quiz
-                                </Link>
-                            </div>
-                        )}
+                        <Pagination>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious href='#' />
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationLink href='#' isActive>
+                                        1
+                                    </PaginationLink>
+                                </PaginationItem>
+                                <PaginationItem>
+                                    <PaginationNext href='#' />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
                     </div>
                 ) : (
-                    <div className='space-y-4'>
-                        {[1, 2, 3].map((n) => (
-                            <div key={n} className='h-16 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse' />
-                        ))}
+                    <div className='text-center py-12'>
+                        <p className='text-lg text-muted-foreground'>You haven't taken any quizzes yet.</p>
+                        <Link
+                            to='/'
+                            className='inline-block mt-4 py-2 px-4 rounded bg-primary text-white hover:bg-primary/90 transition-colors'
+                        >
+                            Start a Quiz
+                        </Link>
                     </div>
                 )}
             </div>

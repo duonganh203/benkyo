@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {
     createQuizService,
+    getAllQuizAttemptsService,
     getQuizAttemptById,
     getQuizByIdService,
     saveQuizAttemptService
@@ -35,5 +36,11 @@ export const getQuizAttemptsById = async (req: Request, res: Response) => {
     const userId = req.user._id;
     const { quizAttemptId } = req.params;
     const quizAttempt = await getQuizAttemptById(quizAttemptId, userId);
+    res.json(quizAttempt);
+};
+
+export const getAllQuizAttempts = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const quizAttempt = await getAllQuizAttemptsService(userId);
     res.json(quizAttempt);
 };

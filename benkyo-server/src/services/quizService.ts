@@ -79,3 +79,19 @@ export const getQuizAttemptById = async (quizAttemptId: string, userId: string) 
 
     return quizAttempt;
 };
+
+export const getAllQuizAttemptsService = async (userId: string) => {
+    const quizAllAttempt = await QuizAttempt.find({ user: userId }).populate({
+        path: 'quiz',
+        populate: {
+            path: 'deck',
+            select: 'name'
+        }
+    });
+
+    if (!quizAllAttempt || quizAllAttempt.length === 0) {
+        throw new NotFoundException('Quiz attempts not found', ErrorCode.NOT_FOUND);
+    }
+
+    return quizAllAttempt;
+};
