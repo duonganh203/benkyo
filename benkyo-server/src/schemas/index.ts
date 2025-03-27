@@ -155,6 +155,23 @@ const DeckRatingSchema = new Schema({
     updatedAt: { type: Date, default: Date.now }
 });
 
+const DocumentSchema = new Schema({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    type: { type: String, required: true, enum: ['pdf', 'doc', 'docx'] },
+    url: { type: String, required: true },
+    embeddingId: { type: String, required: true, unique: true },
+    createdAt: { type: Date, default: Date.now }
+});
+
+const ConversationSchema = new Schema({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    documentId: { type: Schema.Types.ObjectId, ref: 'Document', required: true },
+    question: { type: String, required: true },
+    response: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+});
+
 const StudySessionSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: true },
@@ -175,5 +192,7 @@ export const UserDeckState = model('UserDeckState', UserDeckStateSchema);
 export const Quiz = model('Quiz', QuizSchema);
 export const QuizAttempt = model('QuizAttempt', QuizAttemptSchema);
 export const DeckRating = model('DeckRating', DeckRatingSchema);
+export const Document = model('Document', DocumentSchema);
+export const Conversation = model('Chat', ConversationSchema);
 export const StudySession = model('StudySession', StudySessionSchema);
 export { Rating, State, PublicStatus };
