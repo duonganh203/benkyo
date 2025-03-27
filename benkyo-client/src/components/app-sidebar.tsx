@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useMemo } from 'react';
-import { Home, Library, Package, Settings2, Sparkles, Clock, BadgeInfo } from 'lucide-react';
+import { Home, Library, Package, Settings2, Sparkles, Clock, BadgeInfo, NotebookPen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -42,6 +42,12 @@ const data = {
             url: '/my-decks',
             icon: Library,
             badge: '10'
+        },
+        {
+            title: 'Quizzes',
+            url: '/quizzes',
+            icon: NotebookPen,
+            highlight: true
         },
         {
             title: 'Ask AI',

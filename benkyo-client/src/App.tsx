@@ -19,6 +19,7 @@ import Library from './pages/library';
 import UpdateCard from './pages/update-card';
 import Profile from './pages/profile';
 import ProgressPage from './pages/progress';
+import Quizzes from './pages/quizzes';
 import Quiz from './pages/do-quiz';
 import QuizResults from './pages/quiz-attempt-detail';
 const queryClient = new QueryClient({
@@ -55,6 +56,7 @@ const App = () => {
                                 <Route path='/study/:id' element={<StudyCard />} />
                                 <Route path='do-quiz/:quizId' element={<Quiz />} />
                                 <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />
+                                <Route path='/quizzes' element={<Quizzes />} />
                             </Route>
                         </Route>
                     </Routes>
