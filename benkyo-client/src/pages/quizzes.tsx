@@ -9,6 +9,8 @@ import {
     PaginationPrevious
 } from '@/components/ui/pagination';
 import useGetAllAttempts from '@/hooks/queries/use-get-all-quiz-attempt';
+import { ChevronLeft, NotebookPen } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Quizzes = () => {
     const { data: quizAttempts, isLoading } = useGetAllAttempts();
@@ -102,14 +104,17 @@ const Quizzes = () => {
                         </Pagination>
                     </div>
                 ) : (
-                    <div className='text-center py-12'>
-                        <p className='text-lg text-muted-foreground'>You haven't taken any quizzes yet.</p>
-                        <Link
-                            to='/'
-                            className='inline-block mt-4 py-2 px-4 rounded bg-primary text-white hover:bg-primary/90 transition-colors'
-                        >
-                            Start a Quiz
-                        </Link>
+                    <div className='text-center py-16'>
+                        <div className='mb-4 flex justify-center'>
+                            <NotebookPen className='h-16 w-16 text-primary/60' />
+                        </div>
+                        <h2 className='text-2xl font-semibold mb-2 text-foreground'>No Quiz's Results found</h2>
+                        <Button asChild className='items-center'>
+                            <Link to='/my-decks'>
+                                <ChevronLeft className='h-4 w-4' />
+                                Do Quiz Now!
+                            </Link>
+                        </Button>
                     </div>
                 )}
             </div>
