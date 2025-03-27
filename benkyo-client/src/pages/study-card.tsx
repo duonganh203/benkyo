@@ -260,11 +260,7 @@ const StudyCard = () => {
                 ></div>
             </div>
 
-            <Card
-                className={`p-6 mb-6 min-h-[700px] flex flex-col shadow-md hover:shadow-lg transition-all duration-300 ${
-                    showAnswer ? 'animate-card-flip' : 'animate-slide-up'
-                }`}
-            >
+            <Card className='p-6 mb-6 min-h-[700px] flex flex-col shadow-md hover:shadow-lg transition-all duration-300 animate-slide-up '>
                 {currentCard.tags && currentCard.tags.length > 0 && (
                     <div className='flex flex-wrap gap-1 mb-4'>
                         {currentCard.tags.map((tag) => (
