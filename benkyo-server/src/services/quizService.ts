@@ -62,18 +62,13 @@ export const saveQuizAttemptService = async (
 };
 
 export const getQuizAttemptById = async (quizAttemptId: string, userId: string) => {
-    const quizAttempt = await QuizAttempt.findById(quizAttemptId)
-        .populate({
-            path: 'quiz',
-            populate: {
-                path: 'deck',
-                select: 'name'
-            }
-        })
-        .populate({
-            path: 'quiz',
-            select: 'questions.questionText questions.choices.text questions.correctAnswer'
-        });
+    const quizAttempt = await QuizAttempt.findById(quizAttemptId).populate({
+        path: 'quiz',
+        populate: {
+            path: 'deck',
+            select: 'name'
+        }
+    });
 
     if (!quizAttempt) {
         throw new NotFoundException('Quiz attempt not found', ErrorCode.NOT_FOUND);
