@@ -15,9 +15,9 @@ type DifficultySettings = {
 };
 
 const difficultySettings: Record<Difficulty, DifficultySettings> = {
-    easy: { gridSize: 3, initialSequenceLength: 1, displayTime: 1000, interval: 800 },
-    medium: { gridSize: 4, initialSequenceLength: 1, displayTime: 800, interval: 600 },
-    hard: { gridSize: 5, initialSequenceLength: 1, displayTime: 600, interval: 400 }
+    easy: { gridSize: 3, initialSequenceLength: 1, displayTime: 700, interval: 600 },
+    medium: { gridSize: 4, initialSequenceLength: 1, displayTime: 500, interval: 400 },
+    hard: { gridSize: 5, initialSequenceLength: 1, displayTime: 400, interval: 200 }
 };
 
 const generateSequence = (length: number, totalTiles: number) => {
@@ -134,7 +134,7 @@ const MemoryGame = () => {
                 <button
                     key={tileNumber}
                     className={`aspect-square rounded-md transition-all transform duration-150
-                        ${isHighlighted(tileNumber) ? 'bg-primary scale-95' : 'bg-secondary hover:bg-secondary/80'}
+                        ${isHighlighted(tileNumber) ? 'bg-primary scale-95' : 'bg-primary/30 hover:bg-secondary'}
                         ${isClicked(tileNumber) ? 'bg-primary/80 scale-90' : ''}
                         ${gameState === 'input' ? 'cursor-pointer' : 'cursor-default'}`}
                     onClick={() => handleTileClick(tileNumber)}

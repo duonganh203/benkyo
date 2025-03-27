@@ -15,7 +15,7 @@ import useBatchCreateCards from '@/hooks/queries/use-batch-create-cards';
 import { getToast } from '@/utils/getToast';
 import { CardSchema } from '@/schemas/cardSchema';
 import AICardEditor from './ai-card-editor';
-import MemoryGame from '@/components/memory-game/MemoryGame';
+import MemoryGame from '@/components/memory-game';
 
 type CardValidation = {
     front: string | null;
@@ -264,31 +264,28 @@ const AIFlashcardGenerator = () => {
 
         setIsImporting(true);
 
-        try {
-            await batchCreateCardsMutation(
-                {
-                    cards: validCards,
-                    deckId: deckId || ''
-                },
-                {
-                    onSuccess: (data) => {
-                        getToast('success', `Successfully created ${data.cardsCreated} flashcards`);
-                        queryClient.invalidateQueries({ queryKey: ['deckCards', deckId] });
+        await batchCreateCardsMutation(
+            {
+                cards: validCards,
+                deckId: deckId || ''
+            },
+            {
+                onSuccess: (data) => {
+                    getToast('success', `Successfully created ${data.cardsCreated} flashcards`);
+                    queryClient.invalidateQueries({ queryKey: ['deckCards', deckId] });
 
-                        setShowPreviewDialog(false);
-                        setGeneratedCards([]);
-                        clearFile();
-                    },
-                    onError: (error) => {
-                        getToast('error', error.message || 'Failed to import cards');
-                    }
+                    setShowPreviewDialog(false);
+                    setGeneratedCards([]);
+                    clearFile();
+                },
+                onError: (error) => {
+                    getToast('error', error.message || 'Failed to import cards');
+                },
+                onSettled: () => {
+                    setIsImporting(false);
                 }
-            );
-        } catch (error) {
-            console.error('Error importing cards:', error);
-        } finally {
-            setIsImporting(false);
-        }
+            }
+        );
     };
 
     const getStageDescription = () => {

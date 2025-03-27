@@ -205,7 +205,7 @@ const DeckDetail = () => {
                                 variant='outline'
                                 size='icon'
                                 onClick={() => navigate('/home')}
-                                className='hover:scale-105 active:scale-95 transition-transform'
+                                className='transition-transform'
                             >
                                 <ChevronLeft className='h-5 w-5' />
                             </Button>
@@ -216,16 +216,13 @@ const DeckDetail = () => {
                         </div>
 
                         <div className='flex items-center gap-2'>
-                            <Button
-                                onClick={() => navigate(`/study/${id}`)}
-                                className='hover:scale-105 active:scale-95 transition-transform'
-                            >
+                            <Button onClick={() => navigate(`/study/${id}`)} className='transition-transform'>
                                 <GraduationCap className='mr-2 h-5 w-5' />
                                 Study Now
                             </Button>
                             <Button
                                 onClick={() => open(id!)}
-                                className='hover:scale-105 active:scale-95 transition-transform hover:bg-blue-500 hover:text-white'
+                                className='transition-transform hover:bg-blue-500 hover:text-white'
                                 variant='outline'
                             >
                                 <NotebookPen className='mr-2 h-5 w-5' />
@@ -327,7 +324,7 @@ const DeckDetail = () => {
                                 </div>
                                 <Button
                                     onClick={() => navigate(`/deck/${id}/create-card`)}
-                                    className='hover:scale-105 active:scale-95 transition-transform'
+                                    className='transition-transform'
                                 >
                                     <Plus className='mr-2 h-4 w-4' />
                                     Add Card
@@ -342,7 +339,7 @@ const DeckDetail = () => {
                                             <Badge
                                                 key={tag}
                                                 variant={selectedTags.includes(tag) ? 'default' : 'outline'}
-                                                className={`cursor-pointer hover:scale-105 active:scale-95 transition-transform animation-delay-${Math.min(100 * index, 900)}`}
+                                                className={`cursor-pointer transition-transform animation-delay-${Math.min(100 * index, 900)}`}
                                                 onClick={() => toggleTag(tag)}
                                             >
                                                 {tag}
@@ -371,7 +368,7 @@ const DeckDetail = () => {
                                     {cardsData?.length === 0 && (
                                         <Button
                                             onClick={() => navigate(`/deck/${id}/create-card`)}
-                                            className='hover:scale-105 active:scale-95 transition-transform animate-slide-up'
+                                            className='transition-transform animate-slide-up'
                                         >
                                             <Plus className='mr-2 h-4 w-4' />
                                             Add Your First Card
