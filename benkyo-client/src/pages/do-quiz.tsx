@@ -61,10 +61,8 @@ const Quiz = () => {
         const correctAnswers = quiz.questions.filter(
             (question) => question.correctAnswer === answers[question.questionText]
         ).length;
-        const totalScore = (correctAnswers * 10) / quiz.questions.length;
         const quizAttemptData = {
             quizId: quizId!,
-            score: totalScore,
             startTime: startTime,
             endTime: new Date().toISOString(),
             totalQuestions: quiz.questions.length,

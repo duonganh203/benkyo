@@ -126,7 +126,6 @@ const QuizAttemptSchema = new Schema({
     quiz: { type: Schema.Types.ObjectId, ref: 'Quiz', required: true },
     startTime: { type: Date, default: Date.now },
     endTime: { type: Date },
-    score: { type: Number, default: 0 },
     totalQuestions: { type: Number, required: true },
     correctAnswers: { type: Number, default: 0 },
     responses: [

@@ -39,7 +39,7 @@ export const saveQuizAttemptService = async (
     quizId: string,
     quizAttempData: z.infer<typeof saveQuizAttemptValidation>
 ) => {
-    const { score, startTime, endTime, totalQuestions, correctAnswers, responses } = quizAttempData;
+    const { startTime, endTime, totalQuestions, correctAnswers, responses } = quizAttempData;
     const quiz = await Quiz.findById(quizId);
     if (!quiz) {
         throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
@@ -50,7 +50,6 @@ export const saveQuizAttemptService = async (
     const quizAttempt = new QuizAttempt({
         quiz: quizId,
         user: userId,
-        score,
         startTime: new Date(startTime),
         endTime: new Date(endTime),
         totalQuestions,

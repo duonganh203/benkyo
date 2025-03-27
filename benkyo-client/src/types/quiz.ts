@@ -22,7 +22,6 @@ export interface QuizRes {
 
 export interface QuizAttemptPayload {
     quizId: string;
-    score: number;
     startTime: string;
     endTime: string;
     totalQuestions: number;
@@ -39,7 +38,6 @@ export interface QuizAttemptRes {
         };
         questions: Question[];
     };
-    score: number;
     startTime: string;
     endTime: string;
     totalQuestions: number;
