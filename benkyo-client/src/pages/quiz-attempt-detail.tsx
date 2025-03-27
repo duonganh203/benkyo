@@ -58,7 +58,7 @@ const QuizResults = () => {
         );
     }
 
-    const percentage = Math.round((quizAttempt.score / quizAttempt.totalQuestions) * 100);
+    const percentage = Math.round((quizAttempt.correctAnswers / quizAttempt.totalQuestions) * 100);
 
     const getScoreMessage = () => {
         if (percentage === 100) return 'Perfect score! Amazing job!';
@@ -74,7 +74,7 @@ const QuizResults = () => {
 
             <div className='mb-8 text-center'>
                 <div className='text-3xl font-bold mb-2'>
-                    {quizAttempt.score} / {quizAttempt.totalQuestions} ({percentage}%)
+                    {quizAttempt.correctAnswers} / {quizAttempt.totalQuestions} ({percentage}%)
                 </div>
                 <p className='text-muted-foreground'>{getScoreMessage()}</p>
             </div>

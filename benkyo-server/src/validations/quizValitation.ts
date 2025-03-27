@@ -20,7 +20,6 @@ export const createQuizValidation = z.object({
 });
 
 export const saveQuizAttemptValidation = z.object({
-    score: z.number().int().min(0, 'Score must be at least 0'),
     startTime: z.string(),
     endTime: z.string(),
     totalQuestions: z.number().int().min(1, 'Total questions must be at least 5'),
