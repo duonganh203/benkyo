@@ -108,7 +108,7 @@ const Quiz = () => {
 
     if (!quiz) {
         return (
-            <div className='min-h-screen flex flex-col dark:bg-gray-950 dark:text-white'>
+            <div className='min-h-screen flex flex-col dark:text-white'>
                 <main className='container flex-1 py-8 px-4 md:px-6 flex flex-col items-center justify-center'>
                     <h2 className='text-2xl font-medium mb-4'>Quiz not found</h2>
                     <Button asChild>
@@ -120,7 +120,7 @@ const Quiz = () => {
     }
 
     return (
-        <div className='min-h-screen flex flex-col dark:bg-gray-950 dark:text-white'>
+        <div className='min-h-screen flex flex-col  dark:text-white'>
             <main className='max-w-3xl h-full flex flex-col justify-center mx-auto py-8 px-4'>
                 <div className='mb-6 w-full max-w-3xl'>
                     <div className='flex items-center justify-between'>

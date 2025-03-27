@@ -153,7 +153,7 @@ const QuizResults = () => {
                     Restart Quiz
                 </Button>
                 <Button asChild variant='outline' className='transition-300'>
-                    <Link to={`/home}`}>Back to Home</Link>
+                    <Link to={`/home`}>Back to Home</Link>
                 </Button>
             </div>
         </div>
