@@ -1,9 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, Sparkle, XCircle } from 'lucide-react';
 import useGetQuizAttempt from '@/hooks/queries/use-get-quiz-attempt';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useState } from 'react';
+import { analyzeQuizPerformance } from '@/utils/genAiTip';
+import { AiTipsModal } from '@/components/modals/ai-gen-tip-modal';
 
 const QuizResults = () => {
     const navigate = useNavigate();
@@ -11,6 +14,26 @@ const QuizResults = () => {
     const { quizAttemptId } = useParams<{ quizAttemptId: string }>();
     const { data: quizAttempt, isLoading } = useGetQuizAttempt(quizAttemptId!);
 
+    console.log('quiz', quizAttempt);
+
+    const [aiAnalysis, setAiAnalysis] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+        if (!aiAnalysis && quizAttempt) {
+            setIsAnalyzing(true);
+            analyzeQuizPerformance(quizAttempt)
+                .then((analysis) => {
+                    setAiAnalysis(analysis);
+                })
+                .catch(console.error)
+                .finally(() => {
+                    setIsAnalyzing(false);
+                });
+        }
+    };
     if (isLoading) {
         return (
             <div className='max-w-3xl w-full flex flex-col justify-center mx-auto p-8 rounded-xl animate-scale-in'>
@@ -70,7 +93,20 @@ const QuizResults = () => {
 
     return (
         <div className='max-w-3xl w-full flex flex-col justify-center mx-auto p-8 rounded-xl animate-scale-in'>
-            <h2 className='text-2xl font-bold mb-4 text-center'>Quiz Results</h2>
+            <div className='flex flex-row justify-between items-center mb-4'>
+                <h2 className='text-2xl font-bold'>Quiz Results</h2>
+                <Button variant='outline' onClick={handleOpenModal} className='flex items-center gap-2'>
+                    <Sparkle className='h-4 w-4 text-green-500' />
+                    Get AI Tips
+                </Button>
+            </div>
+
+            <AiTipsModal
+                data={aiAnalysis}
+                open={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                isLoading={isAnalyzing}
+            />
 
             <div className='mb-8 text-center'>
                 <div className='text-3xl font-bold mb-2'>

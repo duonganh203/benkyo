@@ -121,48 +121,64 @@ const model = genAI.getGenerativeModel({
     systemInstruction: ANALYZE_QUIZ_PERFORMANCE_PROMPT
 });
 
-interface QuizResponse {
-    questionIndex: number;
-    selectedChoice: number;
-}
+// interface QuizResponse {
+//     questionIndex: number;
+//     selectedChoice: number;
+// }
 
-interface QuizData {
-    totalQuestions: number;
-    correctAnswers: number;
-    responses: QuizResponse[];
-}
+// interface QuizData {
+//     totalQuestions: number;
+//     correctAnswers: number;
+//     responses: QuizResponse[];
+// }
 
-export async function analyzeQuizPerformance(quizData: QuizData): Promise<any> {
-    if (!quizData || !quizData.totalQuestions || !quizData.correctAnswers) {
-        throw new Error('Invalid quiz data provided.');
+export async function analyzeQuizPerformance(quizAttempt: any): Promise<any> {
+    if (!quizAttempt || !quizAttempt.totalQuestions || quizAttempt.correctAnswers === undefined) {
+        throw new Error('Invalid quiz attempt data.');
     }
 
-    const accuracy = ((quizData.correctAnswers / quizData.totalQuestions) * 100).toFixed(2);
+    const accuracy = ((quizAttempt.correctAnswers / quizAttempt.totalQuestions) * 100).toFixed(2);
+
+    // Chuyển đổi dữ liệu về định dạng AI yêu cầu
+    const processedQuizData = {
+        totalQuestions: quizAttempt.totalQuestions,
+        correctAnswers: quizAttempt.correctAnswers,
+        accuracy: parseFloat(accuracy),
+        responses: quizAttempt.quiz.questions.map((question: any, index: number) => ({
+            questionIndex: index,
+            questionText: question.questionText,
+            choices: question.choices.map((choice: any) => choice.text),
+            correctAnswer: question.choices[question.correctAnswer].text,
+            selectedChoice:
+                quizAttempt.responses[index] !== undefined
+                    ? question.choices[quizAttempt.responses[index].selectedChoice]?.text || 'No answer provided'
+                    : 'No answer provided',
+            isCorrect: quizAttempt.responses[index]?.selectedChoice === question.correctAnswer
+        }))
+    };
 
     const prompt = `
-    Analyze the following quiz results and return the output in JSON format.
-    
-    ## **Quiz Data**  
-    - **Total Questions:** ${quizData.totalQuestions}  
-    - **Correct Answers:** ${quizData.correctAnswers}  
-    - **Accuracy Rate:** ${accuracy}%  
+  Analyze the following quiz results and return the output in JSON format.
 
-    ${ANALYZE_QUIZ_PERFORMANCE_PROMPT}
+  ## **Quiz Data**  
+  - **Total Questions:** ${processedQuizData.totalQuestions}  
+  - **Correct Answers:** ${processedQuizData.correctAnswers}  
+  - **Accuracy Rate:** ${processedQuizData.accuracy}%  
 
-    ## **Input Data**  
-    \`\`\`json
-    ${JSON.stringify(quizData, null, 2)}
-    \`\`\`
-    `;
+  ${ANALYZE_QUIZ_PERFORMANCE_PROMPT}
+
+  ## **Input Data**  
+  \`\`\`json
+  ${JSON.stringify(processedQuizData, null, 2)}
+  \`\`\`
+  `;
 
     try {
         const response = await model.generateContent([prompt]);
         const responseText = response.response.text();
 
-        // Extract JSON from the response
         const jsonMatch =
             responseText.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) || responseText.match(/\{([\s\S]*)\}/);
-
         const jsonString = jsonMatch ? jsonMatch[1] : responseText;
         const analysis = JSON.parse(jsonString);
 
