@@ -121,17 +121,6 @@ const model = genAI.getGenerativeModel({
     systemInstruction: ANALYZE_QUIZ_PERFORMANCE_PROMPT
 });
 
-// interface QuizResponse {
-//     questionIndex: number;
-//     selectedChoice: number;
-// }
-
-// interface QuizData {
-//     totalQuestions: number;
-//     correctAnswers: number;
-//     responses: QuizResponse[];
-// }
-
 export async function analyzeQuizPerformance(quizAttempt: any): Promise<any> {
     if (!quizAttempt || !quizAttempt.totalQuestions || quizAttempt.correctAnswers === undefined) {
         throw new Error('Invalid quiz attempt data.');
