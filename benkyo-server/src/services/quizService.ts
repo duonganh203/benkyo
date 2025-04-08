@@ -1,3 +1,4 @@
+import { populate } from 'dotenv';
 import z from 'zod';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { NotFoundException } from '~/exceptions/notFound';
@@ -71,7 +72,7 @@ export const getQuizAttemptById = async (quizAttemptId: string, userId: string) 
     });
 
     if (!quizAttempt) {
-        throw new NotFoundException('Quiz attempt not found', ErrorCode.NOT_FOUND);
+        throw new NotFoundException('Quiz attempts not found', ErrorCode.NOT_FOUND);
     }
     if (!quizAttempt.user.equals(userId)) {
         throw new BadRequestsException('You dont have permission to view this Quiz attempt', ErrorCode.NOT_FOUND);
