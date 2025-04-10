@@ -7,12 +7,12 @@ import {
     Edit,
     GraduationCap,
     MoreHorizontal,
-    ExternalLink,
     Calendar,
     Book,
     RefreshCcw,
     AlertCircle,
-    NotebookPen
+    NotebookPen,
+    Earth
 } from 'lucide-react';
 import { formatDistanceToNow, isBefore } from 'date-fns';
 import useGetDeckById from '@/hooks/queries/use-get-deck-id';
@@ -35,6 +35,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import { getToast } from '@/utils/getToast';
 import useDeleteDeck from '@/hooks/queries/use-delete-deck';
 import { useGenerateQuizModal } from '@/hooks/stores/use-generate-quiz-modal';
+import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-public-deck-modal';
 
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -45,6 +46,27 @@ const DeckDetail = () => {
     const [activeTab, setActiveTab] = useState('cards');
     const [confirmDelete, setConfirmDelete] = useState(false);
     const { open } = useGenerateQuizModal((store) => store);
+
+    const publicStatus = [
+        {
+            label: 'Private',
+            color: 'text-orange-500 border-orange-500'
+        },
+        {
+            label: 'Pending',
+            color: 'text-yellow-500 border-yellow-500'
+        },
+        {
+            label: 'Public',
+            color: 'text-green-500 border-green-500'
+        },
+        {
+            label: 'Rejected',
+            color: 'text-red-500 border-red-500'
+        }
+    ];
+
+    const { open: openSendReqPublicModal } = useSendRequestPublicDeckModal((store) => store);
 
     const { data: deckData, isLoading: isDeckLoading } = useGetDeckById(id!);
     const { data: cardsData, isLoading: isCardsLoading } = useGetDeckCards(id!);
@@ -213,6 +235,12 @@ const DeckDetail = () => {
                                 <h1 className='text-2xl font-bold'>{deckData.name}</h1>
                                 <p className='text-muted-foreground'>{deckData.description || 'No description'}</p>
                             </div>
+                            <Badge
+                                variant='outline'
+                                className={`ml-2 text-white text-xs px-2 ${publicStatus[deckData.publicStatus].color} border-1`}
+                            >
+                                {publicStatus[deckData.publicStatus].label}
+                            </Badge>
                         </div>
 
                         <div className='flex items-center gap-2'>
@@ -220,6 +248,7 @@ const DeckDetail = () => {
                                 <GraduationCap className='mr-2 h-5 w-5' />
                                 Study Now
                             </Button>
+
                             <Button
                                 onClick={() => open(id!)}
                                 className='transition-transform hover:bg-blue-500 hover:text-white'
@@ -227,6 +256,17 @@ const DeckDetail = () => {
                             >
                                 <NotebookPen className='mr-2 h-5 w-5' />
                                 Do Quiz
+                            </Button>
+                            <Button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    openSendReqPublicModal(id!);
+                                }}
+                                variant='outline'
+                                size='sm'
+                                className='px-3 py-2 h-auto text-primary hover:text-primary hover:bg-primary/10'
+                            >
+                                <Earth className='h-8 w-8' />
                             </Button>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -239,10 +279,7 @@ const DeckDetail = () => {
                                         <Edit className='mr-2 h-4 w-4' />
                                         <span>Edit Deck</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        <ExternalLink className='mr-2 h-4 w-4' />
-                                        <span>Share Deck</span>
-                                    </DropdownMenuItem>
+
                                     <DropdownMenuItem
                                         className='text-destructive'
                                         onClick={() => {

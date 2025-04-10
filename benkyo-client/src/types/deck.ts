@@ -11,6 +11,7 @@ export interface DeckDetails {
     _id: string;
     name: string;
     description?: string;
+    publicStatus: number;
 }
 export interface DeckInterface {
     _id: string;

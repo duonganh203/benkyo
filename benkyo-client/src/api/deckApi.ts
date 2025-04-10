@@ -26,3 +26,8 @@ export const deleteDeck = async (deckId: string) => {
     const response = await api.delete(`decks/${deckId}`);
     return response.data;
 };
+
+export const sendRequestPublicDeck = async (deckId: string) => {
+    const response = await api.patch(`decks/${deckId}/request-public`);
+    return response.data;
+};

@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
-import { createDeckService, deleteDeckService, getAllDecksService, getDeckService } from '~/services/deckService';
+import {
+    createDeckService,
+    deleteDeckService,
+    getAllDecksService,
+    getDeckService,
+    sendReqPublicDeckService
+} from '~/services/deckService';
 import { createDeckValidation } from '~/validations/deckValidation';
 
 export const createDeck = async (req: Request, res: Response) => {
@@ -27,5 +33,12 @@ export const deleteDeck = async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.user._id;
     const result = await deleteDeckService(userId, id);
+    return res.json({ message: result.message });
+};
+
+export const sendReqPublicDeck = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const result = await sendReqPublicDeckService(userId, id);
     return res.json({ message: result.message });
 };
