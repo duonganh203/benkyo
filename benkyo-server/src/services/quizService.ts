@@ -2,6 +2,7 @@ import z from 'zod';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
+import { UnauthorizedException } from '~/exceptions/unauthorized';
 import { Quiz, QuizAttempt } from '~/schemas';
 import { createQuizValidation, saveQuizAttemptValidation } from '~/validations/quizValitation';
 
@@ -45,7 +46,7 @@ export const saveQuizAttemptService = async (
         throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
     }
     if (!quiz.createdBy.equals(userId)) {
-        throw new BadRequestsException('You dont have permission to do this Quiz', ErrorCode.NOT_FOUND);
+        throw new UnauthorizedException('You dont have permission to do this Quiz', ErrorCode.UNAUTHORIZED);
     }
     const quizAttempt = new QuizAttempt({
         quiz: quizId,

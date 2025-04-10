@@ -13,6 +13,12 @@ enum State {
     REVIEW = 2,
     RELEARNING = 3
 }
+enum PublicStatus {
+    PRIVATE = 0,
+    PENDING = 1,
+    APPROVED = 2,
+    REJECTED = 3
+}
 
 const UserSchema = new Schema({
     name: { type: String, required: true, trim: true },
@@ -45,6 +51,10 @@ const DeckSchema = new Schema({
     name: { type: String, required: true, trim: true },
     description: { type: String, trim: true },
     isPublic: { type: Boolean, default: false },
+    publicStatus: {
+        type: Number,
+        default: PublicStatus.PRIVATE
+    },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     cardCount: { type: Number, default: 0 },
@@ -166,4 +176,4 @@ export const Quiz = model('Quiz', QuizSchema);
 export const QuizAttempt = model('QuizAttempt', QuizAttemptSchema);
 export const DeckRating = model('DeckRating', DeckRatingSchema);
 export const StudySession = model('StudySession', StudySessionSchema);
-export { Rating, State };
+export { Rating, State, PublicStatus };

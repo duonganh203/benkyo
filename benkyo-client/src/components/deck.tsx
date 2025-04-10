@@ -1,11 +1,12 @@
-import { DeckInterface } from '@/types/deck';
-import { Card, CardContent, CardFooter } from './ui/card';
-import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { DeckInterface } from '@/types/deck';
+import { cn } from '@/lib/utils';
+import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-public-deck-modal';
 import { Clock, Earth, GraduationCap } from 'lucide-react';
 import { format } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Button } from './ui/button';
+import { Card, CardContent, CardFooter } from './ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 interface DeckProps {
@@ -13,10 +14,12 @@ interface DeckProps {
 }
 
 function Deck({ deck }: DeckProps) {
+    const { open } = useSendRequestPublicDeckModal((store) => store);
     const navigate = useNavigate();
     const handleDeckClick = (deckId: string) => {
         navigate(`/deck/${deckId}`);
     };
+
     return (
         <Card
             key={deck._id}
@@ -92,6 +95,10 @@ function Deck({ deck }: DeckProps) {
                                     </Button>
                                 ) : (
                                     <Button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            open(deck._id);
+                                        }}
                                         variant='ghost'
                                         size='sm'
                                         className='p-0 h-auto text-primary hover:text-primary hover:bg-primary/10'

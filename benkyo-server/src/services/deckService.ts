@@ -1,8 +1,10 @@
 import z from 'zod';
-import { Card, Deck, DeckRating, Revlog, StudySession, User, UserDeckState } from '~/schemas';
+import { Card, Deck, DeckRating, PublicStatus, Revlog, StudySession, User, UserDeckState } from '~/schemas';
 import { createDeckValidation } from '~/validations/deckValidation';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
+import { BadRequestsException } from '~/exceptions/badRequests';
+import { UnauthorizedException } from '~/exceptions/unauthorized';
 
 export const createDeckService = async (userId: string, deckData: z.infer<typeof createDeckValidation>) => {
     const { name, description } = deckData;
@@ -57,4 +59,26 @@ export const deleteDeckService = async (userId: string, deckId: string) => {
     await Deck.findByIdAndDelete(deckId);
     await User.updateOne({ _id: userId }, { $pull: { decks: deckId } });
     return { message: 'Deck and all associated data deleted successfully' };
+};
+
+export const sendReqPublicDeckService = async (userId: string, deckId: string) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+    if (!deck.owner.equals(userId)) {
+        throw new UnauthorizedException('You dont have permission to public this deck', ErrorCode.UNAUTHORIZED);
+    }
+    if (deck.isPublic || deck.publicStatus === PublicStatus.APPROVED) {
+        throw new BadRequestsException('This deck is already public', ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    if (deck.publicStatus === PublicStatus.PENDING) {
+        throw new BadRequestsException('This deck is already pending for approval', ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+    await Deck.findByIdAndUpdate(deckId, {
+        $set: { publicStatus: PublicStatus.PENDING, isPublic: false }
+    });
+
+    return { message: 'Request sent successfully' };
 };
