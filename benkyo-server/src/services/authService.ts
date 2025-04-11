@@ -4,7 +4,9 @@ import { BadRequestsException } from '~/exceptions/badRequests';
 import { ErrorCode } from '~/exceptions/root';
 import { User } from '~/schemas';
 import { loginValidation, registerValidation } from '~/validations/authValidation';
-import { generateToken } from '~/utils/generateJwt';
+import { generateRefreshToken, generateToken } from '~/utils/generateJwt';
+import * as jwt from 'jsonwebtoken';
+
 export const registerService = async (userData: z.infer<typeof registerValidation>) => {
     const { name, email, password } = userData;
     let user = await User.findOne({ email });
@@ -23,5 +25,16 @@ export const loginService = async (userData: z.infer<typeof loginValidation>) =>
     const isMatch = await compare(password, user.password);
     if (!isMatch) throw new BadRequestsException('Email or password is not correct!', ErrorCode.INVALID_CREDENTIALS);
     const token = generateToken(user._id);
-    return { token, user: { id: user._id, username: user.name, email: user.email, avatar: user.avatar } };
+    const refreshToken = generateRefreshToken(user._id);
+    return {
+        token,
+        refreshToken,
+        user: { id: user._id, username: user.name, email: user.email, avatar: user.avatar }
+    };
+};
+
+export const refreshTokenService = async (refreshToken: string) => {
+    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!);
+    const newToken = generateToken((payload as any).id);
+    return newToken;
 };

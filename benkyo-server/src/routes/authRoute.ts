@@ -6,6 +6,7 @@ import {
     googleLogin,
     login,
     me,
+    refreshToken,
     register
 } from '~/controllers/authController';
 import { errorHandler } from '~/errorHandler';
@@ -15,6 +16,7 @@ const authRoutes: Router = Router();
 
 authRoutes.post('/login', errorHandler(login));
 authRoutes.post('/register', errorHandler(register));
+authRoutes.post('/refresh-token', errorHandler(refreshToken));
 authRoutes.get('/me', [authMiddleware], errorHandler(me));
 authRoutes.get('/google', errorHandler(googleLogin));
 authRoutes.get('/google/callback', errorHandler(googleCallback));

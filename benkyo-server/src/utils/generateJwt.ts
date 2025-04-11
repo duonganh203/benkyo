@@ -7,6 +7,16 @@ export function generateToken(_id: Types.ObjectId) {
             id: _id
         },
         process.env.JWT_SECRET!,
-        { expiresIn: '48h' }
+        { expiresIn: '1d' }
+    );
+}
+
+export function generateRefreshToken(_id: Types.ObjectId) {
+    return sign(
+        {
+            id: _id
+        },
+        process.env.JWT_REFRESH_SECRET!,
+        { expiresIn: '14d' }
     );
 }
