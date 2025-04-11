@@ -4,7 +4,7 @@ import { createDeckValidation } from '~/validations/deckValidation';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { BadRequestsException } from '~/exceptions/badRequests';
-import { UnauthorizedException } from '~/exceptions/unauthorized';
+import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 
 export const createDeckService = async (userId: string, deckData: z.infer<typeof createDeckValidation>) => {
     const { name, description } = deckData;
@@ -29,10 +29,10 @@ export const createDeckService = async (userId: string, deckData: z.infer<typeof
 export const getDeckService = async (userId: string, deckId: string) => {
     const deck = await Deck.findById(deckId);
     if (!deck) {
-        throw new Error('Deck not found');
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
     if (!deck.owner.equals(userId) && !deck.isPublic) {
-        throw new Error('You do not have permission to view this deck');
+        throw new ForbiddenRequestsException('You do not have permission to view this deck', ErrorCode.FORBIDDEN);
     }
     return deck;
 };
@@ -47,6 +47,9 @@ export const deleteDeckService = async (userId: string, deckId: string) => {
     const deck = await Deck.findOne({ _id: deckId, owner: userId });
     if (!deck) {
         throw new NotFoundException('Deck not found or you do not have permission to delete it', ErrorCode.NOT_FOUND);
+    }
+    if (!deck.owner.equals(userId)) {
+        throw new ForbiddenRequestsException('You dont have permission to delete this deck', ErrorCode.FORBIDDEN);
     }
     await Card.deleteMany({ deck: deckId });
     await UserDeckState.deleteMany({ deck: deckId });
@@ -67,7 +70,7 @@ export const sendReqPublicDeckService = async (userId: string, deckId: string) =
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
     if (!deck.owner.equals(userId)) {
-        throw new UnauthorizedException('You dont have permission to public this deck', ErrorCode.UNAUTHORIZED);
+        throw new ForbiddenRequestsException('You dont have permission to public this deck', ErrorCode.FORBIDDEN);
     }
     if (deck.isPublic || deck.publicStatus === PublicStatus.APPROVED) {
         throw new BadRequestsException('This deck is already public', ErrorCode.INTERNAL_SERVER_ERROR);

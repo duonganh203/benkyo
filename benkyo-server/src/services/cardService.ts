@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import z from 'zod';
+import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { UnauthorizedException } from '~/exceptions/unauthorized';
 import { Card, Deck, Revlog, UserDeckState } from '~/schemas';
 import { batchCreateCardsValidation, createCardValidation } from '~/validations/cardValidation';
 
@@ -26,9 +26,9 @@ export const updateCard = async (cardId: string, userId: string, cardData: z.inf
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
     if (!deck.owner.equals(userId)) {
-        throw new UnauthorizedException(
+        throw new ForbiddenRequestsException(
             'You do not have permission to update cards to this deck',
-            ErrorCode.UNAUTHORIZED
+            ErrorCode.FORBIDDEN
         );
     }
     const updateCard = await Card.findByIdAndUpdate(cardId, {
@@ -54,7 +54,7 @@ export const getDeckCardsService = async (userId: string, deckId: string) => {
         deck.owner.equals(userId) || (deck.isPublic && deck.subscribers.some((sub) => sub.equals(userId)));
 
     if (!hasAccess) {
-        throw new UnauthorizedException('You do not have access to this deck', ErrorCode.UNAUTHORIZED);
+        throw new ForbiddenRequestsException('You do not have access to this deck', ErrorCode.FORBIDDEN);
     }
 
     const cards = await Card.find({ deck: deckId }).sort({ createdAt: -1 });
@@ -130,7 +130,10 @@ export const createCardService = async (userId: string, cardData: z.infer<typeof
     }
 
     if (!deck.owner.equals(userId)) {
-        throw new UnauthorizedException('You do not have permission to add cards to this deck', ErrorCode.UNAUTHORIZED);
+        throw new ForbiddenRequestsException(
+            'You do not have permission to add cards to this deck',
+            ErrorCode.FORBIDDEN
+        );
     }
 
     const newCard = await Card.create({
@@ -172,7 +175,10 @@ export const batchCreateCardsService = async (
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
     if (!deck.owner.equals(userId)) {
-        throw new UnauthorizedException('You do not have permission to add cards to this deck', ErrorCode.UNAUTHORIZED);
+        throw new ForbiddenRequestsException(
+            'You do not have permission to add cards to this deck',
+            ErrorCode.FORBIDDEN
+        );
     }
 
     const cardsToInsert = cards.map((card) => ({
@@ -214,9 +220,9 @@ export const deleteCardService = async (userId: string, cardId: string) => {
         throw new NotFoundException('Associated deck not found', ErrorCode.NOT_FOUND);
     }
     if (!deck.owner.equals(userId)) {
-        throw new UnauthorizedException(
+        throw new ForbiddenRequestsException(
             'You do not have permission to delete cards from this deck',
-            ErrorCode.UNAUTHORIZED
+            ErrorCode.FORBIDDEN
         );
     }
     await Card.findByIdAndDelete(cardId);

@@ -237,9 +237,12 @@ const DeckDetail = () => {
                             </div>
                             <Badge
                                 variant='outline'
-                                className={`ml-2 text-white text-xs px-2 ${publicStatus[deckData.publicStatus].color} border-1`}
+                                className={`ml-2 text-white text-xs flex items-center px-2 ${publicStatus[deckData.publicStatus].color} border-1}`}
                             >
                                 {publicStatus[deckData.publicStatus].label}
+                                <Earth
+                                    className={`h-4 w-4 ml-0.5 inline-block ${publicStatus[deckData.publicStatus].color}`}
+                                />
                             </Badge>
                         </div>
 

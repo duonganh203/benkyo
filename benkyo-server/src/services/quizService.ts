@@ -1,8 +1,7 @@
 import z from 'zod';
-import { BadRequestsException } from '~/exceptions/badRequests';
+import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { UnauthorizedException } from '~/exceptions/unauthorized';
 import { Quiz, QuizAttempt } from '~/schemas';
 import { createQuizValidation, saveQuizAttemptValidation } from '~/validations/quizValitation';
 
@@ -30,7 +29,7 @@ export const getQuizByIdService = async (quizId: string, userId: string) => {
         throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
     }
     if (!quiz.createdBy.equals(userId)) {
-        throw new BadRequestsException('You dont have permission to view this Quiz', ErrorCode.NOT_FOUND);
+        throw new ForbiddenRequestsException('You dont have permission to view this Quiz', ErrorCode.FORBIDDEN);
     }
     return quiz;
 };
@@ -46,7 +45,7 @@ export const saveQuizAttemptService = async (
         throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
     }
     if (!quiz.createdBy.equals(userId)) {
-        throw new UnauthorizedException('You dont have permission to do this Quiz', ErrorCode.UNAUTHORIZED);
+        throw new ForbiddenRequestsException('You dont have permission to do this Quiz', ErrorCode.FORBIDDEN);
     }
     const quizAttempt = new QuizAttempt({
         quiz: quizId,
@@ -75,7 +74,7 @@ export const getQuizAttemptById = async (quizAttemptId: string, userId: string) 
         throw new NotFoundException('Quiz attempt not found', ErrorCode.NOT_FOUND);
     }
     if (!quizAttempt.user.equals(userId)) {
-        throw new BadRequestsException('You dont have permission to view this Quiz attempt', ErrorCode.NOT_FOUND);
+        throw new ForbiddenRequestsException('You dont have permission to view this Quiz attempt', ErrorCode.FORBIDDEN);
     }
 
     return quizAttempt;
