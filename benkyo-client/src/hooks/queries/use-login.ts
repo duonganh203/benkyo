@@ -4,7 +4,7 @@ import { login } from '@/api/authApi';
 import { ApiError } from '@/types/api';
 import { LoginPayload, User } from '@/types/auth';
 const useLogin = () => {
-    return useMutation<{ user: User; token: string }, AxiosError<ApiError>, LoginPayload>({
+    return useMutation<{ user: User; token: string; refreshToken: string }, AxiosError<ApiError>, LoginPayload>({
         mutationFn: login
     });
 };

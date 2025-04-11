@@ -17,7 +17,7 @@ import { getToast } from '@/utils/getToast';
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
     const { mutate: login, isPending } = useLogin();
-    const { setUser, setToken } = useAuthStore();
+    const { setUser, setToken, setRefreshToken } = useAuthStore();
     const [error, setError] = useState<AxiosError<ApiError>>();
 
     const form = useForm<z.infer<typeof LoginSchema>>({
@@ -33,6 +33,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
             onSuccess: (data) => {
                 setUser(data.user);
                 setToken(data.token);
+                setRefreshToken(data.refreshToken);
                 getToast('success', 'Login successful!!!');
             },
             onError: (error) => {
