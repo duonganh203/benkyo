@@ -1,8 +1,5 @@
-'use client';
-
-import * as React from 'react';
 import { useMemo } from 'react';
-import { Home, Library, Package, Settings2, Sparkles, Clock, BadgeInfo, NotebookPen } from 'lucide-react';
+import { Home, Library, Package, Settings2, Sparkles, Clock, BadgeInfo, NotebookPen, Cat } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -50,9 +47,9 @@ const data = {
             highlight: true
         },
         {
-            title: 'Ask AI',
-            url: '#',
-            icon: Sparkles,
+            title: 'SUPER CAT',
+            url: '/ai-chat',
+            icon: Cat,
             highlight: true
         },
         {
