@@ -1,3 +1,4 @@
+import './index.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -8,7 +9,6 @@ import Marketing from './pages/marketing';
 import ProtectedRoute from './components/layouts/protected-route';
 import AuthRoute from './components/layouts/auth-route';
 import GlobalLayout from './components/layouts/global-layout';
-import './index.css';
 import { ThemeProvider } from './components/providers/theme-provider';
 import DeckDetail from './pages/deck-detail';
 import ModalProvider from './components/providers/modal-provider';
@@ -22,6 +22,7 @@ import ProgressPage from './pages/progress';
 import Quizzes from './pages/quizzes';
 import Quiz from './pages/do-quiz';
 import QuizResults from './pages/quiz-attempt-detail';
+import AIChat from './pages/ai-chat';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -57,6 +58,7 @@ const App = () => {
                                 <Route path='do-quiz/:quizId' element={<Quiz />} />
                                 <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />
                                 <Route path='/quizzes' element={<Quizzes />} />
+                                <Route path='/ai-chat' element={<AIChat />} />
                             </Route>
                         </Route>
                     </Routes>
