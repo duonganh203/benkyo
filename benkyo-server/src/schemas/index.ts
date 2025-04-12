@@ -244,3 +244,4 @@ export type ConversationType = InferSchemaType<typeof ConversationSchema>;
 export const Transaction = model('Transaction', TransactionSchema);
 export const Package = model('Package', PackageSchema);
 export { Rating, State, PublicStatus, PackageType, PackageDuration };
+export type TransactionType = InferSchemaType<typeof TransactionSchema>;
