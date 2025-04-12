@@ -8,3 +8,4 @@ dist/
 build/
 coverage/
 *.log
+uploads/
