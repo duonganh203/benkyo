@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import pLimit from 'p-limit';
 import fs from 'fs-extra';
 import path from 'path';
 import mammoth from 'mammoth';
@@ -16,7 +15,6 @@ const OVERLAP = 200;
 const BATCH_SIZE = 5;
 
 const genAi = new GoogleGenAI({ apiKey: GOOGLE_AI_KEY });
-const concurrencyLimit = pLimit(MAX_CONCURRENT_EMBEDDINGS);
 
 const extractTextFromPDF = async (filePath: string) => {
     try {
@@ -160,7 +158,8 @@ export const processDocument = async (filePath: string, documentId: string, docu
 
         for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
             const batchChunks = chunks.slice(i, i + BATCH_SIZE);
-
+            const pLimit = await import('p-limit');
+            const concurrencyLimit = pLimit.default(MAX_CONCURRENT_EMBEDDINGS);
             const batchResults = await Promise.all(
                 batchChunks.map((chunk) =>
                     concurrencyLimit(async () => {
