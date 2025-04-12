@@ -5,6 +5,7 @@ import cardRoutes from './cardRoute';
 import fsrsRoutes from './fsrsRoute';
 import userRoutes from './userRoute';
 import quizRoutes from './quizRoute';
+import documentRoutes from './documentRoute';
 
 const rootRouter: Router = Router();
 
@@ -15,5 +16,6 @@ rootRouter.use('/cards', cardRoutes);
 rootRouter.use('/fsrs', fsrsRoutes);
 rootRouter.use('/user', userRoutes);
 rootRouter.use('/quiz', quizRoutes);
+rootRouter.use('/documents', documentRoutes);
 
 export default rootRouter;

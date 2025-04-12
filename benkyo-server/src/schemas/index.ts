@@ -159,7 +159,6 @@ const DocumentSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
     type: { type: String, required: true, enum: ['pdf', 'doc', 'docx'] },
-    url: { type: String, required: true },
     embeddingId: { type: String, required: true, unique: true },
     createdAt: { type: Date, default: Date.now }
 });
