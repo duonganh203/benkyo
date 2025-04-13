@@ -209,7 +209,7 @@ const TransactionSchema = new Schema(
         bankAbbreviation: { type: String },
         corresponsiveAccount: { type: String },
         isPaid: { type: Boolean, default: false, required: true },
-        expiredAt: { type: Date, required: true },
+        expiredAt: { type: Date, required: true, default: () => new Date(Date.now() + 30 * 60 * 1000) },
         user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         package: { type: Schema.Types.ObjectId, ref: 'Package', required: true }
     },

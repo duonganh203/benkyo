@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { TransactionType, Transaction, User, Package } from '~/schemas';
+import { Types } from 'mongoose';
 
 type CreateTransactionPayload = Omit<
     TransactionType,
@@ -11,10 +12,10 @@ type CreateTransactionPayload = Omit<
 };
 
 export const saveTransaction = async (transactionData: CreateTransactionPayload) => {
-    console.log('transactionData:', transactionData);
-
     const [userBuy, packageBuy] = transactionData.description.toString().split(' ');
-
+    console.log('transactionData', transactionData);
+    console.log('userBuy', userBuy);
+    console.log('packageBuy', packageBuy);
     const existedUser = await User.findById(userBuy);
     if (!existedUser) {
         throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
@@ -59,15 +60,45 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
             break;
     }
 
-    const now = new Date();
-    const currentExpiry =
-        existedUser.proExpiryDate && existedUser.proExpiryDate > now ? existedUser.proExpiryDate : now;
-
     existedUser.set({
         isPro: true,
-        proExpiryDate: new Date(currentExpiry.setMonth(currentExpiry.getMonth() + months))
+        proType: existedPackage.type,
+        proExpiryDate: new Date(new Date().setMonth(new Date().getMonth() + months))
     });
+
     await existedUser.save();
 
     return 'Transaction success & User upgraded successfully';
+};
+
+export const getTransaction = async (userId: string, packageId: string) => {
+    let transaction = await Transaction.findOne({
+        user: userId,
+        expiredAt: { $gt: Date.now() },
+        package: packageId
+    });
+
+    if (!transaction) {
+        transaction = await new Transaction({
+            user: userId,
+            package: packageId,
+            isPaid: false
+        }).save();
+    }
+
+    transaction = await Transaction.findById(transaction._id)
+        .select('_id isPaid expiredAt')
+        .populate('user', '_id')
+        .populate('package', 'type price ');
+    return transaction;
+};
+
+export const checkPaid = async (userId: string, transactionId: string) => {
+    const transaction = await Transaction.findOne({ user: userId, _id: transactionId }).select('isPaid');
+
+    if (!transaction) {
+        throw new NotFoundException('Transaction not found', ErrorCode.NOT_FOUND);
+    }
+
+    return transaction;
 };

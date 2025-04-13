@@ -114,6 +114,9 @@
     --sidebar-accent-foreground: hsl(240 5.9% 10%);
     --sidebar-border: hsl(220 13% 91%);
     --sidebar-ring: hsl(217.2 91.2% 59.8%);
+    --muted: hsl(210 40% 96.1%);
+    --warning: hsl(38 92% 50%);
+    --warning-foreground: hsl(48 96% 89%);
 }
 .dark {
     --background: hsl(0, 0%, 3.9%);
@@ -351,4 +354,53 @@
 
 .animate-card-flip {
   animation: card-flip 0.6s ease-in-out forwards;
+}
+
+/* QR Animation */
+.circular-progress {
+  position: relative;
+  width: 300px;
+  height: 300px;
+}
+
+.circular-progress svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: rotate(-90deg);
+}
+
+.circular-progress circle {
+  fill: transparent;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transform-origin: center;
+}
+
+.circular-progress .progress-bg {
+  stroke: var(--muted);
+}
+
+.circular-progress .progress {
+  stroke: var(--warning);
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.qr-container {
+  position: absolute;
+  top: 52%;
+  left: 52%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 10px;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.pulse-animation {
+  animation: pulse 1s infinite;
 }

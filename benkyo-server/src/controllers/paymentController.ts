@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { Request, Response } from 'express';
-import { saveTransaction } from '~/services/paymentService';
+import { checkPaid, getTransaction, saveTransaction } from '~/services/paymentService';
 
 export const webhook = async (req: Request, res: Response) => {
     const transactionData = {
@@ -16,4 +16,16 @@ export const webhook = async (req: Request, res: Response) => {
     };
     const result = await saveTransaction(transactionData);
     res.json({ message: result });
+};
+
+export const getInformationQR = async (req: Request, res: Response) => {
+    const { packageId } = req.params;
+    const payment = await getTransaction(req.user._id, packageId);
+    return res.json(payment);
+};
+
+export const getIsPaid = async (req: Request, res: Response) => {
+    const { transactionId } = req.params;
+    const isPaid = await checkPaid(req.user._id, transactionId);
+    return res.json(isPaid);
 };
