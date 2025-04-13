@@ -1,12 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { getToast } from '@/utils/getToast';
 import useGetQRInfo from '@/hooks/queries/use-get-qr-info';
-import { Skeleton } from './ui/skeleton';
 import useCheckIsPaid from '@/hooks/queries/use-check-paid';
+import { Skeleton } from './ui/skeleton';
 import { useNavigate } from 'react-router-dom';
 
 const bankId = import.meta.env.VITE_PAYMENT_BANK_ID;
@@ -14,28 +13,21 @@ const accountNo = import.meta.env.VITE_PAYMENT_BANK_ACCOUNT_NO;
 
 const PaymentQRCode = ({ packageId }: { packageId: string }) => {
     const navigate = useNavigate();
-
     const { data: qrInfo, isLoading, refetch: getQRAgain } = useGetQRInfo(packageId);
-
     const { refetch: checkIsPaid } = useCheckIsPaid(qrInfo?._id ?? '');
 
-    const [qrCode, setQrCode] = useState<string>('');
-    const [timeLeft, setTimeLeft] = useState<number>(0);
-    const [isExpired, setIsExpired] = useState<boolean>(false);
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [isExpired, setIsExpired] = useState(false);
 
     const userId = qrInfo?.user._id;
+    const userName = qrInfo?.user.name;
     const packageInfo = qrInfo?.package;
-    const expiredAt = qrInfo ? new Date(qrInfo.expiredAt) : new Date();
+    const expiredAt = useMemo(() => (qrInfo ? new Date(qrInfo.expiredAt) : new Date()), [qrInfo]);
 
-    const initialDuration = useMemo(() => {
-        return qrInfo ? Math.floor((expiredAt.getTime() - Date.now()) / 1000) : 0;
-    }, [qrInfo, expiredAt]);
-
-    const isLowTime = timeLeft <= 30;
-    const isMediumTime = timeLeft <= 60 && !isLowTime;
-
-    const generateQRCodeURL = () =>
-        `https://img.vietqr.io/image/${bankId}-${accountNo}-qr_only.jpg?amount=${packageInfo?.price}&addInfo=${userId} ${packageInfo?.type}`;
+    const qrCode = useMemo(() => {
+        if (!qrInfo) return '';
+        return `https://img.vietqr.io/image/${bankId}-${accountNo}-qr_only.jpg?amount=${packageInfo?.price}&addInfo=${userId} ${packageInfo?.type}`;
+    }, [qrInfo, userId, packageInfo]);
 
     const handleGenerateQRCode = () => {
         getQRAgain();
@@ -43,18 +35,18 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
     };
 
     useEffect(() => {
-        if (qrInfo) {
-            setQrCode(generateQRCodeURL());
-            setTimeLeft(initialDuration);
-            setIsExpired(false);
-        }
-    }, [qrInfo, initialDuration]);
+        if (!qrInfo) return;
+        setIsExpired(false);
+        setTimeLeft(Math.floor((new Date(qrInfo.expiredAt).getTime() - Date.now()) / 1000));
+    }, [qrInfo]);
 
     useEffect(() => {
         if (timeLeft <= 0) {
             setIsExpired(true);
             return;
         }
+
+        const timerId = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
 
         if (timeLeft % 5 === 0) {
             checkIsPaid().then(({ data }) => {
@@ -65,9 +57,17 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
             });
         }
 
-        const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
-        return () => clearTimeout(timer);
+        return () => clearTimeout(timerId);
     }, [timeLeft, checkIsPaid, navigate]);
+
+    if (!qrInfo) {
+        getToast('error', 'QR Code not found!');
+        navigate('/home');
+        return null;
+    }
+
+    const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+    const seconds = String(timeLeft % 60).padStart(2, '0');
 
     return (
         <Card className='max-w-lg mx-auto p-8 shadow-lg'>
@@ -78,36 +78,19 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
 
             <div className='flex flex-col items-center mb-6'>
                 <div className='circular-progress mb-4 relative'>
-                    <svg width='300' height='300' viewBox='0 0 100 100'>
-                        <circle className='progress-bg' cx='50' cy='50' r='45' strokeDasharray={2 * Math.PI * 45} />
-                        <circle
-                            className='progress'
-                            cx='50'
-                            cy='50'
-                            r='45'
-                            strokeDasharray={2 * Math.PI * 45}
-                            strokeDashoffset={
-                                isExpired || !initialDuration || !timeLeft
-                                    ? 0
-                                    : 2 * Math.PI * 45 * (1 - timeLeft / initialDuration)
-                            }
-                            style={{
-                                stroke: isExpired
-                                    ? 'var(--destructive)'
-                                    : isLowTime
-                                      ? 'var(--warning)'
-                                      : isMediumTime
-                                        ? 'var(--warning)'
-                                        : 'var(--sidebar-ring)'
-                            }}
-                        />
-                    </svg>
+                    <svg width='300' height='300' viewBox='0 0 100 100'></svg>
 
-                    <div className='qr-container flex items-center justify-center absolute inset-0'>
-                        {isLoading || !qrInfo ? (
+                    <div className='flex items-center justify-center absolute inset-0'>
+                        {isLoading ? (
                             <Skeleton className='w-[180px] h-[180px] rounded-md' />
-                        ) : qrCode && !isExpired ? (
-                            <img src={qrCode} alt='Payment QR Code' className={isLowTime ? 'pulse-animation' : ''} />
+                        ) : !isExpired && qrCode ? (
+                            <div className='qr-container relative'>
+                                <img src={qrCode} alt='Payment QR Code' width={250} height={250} />
+                                <div className='corner-border top-left'></div>
+                                <div className='corner-border top-right'></div>
+                                <div className='corner-border bottom-left'></div>
+                                <div className='corner-border bottom-right'></div>
+                            </div>
                         ) : (
                             <div className='flex items-center justify-center w-[180px] h-[180px] bg-secondary'>
                                 <span className='text-muted-foreground text-sm'>QR Code Expired</span>
@@ -116,19 +99,7 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
                     </div>
                 </div>
 
-                <div className='flex items-center justify-center gap-2 mb-2'>
-                    <Clock
-                        size={20}
-                        className={isExpired ? 'text-destructive' : isLowTime ? 'text-warning' : 'text-primary'}
-                    />
-                    <span
-                        className={`text-xl font-mono font-bold ${
-                            isExpired ? 'text-destructive' : isLowTime ? 'text-warning' : 'text-primary'
-                        }`}
-                    >
-                        {`${String(Math.floor(timeLeft / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`}
-                    </span>
-                </div>
+                <span className='text-xl font-mono font-bold'>{`${minutes}:${seconds}`}</span>
 
                 {isExpired && (
                     <Button onClick={handleGenerateQRCode} className='mt-2' size='sm' variant='outline'>
@@ -138,20 +109,16 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
                 )}
             </div>
 
-            <div className='bg-muted p-4 rounded-md mb-6'>
+            <div className='bg-muted py-10 px-16 rounded-md mb-6'>
                 <div className='grid grid-cols-2 gap-2 text-sm'>
-                    <span className='text-muted-foreground'>User ID:</span>
-                    <span className='font-medium'>{userId}</span>
+                    <span className='text-muted-foreground'>User Name:</span>
+                    <span className='font-medium'>{userName}</span>
                     <span className='text-muted-foreground'>Package:</span>
-                    <span className='font-medium'>
-                        <Badge variant='outline' className='px-[50px] w-5 h-5'>
-                            {packageInfo?.type}
-                        </Badge>
-                    </span>
+                    <span className='font-medium'>{packageInfo?.type}</span>
                     <span className='text-muted-foreground'>Price:</span>
-                    <span className='font-medium'>${packageInfo?.price.toFixed(2)}</span>
+                    <span className='font-medium'>{packageInfo?.price} VND</span>
                     <span className='text-muted-foreground'>Expires:</span>
-                    <span className='font-medium'>{expiredAt.toLocaleTimeString()}</span>
+                    <span className='font-medium'>{expiredAt.toLocaleString('vi-VN')}</span>
                 </div>
             </div>
 

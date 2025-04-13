@@ -358,7 +358,6 @@
 
 /* QR Animation */
 .circular-progress {
-  position: relative;
   width: 300px;
   height: 300px;
 }
@@ -386,15 +385,6 @@
   transition: stroke-dashoffset 0.1s linear;
 }
 
-.qr-container {
-  position: absolute;
-  top: 52%;
-  left: 52%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  border-radius: 10px;
-}
-
 @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -403,4 +393,45 @@
 
 .pulse-animation {
   animation: pulse 1s infinite;
+}
+
+.qr-container {
+  position: relative;
+  padding: 20px;
+}
+
+.corner-border {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--chart-2);
+  border-radius:3px;
+}
+
+.top-left {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.top-right {
+  top: 0;
+  right: 0;
+  border-left: 0;
+  border-bottom: 0;
+}
+
+.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-right: 0;
+  border-top: 0;
+}
+
+.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-left: 0;
+  border-top: 0;
 }
