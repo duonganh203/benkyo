@@ -5,14 +5,14 @@ import { useParams } from 'react-router-dom';
 const Payment = () => {
     const { packageId } = useParams<{ packageId: string }>();
     return (
-        <div className='min-h-screen bg-slate-50 py-12 px-4'>
-            <div className='max-w-4xl mx-auto'>
+        <div className='min-h-screen py-12 px-4'>
+            <div className='max-w-4xl mx-auto '>
                 <h1 className='text-3xl font-bold text-center mb-8'>Complete Your Payment</h1>
                 <div className='grid md:grid-cols-7 gap-8'>
                     <div className='md:col-span-4 z-10'>
                         <QrCode packageId={packageId!} />
                     </div>
-                    <div className='md:col-span-3'>
+                    <div className='md:col-span-3 flex items-center'>
                         <Card>
                             <CardContent className='pt-6'>
                                 <h3 className='text-xl font-bold mb-4'>Payment Instructions</h3>

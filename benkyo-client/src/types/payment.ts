@@ -3,6 +3,7 @@ export interface QRInfoInterface {
     isPaid: boolean;
     user: {
         _id: string;
+        name: string;
     };
     package: {
         _id: string;
