@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { InferSchemaType, Schema, model } from 'mongoose';
 
 enum Rating {
     AGAIN = 1,
@@ -195,3 +195,4 @@ export const Document = model('Document', DocumentSchema);
 export const Conversation = model('Chat', ConversationSchema);
 export const StudySession = model('StudySession', StudySessionSchema);
 export { Rating, State, PublicStatus };
+export type ConversationType = InferSchemaType<typeof ConversationSchema>;
