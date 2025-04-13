@@ -1,4 +1,4 @@
-# [![Benkyo](https://benkyo.live/images/thumbnail1.png)](https://benkyo.live/)
+# [![Benkyo](https://benkyo.live/images/banner.png)](https://benkyo.live/)
 
 #### [Website](https://benkyo.live) | [Documentation](#) | [Demo](#)
 
@@ -9,7 +9,7 @@ Create your own flashcards or choose from pre-made decks. Study anytime, anywher
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](#) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](#)
 
-[![Product showcase](https://benkyo.live/images/thumbnail1.png)](https://benkyo.live)
+[![Product showcase](https://benkyo.live/images/homepage.png)](https://benkyo.live)
 
 Create flashcards, study with spaced repetition, and chat with AI about your documents.
 
@@ -49,12 +49,6 @@ The Benkyo application supports:
 -   JWT authentication
 -   Passport.js for OAuth
 -   Multer for file uploads
-
-### AI and Vector Database
-
--   LangChain for document processing and RAG workflows
--   Google Generative AI (Gemini) for embeddings and chat
--   Pinecone vector database for document storage
 
 ## Quick Start
 
@@ -123,38 +117,6 @@ Access the application at `http://localhost:4000`
 
 -   Missing something or found a bug? [Report here](#).
 -   Want to contribute? Check out our [contribution guide](#) or let us know on [Discord](#).
-
-## Project Structure
-
-```
-benkyo/
-├── benkyo-client/         # Frontend React application
-│   ├── public/            # Static assets
-│   ├── src/               # Source code
-│   │   ├── components/    # React components
-│   │   ├── hooks/         # Custom React hooks
-│   │   ├── pages/         # Page components
-│   │   ├── utils/         # Utility functions
-│   │   └── types/         # TypeScript type definitions
-│   └── ...
-├── benkyo-server/         # Backend Node.js application
-│   ├── src/               # Source code
-│   │   ├── controllers/   # Route controllers
-│   │   ├── middlewares/   # Express middlewares
-│   │   ├── routes/        # API routes
-│   │   ├── schemas/       # Mongoose schemas
-│   │   ├── services/      # Business logic
-│   │   └── ...
-│   └── ...
-└── ...
-```
-
-## Acknowledgments
-
--   [Free Sound Repetition System (FSRS)](https://github.com/open-spaced-repetition/fsrs4anki) for the spaced repetition algorithm
--   [Radix UI](https://www.radix-ui.com/) for accessible UI components
--   [TailwindCSS](https://tailwindcss.com/) for the utility-first CSS framework
--   [Google Generative AI](https://ai.google.dev/) for AI capabilities
 
 ## License
 
