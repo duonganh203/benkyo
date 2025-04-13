@@ -14,8 +14,11 @@ const accountNo = import.meta.env.VITE_PAYMENT_BANK_ACCOUNT_NO;
 
 const PaymentQRCode = ({ packageId }: { packageId: string }) => {
     const navigate = useNavigate();
-    const { data: qrInfo, isLoading, refetch: getQRAgain } = useGetQRInfo(packageId!);
+
+    const { data: qrInfo, isLoading, refetch: getQRAgain } = useGetQRInfo(packageId);
+
     const { refetch: checkIsPaid } = useCheckIsPaid(qrInfo?._id ?? '');
+
     const [qrCode, setQrCode] = useState<string>('');
     const [timeLeft, setTimeLeft] = useState<number>(0);
     const [isExpired, setIsExpired] = useState<boolean>(false);
@@ -28,10 +31,13 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
         return qrInfo ? Math.floor((expiredAt.getTime() - Date.now()) / 1000) : 0;
     }, [qrInfo, expiredAt]);
 
+    const isLowTime = timeLeft <= 30;
+    const isMediumTime = timeLeft <= 60 && !isLowTime;
+
     const generateQRCodeURL = () =>
         `https://img.vietqr.io/image/${bankId}-${accountNo}-qr_only.jpg?amount=${packageInfo?.price}&addInfo=${userId} ${packageInfo?.type}`;
 
-    const handleGenerateQRCode = async () => {
+    const handleGenerateQRCode = () => {
         getQRAgain();
         getToast('info', 'QR Code Generated. Scan within 30 minutes to complete payment');
     };
@@ -43,13 +49,14 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
             setIsExpired(false);
         }
     }, [qrInfo, initialDuration]);
+
     useEffect(() => {
         if (timeLeft <= 0) {
             setIsExpired(true);
             return;
         }
 
-        if (timeLeft % 5 == 0) {
+        if (timeLeft % 5 === 0) {
             checkIsPaid().then(({ data }) => {
                 if (data?.isPaid) {
                     getToast('success', 'Payment completed successfully!');
@@ -58,14 +65,9 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
             });
         }
 
-        const timerId = setTimeout(() => {
-            setTimeLeft((prev) => prev - 1);
-        }, 1000);
-        return () => clearTimeout(timerId);
-    }, [timeLeft]);
-
-    const isLowTime = timeLeft <= 30;
-    const isMediumTime = timeLeft <= 60 && !isLowTime;
+        const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
+        return () => clearTimeout(timer);
+    }, [timeLeft, checkIsPaid, navigate]);
 
     return (
         <Card className='max-w-lg mx-auto p-8 shadow-lg'>
