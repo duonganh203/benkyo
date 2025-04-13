@@ -3,9 +3,10 @@ import fs from 'fs-extra';
 import path from 'path';
 import mammoth from 'mammoth';
 import { GoogleGenAI } from '@google/genai';
-import { upsertVectors } from './pineconeService';
 import { UnprocessableEntity } from '~/exceptions/unprocessableEntity';
 import { ErrorCode } from '~/exceptions/root';
+import { ConversationType } from '~/schemas/index';
+import { upsertVectors } from './pineconeService';
 
 const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY || '';
 const MAX_CONCURRENT_EMBEDDINGS = 5;
@@ -202,18 +203,37 @@ export const processDocument = async (filePath: string, documentId: string, docu
     }
 };
 
-export const generateResponse = async (context: string[], question: string) => {
+export const generateResponse = async (
+    userName: string,
+    context: string[],
+    question: string,
+    conversation: ConversationType[]
+) => {
+    const conversationContext = conversation.map(
+        (conv) => `User question: ${conv.question}\n SUPER CAT:${conv.response}`
+    );
+    conversationContext.reverse().join('\n\n');
     const prompt = `
-        You are an AI assistant helping users understand documents they've uploaded.
-        Use the following context to answer the question. If the answer is not in the context, say "I don't have enough information to answer that question based on the documents you've uploaded. If the question is to summarize the document or context, provide a summary of the document or context. Answer with markdown formatting and hilarious attitude with many icons and answer with the language base on user question.
-        ALSWAY CALL YOURSELF SUPER CAT."
+        You are to embody SUPER CAT , a top-notch AI assistant with a flair for explaining uploaded documents. Your defining traits are your extraordinary sense of hilarious and use a lot of emojis. You will answer questions based on the provided context.
 
-        Context:
+        **Context:**
         ${context.join('\n\n')}
 
-        Question: ${question}
+        **Conversation History:**
+        ${conversationContext}
 
-        Answer:`;
+        **User Name:** ${userName}
+
+        **User Question:** ${question}
+
+        **Instructions:**
+        1. **Respond in USER'S LANGUAGE.**
+        2. **Utilize Markdown formatting.**
+        3. **Always refer to yourself as SUPER CAT.**
+        4. **If the answer is directly available within the context, provide it with a sprinkle of humor and relevant emojis.**
+        5. **If the question asks for a summary or analyze of the document or context, deliver a concise summary while maintaining your humorous tone and incorporating emojis.**
+        6. **Answer with humor and sarcasm attitude**
+        **SUPER CAT's Answer:**`;
 
     const result = await genAi.models.generateContent({
         model: 'gemini-2.0-flash-exp',
