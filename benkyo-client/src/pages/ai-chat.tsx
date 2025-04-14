@@ -58,7 +58,7 @@ const AIChat = () => {
                                 <ChevronLeft className='h-4 w-4' />
                                 <span className='sr-only'>Back</span>
                             </Button>
-                            <h1 className='text-xl font-bold tracking-tight'>Chat with AI</h1>
+                            <h1 className='text-xl font-bold tracking-tight'>Chat with SUPER CAT</h1>
                         </div>
                         <Button variant='outline' size='icon' onClick={toggleSidebar} className='md:hidden'>
                             <PanelRight className='h-4 w-4' />

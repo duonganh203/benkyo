@@ -37,6 +37,11 @@ export default function ChatInterface({ documentId, documentName, onChangeDocume
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const exampleQuestions = [
+        'What are the main topics covered in this document?',
+        'Can you summarize the key points?',
+        'Explain the concept of [topic] mentioned in the document'
+    ];
 
     const { mutateAsync: chatMutation, isPending: isLoading } = useChatWithDocument();
 
@@ -190,14 +195,11 @@ export default function ChatInterface({ documentId, documentName, onChangeDocume
                                 <div className='pt-4'>
                                     <h3 className='text-sm font-medium mb-3'>Examples</h3>
                                     <div className='grid gap-2'>
-                                        {[
-                                            'What are the main topics covered in this document?',
-                                            'Can you summarize the key points?',
-                                            'Explain the concept of [topic] mentioned in the document'
-                                        ].map((example, index) => (
-                                            <button
+                                        {exampleQuestions.map((example, index) => (
+                                            <Button
                                                 key={index}
-                                                className='p-3 text-sm bg-muted/50 hover:bg-muted rounded-lg text-left transition-colors'
+                                                variant='ghost'
+                                                className=' p-3 text-sm rounded-lg text-primary/50'
                                                 onClick={() => {
                                                     setInputValue(example);
                                                     if (textareaRef.current) {
@@ -208,7 +210,7 @@ export default function ChatInterface({ documentId, documentName, onChangeDocume
                                                 }}
                                             >
                                                 {example}
-                                            </button>
+                                            </Button>
                                         ))}
                                     </div>
                                 </div>
