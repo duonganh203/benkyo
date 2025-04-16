@@ -1,4 +1,4 @@
-import { QRInfoInterface } from '@/types/payment';
+import { PackageInterface, QRInfoInterface } from '@/types/payment';
 import { api } from '.';
 
 export const getQRInformation = async (packageId: string) => {
@@ -9,4 +9,9 @@ export const getQRInformation = async (packageId: string) => {
 export const checkIsPaid = async (transactionId: string) => {
     const response = await api.get(`payment/checkPaid/${transactionId}`);
     return response.data as QRInfoInterface;
+};
+
+export const getAllPackages = async () => {
+    const response = await api.get(`payment/package`);
+    return response.data as PackageInterface[];
 };

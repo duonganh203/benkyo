@@ -16,3 +16,13 @@ export interface IsPaidInterface {
     _id: string;
     isPaid: boolean;
 }
+
+export interface PackageInterface {
+    _id: string;
+    name: string;
+    type: string;
+    duration: string;
+    price: number;
+    features: string[];
+    isActive: boolean;
+}

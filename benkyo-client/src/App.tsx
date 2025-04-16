@@ -24,6 +24,7 @@ import Quiz from './pages/do-quiz';
 import QuizResults from './pages/quiz-attempt-detail';
 import AIChat from './pages/ai-chat';
 import Payment from './pages/payment';
+import Packages from './pages/package';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -61,6 +62,7 @@ const App = () => {
                                 <Route path='/quizzes' element={<Quizzes />} />
                                 <Route path='/ai-chat' element={<AIChat />} />
                                 <Route path='/payment/:packageId' element={<Payment />} />
+                                <Route path='/package' element={<Packages />} />
                             </Route>
                         </Route>
                     </Routes>

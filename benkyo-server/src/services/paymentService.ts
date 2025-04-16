@@ -11,15 +11,36 @@ type CreateTransactionPayload = Omit<
 };
 
 export const saveTransaction = async (transactionData: CreateTransactionPayload) => {
-    const [userBuy, packageBuy] = transactionData.description.toString().split(' ');
+    const description = transactionData.description.toString().trim();
+    console.log('transac', transactionData);
 
-    const existedUser = await User.findById(userBuy);
+    const userIdMatch = description.match(/[0-9a-fA-F]{24}/);
+    const userId = userIdMatch?.[0];
+    console.log(userId);
+
+    if (!userId) {
+        throw new NotFoundException('User ID not found in description', ErrorCode.NOT_FOUND);
+    }
+
+    const possiblePackages = ['basic', 'pro', 'premium'];
+    const tokens = description.toLowerCase().split(/[^a-zA-Z0-9]/);
+
+    const foundPackage = tokens.find((token) => possiblePackages.some((pkg) => token.includes(pkg)));
+
+    if (!foundPackage) {
+        throw new NotFoundException('Package type not found in description', ErrorCode.NOT_FOUND);
+    }
+
+    const packageType = possiblePackages.find((pkg) => foundPackage.includes(pkg))!;
+    const normalizedPackage = packageType.charAt(0).toUpperCase() + packageType.slice(1).toLowerCase();
+
+    const existedUser = await User.findById(userId);
     if (!existedUser) {
         throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
     }
 
     const existedPackage = await Package.findOne({
-        type: packageBuy,
+        type: normalizedPackage,
         price: transactionData.amount,
         isActive: true
     });
@@ -27,7 +48,7 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
         throw new NotFoundException('Package not found', ErrorCode.NOT_FOUND);
     }
 
-    const existedTransaction = await Transaction.findOne({ user: userBuy });
+    const existedTransaction = await Transaction.findOne({ user: userId });
     if (!existedTransaction) {
         throw new NotFoundException('Transaction not found', ErrorCode.NOT_FOUND);
     }
@@ -59,6 +80,12 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
 };
 
 export const getTransaction = async (userId: string, packageId: string) => {
+    await Transaction.deleteMany({ expiredAt: { $lt: Date.now() }, isPaid: false, user: userId });
+    const existPackage = await Package.findOne({ _id: packageId, isActive: true });
+
+    if (!existPackage) {
+        throw new NotFoundException('Package not found', ErrorCode.NOT_FOUND);
+    }
     let transaction = await Transaction.findOne({
         user: userId,
         expiredAt: { $gt: Date.now() },
@@ -68,8 +95,8 @@ export const getTransaction = async (userId: string, packageId: string) => {
     if (!transaction) {
         transaction = await new Transaction({
             user: userId,
-            package: packageId,
-            isPaid: false
+            isPaid: false,
+            package: packageId
         }).save();
     }
 
@@ -88,4 +115,9 @@ export const checkPaid = async (userId: string, transactionId: string) => {
     }
 
     return transaction;
+};
+
+export const findAllPackages = async () => {
+    const packages = await Package.find({ isActive: true });
+    return packages;
 };

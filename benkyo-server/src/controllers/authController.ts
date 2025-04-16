@@ -50,7 +50,7 @@ export const googleCallback = (req: Request, res: Response) => {
         const token = generateToken(user._id);
         const refreshToken = generateRefreshToken(user._id);
         return res.redirect(
-            `${process.env.FRONTEND_URI}passport?token=${token}&refreshToken=${refreshToken}&id=${user._id}&name=${user.name}&email=${user.email}&avatar=${user.avatar}`
+            `${process.env.FRONTEND_URI}passport?token=${token}&refreshToken=${refreshToken}&id=${user._id}&name=${user.name}&email=${user.email}&avatar=${user.avatar}&isPro=${user.isPro}`
         );
     })(req, res);
 };
@@ -75,7 +75,7 @@ export const facebookCallback = (req: Request, res: Response) => {
             const refreshToken = generateRefreshToken(user._id);
 
             return res.redirect(
-                `${process.env.FRONTEND_URI}passport?token=${token}&refreshToken=${refreshToken}&id=${user._id}&name=${user.name}&email=${user.email}`
+                `${process.env.FRONTEND_URI}passport?token=${token}&refreshToken=${refreshToken}&id=${user._id}&name=${user.name}&email=${user.email}&isPro=${user.isPro}`
             );
         }
     )(req, res);

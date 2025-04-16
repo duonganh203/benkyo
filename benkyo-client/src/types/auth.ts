@@ -3,6 +3,7 @@ export interface User {
     username: string;
     email: string;
     avatar: string;
+    isPro: boolean;
 }
 
 export interface AuthState {

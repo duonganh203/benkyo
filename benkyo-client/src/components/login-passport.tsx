@@ -13,8 +13,9 @@ const LoginPassport = () => {
         const email = searchParams.get('email');
         const name = searchParams.get('name');
         const avatar = searchParams.get('avatar');
-        if (token && id && email && name && avatar) {
-            setUser({ _id: id, email, username: name, avatar: avatar });
+        const isPro = searchParams.get('isPro');
+        if (token && refreshToken && id && email && name && avatar && isPro) {
+            setUser({ _id: id, email, username: name, avatar: avatar, isPro: isPro == 'true' ? true : false });
             setToken(token);
             setRefreshToken(refreshToken);
             navigate('/home', { replace: true });

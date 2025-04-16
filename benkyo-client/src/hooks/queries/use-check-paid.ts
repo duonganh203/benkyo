@@ -8,7 +8,7 @@ const useCheckIsPaid = (transactionId: string) => {
     return useQuery<IsPaidInterface, AxiosError<ApiError>>({
         queryKey: ['IsPaid', transactionId],
         queryFn: () => checkIsPaid(transactionId),
-        enabled: false
+        enabled: !!transactionId
     });
 };
 

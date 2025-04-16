@@ -9,12 +9,16 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
 const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET;
 const FRONTEND_URI = process.env.FRONTEND_URI;
+const ENV = process.env.NODE_ENV || 'development';
+const PORT = process.env.PORT;
+
 passport.use(
     new GoogleStrategy(
         {
             clientID: GOOGLE_CLIENT_ID!,
             clientSecret: GOOGLE_CLIENT_SECRET!,
-            callbackURL: FRONTEND_URI + 'api/auth/google/callback'
+            callbackURL:
+                (ENV === 'development' ? `http://localhost:${PORT}/` : FRONTEND_URI) + 'api/auth/google/callback'
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
