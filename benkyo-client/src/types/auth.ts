@@ -4,6 +4,7 @@ export interface User {
     email: string;
     avatar: string;
     isPro: boolean;
+    proType: string;
 }
 
 export interface AuthState {

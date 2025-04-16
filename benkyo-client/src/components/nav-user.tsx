@@ -16,10 +16,17 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/c
 import { User } from '@/types/auth';
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import { Link } from 'react-router-dom';
+import { Badge } from './ui/badge';
 
 export function NavUser({ user }: { user: User }) {
     const { isMobile } = useSidebar();
     const { logout } = useAuthStore((store) => store);
+    const proTypes = [
+        { label: 'Basic', color: 'text-green-600 border-green-600 bg-green-100' },
+        { label: 'Pro', color: 'text-violet-600 border-violet-600 bg-violet-100' },
+        { label: 'Premium', color: 'text-pink-600 border-pink-600 bg-pink-100' }
+    ];
+    const indexType = user.proType === 'Basic' ? 0 : user.proType === 'Pro' ? 1 : 2;
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -34,7 +41,15 @@ export function NavUser({ user }: { user: User }) {
                                 <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
                             </Avatar>
                             <div className='grid flex-1 text-left text-sm leading-tight'>
-                                <span className='truncate font-semibold'>{user.username}</span>
+                                <div className='flex items-center gap-2'>
+                                    <span className='truncate font-semibold'>{user.username}</span>
+                                    {user.isPro && (
+                                        <Badge variant='secondary' className={`${proTypes[indexType].color}`}>
+                                            {proTypes[indexType].label}
+                                        </Badge>
+                                    )}
+                                </div>
+
                                 <span className='truncate text-xs'>{user.email}</span>
                             </div>
                             <ChevronsUpDown className='ml-auto size-4' />

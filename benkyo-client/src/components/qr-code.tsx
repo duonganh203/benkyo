@@ -57,7 +57,7 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
             checkIsPaid().then(({ data }) => {
                 if (data?.isPaid) {
                     if (user) {
-                        setUser({ ...user, isPro: true });
+                        setUser({ ...user, isPro: true, proType: data.package.type });
                     }
                     getToast('success', 'Payment completed successfully!');
                     navigate('/home');

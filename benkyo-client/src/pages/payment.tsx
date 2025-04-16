@@ -1,25 +1,24 @@
 import QrCode from '@/components/qr-code';
 import { Card, CardContent } from '@/components/ui/card';
-import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const Payment = () => {
     const { packageId } = useParams<{ packageId: string }>();
-    const navigate = useNavigate();
     const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
-    useEffect(() => {
-        if (!packageId || !isValidObjectId(packageId)) {
-            navigate('/home');
-        }
-    }, [packageId, navigate]);
-    if (!packageId || !isValidObjectId(packageId)) return null;
+    if (!packageId || !isValidObjectId(packageId))
+        return (
+            <div className='min-h-screen flex flex-col justify-center items-center'>
+                <h1 className='text-4xl font-bold mb-4'>404</h1>
+                <p className='text-lg text-muted-foreground'>Oops! Package not found.</p>
+            </div>
+        );
 
     return (
         <div className='min-h-screen py-12 px-4'>
             <div className='max-w-4xl mx-auto '>
                 <h1 className='text-3xl font-bold text-center mb-8'>Complete Your Payment</h1>
                 <div className='grid md:grid-cols-7 gap-8'>
-                    <div className='md:col-span-4 z-10'>
+                    <div className='md:col-span-4 z-10 flex '>
                         <QrCode packageId={packageId!} />
                     </div>
                     <div className='md:col-span-3 flex items-center'>

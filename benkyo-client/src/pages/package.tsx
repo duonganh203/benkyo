@@ -53,8 +53,8 @@ const Packages = () => {
     };
 
     return (
-        <div className='min-h-screen bg-[var(--accent)] py-12 px-4 sm:px-6 lg:px-8'>
-            <div className='max-w-6xl mx-auto'>
+        <div className='max-w-6xl h-full flex flex-col mx-auto px-4 py-16'>
+            <div className='w-full mx-auto'>
                 <div className='text-center mb-10'>
                     <h1 className='text-4xl font-bold mb-4'>Choose Your Plan</h1>
                     <p className='text-xl text-muted-foreground max-w-2xl mx-auto'>
@@ -62,7 +62,7 @@ const Packages = () => {
                     </p>
                 </div>
 
-                <div className='grid md:grid-cols-3 gap-8'>
+                <div className='grid md:grid-cols-3 gap-8 my-auto h-full'>
                     {tierList.map(([type, plans], index) => {
                         const sample = plans[0];
                         return (
@@ -75,6 +75,7 @@ const Packages = () => {
                                         <span className='bg-[var(--color-blue-400)] text-primary-foreground px-3 py-1 text-xs font-medium rounded-full'>
                                             Most Popular
                                         </span>
+                                        -
                                     </div>
                                 )}
                                 <CardHeader>
@@ -83,7 +84,7 @@ const Packages = () => {
                                 </CardHeader>
                                 <CardContent className='flex-grow'>
                                     <div className='mb-6'>
-                                        <span className='text-4xl font-bold'>${sample.price}</span>
+                                        <span className='text-4xl font-bold'>{sample.price}đ</span>
                                         <span className='text-muted-foreground'> / billing</span>
                                     </div>
                                     <ul className='space-y-3'>

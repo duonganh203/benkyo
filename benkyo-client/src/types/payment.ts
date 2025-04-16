@@ -15,6 +15,10 @@ export interface QRInfoInterface {
 export interface IsPaidInterface {
     _id: string;
     isPaid: boolean;
+    package: {
+        _id: string;
+        type: string;
+    };
 }
 
 export interface PackageInterface {
