@@ -7,6 +7,7 @@ import userRoutes from './userRoute';
 import quizRoutes from './quizRoute';
 import documentRoutes from './documentRoute';
 import chatRoutes from './chatRoute';
+import paymentRoutes from './paymentRoute';
 
 const rootRouter: Router = Router();
 
@@ -19,5 +20,6 @@ rootRouter.use('/user', userRoutes);
 rootRouter.use('/quiz', quizRoutes);
 rootRouter.use('/documents', documentRoutes);
 rootRouter.use('/chat', chatRoutes);
+rootRouter.use('/payment', paymentRoutes);
 
 export default rootRouter;
