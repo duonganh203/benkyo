@@ -7,9 +7,3 @@ export interface Document {
     embeddingId: string;
     createdAt: string;
 }
-
-export interface ChatResponse {
-    question: string;
-    response: string;
-    conversationId?: string;
-}
