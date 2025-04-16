@@ -20,6 +20,18 @@ enum PublicStatus {
     REJECTED = 3
 }
 
+enum PackageType {
+    BASIC = 'Basic',
+    PRO = 'Pro',
+    PREMIUM = 'Premium'
+}
+
+enum PackageDuration {
+    THREE_MONTHS = '3M',
+    SIX_MONTHS = '6M',
+    ONE_YEAR = '1Y'
+}
+
 const UserSchema = new Schema({
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true },
@@ -27,6 +39,9 @@ const UserSchema = new Schema({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     avatar: { type: String },
+    isPro: { type: Boolean, default: false },
+    proExpiryDate: { type: Date, default: null, required: false },
+    proType: { type: String, enum: Object.values(PackageType), default: PackageType.BASIC },
     fsrsParams: {
         request_retention: { type: Number, default: 0.9 },
         maximum_interval: { type: Number, default: 36500 },
@@ -183,6 +198,36 @@ const StudySessionSchema = new Schema({
     deviceInfo: { type: String }
 });
 
+const TransactionSchema = new Schema(
+    {
+        tid: { type: String },
+        amount: { type: Number },
+        when: { type: Date },
+        bank_sub_acc_id: { type: String },
+        subAccId: { type: String },
+        bankName: { type: String },
+        bankAbbreviation: { type: String },
+        corresponsiveAccount: { type: String },
+        isPaid: { type: Boolean, default: false, required: true },
+        expiredAt: { type: Date, required: true },
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        package: { type: Schema.Types.ObjectId, ref: 'Package', required: true }
+    },
+    { timestamps: true }
+);
+
+const PackageSchema = new Schema(
+    {
+        name: { type: String, required: true },
+        type: { type: String, enum: Object.values(PackageType), required: true },
+        duration: { type: String, enum: Object.values(PackageDuration), required: true },
+        price: { type: Number, required: true },
+        features: [{ type: String }],
+        isActive: { type: Boolean, default: true }
+    },
+    { timestamps: true }
+);
+
 export const User = model('User', UserSchema);
 export const Deck = model('Deck', DeckSchema);
 export const Card = model('Card', CardSchema);
@@ -196,3 +241,6 @@ export const Conversation = model('Chat', ConversationSchema);
 export const StudySession = model('StudySession', StudySessionSchema);
 export { Rating, State, PublicStatus };
 export type ConversationType = InferSchemaType<typeof ConversationSchema>;
+export const Transaction = model('Transaction', TransactionSchema);
+export const Package = model('Package', PackageSchema);
+export { Rating, State, PublicStatus, PackageType, PackageDuration };
