@@ -76,7 +76,7 @@ export default function ChatInterface({
 
             setMessages(conversationMessages);
         }
-    }, [documentId]);
+    }, [conversations, documentId]);
 
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
