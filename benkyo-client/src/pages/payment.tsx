@@ -1,9 +1,19 @@
 import QrCode from '@/components/qr-code';
 import { Card, CardContent } from '@/components/ui/card';
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const Payment = () => {
     const { packageId } = useParams<{ packageId: string }>();
+    const navigate = useNavigate();
+    const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+    useEffect(() => {
+        if (!packageId || !isValidObjectId(packageId)) {
+            navigate('/home');
+        }
+    }, [packageId, navigate]);
+    if (!packageId || !isValidObjectId(packageId)) return null;
+
     return (
         <div className='min-h-screen py-12 px-4'>
             <div className='max-w-4xl mx-auto '>

@@ -29,7 +29,7 @@ export const loginService = async (userData: z.infer<typeof loginValidation>) =>
     return {
         token,
         refreshToken,
-        user: { id: user._id, username: user.name, email: user.email, avatar: user.avatar }
+        user: { id: user._id, username: user.name, email: user.email, avatar: user.avatar, isPro: user.isPro }
     };
 };
 

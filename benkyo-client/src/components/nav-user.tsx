@@ -15,6 +15,7 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { User } from '@/types/auth';
 import useAuthStore from '@/hooks/stores/use-auth-store';
+import { Link } from 'react-router-dom';
 
 export function NavUser({ user }: { user: User }) {
     const { isMobile } = useSidebar();
@@ -58,12 +59,16 @@ export function NavUser({ user }: { user: User }) {
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <Sparkles />
-                                Upgrade to Pro
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
+                        {!user.isPro && (
+                            <DropdownMenuGroup>
+                                <Link to='/package'>
+                                    <DropdownMenuItem>
+                                        <Sparkles />
+                                        Upgrade To Pro
+                                    </DropdownMenuItem>
+                                </Link>
+                            </DropdownMenuGroup>
+                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>

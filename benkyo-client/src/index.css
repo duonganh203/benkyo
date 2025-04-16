@@ -404,7 +404,7 @@
   position: absolute;
   width: 30px;
   height: 30px;
-  border: 2px solid var(--chart-2);
+  border: 2px solid var(--sidebar-ring);
   border-radius:3px;
 }
 
@@ -434,4 +434,38 @@
   right: 0;
   border-left: 0;
   border-top: 0;
+}
+.qr-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px; 
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0) 0%, 
+    var(--sidebar-ring) 50%, 
+    rgba(255, 0, 0, 0) 100%
+  );
+  animation: scanAnimation 4s linear infinite; 
+  opacity: 0.9;
+  z-index: 10;
+  pointer-events: none;
+}
+
+@keyframes scanAnimation {
+  0% {
+    top: 0%;
+  }
+  100% {
+    top: 100%;
+  }
 }

@@ -1,73 +1,82 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
+import { Skeleton } from './ui/skeleton';
 import { getToast } from '@/utils/getToast';
 import useGetQRInfo from '@/hooks/queries/use-get-qr-info';
 import useCheckIsPaid from '@/hooks/queries/use-check-paid';
-import { Skeleton } from './ui/skeleton';
-import { useNavigate } from 'react-router-dom';
+import useAuthStore from '@/hooks/stores/use-auth-store';
 
 const bankId = import.meta.env.VITE_PAYMENT_BANK_ID;
 const accountNo = import.meta.env.VITE_PAYMENT_BANK_ACCOUNT_NO;
 
 const PaymentQRCode = ({ packageId }: { packageId: string }) => {
+    const { user, setUser } = useAuthStore();
     const navigate = useNavigate();
     const { data: qrInfo, isLoading, refetch: getQRAgain } = useGetQRInfo(packageId);
     const { refetch: checkIsPaid } = useCheckIsPaid(qrInfo?._id ?? '');
 
-    const [timeLeft, setTimeLeft] = useState(0);
+    const [timeLeft, setTimeLeft] = useState<number>(0);
     const [isExpired, setIsExpired] = useState(false);
 
-    const userId = qrInfo?.user._id;
-    const userName = qrInfo?.user.name;
-    const packageInfo = qrInfo?.package;
-    const expiredAt = useMemo(() => (qrInfo ? new Date(qrInfo.expiredAt) : new Date()), [qrInfo]);
-
+    const expiredAt = useMemo(() => (qrInfo ? new Date(qrInfo.expiredAt) : null), [qrInfo]);
     const qrCode = useMemo(() => {
         if (!qrInfo) return '';
-        return `https://img.vietqr.io/image/${bankId}-${accountNo}-qr_only.jpg?amount=${packageInfo?.price}&addInfo=${userId} ${packageInfo?.type}`;
-    }, [qrInfo, userId, packageInfo]);
-
-    const handleGenerateQRCode = () => {
-        getQRAgain();
-        getToast('info', 'QR Code Generated. Scan within 30 minutes to complete payment');
-    };
-
-    useEffect(() => {
-        if (!qrInfo) return;
-        setIsExpired(false);
-        setTimeLeft(Math.floor((new Date(qrInfo.expiredAt).getTime() - Date.now()) / 1000));
+        const { user, package: pkg } = qrInfo;
+        return `https://img.vietqr.io/image/${bankId}-${accountNo}-qr_only.jpg?amount=${pkg?.price}&addInfo=${user._id} ${pkg?.type}`;
     }, [qrInfo]);
 
     useEffect(() => {
-        if (timeLeft <= 0) {
-            setIsExpired(true);
-            return;
+        if (expiredAt) {
+            const secondsLeft = Math.floor((expiredAt.getTime() - Date.now()) / 1000);
+            setTimeLeft(secondsLeft > 0 ? secondsLeft : 0);
         }
+    }, [expiredAt]);
 
-        const timerId = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
+    useEffect(() => {
+        if (!timeLeft || isExpired) return;
 
-        if (timeLeft % 5 === 0) {
+        const timerId = setInterval(() => {
+            setTimeLeft((prev) => {
+                const next = prev - 1;
+                if (next <= 0) {
+                    setIsExpired(true);
+                    clearInterval(timerId);
+                }
+                return next;
+            });
+        }, 1000);
+
+        return () => clearInterval(timerId);
+    }, [timeLeft, isExpired]);
+
+    useEffect(() => {
+        if (timeLeft > 0 && timeLeft % 5 === 0) {
             checkIsPaid().then(({ data }) => {
                 if (data?.isPaid) {
+                    if (user) {
+                        setUser({ ...user, isPro: true });
+                    }
                     getToast('success', 'Payment completed successfully!');
                     navigate('/home');
                 }
             });
         }
+    }, [timeLeft]);
 
-        return () => clearTimeout(timerId);
-    }, [timeLeft, checkIsPaid, navigate]);
-
-    if (!qrInfo) {
-        getToast('error', 'QR Code not found!');
-        navigate('/home');
-        return null;
-    }
+    const handleGenerateQRCode = () => {
+        getQRAgain();
+        setIsExpired(false);
+        getToast('info', 'QR Code regenerated. Scan within 30 minutes to complete payment');
+    };
 
     const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
     const seconds = String(timeLeft % 60).padStart(2, '0');
+
+    const userName = qrInfo?.user?.name;
+    const packageInfo = qrInfo?.package;
 
     return (
         <Card className='max-w-lg mx-auto p-8 shadow-lg'>
@@ -79,7 +88,6 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
             <div className='flex flex-col items-center mb-6'>
                 <div className='circular-progress mb-4 relative'>
                     <svg width='300' height='300' viewBox='0 0 100 100'></svg>
-
                     <div className='flex items-center justify-center absolute inset-0'>
                         {isLoading ? (
                             <Skeleton className='w-[180px] h-[180px] rounded-md' />
@@ -118,7 +126,7 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
                     <span className='text-muted-foreground'>Price:</span>
                     <span className='font-medium'>{packageInfo?.price} VND</span>
                     <span className='text-muted-foreground'>Expires:</span>
-                    <span className='font-medium'>{expiredAt.toLocaleString('vi-VN')}</span>
+                    <span className='font-medium'>{expiredAt?.toLocaleString('vi-VN')}</span>
                 </div>
             </div>
 
