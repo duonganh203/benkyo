@@ -3,6 +3,19 @@ import { ErrorCode } from '~/exceptions/root';
 import { Conversation, Document, User } from '~/schemas';
 import { generateEmbedding, generateResponse } from './embeddingService';
 import { queryVectors } from './pineconeService';
+import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
+
+export const getAllConversationsService = async (userId: string, documentId: string) => {
+    const document = await Document.findById(documentId);
+    if (!document) {
+        throw new NotFoundException('Document not found', ErrorCode.NOT_FOUND);
+    }
+    if (!document.userId.equals(userId.toString())) {
+        throw new ForbiddenRequestsException('You do not have permission to view this document', ErrorCode.FORBIDDEN);
+    }
+    const conversations = await Conversation.find({ userId, documentId });
+    return conversations;
+};
 
 export const chatWithDocumentService = async (userId: string, documentId: string, question: string) => {
     const document = await Document.findById(documentId);
@@ -13,7 +26,12 @@ export const chatWithDocumentService = async (userId: string, documentId: string
     if (!user) {
         throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
     }
-
+    if (!document.userId.equals(userId.toString())) {
+        throw new ForbiddenRequestsException(
+            'You do not have permission to chat with this document',
+            ErrorCode.FORBIDDEN
+        );
+    }
     const conversationHistory = await Conversation.find({
         userId,
         documentId: documentId

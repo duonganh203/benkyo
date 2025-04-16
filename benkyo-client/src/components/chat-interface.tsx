@@ -8,10 +8,12 @@ import { cn } from '@/lib/utils';
 import { getToast } from '@/utils/getToast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { TypingIndicator } from './typing-animation';
-import { TypewriterEffect } from './typer-writer-effect';
 import useChatWithDocument from '@/hooks/queries/use-chat-with-document';
 import useAuthStore from '@/hooks/stores/use-auth-store';
+import useGetAllConversations from '@/hooks/queries/use-get-all-conversations';
+import { ConversationRes } from '@/types/chat';
+import { TypingIndicator } from './typing-animation';
+import { TypewriterEffect } from './typer-writer-effect';
 
 interface ChatInterfaceProps {
     documentId: string;
@@ -44,16 +46,36 @@ export default function ChatInterface({ documentId, documentName, onChangeDocume
     ];
 
     const { mutateAsync: chatMutation, isPending: isLoading } = useChatWithDocument();
-
+    const { data: conversations, isLoading: isConversationsLoading } = useGetAllConversations(documentId);
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
     useEffect(() => {
-        // Reset messages when document changes
-        setMessages([]);
-    }, [documentId, documentName]);
+        if (conversations && Array.isArray(conversations)) {
+            const conversationMessages = conversations
+                .map((conv: ConversationRes) => [
+                    {
+                        id: `user-${conv._id}`,
+                        content: conv.question,
+                        sender: 'user' as const,
+                        timestamp: new Date(conv.createdAt)
+                    },
+                    {
+                        id: `assistant-${conv._id}`,
+                        content: conv.response,
+                        sender: 'assistant' as const,
+                        timestamp: new Date(conv.createdAt)
+                    }
+                ])
+                .flat();
 
+            setMessages(conversationMessages);
+        }
+    }, [conversations, documentId, messages.length]);
+    useEffect(() => {
+        setMessages([]);
+    }, [documentId]);
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
             setTimeout(() => {
@@ -160,7 +182,6 @@ export default function ChatInterface({ documentId, documentName, onChangeDocume
             textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
         }
     };
-
     return (
         <div className='flex flex-col h-[calc(100vh-5rem)]'>
             <div className='border-b p-3 flex justify-between items-center bg-muted/30'>
@@ -168,10 +189,22 @@ export default function ChatInterface({ documentId, documentName, onChangeDocume
                     <FileText className='h-4 w-4' />
                     <span className='font-medium text-sm max-w-[200px] truncate'>{documentName}</span>
                 </div>
-                <Button size='sm' variant='outline' onClick={onChangeDocument}>
-                    <X className='h-3 w-3 mr-1' />
-                    Change
-                </Button>
+                <div className='flex gap-2'>
+                    {messages.length > 0 && (
+                        <Button
+                            size='sm'
+                            variant='ghost'
+                            onClick={() => setMessages([])}
+                            className='text-muted-foreground hover:text-destructive'
+                        >
+                            Clear Chat
+                        </Button>
+                    )}
+                    <Button size='sm' variant='outline' onClick={onChangeDocument}>
+                        <X className='h-3 w-3 mr-1' />
+                        Change
+                    </Button>
+                </div>
             </div>
 
             <div className='relative flex-1 h-[calc(100vh-15rem)]'>
@@ -181,7 +214,14 @@ export default function ChatInterface({ documentId, documentName, onChangeDocume
                     onScroll={handleScroll}
                     ref={scrollAreaRef}
                 >
-                    {messages.length === 0 ? (
+                    {isConversationsLoading ? (
+                        <div className='h-full flex flex-col items-center justify-center'>
+                            <div className='flex flex-col items-center gap-4'>
+                                <Loader2 className='h-8 w-8 animate-spin text-primary' />
+                                <p className='text-muted-foreground'>Loading conversation history...</p>
+                            </div>
+                        </div>
+                    ) : messages.length === 0 ? (
                         <div className='h-full flex flex-col items-center justify-center'>
                             <div className='max-w-md text-center space-y-5'>
                                 <div className='mx-auto bg-primary/10 p-3 rounded-full w-16 h-16 flex items-center justify-center'>
@@ -284,7 +324,9 @@ export default function ChatInterface({ documentId, documentName, onChangeDocume
                                                 )}
                                             </div>
                                             <div className='text-xs opacity-70 mt-1'>
-                                                {message.timestamp.toLocaleTimeString([], {
+                                                {message.timestamp.toLocaleString([], {
+                                                    month: 'short',
+                                                    day: 'numeric',
                                                     hour: '2-digit',
                                                     minute: '2-digit'
                                                 })}
