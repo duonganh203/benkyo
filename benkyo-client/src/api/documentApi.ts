@@ -1,4 +1,4 @@
-import { ChatResponse, Document } from '@/types/document';
+import { Document } from '@/types/document';
 import { api } from '.';
 
 export const uploadDocument = async (formData: FormData) => {
@@ -23,12 +23,4 @@ export const getDocumentById = async (documentId: string) => {
 export const deleteDocument = async (documentId: string) => {
     const response = await api.delete(`documents/${documentId}`);
     return response.data;
-};
-
-export const chatWithDocument = async (documentId: string, question: string) => {
-    const response = await api.post('documents/chat', {
-        documentId,
-        question
-    });
-    return response.data as ChatResponse;
 };

@@ -6,6 +6,7 @@ import fsrsRoutes from './fsrsRoute';
 import userRoutes from './userRoute';
 import quizRoutes from './quizRoute';
 import documentRoutes from './documentRoute';
+import chatRoutes from './chatRoute';
 
 const rootRouter: Router = Router();
 
@@ -17,5 +18,6 @@ rootRouter.use('/fsrs', fsrsRoutes);
 rootRouter.use('/user', userRoutes);
 rootRouter.use('/quiz', quizRoutes);
 rootRouter.use('/documents', documentRoutes);
+rootRouter.use('/chat', chatRoutes);
 
 export default rootRouter;
