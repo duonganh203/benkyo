@@ -108,7 +108,9 @@ export const getTransaction = async (userId: string, packageId: string) => {
 };
 
 export const checkPaid = async (userId: string, transactionId: string) => {
-    const transaction = await Transaction.findOne({ user: userId, _id: transactionId }).select('isPaid');
+    const transaction = await Transaction.findOne({ user: userId, _id: transactionId })
+        .select('isPaid')
+        .populate('package', 'type');
 
     if (!transaction) {
         throw new NotFoundException('Transaction not found', ErrorCode.NOT_FOUND);
