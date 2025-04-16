@@ -1,5 +1,5 @@
 import '../markdown.css';
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Send, Loader2, FileText, X, ChevronDown, Cat } from 'lucide-react';
 import Markdown from 'marked-react';
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,11 @@ interface Message {
     hasAnimated?: boolean;
 }
 
-export default function ChatInterface({ documentId, documentName, onChangeDocument }: ChatInterfaceProps) {
+export default function ChatInterface({
+    documentId,
+    documentName,
+    onChangeDocument
+}: ChatInterfaceProps): React.ReactElement {
     const { user } = useAuthStore((store) => store);
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -72,10 +76,8 @@ export default function ChatInterface({ documentId, documentName, onChangeDocume
 
             setMessages(conversationMessages);
         }
-    }, [conversations, documentId, messages.length]);
-    useEffect(() => {
-        setMessages([]);
     }, [documentId]);
+
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
             setTimeout(() => {
@@ -344,7 +346,7 @@ export default function ChatInterface({ documentId, documentName, onChangeDocume
                     <Button
                         className='absolute bottom-4 right-4 rounded-full shadow-md'
                         size='icon'
-                        onClick={scrollToBottom}
+                        onClick={() => scrollToBottom()}
                     >
                         <ChevronDown className='h-4 w-4' />
                     </Button>
