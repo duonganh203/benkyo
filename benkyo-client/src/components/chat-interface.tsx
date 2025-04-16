@@ -1,5 +1,5 @@
 import '../markdown.css';
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send, Loader2, FileText, X, ChevronDown, Cat } from 'lucide-react';
 import Markdown from 'marked-react';
 import { Button } from '@/components/ui/button';
