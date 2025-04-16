@@ -94,6 +94,7 @@ const AIChat = () => {
                             onDocumentSelect={handleDocumentSelect}
                             onFileUpload={handleFileUpload}
                             onToggle={toggleSidebar}
+                            selectedDocument={selectedDocument}
                         />
                     </div>
                 </div>

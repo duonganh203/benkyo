@@ -17,6 +17,7 @@ interface DocumentSidebarProps {
     onFileUpload: (file: File, documentName: string) => Promise<Document>;
     onToggle: () => void;
     isUploading: boolean;
+    selectedDocument?: Document | null;
 }
 
 const DocumentSidebar = ({
@@ -25,7 +26,8 @@ const DocumentSidebar = ({
     onDocumentSelect,
     onFileUpload,
     onToggle,
-    isUploading
+    isUploading,
+    selectedDocument
 }: DocumentSidebarProps) => {
     const [dragActive, setDragActive] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -198,7 +200,12 @@ const DocumentSidebar = ({
                                 {documents.map((doc) => (
                                     <Card
                                         key={doc._id}
-                                        className='cursor-pointer hover:bg-muted/50 transition-colors'
+                                        className={cn(
+                                            'cursor-pointer hover:bg-muted/50 transition-colors',
+                                            selectedDocument &&
+                                                selectedDocument._id === doc._id &&
+                                                'border-2 border-primary'
+                                        )}
                                         onClick={() => onDocumentSelect(doc)}
                                     >
                                         <CardHeader className='p-3'>
