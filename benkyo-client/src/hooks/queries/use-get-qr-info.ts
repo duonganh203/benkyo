@@ -1,4 +1,4 @@
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { getQRInformation } from '@/api/paymentApi';
 import { QRInfoInterface } from '@/types/payment';
 import { AxiosError } from 'axios';
