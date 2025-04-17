@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { DeckInterface } from '@/types/deck';
 import { cn } from '@/lib/utils';
 import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-public-deck-modal';
-import { Clock, Earth, GraduationCap, User } from 'lucide-react';
+import { Clock, Earth, GraduationCap } from 'lucide-react';
 import { format } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Button } from './ui/button';

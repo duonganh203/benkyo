@@ -31,7 +31,3 @@ export const sendRequestPublicDeck = async (deckId: string) => {
     const response = await api.patch(`decks/${deckId}/request-public`);
     return response.data;
 };
-export const getPublicDecks = async () => {
-    const response = await api.get('decks/public-deck');
-    return response.data;
-};
