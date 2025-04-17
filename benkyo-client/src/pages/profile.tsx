@@ -77,7 +77,7 @@ export default function Profile() {
         updateUser(updateData, {
             onSuccess: (updatedUser) => {
                 getToast('success', 'User updated successfully!!!');
-                setUser(updatedUser);
+                setUser({ ...user, ...updatedUser });
                 setPreviewAvatar(undefined);
                 setSelectedFile(null);
             },
