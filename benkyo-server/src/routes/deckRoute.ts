@@ -15,7 +15,7 @@ const deckRoutes: Router = Router();
 
 deckRoutes.post('/', [authMiddleware], errorHandler(createDeck));
 deckRoutes.get('/my-decks', [authMiddleware], errorHandler(getAllDecks));
-deckRoutes.get('/public-deck', errorHandler(getPublicDecks));
+deckRoutes.get('/public-deck', [authMiddleware], errorHandler(getPublicDecks));
 deckRoutes.get('/:id', [authMiddleware], errorHandler(getDeck));
 deckRoutes.get('/:id/cards', [authMiddleware], errorHandler(getCards));
 deckRoutes.delete('/:id', [authMiddleware], errorHandler(deleteDeck));
