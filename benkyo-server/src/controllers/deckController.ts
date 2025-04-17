@@ -4,7 +4,8 @@ import {
     deleteDeckService,
     getAllDecksService,
     getDeckService,
-    sendReqPublicDeckService
+    sendReqPublicDeckService,
+    getPublicDecksService
 } from '~/services/deckService';
 import { createDeckValidation } from '~/validations/deckValidation';
 
@@ -41,4 +42,9 @@ export const sendReqPublicDeck = async (req: Request, res: Response) => {
     const userId = req.user._id;
     const result = await sendReqPublicDeckService(userId, id);
     return res.json({ message: result.message });
+};
+
+export const getPublicDecks = async (req: Request, res: Response) => {
+    const result = await getPublicDecksService();
+    res.json(result);
 };
