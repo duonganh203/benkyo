@@ -12,23 +12,20 @@ type CreateTransactionPayload = Omit<
 
 export const saveTransaction = async (transactionData: CreateTransactionPayload) => {
     const description = transactionData.description.toString().trim();
-    console.log('transac', transactionData);
 
     const userIdMatch = description.match(/[0-9a-fA-F]{24}/);
     const userId = userIdMatch?.[0];
-    console.log(userId);
-
     if (!userId) {
-        throw new NotFoundException('User ID not found in description', ErrorCode.NOT_FOUND);
+        console.log('User ID not found in description:', userId);
+        return;
     }
 
     const possiblePackages = ['basic', 'pro', 'premium'];
     const tokens = description.toLowerCase().split(/[^a-zA-Z0-9]/);
-
     const foundPackage = tokens.find((token) => possiblePackages.some((pkg) => token.includes(pkg)));
-
     if (!foundPackage) {
-        throw new NotFoundException('Package type not found in description', ErrorCode.NOT_FOUND);
+        console.log('Package type not found: ', foundPackage);
+        return;
     }
 
     const packageType = possiblePackages.find((pkg) => foundPackage.includes(pkg))!;
@@ -36,7 +33,8 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
 
     const existedUser = await User.findById(userId);
     if (!existedUser) {
-        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+        console.log('User not found: ', existedUser);
+        return;
     }
 
     const existedPackage = await Package.findOne({
@@ -45,12 +43,14 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
         isActive: true
     });
     if (!existedPackage) {
-        throw new NotFoundException('Package not found', ErrorCode.NOT_FOUND);
+        console.log('Package not found or price mismatch: ', existedPackage);
+        return;
     }
 
     const existedTransaction = await Transaction.findOne({ user: userId });
     if (!existedTransaction) {
-        throw new NotFoundException('Transaction not found', ErrorCode.NOT_FOUND);
+        console.log('Transaction not found: ', existedTransaction);
+        return;
     }
 
     existedTransaction.set({
@@ -61,11 +61,10 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
     await existedTransaction.save();
 
     const durationToMonths: Record<string, number> = {
-        '3M': 3,
-        '6M': 6,
+        '3T': 3,
+        '6T': 6,
         '1Y': 12
     };
-
     const months = durationToMonths[existedPackage.duration] || 1;
     const now = new Date();
 
@@ -75,7 +74,7 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
         proExpiryDate: new Date(now.setMonth(now.getMonth() + months))
     });
     await existedUser.save();
-
+    console.log('Transaction success & User upgraded successfully');
     return 'Transaction success & User upgraded successfully';
 };
 
