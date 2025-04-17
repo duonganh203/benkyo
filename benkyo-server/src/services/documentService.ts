@@ -5,8 +5,8 @@ import { Document } from '~/schemas';
 import { processDocument } from './embeddingService';
 import { queryVectors, deleteVectors, DIMENSION } from './pineconeService';
 import { ErrorCode } from '~/exceptions/root';
-import { UnauthorizedException } from '~/exceptions/unauthorized';
 import { NotFoundException } from '~/exceptions/notFound';
+import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 
 export const uploadDocumentService = async (userId: string, file: Express.Multer.File, documentName: string) => {
     const documentId = uuidv4();
@@ -36,7 +36,7 @@ export const getDocumentByIdService = async (documentId: string, userId: string)
         throw new NotFoundException('Document not found', ErrorCode.NOT_FOUND);
     }
     if (document.userId.toString() !== userId) {
-        throw new UnauthorizedException('You do not have permission to access this document', ErrorCode.UNAUTHORIZED);
+        throw new ForbiddenRequestsException('You do not have permission to access this document', ErrorCode.FORBIDDEN);
     }
     return document;
 };
@@ -47,7 +47,7 @@ export const deleteDocumentService = async (documentId: string, userId: string) 
         throw new NotFoundException('Document not found', ErrorCode.NOT_FOUND);
     }
     if (document.userId.toString() !== userId) {
-        throw new UnauthorizedException('You do not have permission to delete this document', ErrorCode.UNAUTHORIZED);
+        throw new ForbiddenRequestsException('You do not have permission to access this document', ErrorCode.FORBIDDEN);
     }
     const dummyVector = Array(DIMENSION).fill(0);
     const matches = await queryVectors(dummyVector, 1000, { documentId: document.embeddingId });
