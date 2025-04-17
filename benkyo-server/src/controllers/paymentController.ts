@@ -14,8 +14,8 @@ export const webhook = async (req: Request, res: Response) => {
         bankAbbreviation: req.body.data[0].bankAbbreviation,
         corresponsiveAccount: req.body.data[0].corresponsiveAccount
     };
-    const result = await saveTransaction(transactionData);
-    res.json({ message: result });
+    const response = await saveTransaction(transactionData);
+    return res.json(response);
 };
 
 export const getInformationQR = async (req: Request, res: Response) => {
