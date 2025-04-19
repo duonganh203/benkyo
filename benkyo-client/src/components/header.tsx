@@ -12,7 +12,7 @@ const Header = () => {
         <header className='fixed w-full py-2 border-b z-10 bg-white dark:bg-[#0a0a0a]'>
             <div className='max-w-[1416px] mx-auto flex justify-between items-center'>
                 <Link to='#' className='flex items-center gap-2'>
-                    <img src='/images/logo.png' className='size-5' />
+                    <img src='/images/logo.png' alt='benkyo-logo' className='size-5' />
                     <h3 className='font-bold'>BENKYO</h3>
                 </Link>
                 <div className='flex items-center space-x-4'>
