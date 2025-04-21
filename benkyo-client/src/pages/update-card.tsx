@@ -108,7 +108,7 @@ const UpdateCard = () => {
                 </TabsList>
 
                 <TabsContent value='manual' className='space-y-4'>
-                    <Card className='border-none shadow-none'>
+                    <Card className='border-none shadow-none bg-transparent'>
                         <CardContent className='p-0 space-y-6'>
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
