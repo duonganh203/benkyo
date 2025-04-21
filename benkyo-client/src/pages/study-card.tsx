@@ -149,9 +149,9 @@ const StudyCard = () => {
         return (
             <div className='max-w-2xl mx-auto py-8 px-4'>
                 <div className='flex items-center justify-between mb-6'>
-                    <Button variant='ghost' onClick={handleExit}>
+                    <Button variant='ghost' onClick={() => navigate(-1)}>
                         <ChevronLeft className='h-4 w-4 mr-2' />
-                        Back
+                        <span>Back</span>
                     </Button>
                     <h1 className='text-xl font-bold'>Study</h1>
                     <div className='w-14'></div>
@@ -171,7 +171,7 @@ const StudyCard = () => {
                                 <p className='text-muted-foreground mb-6'>
                                     You're all caught up! Check back later for more cards.
                                 </p>
-                                <Button onClick={() => navigate(`/deck/${deckId}`)}>Return to Deck</Button>
+                                <Button onClick={() => navigate(-1)}>Return to Deck</Button>
                             </>
                         )}
                     </div>
