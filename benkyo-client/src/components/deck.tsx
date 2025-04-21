@@ -48,21 +48,17 @@ function Deck({ deck }: DeckProps) {
                     <Clock className='h-3 w-3 mr-1' />
                     <span>Updated {format(new Date(deck.updatedAt), 'MMM d, yyyy')}</span>
                 </div>
-                <div className='space-x-2'>
+                <div className='space-x-2 flex items-center'>
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button
-                                    variant='ghost'
-                                    size='sm'
-                                    className='p-0 h-auto text-primary hover:text-primary hover:bg-primary/10'
+                                <GraduationCap
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         navigate(`/study/${deck._id}`);
                                     }}
-                                >
-                                    <GraduationCap className='h-4 w-4' />
-                                </Button>
+                                    className='h-5 w-5 text-primary/80 hover:text-primary rounded-md'
+                                />
                             </TooltipTrigger>
                             <TooltipContent>
                                 <p>Study</p>
@@ -74,25 +70,15 @@ function Deck({ deck }: DeckProps) {
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 {deck.isPublic && deck.owner ? (
-                                    <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        className='p-0 h-auto'
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-                                        <Avatar className='h-4 w-4'>
-                                            {deck.owner.avatar ? (
-                                                <AvatarImage
-                                                    src={deck.owner.avatar}
-                                                    alt={deck.owner.username || 'User'}
-                                                />
-                                            ) : (
-                                                <AvatarFallback className='text-[8px] bg-primary/10 text-primary'>
-                                                    {(deck.owner.username || 'U').charAt(0)}
-                                                </AvatarFallback>
-                                            )}
-                                        </Avatar>
-                                    </Button>
+                                    <Avatar className='h-5 w-5'>
+                                        {deck.owner.avatar ? (
+                                            <AvatarImage src={deck.owner.avatar} alt={deck.owner.name || 'User'} />
+                                        ) : (
+                                            <AvatarFallback className='text-[8px] bg-primary/10 text-primary'>
+                                                {(deck.owner.name || 'U').charAt(0)}
+                                            </AvatarFallback>
+                                        )}
+                                    </Avatar>
                                 ) : (
                                     <Button
                                         onClick={(e) => {
@@ -103,12 +89,12 @@ function Deck({ deck }: DeckProps) {
                                         size='sm'
                                         className='p-0 h-auto text-primary hover:text-primary hover:bg-primary/10'
                                     >
-                                        <Earth className='h-4 w-4' />
+                                        <Earth className='h-6 w-6' />
                                     </Button>
                                 )}
                             </TooltipTrigger>
                             <TooltipContent>
-                                {deck.isPublic && deck.owner ? `Created by ${deck.owner.username || 'User'}` : 'Share'}
+                                {deck.isPublic && deck.owner ? `Created by ${deck.owner.name || 'User'}` : 'Share'}
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>

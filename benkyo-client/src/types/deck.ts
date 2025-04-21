@@ -1,5 +1,3 @@
-import { User } from './auth';
-
 export interface CreateDeckPayload {
     name: string;
     description?: string;
@@ -20,6 +18,11 @@ export interface DeckInterface {
     cardCount: number;
     updatedAt: string;
     createdAt: string;
-    owner: User;
+    owner: Onwer;
     isPublic: boolean;
+}
+
+interface Onwer {
+    name: string;
+    avatar?: string;
 }
