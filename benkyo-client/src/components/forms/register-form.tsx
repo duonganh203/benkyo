@@ -130,7 +130,7 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
                                             <Input
                                                 id='password'
                                                 type='password'
-                                                placeholder='*****'
+                                                placeholder='**********'
                                                 required
                                                 {...field}
                                             />

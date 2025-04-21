@@ -105,7 +105,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                                             <Input
                                                 id='password'
                                                 type='password'
-                                                placeholder='*****'
+                                                placeholder='**********'
                                                 required
                                                 {...field}
                                             />
