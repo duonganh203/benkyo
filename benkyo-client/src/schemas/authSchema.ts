@@ -6,6 +6,6 @@ export const LoginSchema = z.object({
 });
 
 export const RegisterSchema = LoginSchema.extend({
-    firstName: z.string().min(3, { message: 'Must be at least 3 characters long' }),
-    lastName: z.string().min(3, { message: 'Must be at least 3 characters long' })
+    firstName: z.string().min(1, { message: 'Must be at least 3 characters long' }),
+    lastName: z.string().min(1, { message: 'Must be at least 3 characters long' })
 });
