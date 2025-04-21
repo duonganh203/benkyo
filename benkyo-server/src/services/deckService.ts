@@ -86,5 +86,5 @@ export const sendReqPublicDeckService = async (userId: string, deckId: string) =
     return { message: 'Request sent successfully' };
 };
 export const getPublicDecksService = async () => {
-    return await Deck.find({ isPublic: true, publicStatus: PublicStatus.APPROVED }).populate('owner', 'name');
+    return await Deck.find({ isPublic: true, publicStatus: PublicStatus.APPROVED }).populate('owner', 'name avatar');
 };
