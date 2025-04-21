@@ -220,13 +220,12 @@ const DeckDetail = () => {
                 </div>
             ) : (
                 <div className='max-w-5xl mx-auto py-8 px-4 animate-fade-in'>
-                    {/* Header */}
                     <div className='flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 animate-slide-down'>
                         <div className='flex items-center gap-2'>
                             <Button
                                 variant='outline'
                                 size='icon'
-                                onClick={() => navigate('/home')}
+                                onClick={() => navigate('/my-decks')}
                                 className='transition-transform'
                             >
                                 <ChevronLeft className='h-5 w-5' />
