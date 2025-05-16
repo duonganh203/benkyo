@@ -4,54 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-    --radius-lg: var(--radius);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-sm: calc(var(--radius) - 4px);
-
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-
-    --color-card: var(--card);
-    --color-card-foreground: var(--card-foreground);
-
-    --color-popover: var(--popover);
-    --color-popover-foreground: var(--popover-foreground);
-
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
-
-    --color-secondary: var(--secondary);
-    --color-secondary-foreground: var(--secondary-foreground);
-
-    --color-muted: var(--muted);
-    --color-muted-foreground: var(--muted-foreground);
-
-    --color-accent: var(--accent);
-    --color-accent-foreground: var(--accent-foreground);
-
-    --color-destructive: var(--destructive);
-    --color-destructive-foreground: var(--destructive-foreground);
-
-    --color-border: var(--border);
-    --color-input: var(--input);
-    --color-ring: var(--ring);
-
-    --color-chart-1: var(--chart-1);
-    --color-chart-2: var(--chart-2);
-    --color-chart-3: var(--chart-3);
-    --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-}
-
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -79,78 +31,162 @@
 }
 
 :root {
-    --background: hsl(0, 0%, 100%);
-    --foreground: hsl(0, 0%, 3.9%);
-    --card: hsl(0, 0%, 100%);
-    --card-foreground: hsl(0, 0%, 3.9%);
-    --popover: hsl(0, 0%, 100%);
-    --popover-foreground: hsl(0, 0%, 3.9%);
-    --primary: hsl(0, 0%, 9%);
-    --primary-foreground: hsl(0, 0%, 98%);
-    --secondary: hsl(0, 0%, 96.1%);
-    --secondary-foreground: hsl(0, 0%, 9%);
-    --muted: hsl(0, 0%, 96.1%);
-    --muted-foreground: hsl(0, 0%, 45.1%);
-    --accent: hsl(0, 0%, 96.1%);
-    --accent-foreground: hsl(0, 0%, 9%);
-    --destructive: hsl(0, 84.2%, 60.2%);
-    --destructive-foreground: hsl(0, 0%, 98%);
-    --border: hsl(0, 0%, 89.8%);
-    --input: hsl(0, 0%, 89.8%);
-    --ring: hsl(0, 0%, 3.9%);
-    --chart-1: hsl(12, 76%, 61%);
-    --chart-2: hsl(173, 58%, 39%);
-    --chart-3: hsl(197, 37%, 24%);
-    --chart-4: hsl(43, 74%, 66%);
-    --chart-5: hsl(27, 87%, 67%);
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.33 0.05 264.14);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.33 0.05 264.14);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.33 0.05 264.14);
+    --primary: oklch(0.57 0.18 272.8);
+    --primary-foreground: oklch(1 0 0);
+    --secondary: oklch(0.98 0.01 279.69);
+    --secondary-foreground: oklch(0.43 0.11 271.52);
+    --muted: oklch(1 0 0);
+    --muted-foreground: oklch(0.58 0.04 264.92);
+    --accent: oklch(0.98 0.01 228.92);
+    --accent-foreground: oklch(0.33 0.05 264.14);
+    --destructive: oklch(0.72 0.2 352.26);
+    --destructive-foreground: oklch(1 0 0);
+    --border: oklch(0.96 0.01 264.52);
+    --input: oklch(0.96 0.01 264.52);
+    --ring: oklch(0.57 0.18 272.8);
+    --chart-1: oklch(0.57 0.18 272.8);
+    --chart-2: oklch(0.77 0.12 274.26);
+    --chart-3: oklch(0.68 0.16 261.96);
+    --chart-4: oklch(0.73 0.14 266.93);
+    --chart-5: oklch(0.52 0.17 265.18);
+    --sidebar: oklch(1 0 0);
+    --sidebar-foreground: oklch(0.33 0.05 264.14);
+    --sidebar-primary: oklch(0.57 0.18 272.8);
+    --sidebar-primary-foreground: oklch(1 0 0);
+    --sidebar-accent: oklch(0.98 0.01 228.92);
+    --sidebar-accent-foreground: oklch(0.33 0.05 264.14);
+    --sidebar-border: oklch(0.96 0.01 264.52);
+    --sidebar-ring: oklch(0.57 0.18 272.8);
+    --font-sans: Geist, sans-serif;
+    --font-serif: Georgia, serif;
+    --font-mono: Geist Mono, monospace;
     --radius: 0.5rem;
-    --color-yellow-600: #f59e0b;
-    --color-blue-400: #60a5fa;
-    --sidebar: hsl(0 0% 98%);
-    --sidebar-foreground: hsl(240 5.3% 26.1%);
-    --sidebar-primary: hsl(240 5.9% 10%);
-    --sidebar-primary-foreground: hsl(0 0% 98%);
-    --sidebar-accent: hsl(240 4.8% 95.9%);
-    --sidebar-accent-foreground: hsl(240 5.9% 10%);
-    --sidebar-border: hsl(220 13% 91%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
-    --muted: hsl(210 40% 96.1%);
-    --warning: hsl(38 92% 50%);
-    --warning-foreground: hsl(48 96% 89%);
+    --shadow-2xs: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.06);
+    --shadow-xs: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.06);
+    --shadow-sm: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.12), 0px 1px 2px -1px hsl(220 35.82% 26.27% / 0.12);
+    --shadow: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.12), 0px 1px 2px -1px hsl(220 35.82% 26.27% / 0.12);
+    --shadow-md: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.12), 0px 2px 4px -1px hsl(220 35.82% 26.27% / 0.12);
+    --shadow-lg: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.12), 0px 4px 6px -1px hsl(220 35.82% 26.27% / 0.12);
+    --shadow-xl: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.12), 0px 8px 10px -1px hsl(220 35.82% 26.27% / 0.12);
+    --shadow-2xl: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.3);
+    --tracking-normal: 0.1em;
 }
+
 .dark {
-    --background: hsl(0, 0%, 3.9%);
-    --foreground: hsl(0, 0%, 98%);
-    --card: hsl(0, 0%, 3.9%);
-    --card-foreground: hsl(0, 0%, 98%);
-    --popover: hsl(0, 0%, 3.9%);
-    --popover-foreground: hsl(0, 0%, 98%);
-    --primary: hsl(0, 0%, 98%);
-    --primary-foreground: hsl(0, 0%, 9%);
-    --secondary: hsl(0, 0%, 14.9%);
-    --secondary-foreground: hsl(0, 0%, 98%);
-    --muted: hsl(0, 0%, 14.9%);
-    --muted-foreground: hsl(0, 0%, 63.9%);
-    --accent: hsl(0, 0%, 14.9%);
-    --accent-foreground: hsl(0, 0%, 98%);
-    --destructive: hsl(0, 62.8%, 30.6%);
-    --destructive-foreground: hsl(0, 0%, 98%);
-    --border: hsl(0, 0%, 14.9%);
-    --input: hsl(0, 0%, 14.9%);
-    --ring: hsl(0, 0%, 83.1%);
-    --chart-1: hsl(220, 70%, 50%);
-    --chart-2: hsl(160, 60%, 45%);
-    --chart-3: hsl(30, 80%, 55%);
-    --chart-4: hsl(280, 65%, 60%);
-    --chart-5: hsl(340, 75%, 55%);
-    --sidebar: hsl(240 5.9% 10%);
-    --sidebar-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-primary: hsl(224.3 76.3% 48%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(240 3.7% 15.9%);
-    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-border: hsl(240 3.7% 15.9%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
+    --background: oklch(0.2 0.02 262.26);
+    --foreground: oklch(0.97 0.01 264.52);
+    --card: oklch(0.25 0.03 261.6);
+    --card-foreground: oklch(0.97 0.01 264.52);
+    --popover: oklch(0.25 0.03 261.6);
+    --popover-foreground: oklch(0.97 0.01 264.52);
+    --primary: oklch(0.78 0.11 276.26);
+    --primary-foreground: oklch(0.2 0.02 262.26);
+    --secondary: oklch(0.35 0.07 266.53);
+    --secondary-foreground: oklch(0.92 0.04 266.5);
+    --muted: oklch(0.3 0.06 263.8);
+    --muted-foreground: oklch(0.77 0.04 265.17);
+    --accent: oklch(0.38 0.07 262.39);
+    --accent-foreground: oklch(0.97 0.01 264.52);
+    --destructive: oklch(0.72 0.2 352.26);
+    --destructive-foreground: oklch(1 0 0);
+    --border: oklch(0.36 0.05 264.14);
+    --input: oklch(0.36 0.05 264.14);
+    --ring: oklch(0.78 0.11 276.26);
+    --chart-1: oklch(0.78 0.11 276.26);
+    --chart-2: oklch(0.72 0.08 250.12);
+    --chart-3: oklch(0.88 0.12 206.2);
+    --chart-4: oklch(0.74 0.13 162.11);
+    --chart-5: oklch(0.8 0.19 330.76);
+    --sidebar: oklch(0.25 0.03 261.6);
+    --sidebar-foreground: oklch(0.97 0.01 264.52);
+    --sidebar-primary: oklch(0.78 0.11 276.26);
+    --sidebar-primary-foreground: oklch(0.2 0.02 262.26);
+    --sidebar-accent: oklch(0.38 0.07 262.39);
+    --sidebar-accent-foreground: oklch(0.97 0.01 264.52);
+    --sidebar-border: oklch(0.36 0.05 264.14);
+    --sidebar-ring: oklch(0.78 0.11 276.26);
+    --font-sans: Geist, sans-serif;
+    --font-serif: Georgia, serif;
+    --font-mono: Geist Mono, monospace;
+    --radius: 0.5rem;
+    --shadow-2xs: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.06);
+    --shadow-xs: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.06);
+    --shadow-sm: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.12), 0px 1px 2px -1px hsl(220 35.82% 26.27% / 0.12);
+    --shadow: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.12), 0px 1px 2px -1px hsl(220 35.82% 26.27% / 0.12);
+    --shadow-md: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.12), 0px 2px 4px -1px hsl(220 35.82% 26.27% / 0.12);
+    --shadow-lg: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.12), 0px 4px 6px -1px hsl(220 35.82% 26.27% / 0.12);
+    --shadow-xl: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.12), 0px 8px 10px -1px hsl(220 35.82% 26.27% / 0.12);
+    --shadow-2xl: 0px 4px 10px 0px hsl(220 35.82% 26.27% / 0.3);
+}
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+    --font-sans: var(--font-sans);
+    --font-mono: var(--font-mono);
+    --font-serif: var(--font-serif);
+
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+
+    --shadow-2xs: var(--shadow-2xs);
+    --shadow-xs: var(--shadow-xs);
+    --shadow-sm: var(--shadow-sm);
+    --shadow: var(--shadow);
+    --shadow-md: var(--shadow-md);
+    --shadow-lg: var(--shadow-lg);
+    --shadow-xl: var(--shadow-xl);
+    --shadow-2xl: var(--shadow-2xl);
+
+    --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
+    --tracking-tight: calc(var(--tracking-normal) - 0.025em);
+    --tracking-normal: var(--tracking-normal);
+    --tracking-wide: calc(var(--tracking-normal) + 0.025em);
+    --tracking-wider: calc(var(--tracking-normal) + 0.05em);
+    --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+}
+
+body {
+    letter-spacing: var(--tracking-normal);
 }
 
 @layer base {
@@ -213,259 +249,327 @@
 
 /* Keyframe Definitions */
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @keyframes scaleIn {
-  0% { transform: scale(0.9); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 @keyframes slideDown {
-  0% { transform: translateY(-20px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideUp {
-  0% { transform: translateY(20px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+    0% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideInRight {
-  0% { transform: translateX(30px); opacity: 0; }
-  100% { transform: translateX(0); opacity: 1; }
+    0% {
+        transform: translateX(30px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideOutLeft {
-  0% { transform: translateX(0); opacity: 1; }
-  100% { transform: translateX(-30px); opacity: 0; }
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-30px);
+        opacity: 0;
+    }
 }
 
 @keyframes slideOutRight {
-  0% { transform: translateX(0); opacity: 1; }
-  100% { transform: translateX(30px); opacity: 0; }
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(30px);
+        opacity: 0;
+    }
 }
 
 @keyframes pulseSlight {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
 }
 
 @keyframes bounceSmall {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
 }
 
 /* Animation Classes */
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-in-out forwards;
+    animation: fadeIn 0.5s ease-in-out forwards;
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.5s ease-in-out forwards;
+    animation: scaleIn 0.5s ease-in-out forwards;
 }
 
 .animate-slide-down {
-  animation: slideDown 0.5s ease-in-out forwards;
+    animation: slideDown 0.5s ease-in-out forwards;
 }
 
 .animate-slide-up {
-  animation: slideUp 0.5s ease-in-out forwards;
+    animation: slideUp 0.5s ease-in-out forwards;
 }
 
 .animate-slide-in-right {
-  animation: slideInRight 0.5s ease-in-out forwards;
+    animation: slideInRight 0.5s ease-in-out forwards;
 }
 
 .animate-slide-out-left {
-  animation: slideOutLeft 0.3s ease-in-out forwards;
+    animation: slideOutLeft 0.3s ease-in-out forwards;
 }
 
 .animate-slide-out-right {
-  animation: slideOutRight 0.3s ease-in-out forwards;
+    animation: slideOutRight 0.3s ease-in-out forwards;
 }
 
 .animate-pulse-subtle {
-  animation: pulseSlight 2s infinite ease-in-out;
+    animation: pulseSlight 2s infinite ease-in-out;
 }
 
 .animate-bounce-small {
-  animation: bounceSmall 2s infinite ease-in-out;
+    animation: bounceSmall 2s infinite ease-in-out;
 }
 
 /* Animation Delay Classes - Adding more beyond what you already have */
 .animation-delay-100 {
-  animation-delay: 100ms;
+    animation-delay: 100ms;
 }
 
 /* You already have 200-600ms delays defined */
 
 .animation-delay-700 {
-  animation-delay: 700ms;
+    animation-delay: 700ms;
 }
 
 .animation-delay-800 {
-  animation-delay: 800ms;
+    animation-delay: 800ms;
 }
 
 .animation-delay-900 {
-  animation-delay: 900ms;
+    animation-delay: 900ms;
 }
 
 /* Helper classes for animation variants */
 .group:hover .group-hover\:animate-pulse-subtle {
-  animation: pulseSlight 2s infinite ease-in-out;
+    animation: pulseSlight 2s infinite ease-in-out;
 }
 
 .hover\:scale-105:hover {
-  transform: scale(1.05);
+    transform: scale(1.05);
 }
 
 .active\:scale-95:active {
-  transform: scale(0.95);
+    transform: scale(0.95);
 }
 
 /* Card animations keyframes */
 @keyframes fade-in {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @keyframes slide-up {
-  0% { transform: translateY(10px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+    0% {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 @keyframes card-flip {
-  0% { transform: rotateX(0deg); }
-  50% { transform: rotateX(10deg); opacity: 0.8; }
-  100% { transform: rotateX(0deg); }
+    0% {
+        transform: rotateX(0deg);
+    }
+    50% {
+        transform: rotateX(10deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: rotateX(0deg);
+    }
 }
 
 /* Card animation classes */
 .animate-fade-in {
-  animation: fade-in 0.4s ease-in-out forwards;
+    animation: fade-in 0.4s ease-in-out forwards;
 }
 
 .animate-slide-up {
-  animation: slide-up 0.5s ease-out forwards;
+    animation: slide-up 0.5s ease-out forwards;
 }
 
 .animate-card-flip {
-  animation: card-flip 0.6s ease-in-out forwards;
+    animation: card-flip 0.6s ease-in-out forwards;
 }
 
 /* QR Animation */
 .circular-progress {
-  width: 300px;
-  height: 300px;
+    width: 300px;
+    height: 300px;
 }
 
 .circular-progress svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: rotate(-90deg);
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotate(-90deg);
 }
 
 .circular-progress circle {
-  fill: transparent;
-  stroke-width: 6;
-  stroke-linecap: round;
-  transform-origin: center;
+    fill: transparent;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transform-origin: center;
 }
 
 .circular-progress .progress-bg {
-  stroke: var(--muted);
+    stroke: var(--muted);
 }
 
 .circular-progress .progress {
-  stroke: var(--warning);
-  transition: stroke-dashoffset 0.1s linear;
+    stroke: var(--warning);
+    transition: stroke-dashoffset 0.1s linear;
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 .pulse-animation {
-  animation: pulse 1s infinite;
+    animation: pulse 1s infinite;
 }
 
 .qr-container {
-  position: relative;
-  padding: 20px;
+    position: relative;
+    padding: 20px;
 }
 
 .corner-border {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border: 2px solid var(--sidebar-ring);
-  border-radius:3px;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--sidebar-ring);
+    border-radius: 3px;
 }
 
 .top-left {
-  top: 0;
-  left: 0;
-  border-right: 0;
-  border-bottom: 0;
+    top: 0;
+    left: 0;
+    border-right: 0;
+    border-bottom: 0;
 }
 
 .top-right {
-  top: 0;
-  right: 0;
-  border-left: 0;
-  border-bottom: 0;
+    top: 0;
+    right: 0;
+    border-left: 0;
+    border-bottom: 0;
 }
 
 .bottom-left {
-  bottom: 0;
-  left: 0;
-  border-right: 0;
-  border-top: 0;
+    bottom: 0;
+    left: 0;
+    border-right: 0;
+    border-top: 0;
 }
 
 .bottom-right {
-  bottom: 0;
-  right: 0;
-  border-left: 0;
-  border-top: 0;
+    bottom: 0;
+    right: 0;
+    border-left: 0;
+    border-top: 0;
 }
 .qr-wrapper {
-  position: relative;
-  width: 300px;
-  height: 300px;
-  overflow: hidden;
-  border-radius: 8px;
+    position: relative;
+    width: 300px;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 8px;
 }
 
 .scan-line {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 6px; 
-  background: linear-gradient(
-    90deg,
-    rgba(255, 0, 0, 0) 0%, 
-    var(--sidebar-ring) 50%, 
-    rgba(255, 0, 0, 0) 100%
-  );
-  animation: scanAnimation 4s linear infinite; 
-  opacity: 0.9;
-  z-index: 10;
-  pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, rgba(255, 0, 0, 0) 0%, var(--sidebar-ring) 50%, rgba(255, 0, 0, 0) 100%);
+    animation: scanAnimation 4s linear infinite;
+    opacity: 0.9;
+    z-index: 10;
+    pointer-events: none;
 }
 
 @keyframes scanAnimation {
-  0% {
-    top: 0%;
-  }
-  100% {
-    top: 100%;
-  }
+    0% {
+        top: 0%;
+    }
+    100% {
+        top: 100%;
+    }
 }
