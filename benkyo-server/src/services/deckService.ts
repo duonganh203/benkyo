@@ -113,7 +113,12 @@ export const getRequestPulbicDeckService = async (deckId: string) => {
     };
 };
 
-export const reviewPublicDeckService = async (deckId: string, status: PublicStatus, note?: string) => {
+export const reviewPublicDeckService = async (
+    deckId: string,
+    status: PublicStatus,
+    reviewerId: string,
+    note?: string
+) => {
     const deck = await Deck.findById(deckId);
     if (!deck) {
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
@@ -125,7 +130,8 @@ export const reviewPublicDeckService = async (deckId: string, status: PublicStat
 
     const updateData: any = {
         publicStatus: status,
-        isPublic: status === PublicStatus.APPROVED
+        isPublic: status === PublicStatus.APPROVED,
+        reviewedBy: reviewerId
     };
 
     if (note !== undefined) {
