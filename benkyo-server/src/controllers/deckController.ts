@@ -75,6 +75,6 @@ export const reviewPublicServiceDeck = async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'Invalid status value' });
     }
 
-    const result = await reviewPublicDeckService(id, status, note);
+    const result = await reviewPublicDeckService(id, status, req.user._id, note);
     return res.json({ message: result.message });
 };
