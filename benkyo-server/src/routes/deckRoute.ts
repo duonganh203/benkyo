@@ -4,16 +4,23 @@ import {
     createDeck,
     deleteDeck,
     getAllDecks,
+    getAllRequestPublicDecks,
     getDeck,
-    sendReqPublicDeck,
-    getPublicDecks
+    getPublicDecks,
+    getRequestPulbicDeck,
+    reviewPublicServiceDeck,
+    sendReqPublicDeck
 } from '~/controllers/deckController';
 import { errorHandler } from '~/errorHandler';
+import adminAuthMiddleware from '~/middlewares/adminAuthMiddleware';
 import authMiddleware from '~/middlewares/authMiddleware';
 
 const deckRoutes: Router = Router();
 
 deckRoutes.post('/', [authMiddleware], errorHandler(createDeck));
+deckRoutes.get('/public-requests', [adminAuthMiddleware], errorHandler(getAllRequestPublicDecks));
+deckRoutes.get('/public-requests/:id', [adminAuthMiddleware], errorHandler(getRequestPulbicDeck));
+deckRoutes.patch('/public-requests/:id', [adminAuthMiddleware], errorHandler(reviewPublicServiceDeck));
 deckRoutes.get('/my-decks', [authMiddleware], errorHandler(getAllDecks));
 deckRoutes.get('/public-deck', [authMiddleware], errorHandler(getPublicDecks));
 deckRoutes.get('/:id', [authMiddleware], errorHandler(getDeck));

@@ -1,11 +1,15 @@
 import { Request, Response } from 'express';
+import { PublicStatus } from '~/schemas';
 import {
     createDeckService,
     deleteDeckService,
     getAllDecksService,
+    getAllRequestedPublicDecksService,
     getDeckService,
     sendReqPublicDeckService,
-    getPublicDecksService
+    getPublicDecksService,
+    getRequestPulbicDeckService,
+    reviewPublicDeckService
 } from '~/services/deckService';
 import { createDeckValidation } from '~/validations/deckValidation';
 
@@ -47,4 +51,30 @@ export const sendReqPublicDeck = async (req: Request, res: Response) => {
 export const getPublicDecks = async (req: Request, res: Response) => {
     const result = await getPublicDecksService();
     res.json(result);
+};
+
+export const getAllRequestPublicDecks = async (req: Request, res: Response) => {
+    const result = await getAllRequestedPublicDecksService();
+    res.json(result);
+};
+
+export const getRequestPulbicDeck = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await getRequestPulbicDeckService(id);
+    if (!result) {
+        return res.status(404).json({ message: 'Deck not found' });
+    }
+    return res.json(result);
+};
+
+export const reviewPublicServiceDeck = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { status, note } = req.body;
+
+    if (!Object.values(PublicStatus).includes(status)) {
+        return res.status(400).json({ message: 'Invalid status value' });
+    }
+
+    const result = await reviewPublicDeckService(id, status, note);
+    return res.json({ message: result.message });
 };

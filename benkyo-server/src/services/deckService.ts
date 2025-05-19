@@ -88,3 +88,51 @@ export const sendReqPublicDeckService = async (userId: string, deckId: string) =
 export const getPublicDecksService = async () => {
     return await Deck.find({ isPublic: true, publicStatus: PublicStatus.APPROVED }).populate('owner', 'name avatar');
 };
+
+export const getAllRequestedPublicDecksService = async () => {
+    const decks = await Deck.find({
+        publicStatus: { $in: [PublicStatus.PENDING, PublicStatus.APPROVED, PublicStatus.REJECTED] }
+    }).populate('owner');
+    return decks;
+};
+
+export const getRequestPulbicDeckService = async (deckId: string) => {
+    const deck = await Deck.findById(deckId).populate('owner').populate('reviewedBy').lean();
+
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    const cards = await Card.find({ deck: deckId }).lean();
+
+    return {
+        ...deck,
+        cards,
+        reviewNote: deck.reviewNote,
+        reviewedBy: deck.reviewedBy
+    };
+};
+
+export const reviewPublicDeckService = async (deckId: string, status: PublicStatus, note?: string) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (deck.publicStatus === status) {
+        throw new BadRequestsException('This deck is already in this status', ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    const updateData: any = {
+        publicStatus: status,
+        isPublic: status === PublicStatus.APPROVED
+    };
+
+    if (note !== undefined) {
+        updateData.reviewNote = note;
+    }
+
+    await Deck.findByIdAndUpdate(deckId, { $set: updateData });
+
+    return { message: 'Deck status and note updated successfully' };
+};
