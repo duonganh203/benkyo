@@ -18,10 +18,13 @@ export const registerService = async (userData: z.infer<typeof registerValidatio
     return user;
 };
 
-export const loginService = async (userData: z.infer<typeof loginValidation>) => {
+export const loginService = async (userData: z.infer<typeof loginValidation>, options?: { isAdmin?: boolean }) => {
     const { email, password } = userData;
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) throw new BadRequestsException('Email or password is not correct!', ErrorCode.INVALID_CREDENTIALS);
+    if (options?.isAdmin && user.role !== 'admin') {
+        throw new BadRequestsException('You are not authorized as an admin!', ErrorCode.UNAUTHORIZED);
+    }
     const isMatch = await compare(password, user.password);
     if (!isMatch) throw new BadRequestsException('Email or password is not correct!', ErrorCode.INVALID_CREDENTIALS);
     const token = generateToken(user._id);

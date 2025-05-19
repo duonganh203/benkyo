@@ -42,6 +42,7 @@ const UserSchema = new Schema({
     isPro: { type: Boolean, default: false },
     proExpiryDate: { type: Date, default: null, required: false },
     proType: { type: String, enum: Object.values(PackageType), default: PackageType.BASIC },
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
     fsrsParams: {
         request_retention: { type: Number, default: 0.9 },
         maximum_interval: { type: Number, default: 36500 },
@@ -77,7 +78,9 @@ const DeckSchema = new Schema({
     subscribers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     avgRating: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 },
-    popularity: { type: Number, default: 0 }
+    popularity: { type: Number, default: 0 },
+    reviewedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    reviewNote: { type: String }
 });
 
 const CardSchema = new Schema({
