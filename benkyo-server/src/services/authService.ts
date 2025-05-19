@@ -6,6 +6,7 @@ import { User } from '~/schemas';
 import { loginValidation, registerValidation } from '~/validations/authValidation';
 import { generateRefreshToken, generateToken } from '~/utils/generateJwt';
 import * as jwt from 'jsonwebtoken';
+import { UnauthorizedException } from '~/exceptions/unauthorized';
 
 export const registerService = async (userData: z.infer<typeof registerValidation>) => {
     const { name, email, password } = userData;
@@ -23,7 +24,7 @@ export const loginService = async (userData: z.infer<typeof loginValidation>, op
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) throw new BadRequestsException('Email or password is not correct!', ErrorCode.INVALID_CREDENTIALS);
     if (options?.isAdmin && user.role !== 'admin') {
-        throw new BadRequestsException('You are not authorized as an admin!', ErrorCode.UNAUTHORIZED);
+        throw new UnauthorizedException('You are not authorized as an admin!', ErrorCode.UNAUTHORIZED);
     }
     const isMatch = await compare(password, user.password);
     if (!isMatch) throw new BadRequestsException('Email or password is not correct!', ErrorCode.INVALID_CREDENTIALS);
