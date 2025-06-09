@@ -1,5 +1,16 @@
 import z from 'zod';
-import { Card, Deck, DeckRating, PublicStatus, Revlog, StudySession, User, UserDeckState } from '~/schemas';
+import {
+    Card,
+    Deck,
+    DeckRating,
+    PublicStatus,
+    Quiz,
+    QuizAttempt,
+    Revlog,
+    StudySession,
+    User,
+    UserDeckState
+} from '~/schemas';
 import { createDeckValidation } from '~/validations/deckValidation';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
@@ -54,11 +65,19 @@ export const deleteDeckService = async (userId: string, deckId: string) => {
     await Card.deleteMany({ deck: deckId });
     await UserDeckState.deleteMany({ deck: deckId });
     await DeckRating.deleteMany({ deck: deckId });
+
     await StudySession.deleteMany({ deck: deckId });
     const cardIds = await Card.find({ deck: deckId }, '_id').lean();
     if (cardIds.length > 0) {
         await Revlog.deleteMany({ card: { $in: cardIds.map((card) => card._id) } });
     }
+
+    const quizIds = await Quiz.find({ deck: deckId }, '_id').lean();
+    if (quizIds.length > 0) {
+        await QuizAttempt.deleteMany({ quiz: { $in: quizIds.map((quiz) => quiz._id) } });
+        await Quiz.deleteMany({ deck: deckId });
+    }
+
     await Deck.findByIdAndDelete(deckId);
     await User.updateOne({ _id: userId }, { $pull: { decks: deckId } });
     return { message: 'Deck and all associated data deleted successfully' };
