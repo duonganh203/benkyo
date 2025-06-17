@@ -32,6 +32,11 @@ enum PackageDuration {
     ONE_YEAR = '1Y'
 }
 
+enum Func {
+    GEN_AI = 'Basic',
+    CLASS = 'Class'
+}
+
 const UserSchema = new Schema({
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true },
@@ -231,6 +236,12 @@ const PackageSchema = new Schema(
     { timestamps: true }
 );
 
+const GenerationLogSchema = new Schema({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    function: { type: String, enum: Object.values(Func), required: true },
+    remaining: { type: Number, default: 3 }
+});
+
 export const User = model('User', UserSchema);
 export const Deck = model('Deck', DeckSchema);
 export const Card = model('Card', CardSchema);
@@ -246,4 +257,6 @@ export const Transaction = model('Transaction', TransactionSchema);
 export const Package = model('Package', PackageSchema);
 export type TransactionType = InferSchemaType<typeof TransactionSchema>;
 export type ConversationType = InferSchemaType<typeof ConversationSchema>;
-export { Rating, State, PublicStatus, PackageType, PackageDuration };
+export type UserType = InferSchemaType<typeof UserSchema>;
+export const GenerationLog = model('GenerationLog', GenerationLogSchema);
+export { Rating, State, PublicStatus, PackageType, PackageDuration, Func };
