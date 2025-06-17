@@ -43,3 +43,28 @@ function getUserCreditLimitAI(user: UserType): number {
             return 0;
     }
 }
+
+export async function deductUserCredit(userId: string, func: Func = Func.GEN_AI) {
+    const log = await GenerationLog.findOne({
+        userId,
+        function: func
+    }).select('remaining');
+    if (log) {
+        await log.save();
+    }
+}
+
+export async function addCreditFromNewUser(userId: string, func: Func = Func.GEN_AI) {
+    const logAI = await GenerationLog.findOne({
+        userId,
+        function: Func.GEN_AI
+    });
+    if (!logAI) {
+        const logAINew = new GenerationLog({
+            userId,
+            function: Func.GEN_AI,
+            remaining: 3
+        });
+        await logAINew.save();
+    }
+}
