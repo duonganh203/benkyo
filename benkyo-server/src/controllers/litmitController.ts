@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
-import { checkRemainingCredits, deductUserCredit } from '~/services/limitService';
+import { getRemainingCredits, deductUserCredit } from '~/services/limitService';
 
-export const getRemainingCredits = async (req: Request, res: Response) => {
+export const getRemainingCredit = async (req: Request, res: Response) => {
     const userId = req.user._id;
-    const func = req.body.func;
-    const remainingCredits = await checkRemainingCredits(userId, func);
+    const func = req.params.function;
+    const remainingCredits = await getRemainingCredits(userId, func);
     return res.json({ remainingCredits });
 };
 
 export const deductCredits = async (req: Request, res: Response) => {
     const userId = req.user._id;
-    const func = req.body.func;
+    const func = req.params.function;
     await deductUserCredit(userId, func);
 };

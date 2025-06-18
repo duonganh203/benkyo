@@ -20,7 +20,7 @@ export function creditsResetJob() {
     });
 }
 
-export async function checkRemainingCredits(userId: string, func: Func) {
+export async function getRemainingCredits(userId: string, func: string) {
     const remaining = await GenerationLog.findOne({
         userId: userId,
         function: func
@@ -44,17 +44,19 @@ function getUserCreditLimitAI(user: UserType): number {
     }
 }
 
-export async function deductUserCredit(userId: string, func: Func = Func.GEN_AI) {
+export async function deductUserCredit(userId: string, func: string) {
+    console.log(`Deducting credit for user ${userId} for function ${func}`);
     const log = await GenerationLog.findOne({
         userId,
         function: func
     }).select('remaining');
     if (log) {
+        log.remaining -= 1;
         await log.save();
     }
 }
 
-export async function addCreditFromNewUser(userId: string, func: Func = Func.GEN_AI) {
+export async function addCreditFromNewUser(userId: string) {
     const logAI = await GenerationLog.findOne({
         userId,
         function: Func.GEN_AI

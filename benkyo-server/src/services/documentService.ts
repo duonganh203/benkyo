@@ -7,6 +7,7 @@ import { queryVectors, deleteVectors, DIMENSION } from './pineconeService';
 import { ErrorCode } from '~/exceptions/root';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
+import { deductUserCredit } from './limitService';
 
 export const uploadDocumentService = async (userId: string, file: Express.Multer.File, documentName: string) => {
     const documentId = uuidv4();
@@ -22,6 +23,7 @@ export const uploadDocumentService = async (userId: string, file: Express.Multer
     if (file && file.path) {
         await fs.remove(file.path).catch(() => {});
     }
+    deductUserCredit(userId, 'Ai');
     return document;
 };
 

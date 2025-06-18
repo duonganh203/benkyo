@@ -7,6 +7,7 @@ import { loginValidation, registerValidation } from '~/validations/authValidatio
 import { generateRefreshToken, generateToken } from '~/utils/generateJwt';
 import * as jwt from 'jsonwebtoken';
 import { UnauthorizedException } from '~/exceptions/unauthorized';
+import { addCreditFromNewUser } from './limitService';
 
 export const registerService = async (userData: z.infer<typeof registerValidation>) => {
     const { name, email, password } = userData;
@@ -16,6 +17,7 @@ export const registerService = async (userData: z.infer<typeof registerValidatio
     }
     const hashedPassword = await hash(password, 10);
     user = await User.create({ name, email: email.toLowerCase(), password: hashedPassword });
+    addCreditFromNewUser(user._id.toString());
     return user;
 };
 
