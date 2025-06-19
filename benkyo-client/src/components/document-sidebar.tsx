@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Upload, FileText, ChevronRight, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getToast } from '@/utils/getToast';
 import { Document } from '@/types/document';
+import useGetCreditAI from '@/hooks/queries/use-get-credit-ai';
 
 interface DocumentSidebarProps {
     documents: Document[];
@@ -32,6 +33,8 @@ const DocumentSidebar = ({
     const [dragActive, setDragActive] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [documentName, setDocumentName] = useState('');
+    const { data: credit, refetch: getCreditAI } = useGetCreditAI('Ai');
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -46,8 +49,9 @@ const DocumentSidebar = ({
         e.stopPropagation();
         setDragActive(false);
 
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            handleFile(e.dataTransfer.files[0]);
+        const file = e.dataTransfer.files?.[0];
+        if (file) {
+            checkAllowedAIAvailable(() => handleFile(file));
         }
     };
 
@@ -101,6 +105,17 @@ const DocumentSidebar = ({
         ];
         return allowedTypes.includes(file.type);
     };
+    const checkAllowedAIAvailable = async (onAllowed: () => void) => {
+        await getCreditAI();
+        if (credit?.remainingCredits.remaining <= 0) {
+            getToast(
+                'error',
+                'You currently have no AI credits. Please purchase a plan to use this feature, or wait until your credits reset the next day.'
+            );
+            return;
+        }
+        onAllowed();
+    };
 
     return (
         <div className='w-full h-full flex flex-col'>
@@ -128,6 +143,7 @@ const DocumentSidebar = ({
                                 onDrop={handleDrop}
                             >
                                 <input
+                                    ref={fileInputRef}
                                     id='file-upload'
                                     type='file'
                                     accept='.pdf,.doc,.docx,.txt'
@@ -135,7 +151,14 @@ const DocumentSidebar = ({
                                     onChange={handleChange}
                                 />
 
-                                <label htmlFor='file-upload' className='cursor-pointer block'>
+                                <label
+                                    htmlFor='file-upload'
+                                    className='cursor-pointer block'
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        checkAllowedAIAvailable(() => fileInputRef.current?.click());
+                                    }}
+                                >
                                     <div className='flex flex-col items-center justify-center'>
                                         <Upload size={36} className='mb-2 text-muted-foreground' />
                                         <p className='text-sm font-medium'>Drag & drop</p>
