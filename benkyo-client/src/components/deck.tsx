@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { DeckInterface } from '@/types/deck';
 import { cn } from '@/lib/utils';
 import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-public-deck-modal';
+import useSubscribeToDeck from '@/hooks/queries/use-subscribe-to-deck';
 import { Clock, Earth, GraduationCap } from 'lucide-react';
 import { format } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
@@ -16,8 +17,21 @@ interface DeckProps {
 function Deck({ deck }: DeckProps) {
     const { open } = useSendRequestPublicDeckModal((store) => store);
     const navigate = useNavigate();
+    const { mutateAsync: subscribeToDeckMutate } = useSubscribeToDeck(deck._id);
+
     const handleDeckClick = (deckId: string) => {
         navigate(`/deck/${deckId}`);
+    };
+
+    const handleStudyClick = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        try {
+            navigate(`/study/${deck._id}`);
+            await subscribeToDeckMutate();
+        } catch (error) {
+            console.error('Failed to subscribe to deck:', error);
+            navigate(`/study/${deck._id}`);
+        }
     };
 
     return (
@@ -53,11 +67,8 @@ function Deck({ deck }: DeckProps) {
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <GraduationCap
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        navigate(`/study/${deck._id}`);
-                                    }}
-                                    className='h-5 w-5 text-primary/80 hover:text-primary rounded-md'
+                                    onClick={handleStudyClick}
+                                    className='h-5 w-5 text-primary/80 hover:text-primary rounded-md cursor-pointer'
                                 />
                             </TooltipTrigger>
                             <TooltipContent>
@@ -65,7 +76,6 @@ function Deck({ deck }: DeckProps) {
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>

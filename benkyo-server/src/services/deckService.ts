@@ -50,7 +50,11 @@ export const getDeckService = async (userId: string, deckId: string) => {
 
 export const getAllDecksService = async (userId: string) => {
     const decks = await Deck.find({ owner: userId }).populate('owner');
-    const publicDeck = await Deck.find({ owner: { $ne: userId }, isPublic: true }).populate('owner');
+    const publicDeck = await Deck.find({
+        owner: { $ne: userId },
+        isPublic: true,
+        subscribers: { $in: [userId] }
+    }).populate('owner');
     return [...decks, ...publicDeck];
 };
 
@@ -160,4 +164,52 @@ export const reviewPublicDeckService = async (
     await Deck.findByIdAndUpdate(deckId, { $set: updateData });
 
     return { message: 'Deck status and note updated successfully' };
+};
+
+export const subscribeToDeckService = async (userId: string, deckId: string) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!deck.isPublic && deck.publicStatus !== PublicStatus.APPROVED) {
+        throw new ForbiddenRequestsException(
+            'You do not have permission to subscribe to this deck',
+            ErrorCode.FORBIDDEN
+        );
+    }
+    if (deck.owner.equals(userId)) {
+        throw new BadRequestsException('You cannot subscribe to your own deck', ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    if (deck.subscribers.some((subscriberId) => subscriberId.equals(userId))) {
+        return { message: 'Already subscribed to this deck', isSubscribed: true };
+    }
+
+    await Deck.findByIdAndUpdate(deckId, {
+        $addToSet: { subscribers: userId }
+    });
+
+    const existingUserDeckState = await UserDeckState.findOne({
+        user: userId,
+        deck: deckId
+    });
+
+    if (!existingUserDeckState) {
+        const userDeckState = new UserDeckState({
+            user: userId,
+            deck: deckId,
+            isOriginalOwner: deck.owner.equals(userId),
+            stats: {
+                reviewCards: 0,
+                learningCards: 0,
+                newCards: 0,
+                totalCards: deck.cardCount || 0
+            },
+            lastStudied: null
+        });
+        await userDeckState.save();
+    }
+
+    return { message: 'Successfully subscribed to deck', isSubscribed: true };
 };

@@ -36,6 +36,7 @@ import { getToast } from '@/utils/getToast';
 import useDeleteDeck from '@/hooks/queries/use-delete-deck';
 import { useGenerateQuizModal } from '@/hooks/stores/use-generate-quiz-modal';
 import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-public-deck-modal';
+import useSubscribeToDeck from '@/hooks/queries/use-subscribe-to-deck';
 
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -67,11 +68,11 @@ const DeckDetail = () => {
     ];
 
     const { open: openSendReqPublicModal } = useSendRequestPublicDeckModal((store) => store);
-
     const { data: deckData, isLoading: isDeckLoading } = useGetDeckById(id!);
     const { data: cardsData, isLoading: isCardsLoading } = useGetDeckCards(id!);
     const { mutateAsync: deleteCardMutate } = useDeleteCard();
     const { mutateAsync: deleteDeckMutate, isPending: isDeletingDeck } = useDeleteDeck(id!);
+    const { mutateAsync: subscribeToDeckMutate, isPending: isSubscribing } = useSubscribeToDeck(id!);
 
     const queryClient = useQueryClient();
 
@@ -190,6 +191,13 @@ const DeckDetail = () => {
             }
         );
     };
+
+    const handleStudyNow = async () => {
+        navigate(`/study/${id}`);
+        if (deckData?.publicStatus === 2) {
+            await subscribeToDeckMutate();
+        }
+    };
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
@@ -242,13 +250,13 @@ const DeckDetail = () => {
                                 <Earth
                                     className={`h-4 w-4 ml-0.5 inline-block ${publicStatus[deckData.publicStatus].color}`}
                                 />
-                            </Badge>
+                            </Badge>{' '}
                         </div>
 
                         <div className='flex items-center gap-2'>
-                            <Button onClick={() => navigate(`/study/${id}`)} className='transition-transform'>
+                            <Button onClick={handleStudyNow} className='transition-transform' disabled={isSubscribing}>
                                 <GraduationCap className='mr-2 h-5 w-5' />
-                                Study Now
+                                {isSubscribing ? 'Starting...' : 'Study Now'}
                             </Button>
 
                             <Button
