@@ -26,6 +26,8 @@ import AIChat from './pages/ai-chat';
 import Payment from './pages/payment';
 import Packages from './pages/package';
 import Community from './pages/community';
+import StreakIcon from './components/streak-icon';
+import { useLoginStreakTimer } from './components/modals/use-login-streak-time';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -38,6 +40,8 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
+    const showStreak = useLoginStreakTimer();
+
     return (
         <QueryClientProvider client={queryClient}>
             <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
@@ -69,6 +73,8 @@ const App = () => {
                         </Route>
                     </Routes>
                     <ModalProvider />
+
+                    {showStreak && <StreakIcon />}
                 </Router>
                 <Toaster closeButton richColors position='top-right' />
             </ThemeProvider>

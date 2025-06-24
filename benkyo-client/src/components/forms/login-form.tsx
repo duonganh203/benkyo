@@ -14,6 +14,7 @@ import { LoginSchema } from '@/schemas/authSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ApiError } from '@/types/api';
 import { getToast } from '@/utils/getToast';
+import { loginStreak } from '@/api/streakApi';
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
     const { mutate: login, isPending } = useLogin();
@@ -30,10 +31,18 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
     const onSubmit = (data: z.infer<typeof LoginSchema>) => {
         login(data, {
-            onSuccess: (data) => {
+            onSuccess: async (data) => {
                 setUser(data.user);
                 setToken(data.token);
                 setRefreshToken(data.refreshToken);
+
+                try {
+                    await loginStreak();
+                } catch (error) {
+                    console.error('Streak update failed:', error);
+                }
+
+                sessionStorage.setItem('justLoggedIn', 'true');
                 getToast('success', 'Login successful!!!');
             },
             onError: (error) => {
