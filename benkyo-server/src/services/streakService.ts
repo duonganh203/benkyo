@@ -1,54 +1,68 @@
 import { User } from '~/schemas';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ErrorCode } from '~/exceptions/root';
+import { differenceInCalendarDays } from 'date-fns';
 
-export const updateLoginStreakService = async (userId: string) => {
+export const updateStudyStreakService = async (userId: string) => {
     const user = await User.findById(userId);
-    if (!user) {
-        throw new BadRequestsException('User not found', ErrorCode.NOT_FOUND);
-    }
+    if (!user) throw new BadRequestsException('User not found', ErrorCode.NOT_FOUND);
 
     const now = new Date();
-    const today = new Date(now.setHours(0, 0, 0, 0));
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const lastLoginDate = user.lastLoginDate ? new Date(user.lastLoginDate) : null;
-    if (lastLoginDate) lastLoginDate.setHours(0, 0, 0, 0);
-
-    if (!lastLoginDate) {
-        user.loginStreak = 1;
-    } else if (lastLoginDate.getTime() === today.getTime()) {
-        return {
-            loginStreak: user.loginStreak,
-            lastLoginDate: user.lastLoginDate
+    if (!user.stats || !user.stats.lastStudyDate) {
+        user.stats = {
+            ...user.stats,
+            studyStreak: 1,
+            longestStudyStreak: 1,
+            lastStudyDate: now,
+            totalReviews: user.stats?.totalReviews ?? 0
         };
     } else {
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
+        const last = new Date(user.stats.lastStudyDate);
+        const diff = differenceInCalendarDays(today, new Date(last.getFullYear(), last.getMonth(), last.getDate()));
 
-        if (lastLoginDate.getTime() === yesterday.getTime()) {
-            user.loginStreak += 1;
+        if (diff === 0) {
+            return {
+                studyStreak: user.stats.studyStreak,
+                lastStudyDate: user.stats.lastStudyDate
+            };
+        } else if (diff === 1) {
+            user.stats.studyStreak += 1;
+            if (user.stats.studyStreak > user.stats.longestStudyStreak) {
+                user.stats.longestStudyStreak = user.stats.studyStreak;
+            }
         } else {
-            user.loginStreak = 1;
+            user.stats.studyStreak = 1;
         }
+        user.stats.lastStudyDate = now;
     }
 
-    user.lastLoginDate = new Date();
+    user.markModified('stats');
     await user.save();
 
     return {
-        loginStreak: user.loginStreak,
-        lastLoginDate: user.lastLoginDate
+        studyStreak: user.stats.studyStreak,
+        lastStudyDate: user.stats.lastStudyDate
     };
 };
 
-export const getLoginStreakService = async (userId: string) => {
+export const getStudyStreakService = async (userId: string) => {
     const user = await User.findById(userId);
     if (!user) {
         throw new BadRequestsException('User not found', ErrorCode.NOT_FOUND);
     }
 
     return {
-        loginStreak: user.loginStreak,
-        lastLoginDate: user.lastLoginDate
+        studyStreak: user.stats?.studyStreak ?? 0,
+        lastStudyDate: user.stats?.lastStudyDate ?? null
     };
+};
+
+export const getTopLongestStudyStreakService = async (limit = 10) => {
+    return User.find({ 'stats.longestStudyStreak': { $gt: 0 } })
+        .sort({ 'stats.longestStudyStreak': -1, _id: 1 })
+        .limit(limit)
+        .select('name avatar stats.longestStudyStreak')
+        .lean();
 };
