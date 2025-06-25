@@ -1,26 +1,11 @@
 import { Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { getLoginStreak } from '@/api/streakApi';
 
 interface StreakIconProps {
     count?: number;
 }
 
 export default function StreakIcon({ count }: StreakIconProps) {
-    const [streakCount, setStreakCount] = useState<number | null>(count ?? null);
-
-    useEffect(() => {
-        if (count === undefined) {
-            getLoginStreak()
-                .then((data) => setStreakCount(data.loginStreak))
-                .catch((error) => {
-                    console.error('Failed to fetch streak:', error);
-                    setStreakCount(null);
-                });
-        }
-    }, [count]);
-
     return (
         <div className='fixed bottom-10 right-20 z-50 flex flex-col items-center gap-2 animate-[gentle-bounce_1.8s_ease-in-out_infinite]'>
             <motion.div
@@ -29,7 +14,7 @@ export default function StreakIcon({ count }: StreakIconProps) {
                 transition={{ duration: 0.6 }}
                 className='px-3 py-1.5 text-sm font-medium text-white bg-violet-500 border border-violet-200 rounded-lg shadow-md'
             >
-                Bạn đã học {streakCount} ngày liên tiếp!
+                Bạn đã học {count} ngày liên tiếp!
             </motion.div>
 
             <motion.div className='relative w-16 h-16 cursor-pointer animate-gentle-bounce'>

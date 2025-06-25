@@ -1,11 +1,11 @@
 import { api } from '.';
 
-export const loginStreak = async () => {
-    const { data } = await api.post('/streak');
+export const studyStreak = async () => {
+    const { data } = await api.post('/streak/study');
     return data;
 };
 
-export const getLoginStreak = async () => {
-    const { data } = await api.get('/streak');
+export const getStudyStreak = async () => {
+    const { data } = await api.get('/streak/study');
     return data;
 };
