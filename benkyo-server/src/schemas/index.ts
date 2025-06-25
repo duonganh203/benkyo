@@ -43,8 +43,6 @@ const UserSchema = new Schema({
     proExpiryDate: { type: Date, default: null, required: false },
     proType: { type: String, enum: Object.values(PackageType), default: PackageType.BASIC },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
-    loginStreak: { type: Number, default: 0 },
-    lastLoginDate: { type: Date },
     fsrsParams: {
         request_retention: { type: Number, default: 0.9 },
         maximum_interval: { type: Number, default: 36500 },
@@ -61,6 +59,7 @@ const UserSchema = new Schema({
     stats: {
         totalReviews: { type: Number, default: 0 },
         studyStreak: { type: Number, default: 0 },
+        longestStudyStreak: { type: Number, default: 0 },
         lastStudyDate: { type: Date }
     }
 });

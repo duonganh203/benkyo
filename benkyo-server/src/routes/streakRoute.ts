@@ -1,11 +1,16 @@
 import { Router } from 'express';
-import { getLoginStreakController, updateLoginStreakController } from '~/controllers/streakController';
+import {
+    getStudyStreakController,
+    getTopLongestStudyStreakController,
+    updateStudyStreakController
+} from '~/controllers/streakController';
 import { errorHandler } from '~/errorHandler';
 import authMiddleware from '~/middlewares/authMiddleware';
 
 const streakRoutes: Router = Router();
 
-streakRoutes.get('/', [authMiddleware], errorHandler(getLoginStreakController));
-streakRoutes.post('/', [authMiddleware], errorHandler(updateLoginStreakController));
+streakRoutes.get('/study', [authMiddleware], errorHandler(getStudyStreakController));
+streakRoutes.post('/study', [authMiddleware], errorHandler(updateStudyStreakController));
+streakRoutes.get('/study/top', errorHandler(getTopLongestStudyStreakController));
 
 export default streakRoutes;
