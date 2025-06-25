@@ -18,6 +18,8 @@ import useGetDueCards from '@/hooks/queries/use-get-due-cards';
 import useSubmitReview from '@/hooks/queries/use-submit-review';
 import { getToast } from '@/utils/getToast';
 import useSkipCard from '@/hooks/queries/use-skip-card';
+import { studyStreak } from '@/api/streakApi';
+import { useStudyFlagStore } from '@/hooks/stores/use-study-store';
 
 const StudyCard = () => {
     const { id: deckId } = useParams<{ id: string }>();
@@ -37,10 +39,29 @@ const StudyCard = () => {
 
     const timerRef = useRef<number | null>(null);
     const startTimeRef = useRef<number>(Date.now());
+    const streakLoggedRef = useRef(false);
 
     const { data: dueCards = [], isLoading } = useGetDueCards(deckId!);
 
     const { mutate: submitReview } = useSubmitReview(deckId!);
+
+    const logStreakOnce = async () => {
+        if (streakLoggedRef.current) return;
+        streakLoggedRef.current = true;
+        try {
+            const data = await studyStreak();
+            setJustStudied(true, data.studyStreak);
+        } catch (err) {
+            console.error('[STREAK] update failed', err);
+            setJustStudied(true, null);
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            streakLoggedRef.current = false;
+        };
+    }, [deckId]);
 
     useEffect(() => {
         setCards(dueCards);
@@ -66,33 +87,30 @@ const StudyCard = () => {
         setCurrentCardTime(0);
     }, [currentCardIndex]);
 
+    const { setJustStudied } = useStudyFlagStore();
+
     const handleRate = (rating: Rating) => {
         if (!cards.length || currentCardIndex >= cards.length) return;
-
         const currentCard = cards[currentCardIndex];
         const reviewTime = Math.round((Date.now() - startTimeRef.current) / 1000);
 
         submitReview(
             { cardId: currentCard._id, rating, reviewTime },
             {
-                onSuccess: () => {
-                    setStats((prev) => ({
-                        ...prev,
-                        studied: prev.studied + 1
-                    }));
+                onSuccess: async () => {
+                    await logStreakOnce(); // <- ghi streak ngay lượt rate đầu tiên
+                    setStats((prev) => ({ ...prev, studied: prev.studied + 1 }));
                     nextCard();
                 },
-                onError: () => {
-                    getToast('error', 'Failed to submit rating');
-                }
+                onError: () => getToast('error', 'Failed to submit rating')
             }
         );
     };
+
     const { mutate: skipCard } = useSkipCard(deckId!);
 
     const nextCard = () => {
         const nextIndex = currentCardIndex + 1;
-
         if (nextIndex >= cards.length) {
             if (timerRef.current) {
                 clearInterval(timerRef.current);
@@ -105,7 +123,8 @@ const StudyCard = () => {
         }
     };
 
-    const handleShowAnswer = () => {
+    const handleShowAnswer = async () => {
+        await logStreakOnce();
         setShowAnswer(true);
     };
 
@@ -122,29 +141,27 @@ const StudyCard = () => {
 
     const handleSkip = () => {
         if (!cards.length || currentCardIndex >= cards.length) return;
-
         const currentCard = cards[currentCardIndex];
         skipCard(
             { cardId: currentCard._id },
             {
-                onSuccess: () => {
+                onSuccess: async () => {
+                    await logStreakOnce(); // <- skip cũng log
                     nextCard();
                 },
-                onError: () => {
-                    getToast('error', 'Failed to skip card');
-                }
+                onError: () => getToast('error', 'Failed to skip card')
             }
         );
     };
 
-    const endStudySession = () => {
+    const endStudySession = async () => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
             timerRef.current = null;
         }
+        await logStreakOnce();
         navigate(`/deck/${deckId}`);
     };
-
     if (isLoading || !cards.length) {
         return (
             <div className='max-w-2xl mx-auto py-8 px-4'>
