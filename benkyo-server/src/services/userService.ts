@@ -18,21 +18,15 @@ export const updateUserService = async (userId: string, userData: z.infer<typeof
     };
 };
 export const listUserAccountsService = async () => {
-    try {
-        const users = await User.find({ role: 'user' }).select(
-            '_id name email avatar createdAt isPro proExpiryDate role'
-        );
-        return users.map((user) => ({
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            avatar: user.avatar,
-            isPro: user.isPro,
-            proExpiryDate: user.proExpiryDate,
-            createdAt: user.createdAt,
-            role: user.role
-        }));
-    } catch (error) {
-        throw new BadRequestsException('Failed to fetch user accounts', ErrorCode.INTERNAL_SERVER_ERROR);
-    }
+    const users = await User.find();
+    return users.map((user) => ({
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        isPro: user.isPro,
+        proExpiryDate: user.proExpiryDate,
+        createdAt: user.createdAt,
+        role: user.role
+    }));
 };
