@@ -23,7 +23,7 @@ export const uploadDocumentService = async (userId: string, file: Express.Multer
     if (file && file.path) {
         await fs.remove(file.path).catch(() => {});
     }
-    deductUserCredit(userId, 'Ai');
+    await deductUserCredit(userId, 'Ai');
     return document;
 };
 
