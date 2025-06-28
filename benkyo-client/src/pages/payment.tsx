@@ -5,13 +5,14 @@ import { useParams } from 'react-router-dom';
 const Payment = () => {
     const { packageId } = useParams<{ packageId: string }>();
     const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
-    if (!packageId || !isValidObjectId(packageId))
+    if (!packageId || !isValidObjectId(packageId)) {
         return (
             <div className='min-h-screen flex flex-col justify-center items-center'>
                 <h1 className='text-4xl font-bold mb-4'>404</h1>
-                <p className='text-lg text-muted-foreground'>Oops! Package not found.</p>
+                <p className='text-lg text-muted-foreground'>Oops! Package not found or invalid ID.</p>
             </div>
         );
+    }
 
     return (
         <div className='min-h-screen py-12 px-4'>
