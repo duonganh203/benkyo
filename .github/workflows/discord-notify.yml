@@ -17,10 +17,10 @@ jobs:
               run: |
                   if [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
                     echo "status=✅ CI Passed 🎉" >> $GITHUB_OUTPUT
-                    echo "color=3066993" >> $GITHUB_OUTPUT  # green
+                    echo "color=3066993" >> $GITHUB_OUTPUT
                   else
                     echo "status=❌ CI Failed 💥" >> $GITHUB_OUTPUT
-                    echo "color=15158332" >> $GITHUB_OUTPUT  # red
+                    echo "color=15158332" >> $GITHUB_OUTPUT
                   fi
 
             - name: Send to Discord
@@ -34,9 +34,11 @@ jobs:
                   AUTHOR: ${{ github.event.workflow_run.head_commit.author.name }}
                   USERNAME: ${{ github.event.workflow_run.head_commit.author.username }}
               run: |
-                    curl -X POST "$DISCORD_WEBHOOK" \
-                      -H "Content-Type: application/json" \
-                      -d @- <<EOF
+                  TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+                  curl -X POST "$DISCORD_WEBHOOK" \
+                    -H "Content-Type: application/json" \
+                    -d @- <<EOF
                   {
                     "content": "@everyone",
                     "embeds": [
@@ -54,10 +56,9 @@ jobs:
                           "url": "https://cdn-icons-png.flaticon.com/512/906/906334.png"
                         },
                         "footer": {
-                          "text": "🕒 CI finished at $(date -u +"%Y-%m-%d %H:%M:%S UTC") • 🐙 GitHub Actions"
+                          "text": "🕒 CI finished at ${TIMESTAMP} • 🐙 GitHub Actions"
                         }
                       }
                     ]
                   }
                   EOF
-
