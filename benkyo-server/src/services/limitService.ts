@@ -11,7 +11,7 @@ export function creditsResetJob() {
             });
 
             if (existing && existing.function === Func.GEN_AI) {
-                const tokenLimitAI = getUserCreditLimitAI(user);
+                const tokenLimitAI = getUserCreditLimitAI(user.proType);
                 existing.remaining = tokenLimitAI;
                 await existing.save();
             }
@@ -31,8 +31,8 @@ export async function getRemainingCredits(userId: string, func: string) {
     return remaining.remaining;
 }
 
-function getUserCreditLimitAI(user: UserType): number {
-    switch (user.proType) {
+function getUserCreditLimitAI(proType: string): number {
+    switch (proType) {
         case 'Basic':
             return 5;
         case 'Pro':
@@ -56,16 +56,16 @@ export async function deductUserCredit(userId: string, func: string) {
     }
 }
 
-export async function addCreditFromNewUser(userId: string) {
+export async function addCreditFromNewUser(proType: string, userId: string) {
     const logAI = await GenerationLog.findOne({
-        userId,
+        userId: userId,
         function: Func.GEN_AI
     });
     if (!logAI) {
         const logAINew = new GenerationLog({
             userId,
             function: Func.GEN_AI,
-            remaining: getUserCreditLimitAI(user)
+            remaining: getUserCreditLimitAI(proType)
         });
         await logAINew.save();
     }
