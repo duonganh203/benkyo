@@ -17,7 +17,11 @@ export const registerService = async (userData: z.infer<typeof registerValidatio
     }
     const hashedPassword = await hash(password, 10);
     user = await User.create({ name, email: email.toLowerCase(), password: hashedPassword });
-    addCreditFromNewUser(user._id.toString());
+    try {
+        await addCreditFromNewUser(user._id.toString());
+    } catch (error) {
+        console.error('Failed to initialize credits for new user:', error);
+    }
     return user;
 };
 
