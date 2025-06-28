@@ -28,7 +28,7 @@ export async function getRemainingCredits(userId: string, func: string) {
     if (!remaining) {
         return 0;
     }
-    return remaining;
+    return remaining.remaining;
 }
 
 function getUserCreditLimitAI(user: UserType): number {
