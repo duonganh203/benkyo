@@ -29,12 +29,13 @@ jobs:
                   STATUS: ${{ steps.result.outputs.status }}
                   COLOR: ${{ steps.result.outputs.color }}
                   TITLE: ${{ github.event.workflow_run.display_title }}
-                  URL: ${{ github.event.workflow_run.html_url }}
                   COMMIT_MSG: ${{ github.event.workflow_run.head_commit.message }}
-                  AUTHOR: ${{ github.event.workflow_run.head_commit.author.name }}
-                  USERNAME: ${{ github.event.workflow_run.head_commit.author.username }}
+                  REPO: ${{ github.repository }}
+                  COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+                  USER: ${{ github.event.sender.login }}
               run: |
                   TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+                  PR_URL="https://github.com/${REPO}/pulls?q=sha:${COMMIT_SHA}"
 
                   curl -X POST "$DISCORD_WEBHOOK" \
                     -H "Content-Type: application/json" \
@@ -44,13 +45,13 @@ jobs:
                     "embeds": [
                       {
                         "title": "🚀 ${STATUS}",
-                        "url": "${URL}",
-                        "description": "📦 **Commit**: \`${COMMIT_MSG}\`\n🔧 **Workflow**: \`${TITLE}\`\n👤 **Author**: [${AUTHOR}](https://github.com/${USERNAME})",
+                        "url": "${PR_URL}",
+                        "description": "📦 **Commit**: \`${COMMIT_MSG}\`\n🔧 **Workflow**: \`${TITLE}\`\n👤 **User**: [${USER}](https://github.com/${USER})",
                         "color": ${COLOR},
                         "author": {
-                          "name": "${AUTHOR}",
-                          "url": "https://github.com/${USERNAME}",
-                          "icon_url": "https://github.com/${USERNAME}.png"
+                          "name": "${USER}",
+                          "url": "https://github.com/${USER}",
+                          "icon_url": "https://github.com/${USER}.png"
                         },
                         "thumbnail": {
                           "url": "https://cdn-icons-png.flaticon.com/512/906/906334.png"
