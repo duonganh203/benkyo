@@ -1,7 +1,9 @@
 import { type LucideIcon } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { Badge } from './ui/badge';
+import { cn } from '@/lib/utils';
 
 export function NavMain({
     items
@@ -11,6 +13,8 @@ export function NavMain({
         url: string;
         icon: LucideIcon;
         isActive?: boolean;
+        badge?: string;
+        highlight?: boolean;
     }[];
 }) {
     const location = useLocation();
@@ -26,10 +30,17 @@ export function NavMain({
                 return (
                     <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton asChild isActive={isActive}>
-                            <a href={item.url}>
-                                <item.icon />
-                                <span>{item.title}</span>
-                            </a>
+                            <Link to={item.url} className='flex items-center gap-2'>
+                                <item.icon className={cn(item.highlight && 'text-sidebar-primary')} />
+                                <span className={cn(item.highlight && 'text-sidebar-primary font-medium')}>
+                                    {item.title}
+                                </span>
+                                {item.badge && (
+                                    <Badge variant='secondary' className='ml-auto text-[10px] bg-sidebar-accent/50'>
+                                        {item.badge}
+                                    </Badge>
+                                )}
+                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 );
