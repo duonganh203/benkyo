@@ -16,7 +16,7 @@ export function creditsResetJob() {
                 await existing.save();
             }
         }
-        console.log(`Resetting daily credits reseted`);
+        console.log('Daily credits reset');
     });
 }
 
