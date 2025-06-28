@@ -34,27 +34,30 @@ jobs:
                   AUTHOR: ${{ github.event.workflow_run.head_commit.author.name }}
                   USERNAME: ${{ github.event.workflow_run.head_commit.author.username }}
               run: |
-                  curl -X POST "$DISCORD_WEBHOOK" \
-                    -H "Content-Type: application/json" \
-                    -d '{
-                      "content": "@everyone",
-                      "embeds": [
-                        {
-                          "title": "🚀 '"${STATUS}"'",
-                          "url": "'"${URL}"'",
-                          "description": "📦 **Commit**: `${COMMIT_MSG}`\n🔧 **Workflow**: `${TITLE}`\n👤 **Author**: [${AUTHOR}](https://github.com/${USERNAME})",
-                          "color": '"${COLOR}"',
-                          "author": {
-                            "name": "'"${AUTHOR}"'",
-                            "url": "https://github.com/${USERNAME}",
-                            "icon_url": "https://github.com/${USERNAME}.png"
-                          },
-                          "thumbnail": {
-                            "url": "https://cdn-icons-png.flaticon.com/512/906/906334.png"
-                          },
-                          "footer": {
-                            "text": "🕒 CI finished at $(date -u +"%Y-%m-%d %H:%M:%S UTC") • 🐙 GitHub Actions"
-                          }
+                    curl -X POST "$DISCORD_WEBHOOK" \
+                      -H "Content-Type: application/json" \
+                      -d @- <<EOF
+                  {
+                    "content": "@everyone",
+                    "embeds": [
+                      {
+                        "title": "🚀 ${STATUS}",
+                        "url": "${URL}",
+                        "description": "📦 **Commit**: \`${COMMIT_MSG}\`\n🔧 **Workflow**: \`${TITLE}\`\n👤 **Author**: [${AUTHOR}](https://github.com/${USERNAME})",
+                        "color": ${COLOR},
+                        "author": {
+                          "name": "${AUTHOR}",
+                          "url": "https://github.com/${USERNAME}",
+                          "icon_url": "https://github.com/${USERNAME}.png"
+                        },
+                        "thumbnail": {
+                          "url": "https://cdn-icons-png.flaticon.com/512/906/906334.png"
+                        },
+                        "footer": {
+                          "text": "🕒 CI finished at $(date -u +"%Y-%m-%d %H:%M:%S UTC") • 🐙 GitHub Actions"
                         }
-                      ]
-                    }'
+                      }
+                    ]
+                  }
+                  EOF
+
