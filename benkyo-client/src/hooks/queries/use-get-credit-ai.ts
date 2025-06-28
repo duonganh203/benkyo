@@ -6,7 +6,7 @@ import { getCreditAI } from '@/api/limitAPi';
 const useGetCreditAI = (func: string) => {
     return useQuery<any, AxiosError<ApiError>>({
         queryKey: ['creditAI', func],
-        queryFn: () => getCreditAI()
+        queryFn: () => getCreditAI(func)
     });
 };
 
