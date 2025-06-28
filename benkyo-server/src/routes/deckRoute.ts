@@ -9,7 +9,8 @@ import {
     getPublicDecks,
     getRequestPulbicDeck,
     reviewPublicServiceDeck,
-    sendReqPublicDeck
+    sendReqPublicDeck,
+    subscribeToDeck
 } from '~/controllers/deckController';
 import { errorHandler } from '~/errorHandler';
 import adminAuthMiddleware from '~/middlewares/adminAuthMiddleware';
@@ -27,5 +28,6 @@ deckRoutes.get('/:id', [authMiddleware], errorHandler(getDeck));
 deckRoutes.get('/:id/cards', [authMiddleware], errorHandler(getCards));
 deckRoutes.delete('/:id', [authMiddleware], errorHandler(deleteDeck));
 deckRoutes.patch('/:id/request-public', [authMiddleware], errorHandler(sendReqPublicDeck));
+deckRoutes.post('/:id/subscribe', [authMiddleware], errorHandler(subscribeToDeck));
 
 export default deckRoutes;
