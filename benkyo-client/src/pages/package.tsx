@@ -51,6 +51,14 @@ const Packages = () => {
             navigate(`/payment/${chosen._id}`);
         }
     };
+    if (tierList.length === 0) {
+        return (
+            <div className='min-h-screen flex flex-col justify-center items-center'>
+                <h1 className='text-4xl font-bold mb-4'>No Packages Available</h1>
+                <p className='text-lg text-muted-foreground'>Please check back later.</p>
+            </div>
+        );
+    }
 
     return (
         <div className='max-w-6xl h-full flex flex-col mx-auto px-4 py-16'>
