@@ -33,7 +33,7 @@ enum PackageDuration {
 }
 
 enum Func {
-    GEN_AI = 'Ai',
+    GEN_AI = 'AI',
     CLASS = 'Class'
 }
 
