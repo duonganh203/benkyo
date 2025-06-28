@@ -59,6 +59,7 @@ const UserSchema = new Schema({
     stats: {
         totalReviews: { type: Number, default: 0 },
         studyStreak: { type: Number, default: 0 },
+        longestStudyStreak: { type: Number, default: 0 },
         lastStudyDate: { type: Date }
     }
 });

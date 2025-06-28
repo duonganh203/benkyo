@@ -26,6 +26,7 @@ import AIChat from './pages/ai-chat';
 import Payment from './pages/payment';
 import Packages from './pages/package';
 import Community from './pages/community';
+
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {

@@ -8,6 +8,7 @@ import quizRoutes from './quizRoute';
 import documentRoutes from './documentRoute';
 import chatRoutes from './chatRoute';
 import paymentRoutes from './paymentRoute';
+import streakRoutes from './streakRoute';
 
 const rootRouter: Router = Router();
 
@@ -21,5 +22,6 @@ rootRouter.use('/quiz', quizRoutes);
 rootRouter.use('/documents', documentRoutes);
 rootRouter.use('/chat', chatRoutes);
 rootRouter.use('/payment', paymentRoutes);
+rootRouter.use('/streak', streakRoutes);
 
 export default rootRouter;
