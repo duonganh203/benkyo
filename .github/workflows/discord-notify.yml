@@ -1,0 +1,60 @@
+name: Notify Discord after CI
+
+on:
+    workflow_run:
+        workflows: ['ci phase']
+        types:
+            - completed
+
+jobs:
+    discord-notify:
+        runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion != 'skipped' }}
+
+        steps:
+            - name: Set status icon
+              id: result
+              run: |
+                  if [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
+                    echo "status=✅ CI Passed 🎉" >> $GITHUB_OUTPUT
+                    echo "color=3066993" >> $GITHUB_OUTPUT  # green
+                  else
+                    echo "status=❌ CI Failed 💥" >> $GITHUB_OUTPUT
+                    echo "color=15158332" >> $GITHUB_OUTPUT  # red
+                  fi
+
+            - name: Send to Discord
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+                  STATUS: ${{ steps.result.outputs.status }}
+                  COLOR: ${{ steps.result.outputs.color }}
+                  TITLE: ${{ github.event.workflow_run.display_title }}
+                  URL: ${{ github.event.workflow_run.html_url }}
+                  COMMIT_MSG: ${{ github.event.workflow_run.head_commit.message }}
+                  AUTHOR: ${{ github.event.workflow_run.head_commit.author.name }}
+                  USERNAME: ${{ github.event.workflow_run.head_commit.author.username }}
+              run: |
+                  curl -X POST "$DISCORD_WEBHOOK" \
+                    -H "Content-Type: application/json" \
+                    -d '{
+                      "content": "@everyone",
+                      "embeds": [
+                        {
+                          "title": "🚀 '"${STATUS}"'",
+                          "url": "'"${URL}"'",
+                          "description": "📦 **Commit**: `${COMMIT_MSG}`\n🔧 **Workflow**: `${TITLE}`\n👤 **Author**: [${AUTHOR}](https://github.com/${USERNAME})",
+                          "color": '"${COLOR}"',
+                          "author": {
+                            "name": "'"${AUTHOR}"'",
+                            "url": "https://github.com/${USERNAME}",
+                            "icon_url": "https://github.com/${USERNAME}.png"
+                          },
+                          "thumbnail": {
+                            "url": "https://cdn-icons-png.flaticon.com/512/906/906334.png"
+                          },
+                          "footer": {
+                            "text": "🕒 CI finished at $(date -u +"%Y-%m-%d %H:%M:%S UTC") • 🐙 GitHub Actions"
+                          }
+                        }
+                      ]
+                    }'
