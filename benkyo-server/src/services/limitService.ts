@@ -65,7 +65,7 @@ export async function addCreditFromNewUser(userId: string) {
         const logAINew = new GenerationLog({
             userId,
             function: Func.GEN_AI,
-            remaining: 3
+            remaining: getUserCreditLimitAI(user)
         });
         await logAINew.save();
     }
