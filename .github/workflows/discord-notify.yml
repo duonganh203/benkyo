@@ -23,6 +23,18 @@ jobs:
                     echo "color=15158332" >> $GITHUB_OUTPUT
                   fi
 
+            - name: Get PR URL via GitHub API
+              id: pr
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SHA: ${{ github.event.workflow_run.head_sha }}
+                  REPO: ${{ github.repository }}
+              run: |
+                  PR_API_URL="https://api.github.com/repos/${REPO}/commits/${SHA}/pulls"
+                  PR_JSON=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github.groot-preview+json" "$PR_API_URL")
+                  PR_URL=$(echo "$PR_JSON" | jq -r '.[0].html_url')
+                  echo "url=$PR_URL" >> $GITHUB_OUTPUT
+
             - name: Send to Discord
               env:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
@@ -30,12 +42,10 @@ jobs:
                   COLOR: ${{ steps.result.outputs.color }}
                   TITLE: ${{ github.event.workflow_run.display_title }}
                   COMMIT_MSG: ${{ github.event.workflow_run.head_commit.message }}
-                  REPO: ${{ github.repository }}
-                  COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
                   USER: ${{ github.event.sender.login }}
+                  PR_URL: ${{ steps.pr.outputs.url }}
               run: |
                   TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-                  PR_URL="https://github.com/${REPO}/pulls?q=sha:${COMMIT_SHA}"
 
                   curl -X POST "$DISCORD_WEBHOOK" \
                     -H "Content-Type: application/json" \
@@ -46,7 +56,7 @@ jobs:
                       {
                         "title": "🚀 ${STATUS}",
                         "url": "${PR_URL}",
-                        "description": "📦 **Commit**: \`${COMMIT_MSG}\`\n🔧 **Workflow**: \`${TITLE}\`\n👤 **User**: [${USER}](https://github.com/${USER})",
+                        "description": "🧪 **Workflow**: \`${TITLE}\`\n📦 **Commit**: \`${COMMIT_MSG}\`\n👤 **Author**: [${USER}](https://github.com/${USER})",
                         "color": ${COLOR},
                         "author": {
                           "name": "${USER}",
