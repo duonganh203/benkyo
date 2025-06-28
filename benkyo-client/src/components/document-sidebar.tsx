@@ -33,7 +33,7 @@ const DocumentSidebar = ({
     const [dragActive, setDragActive] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [documentName, setDocumentName] = useState('');
-    const { data: credit, refetch: getCreditAI } = useGetCreditAI('Ai');
+    const { data: credit, refetch: getCreditAI } = useGetCreditAI('AI');
     const fileInputRef = useRef<HTMLInputElement>(null);
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault();
