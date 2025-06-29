@@ -131,6 +131,15 @@ const DeckDetail = () => {
     };
 
     const getLearningStatus = (card: CardInterface) => {
+        if (!card.learning) {
+            return {
+                stateText: 'New',
+                stateColor: 'bg-blue-500',
+                dueText: 'Not scheduled',
+                isDue: false
+            };
+        }
+
         const { state, due } = card.learning;
         const dueDate = new Date(due);
         const now = new Date();
@@ -150,12 +159,16 @@ const DeckDetail = () => {
                 stateColor = 'bg-yellow-500';
                 break;
             case State.REVIEW:
-                stateText = isDue ? 'Due now' : formatDistanceToNow(dueDate, { addSuffix: true });
+                stateText = isDue ? 'Due now' : 'Review';
                 stateColor = isDue ? 'bg-green-500' : 'bg-green-300';
                 break;
             case State.RELEARNING:
                 stateText = 'Relearning';
                 stateColor = 'bg-red-500';
+                break;
+            default:
+                stateText = 'New';
+                stateColor = 'bg-blue-500';
                 break;
         }
 
