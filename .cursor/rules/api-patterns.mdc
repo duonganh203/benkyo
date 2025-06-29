@@ -1,0 +1,189 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# API Patterns & Conventions
+
+## Request/Response Structure
+
+### Standard Response Format
+All API responses follow a consistent structure:
+```typescript
+{
+  success: boolean;
+  data?: any;
+  message?: string;
+  error?: string;
+}
+```
+
+### Error Handling Pattern
+- Use custom exception classes from [benkyo-server/src/exceptions/](mdc:benkyo-server/src/exceptions)
+- Common exceptions: `BadRequestsException`, `UnauthorizedException`, `ForbiddenException`, `NotFoundException`
+- Global error handling in [benkyo-server/src/middlewares/errorsMiddleware.ts](mdc:benkyo-server/src/middlewares/errorsMiddleware.ts)
+
+## Controller Pattern
+
+### Structure
+```typescript
+// Controller handles HTTP logic
+export const createCard = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Validation
+    const validatedData = cardValidation.create.parse(req.body);
+    
+    // Business logic delegation
+    const result = await cardService.createCard(req.user.id, validatedData);
+    
+    // Response
+    res.status(201).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+```
+
+### Service Layer
+```typescript
+// Service handles business logic
+export const createCard = async (userId: string, cardData: CardInput) => {
+  // Business validation
+  const deck = await Deck.findById(cardData.deckId);
+  if (!deck || deck.owner.toString() !== userId) {
+    throw new ForbiddenException('Access denied');
+  }
+  
+  // Database operations
+  const card = await Card.create(cardData);
+  await Deck.findByIdAndUpdate(cardData.deckId, { $inc: { cardCount: 1 } });
+  
+  return card;
+};
+```
+
+## Authentication & Authorization
+
+### Middleware Chain
+1. **authMiddleware** - Verifies JWT token, adds `req.user`
+2. **proAccountMiddleware** - Checks pro subscription for premium features
+3. **adminAuthMiddleware** - Validates admin permissions
+
+### Usage Examples
+```typescript
+// Basic auth required
+router.get('/decks', authMiddleware, getDecksByUser);
+
+// Pro subscription required
+router.post('/ai/generate', authMiddleware, proAccountMiddleware, generateCards);
+
+// Admin access required
+router.patch('/decks/:id/approve', authMiddleware, adminAuthMiddleware, approveDeck);
+```
+
+## Client-Side API Integration
+
+### React Query Pattern
+Hooks in [benkyo-client/src/hooks/queries/](mdc:benkyo-client/src/hooks/queries) follow this pattern:
+
+```typescript
+export const useCreateDeck = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (deckData: CreateDeckInput) => deckApi.createDeck(deckData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-decks'] });
+      toast.success('Deck created successfully');
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    }
+  });
+};
+```
+
+### API Client Structure
+API functions in [benkyo-client/src/api/](mdc:benkyo-client/src/api) use consistent patterns:
+
+```typescript
+export const deckApi = {
+  getUserDecks: (): Promise<Deck[]> => 
+    api.get('/decks').then(res => res.data.data),
+    
+  createDeck: (deckData: CreateDeckInput): Promise<Deck> =>
+    api.post('/decks', deckData).then(res => res.data.data),
+    
+  getDeckById: (id: string): Promise<DeckWithCards> =>
+    api.get(`/decks/${id}`).then(res => res.data.data)
+};
+```
+
+## Validation Strategy
+
+### Server-Side Validation
+- Use validation functions in [benkyo-server/src/validations/](mdc:benkyo-server/src/validations)
+- Validate at controller level before service calls
+- Return structured error messages
+
+### Client-Side Validation
+- Zod schemas in [benkyo-client/src/schemas/](mdc:benkyo-client/src/schemas)
+- Form validation with react-hook-form
+- Real-time validation feedback
+
+## Pagination & Filtering
+
+### Standard Pagination
+```typescript
+// Query parameters
+interface PaginationQuery {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+// Response format
+interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    current: number;
+    total: number;
+    pages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+```
+
+## File Upload Pattern
+
+### Server Side
+- Use [benkyo-server/src/middlewares/uploadMiddleware.ts](mdc:benkyo-server/src/middlewares/uploadMiddleware.ts)
+- Handle file validation and storage
+- Clean up temporary files on error
+
+### Client Side
+- Progress tracking for large uploads
+- File type and size validation
+- Preview functionality where applicable
+
+## Real-time Features
+
+### WebSocket Integration
+- Document chat uses real-time updates
+- Study session progress tracking
+- Notification system for community features
+
+## Rate Limiting & Security
+
+### Pro Account Limits
+- Daily card creation limits
+- API request throttling
+- Feature access control based on subscription tier
+
+### Security Headers
+- CORS configuration
+- JWT token expiration handling
+- Input sanitization
+
