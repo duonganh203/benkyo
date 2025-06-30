@@ -50,7 +50,9 @@ const StudyCard = () => {
         streakLoggedRef.current = true;
         try {
             const data = await studyStreak();
-            setJustStudied(true, data.studyStreak);
+            if (data.updated) {
+                setJustStudied(true, data.studyStreak);
+            }
         } catch (err) {
             console.error('[STREAK] update failed', err);
             setJustStudied(true, null);
@@ -90,6 +92,9 @@ const StudyCard = () => {
     const { setJustStudied } = useStudyFlagStore();
 
     const handleRate = (rating: Rating) => {
+        const isLastCard = currentCardIndex + 1 === cards.length;
+        if (isLastCard) logStreakOnce();
+
         if (!cards.length || currentCardIndex >= cards.length) return;
         const currentCard = cards[currentCardIndex];
         const reviewTime = Math.round((Date.now() - startTimeRef.current) / 1000);
@@ -98,7 +103,6 @@ const StudyCard = () => {
             { cardId: currentCard._id, rating, reviewTime },
             {
                 onSuccess: async () => {
-                    await logStreakOnce(); // <- ghi streak ngay lượt rate đầu tiên
                     setStats((prev) => ({ ...prev, studied: prev.studied + 1 }));
                     nextCard();
                 },
@@ -112,6 +116,7 @@ const StudyCard = () => {
     const nextCard = () => {
         const nextIndex = currentCardIndex + 1;
         if (nextIndex >= cards.length) {
+            logStreakOnce();
             if (timerRef.current) {
                 clearInterval(timerRef.current);
                 timerRef.current = null;
@@ -124,7 +129,6 @@ const StudyCard = () => {
     };
 
     const handleShowAnswer = async () => {
-        await logStreakOnce();
         setShowAnswer(true);
     };
 
@@ -146,7 +150,6 @@ const StudyCard = () => {
             { cardId: currentCard._id },
             {
                 onSuccess: async () => {
-                    await logStreakOnce(); // <- skip cũng log
                     nextCard();
                 },
                 onError: () => getToast('error', 'Failed to skip card')
@@ -159,9 +162,9 @@ const StudyCard = () => {
             clearInterval(timerRef.current);
             timerRef.current = null;
         }
-        await logStreakOnce();
         navigate(`/deck/${deckId}`);
     };
+
     if (isLoading || !cards.length) {
         return (
             <div className='max-w-2xl mx-auto py-8 px-4'>
