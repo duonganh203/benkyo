@@ -26,6 +26,7 @@ import AIChat from './pages/ai-chat';
 import Payment from './pages/payment';
 import Packages from './pages/package';
 import Community from './pages/community';
+import TopLearners from './pages/top-streak-study';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -66,6 +67,7 @@ const App = () => {
                                 <Route path='/payment/:packageId' element={<Payment />} />
                                 <Route path='/package' element={<Packages />} />
                                 <Route path='/community' element={<Community />} />
+                                <Route path='/top-learners' element={<TopLearners />} />
                             </Route>
                         </Route>
                     </Routes>
