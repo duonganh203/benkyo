@@ -12,8 +12,8 @@ export function useStudyStreakTimer() {
 
     useEffect(() => {
         if (justStudied) {
-            const fetch = async () => {
-                if (latestStreak != null) setStreak(latestStreak);
+            const loadStreak = async () => {
+                if (latestStreak !== null) setStreak(latestStreak);
                 else {
                     try {
                         const data = await getStudyStreak();
@@ -23,7 +23,7 @@ export function useStudyStreakTimer() {
                     }
                 }
             };
-            fetch();
+            loadStreak();
 
             setVisible(true);
             toRef.current = setTimeout(() => {
