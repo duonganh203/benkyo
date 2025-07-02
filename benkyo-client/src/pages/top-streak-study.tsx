@@ -1,21 +1,17 @@
+import useGetTopLearner from '@/hooks/queries/use-get-top-learner';
 import { Trophy, Award, Medal, Crown, Star, Sparkles } from 'lucide-react';
 
-const topLearners = [
-    { id: 1, name: 'Alex Chen', streak: 342, avatar: 'AC', school: 'Stanford University' },
-    { id: 2, name: 'Maria Rodriguez', streak: 289, avatar: 'MR', school: 'MIT' },
-    { id: 3, name: 'James Wilson', streak: 267, avatar: 'JW', school: 'Harvard University' },
-    { id: 4, name: 'Sarah Kim', streak: 234, avatar: 'SK', school: 'UC Berkeley' },
-    { id: 5, name: 'David Thompson', streak: 201, avatar: 'DT', school: 'Oxford University' },
-    { id: 6, name: 'Emily Zhang', streak: 189, avatar: 'EZ', school: 'Cambridge University' },
-    { id: 7, name: 'Michael Brown', streak: 176, avatar: 'MB', school: 'Yale University' },
-    { id: 8, name: 'Lisa Park', streak: 165, avatar: 'LP', school: 'Princeton University' },
-    { id: 9, name: 'Robert Taylor', streak: 152, avatar: 'RT', school: 'Columbia University' },
-    { id: 10, name: 'Jennifer Lee', streak: 143, avatar: 'JL', school: 'UCLA' }
-];
-
 const TopLearners = () => {
+    const { data } = useGetTopLearner();
+    const topLearners = data || [];
+
+    console.log('Top Learners:', topLearners);
+
     const topThree = topLearners.slice(0, 3);
     const restOfList = topLearners.slice(3);
+
+    const totalDays = topLearners.reduce((sum, l) => sum + (l.stats?.longestStudyStreak ?? 0), 0);
+    const longestStreak = topLearners.reduce((max, l) => Math.max(max, l.stats?.longestStudyStreak ?? 0), 0);
 
     const getPodiumIcon = (position: number) => {
         switch (position) {
@@ -93,7 +89,7 @@ const TopLearners = () => {
                     <div className='flex items-end justify-center gap-6 max-w-4xl mx-auto'>
                         {topThree.map((learner, index) => (
                             <div
-                                key={learner.id}
+                                key={learner._id}
                                 className={`${getPodiumStyling(index + 1)} flex-1 max-w-xs rounded-t-2xl relative hover:scale-105 transition-transform duration-300 cursor-pointer`}
                             >
                                 <div className='absolute -top-14 left-1/2 -translate-x-1/2'>
@@ -105,9 +101,8 @@ const TopLearners = () => {
 
                                 <div className='absolute bottom-3 left-1/2 -translate-x-1/2 text-center text-white w-full px-2'>
                                     <h3 className='font-bold text-lg'>{learner.name}</h3>
-                                    <p className='text-2xl font-bold'>{learner.streak}</p>
+                                    <p className='text-2xl font-bold'>{learner.stats.longestStudyStreak}</p>
                                     <p className='text-xs opacity-90'>days</p>
-                                    <p className='text-xs opacity-80'>{learner.school}</p>
                                 </div>
 
                                 <div className='absolute top-3 right-3 bg-muted/30 backdrop-blur-md rounded-full px-3 py-1 border border-border'>
@@ -127,7 +122,7 @@ const TopLearners = () => {
                     <div className='space-y-4'>
                         {restOfList.map((learner, index) => (
                             <div
-                                key={learner.id}
+                                key={learner._id}
                                 className='bg-muted/70 backdrop-blur-sm rounded-2xl p-6 hover:bg-muted hover:shadow-md transition-transform duration-300 hover:scale-[1.02] border border-border'
                             >
                                 <div className='flex items-center justify-between'>
@@ -142,11 +137,12 @@ const TopLearners = () => {
                                         </div>
                                         <div>
                                             <h3 className='text-lg font-bold'>{learner.name}</h3>
-                                            <p className='text-muted-foreground text-sm'>{learner.school}</p>
                                         </div>
                                     </div>
                                     <div className='text-right'>
-                                        <div className='text-2xl font-bold text-sky-400'>{learner.streak}</div>
+                                        <div className='text-2xl font-bold text-sky-400'>
+                                            {learner.stats.longestStudyStreak}
+                                        </div>
                                         <div className='text-muted-foreground text-sm'>days streak</div>
                                     </div>
                                 </div>
@@ -158,15 +154,15 @@ const TopLearners = () => {
                 {/* Quick Stats */}
                 <section className='grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-20'>
                     <div className='bg-muted/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-border shadow-sm hover:shadow-lg'>
-                        <div className='text-3xl font-bold text-sky-400 mb-2'>2,258</div>
+                        <div className='text-3xl font-bold text-sky-400 mb-2'>{totalDays}</div>
                         <div className='text-muted-foreground'>Total Days</div>
                     </div>
                     <div className='bg-muted/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-border shadow-sm hover:shadow-lg'>
-                        <div className='text-3xl font-bold text-indigo-400 mb-2'>10</div>
+                        <div className='text-3xl font-bold text-indigo-400 mb-2'>{topLearners.length}</div>
                         <div className='text-muted-foreground'>Top Learners</div>
                     </div>
                     <div className='bg-muted/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-border shadow-sm hover:shadow-lg'>
-                        <div className='text-3xl font-bold text-purple-400 mb-2'>342</div>
+                        <div className='text-3xl font-bold text-purple-400 mb-2'>{longestStreak}</div>
                         <div className='text-muted-foreground'>Longest Streak</div>
                     </div>
                 </section>
