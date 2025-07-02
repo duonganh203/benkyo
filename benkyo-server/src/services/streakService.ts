@@ -7,33 +7,28 @@ export const updateStudyStreakService = async (userId: string) => {
     const user = await User.findById(userId);
     if (!user) throw new BadRequestsException('User not found', ErrorCode.NOT_FOUND);
 
-    const now = new Date();
-
     if (!user.stats) {
         user.stats = {
-            studyStreak: 1,
-            longestStudyStreak: 1,
-            lastStudyDate: now,
+            studyStreak: 0,
+            longestStudyStreak: 0,
+            lastStudyDate: null,
             totalReviews: 0
         };
     }
 
+    const now = new Date();
     const todayStart = startOfDay(now);
-    const last = user.stats.lastStudyDate ? startOfDay(new Date(user.stats.lastStudyDate)) : null;
+    const lastStudyStart = user.stats.lastStudyDate ? startOfDay(new Date(user.stats.lastStudyDate)) : null;
 
     let updated = false;
 
-    if (!last) {
-        user.stats = {
-            ...user.stats,
-            studyStreak: 1,
-            longestStudyStreak: 1,
-            lastStudyDate: now,
-            totalReviews: user.stats.totalReviews ?? 0
-        };
+    if (!lastStudyStart) {
+        user.stats.studyStreak = 1;
+        user.stats.longestStudyStreak = 1;
+        user.stats.lastStudyDate = now;
         updated = true;
     } else {
-        const diff = differenceInCalendarDays(todayStart, last);
+        const diff = differenceInCalendarDays(todayStart, lastStudyStart);
 
         if (diff === 1) {
             user.stats.studyStreak += 1;
@@ -43,6 +38,7 @@ export const updateStudyStreakService = async (userId: string) => {
             user.stats.studyStreak = 1;
             updated = true;
         }
+
         user.stats.lastStudyDate = now;
     }
 

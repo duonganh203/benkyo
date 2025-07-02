@@ -1,3 +1,5 @@
+import { useStudyStreakTimer } from '@/hooks/queries/use-study-streak-timer';
+
 import { Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -5,7 +7,7 @@ interface StreakIconProps {
     count?: number;
 }
 
-export default function StreakIcon({ count }: StreakIconProps) {
+function StreakIcon({ count }: StreakIconProps) {
     return (
         <div className='fixed bottom-10 right-20 z-50 flex flex-col items-center gap-2 animate-[gentle-bounce_1.8s_ease-in-out_infinite]'>
             <motion.div
@@ -14,7 +16,7 @@ export default function StreakIcon({ count }: StreakIconProps) {
                 transition={{ duration: 0.6 }}
                 className='px-3 py-1.5 text-sm font-medium text-white bg-violet-500 border border-violet-200 rounded-lg shadow-md'
             >
-                Bạn đã học {count} ngày liên tiếp!
+                You've studied for {count} consecutive days!
             </motion.div>
 
             <motion.div className='relative w-16 h-16 cursor-pointer animate-gentle-bounce'>
@@ -32,4 +34,9 @@ export default function StreakIcon({ count }: StreakIconProps) {
             </motion.div>
         </div>
     );
+}
+
+export default function StreakIconContainer() {
+    const streak = useStudyStreakTimer();
+    return streak !== null ? <StreakIcon count={streak} /> : null;
 }

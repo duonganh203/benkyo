@@ -18,8 +18,8 @@ import useGetDueCards from '@/hooks/queries/use-get-due-cards';
 import useSubmitReview from '@/hooks/queries/use-submit-review';
 import { getToast } from '@/utils/getToast';
 import useSkipCard from '@/hooks/queries/use-skip-card';
-import { studyStreak } from '@/api/streakApi';
 import { useStudyFlagStore } from '@/hooks/stores/use-study-store';
+import useStudyStreak from '@/hooks/queries/use-study-streak';
 
 const StudyCard = () => {
     const { id: deckId } = useParams<{ id: string }>();
@@ -45,18 +45,23 @@ const StudyCard = () => {
 
     const { mutate: submitReview } = useSubmitReview(deckId!);
 
-    const logStreakOnce = async () => {
+    const { mutate: updateStreak } = useStudyStreak();
+
+    const logStreakOnce = () => {
         if (streakLoggedRef.current) return;
         streakLoggedRef.current = true;
-        try {
-            const data = await studyStreak();
-            if (data.updated) {
-                setJustStudied(true, data.studyStreak);
+
+        updateStreak(undefined, {
+            onSuccess: (data) => {
+                if (data.updated) {
+                    setJustStudied(true, data.studyStreak);
+                }
+            },
+            onError: (err) => {
+                console.error('[STREAK] update failed', err);
+                setJustStudied(true, null);
             }
-        } catch (err) {
-            console.error('[STREAK] update failed', err);
-            setJustStudied(true, null);
-        }
+        });
     };
 
     useEffect(() => {
@@ -128,10 +133,6 @@ const StudyCard = () => {
         }
     };
 
-    const handleShowAnswer = async () => {
-        setShowAnswer(true);
-    };
-
     const formatTime = (seconds: number): string => {
         if (seconds < 60) return `${seconds}s`;
         const minutes = Math.floor(seconds / 60);
@@ -149,7 +150,7 @@ const StudyCard = () => {
         skipCard(
             { cardId: currentCard._id },
             {
-                onSuccess: async () => {
+                onSuccess: () => {
                     nextCard();
                 },
                 onError: () => getToast('error', 'Failed to skip card')
@@ -157,7 +158,7 @@ const StudyCard = () => {
         );
     };
 
-    const endStudySession = async () => {
+    const endStudySession = () => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
             timerRef.current = null;
@@ -334,7 +335,7 @@ const StudyCard = () => {
                             Skip
                         </Button>
                         <Button
-                            onClick={handleShowAnswer}
+                            onClick={() => setShowAnswer(true)}
                             className='w-full transition-all hover:brightness-110 active:scale-95'
                         >
                             Show Answer

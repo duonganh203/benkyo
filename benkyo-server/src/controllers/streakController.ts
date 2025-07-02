@@ -16,7 +16,7 @@ export const getStudyStreakController = async (req: Request, res: Response) => {
     res.json(result);
 };
 
-export const getTopLongestStudyStreakController = async (req: Request, res: Response, next: NextFunction) => {
+export const getTopLongestStudyStreakController = async (req: Request, res: Response) => {
     const limit = Number(req.query.limit) || 10;
     const users = await getTopLongestStudyStreakService(limit);
 
