@@ -31,7 +31,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 
 export const me = async (req: Request, res: Response) => {
     const { _id, name, email } = req.user;
-    res.json({ id: _id, name, email });
+    res.json({ _id, name, email });
 };
 
 export const googleLogin = async (req: Request, res: Response) => {

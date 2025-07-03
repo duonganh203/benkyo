@@ -3,6 +3,7 @@ import { getCards } from '~/controllers/cardController';
 import {
     createDeck,
     deleteDeck,
+    duplicateDeck,
     getAllDecks,
     getAllRequestPublicDecks,
     getDeck,
@@ -24,6 +25,7 @@ deckRoutes.patch('/public-requests/:id', [adminAuthMiddleware], errorHandler(rev
 deckRoutes.get('/my-decks', [authMiddleware], errorHandler(getAllDecks));
 deckRoutes.get('/public-deck', [authMiddleware], errorHandler(getPublicDecks));
 deckRoutes.get('/:id', [authMiddleware], errorHandler(getDeck));
+deckRoutes.post('/:id/duplicate', [authMiddleware], errorHandler(duplicateDeck));
 deckRoutes.get('/:id/cards', [authMiddleware], errorHandler(getCards));
 deckRoutes.delete('/:id', [authMiddleware], errorHandler(deleteDeck));
 deckRoutes.patch('/:id/request-public', [authMiddleware], errorHandler(sendReqPublicDeck));
