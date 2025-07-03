@@ -16,6 +16,7 @@ interface DeckProps {
 function Deck({ deck }: DeckProps) {
     const { open } = useSendRequestPublicDeckModal((store) => store);
     const navigate = useNavigate();
+
     const handleDeckClick = (deckId: string) => {
         navigate(`/deck/${deckId}`);
     };

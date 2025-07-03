@@ -78,7 +78,6 @@ const DeckSchema = new Schema({
     updatedAt: { type: Date, default: Date.now },
     cardCount: { type: Number, default: 0 },
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    subscribers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     avgRating: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 },
     popularity: { type: Number, default: 0 },

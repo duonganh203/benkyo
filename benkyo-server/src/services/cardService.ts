@@ -50,8 +50,7 @@ export const getDeckCardsService = async (userId: string, deckId: string) => {
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
 
-    const hasAccess =
-        deck.owner.equals(userId) || (deck.isPublic && deck.subscribers.some((sub) => sub.equals(userId)));
+    const hasAccess = deck.owner.equals(userId) || deck.isPublic;
 
     if (!hasAccess) {
         throw new ForbiddenRequestsException('You do not have access to this deck', ErrorCode.FORBIDDEN);

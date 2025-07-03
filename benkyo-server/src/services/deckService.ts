@@ -38,7 +38,7 @@ export const createDeckService = async (userId: string, deckData: z.infer<typeof
 };
 
 export const getDeckService = async (userId: string, deckId: string) => {
-    const deck = await Deck.findById(deckId);
+    const deck = await Deck.findById(deckId).populate('owner', 'name avatar _id');
     if (!deck) {
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
@@ -50,8 +50,64 @@ export const getDeckService = async (userId: string, deckId: string) => {
 
 export const getAllDecksService = async (userId: string) => {
     const decks = await Deck.find({ owner: userId }).populate('owner');
-    const publicDeck = await Deck.find({ owner: { $ne: userId }, isPublic: true }).populate('owner');
-    return [...decks, ...publicDeck];
+    return decks;
+};
+export const duplicateDeckService = async (userId: string, deckId: string) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+    if (deck.owner.equals(userId)) {
+        throw new BadRequestsException('You cannot duplicate your own deck', ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    const newDeck = new Deck({
+        name: deck.name,
+        description: deck.description,
+        owner: userId,
+        cardCount: deck.cardCount,
+        isPublic: false,
+        publicStatus: PublicStatus.PRIVATE
+    });
+    await newDeck.save();
+
+    const originalCards = await Card.find({ deck: deckId });
+
+    if (originalCards.length > 0) {
+        const newCards = originalCards.map((card) => ({
+            front: card.front,
+            back: card.back,
+            deck: newDeck._id,
+            state: 0,
+            due: new Date(),
+            stability: 0,
+            difficulty: 0,
+            elapsedDays: 0,
+            scheduledDays: 0,
+            reps: 0,
+            lapses: 0
+        }));
+
+        const insertedCards = await Card.insertMany(newCards);
+        console.log(`Successfully inserted ${insertedCards.length} cards to new deck`);
+    }
+
+    const userDeckState = new UserDeckState({
+        user: userId,
+        deck: newDeck._id,
+        stats: {
+            reviewCards: 0,
+            learningCards: 0,
+            newCards: originalCards.length,
+            totalCards: originalCards.length
+        },
+        lastStudied: null
+    });
+    await userDeckState.save();
+
+    await User.findByIdAndUpdate(userId, { $push: { decks: newDeck._id } });
+
+    return { message: 'Deck duplicated successfully', deckId: newDeck._id };
 };
 
 export const deleteDeckService = async (userId: string, deckId: string) => {
