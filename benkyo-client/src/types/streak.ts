@@ -3,3 +3,8 @@ export type StudyStreakResponse = {
     studyStreak: number;
     lastStudyDate: string;
 };
+
+export type StudyStreak = {
+    studyStreak: number;
+    lastStudyDate: string;
+};
