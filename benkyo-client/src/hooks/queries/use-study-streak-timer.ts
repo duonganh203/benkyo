@@ -29,7 +29,7 @@ export function useStudyStreakTimer() {
             toRef.current = setTimeout(() => {
                 setVisible(false);
                 setJustStudied(false);
-            }, 5_000);
+            }, 3_000);
         }
 
         return () => {

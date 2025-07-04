@@ -4,50 +4,58 @@ import { ErrorCode } from '~/exceptions/root';
 import { startOfDay, differenceInCalendarDays } from 'date-fns';
 
 export const updateStudyStreakService = async (userId: string) => {
-    const user = await User.findById(userId);
-    if (!user) throw new BadRequestsException('User not found', ErrorCode.NOT_FOUND);
+    const user = await User.findById(userId, 'stats');
 
-    if (!user.stats) {
-        user.stats = {
-            studyStreak: 0,
-            longestStudyStreak: 0,
-            lastStudyDate: null,
-            totalReviews: 0
-        };
+    if (!user) {
+        throw new BadRequestsException('User not found', ErrorCode.NOT_FOUND);
     }
 
     const now = new Date();
     const todayStart = startOfDay(now);
-    const lastStudyStart = user.stats.lastStudyDate ? startOfDay(new Date(user.stats.lastStudyDate)) : null;
+    const stats = user.stats || {
+        studyStreak: 0,
+        longestStudyStreak: 0,
+        lastStudyDate: null,
+        totalReviews: 0
+    };
+
+    const lastStudyStart = stats.lastStudyDate ? startOfDay(new Date(stats.lastStudyDate)) : null;
 
     let updated = false;
+    let newStudyStreak = stats.studyStreak || 0;
+    let newLongestStreak = stats.longestStudyStreak || 0;
 
     if (!lastStudyStart) {
-        user.stats.studyStreak = 1;
-        user.stats.longestStudyStreak = 1;
-        user.stats.lastStudyDate = now;
+        newStudyStreak = 1;
+        newLongestStreak = 1;
         updated = true;
     } else {
         const diff = differenceInCalendarDays(todayStart, lastStudyStart);
 
         if (diff === 1) {
-            user.stats.studyStreak += 1;
-            user.stats.longestStudyStreak = Math.max(user.stats.longestStudyStreak, user.stats.studyStreak);
+            newStudyStreak += 1;
+            newLongestStreak = Math.max(newLongestStreak, newStudyStreak);
             updated = true;
         } else if (diff > 1) {
-            user.stats.studyStreak = 1;
+            newStudyStreak = 1;
             updated = true;
         }
-
-        user.stats.lastStudyDate = now;
     }
 
-    user.markModified('stats');
-    await user.save();
+    await User.updateOne(
+        { _id: userId },
+        {
+            $set: {
+                'stats.studyStreak': newStudyStreak,
+                'stats.longestStudyStreak': newLongestStreak,
+                'stats.lastStudyDate': now
+            }
+        }
+    );
 
     return {
-        studyStreak: user.stats.studyStreak,
-        lastStudyDate: user.stats.lastStudyDate,
+        studyStreak: newStudyStreak,
+        lastStudyDate: now,
         updated
     };
 };
