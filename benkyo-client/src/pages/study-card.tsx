@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ArrowRight, Check, X, Clock, BarChart, PenIcon } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,11 +20,12 @@ import useSubmitReview from '@/hooks/queries/use-submit-review';
 import { getToast } from '@/utils/getToast';
 import useSkipCard from '@/hooks/queries/use-skip-card';
 import { useStudyFlagStore } from '@/hooks/stores/use-study-store';
-import useStudyStreak from '@/hooks/queries/use-study-streak';
+import useUpdateStudyStreak from '@/hooks/queries/use-update-study-streak';
 
 const StudyCard = () => {
     const { id: deckId } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     const [showAnswer, setShowAnswer] = useState(false);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -45,7 +47,7 @@ const StudyCard = () => {
 
     const { mutate: submitReview } = useSubmitReview(deckId!);
 
-    const { mutate: updateStreak } = useStudyStreak();
+    const { mutate: updateStreak } = useUpdateStudyStreak();
 
     const logStreakOnce = () => {
         if (streakLoggedRef.current) return;
@@ -56,6 +58,7 @@ const StudyCard = () => {
                 if (data.updated) {
                     setJustStudied(true, data.studyStreak);
                 }
+                queryClient.invalidateQueries({ queryKey: ['studyStreak'] });
             },
             onError: (err) => {
                 console.error('[STREAK] update failed', err);
@@ -107,7 +110,7 @@ const StudyCard = () => {
         submitReview(
             { cardId: currentCard._id, rating, reviewTime },
             {
-                onSuccess: async () => {
+                onSuccess: () => {
                     setStats((prev) => ({ ...prev, studied: prev.studied + 1 }));
                     nextCard();
                 },

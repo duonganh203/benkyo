@@ -12,18 +12,12 @@ export const updateStudyStreakService = async (userId: string) => {
 
     const now = new Date();
     const todayStart = startOfDay(now);
-    const stats = user.stats || {
-        studyStreak: 0,
-        longestStudyStreak: 0,
-        lastStudyDate: null,
-        totalReviews: 0
-    };
-
+    const stats = user.stats!;
     const lastStudyStart = stats.lastStudyDate ? startOfDay(new Date(stats.lastStudyDate)) : null;
 
     let updated = false;
-    let newStudyStreak = stats.studyStreak || 0;
-    let newLongestStreak = stats.longestStudyStreak || 0;
+    let newStudyStreak = stats.studyStreak;
+    let newLongestStreak = stats.longestStudyStreak;
 
     if (!lastStudyStart) {
         newStudyStreak = 1;
@@ -32,7 +26,9 @@ export const updateStudyStreakService = async (userId: string) => {
     } else {
         const diff = differenceInCalendarDays(todayStart, lastStudyStart);
 
-        if (diff === 1) {
+        if (diff === 0) {
+            updated = false;
+        } else if (diff === 1) {
             newStudyStreak += 1;
             newLongestStreak = Math.max(newLongestStreak, newStudyStreak);
             updated = true;
@@ -42,7 +38,7 @@ export const updateStudyStreakService = async (userId: string) => {
         }
     }
 
-    await User.updateOne(
+    await User.findOneAndUpdate(
         { _id: userId },
         {
             $set: {

@@ -30,7 +30,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
     const onSubmit = (data: z.infer<typeof LoginSchema>) => {
         login(data, {
-            onSuccess: async (data) => {
+            onSuccess: (data) => {
                 setUser(data.user);
                 setToken(data.token);
                 setRefreshToken(data.refreshToken);
