@@ -9,7 +9,8 @@ import {
     sendReqPublicDeckService,
     getPublicDecksService,
     getRequestPulbicDeckService,
-    reviewPublicDeckService
+    reviewPublicDeckService,
+    duplicateDeckService
 } from '~/services/deckService';
 import { createDeckValidation } from '~/validations/deckValidation';
 
@@ -76,5 +77,12 @@ export const reviewPublicServiceDeck = async (req: Request, res: Response) => {
     }
 
     const result = await reviewPublicDeckService(id, status, req.user._id, note);
+    return res.json({ message: result.message });
+};
+
+export const duplicateDeck = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const result = await duplicateDeckService(userId, id);
     return res.json({ message: result.message });
 };

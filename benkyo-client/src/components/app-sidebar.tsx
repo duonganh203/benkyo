@@ -9,7 +9,8 @@ import {
     SidebarFooter,
     SidebarHeader,
     SidebarMenuButton,
-    SidebarRail
+    SidebarRail,
+    SidebarSeparator
 } from '@/components/ui/sidebar';
 import { NavMain } from './nav-main';
 import { NavUser } from './nav-user';
@@ -22,50 +23,6 @@ import useGetUserDecks from '@/hooks/queries/use-get-user-decks';
 import { Skeleton } from './ui/skeleton';
 import { ScrollArea } from './ui/scroll-area';
 
-const data = {
-    navMain: [
-        {
-            title: 'Home',
-            url: '/home',
-            icon: Home
-        },
-        {
-            title: 'Community',
-            url: '/community',
-            icon: Package
-        },
-        {
-            title: 'All decks',
-            url: '/my-decks',
-            icon: Library,
-            badge: '10'
-        },
-        {
-            title: 'Quizzes',
-            url: '/quizzes',
-            icon: NotebookPen,
-            highlight: true
-        },
-        {
-            title: 'SUPER CAT',
-            url: '/ai-chat',
-            icon: Cat,
-            highlight: true
-        },
-        {
-            title: 'Top Learners',
-            url: '/top-learners',
-            icon: Medal,
-            highlight: true
-        },
-        {
-            title: 'Settings',
-            url: '/profile',
-            icon: Settings2
-        }
-    ]
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { user } = useAuthStore((store) => store);
     const { open } = useCreateDeckModal((store) => store);
@@ -75,105 +32,163 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         return [...decks].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 5);
     }, [decks]);
 
+    const navData = useMemo(
+        () => ({
+            navMain: [
+                {
+                    title: 'Home',
+                    url: '/home',
+                    icon: Home
+                },
+                {
+                    title: 'Community',
+                    url: '/community',
+                    icon: Package
+                },
+                {
+                    title: 'All decks',
+                    url: '/my-decks',
+                    icon: Library,
+                    badge: decks.length.toString()
+                },
+                {
+                    title: 'Quizzes',
+                    url: '/quizzes',
+                    icon: NotebookPen,
+                    highlight: true
+                },
+                {
+                    title: 'SUPER CAT',
+                    url: '/ai-chat',
+                    icon: Cat,
+                    highlight: true
+                },
+                {
+                    title: 'Top Learners',
+                    url: '/top-learners',
+                    icon: Medal,
+                    highlight: true
+                },
+                {
+                    title: 'Settings',
+                    url: '/profile',
+                    icon: Settings2
+                }
+            ]
+        }),
+        [decks.length]
+    );
+
     return (
-        <Sidebar
-            className='border-r border-border/40 bg-gradient-to-b from-background to-background/95 backdrop-blur-sm'
-            {...props}
-        >
-            <SidebarHeader className='pb-6'>
-                <SidebarMenuButton size='lg' asChild className='mb-4'>
+        <Sidebar variant='inset' className='border-r-0' {...props}>
+            <SidebarHeader className='border-b border-sidebar-border bg-sidebar/50 backdrop-blur-sm'>
+                <SidebarMenuButton size='lg' asChild className='mb-2'>
                     <div className='flex items-center'>
                         <Link to='/home' className='flex flex-1 items-center gap-3 group'>
-                            <div className='flex aspect-square size-10 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm group-hover:bg-primary/15 transition-colors'>
+                            <div className='flex aspect-square size-9 items-center justify-center rounded-lg bg-sidebar-primary/10 text-sidebar-primary shadow-sm group-hover:bg-sidebar-primary/15 transition-all duration-200'>
                                 <img src='/images/logo.png' className='size-5' />
                             </div>
                             <div className='grid flex-1 text-left leading-tight'>
-                                <span className='font-bold text-lg text-foreground tracking-tight'>Benkyo</span>
-                                <span className='text-xs text-muted-foreground'>Smart Flashcards</span>
+                                <span className='font-semibold text-base text-sidebar-foreground tracking-tight'>
+                                    Benkyo
+                                </span>
+                                <span className='text-[10px] text-sidebar-foreground/60'>Smart Flashcards</span>
                             </div>
                         </Link>
                         <ModeToggle />
                     </div>
                 </SidebarMenuButton>
 
-                <div className='px-3 mb-4'>
-                    <Button
-                        className='w-full py-1.5 justify-center bg-primary/5 border-primary/20 text-primary/80 hover:bg-primary/10 transition-colors cursor-pointer'
-                        variant='outline'
-                        size='sm'
-                        onClick={() => open()}
-                    >
-                        <Sparkles className='h-3.5 w-3.5 mr-1.5' />
-                        Create new deck
-                    </Button>
-                </div>
-
-                <NavMain items={data.navMain} />
+                <Button
+                    className='w-full justify-center bg-sidebar-primary/10 border-sidebar-primary/20 text-sidebar-primary hover:bg-sidebar-primary/15 hover:border-sidebar-primary/30 transition-all duration-200 shadow-sm'
+                    variant='outline'
+                    size='sm'
+                    onClick={() => open()}
+                >
+                    <Sparkles className='h-4 w-4 mr-2' />
+                    Create new deck
+                </Button>
             </SidebarHeader>
 
-            <SidebarContent className='px-3'>
-                <div className='rounded-lg border border-border/40 bg-muted/30 p-3'>
-                    <h4 className='text-sm font-medium mb-3 flex items-center justify-between'>
-                        <div className='flex items-center'>
-                            <span className='bg-primary/20 text-primary rounded-full p-1 mr-2'>
-                                <Clock className='h-3 w-3' />
-                            </span>
+            <SidebarContent className='px-2 py-4 overflow-hidden'>
+                <div className='mb-6'>
+                    <NavMain items={navData.navMain} />
+                </div>
+
+                <SidebarSeparator className='mb-4' />
+
+                <div className='space-y-3'>
+                    <div className='flex items-center justify-between px-2'>
+                        <h4 className='text-sm font-medium text-sidebar-foreground/80 flex items-center'>
+                            <Clock className='h-4 w-4 mr-2 text-sidebar-primary' />
                             Recent Decks
-                        </div>
-                        <Badge variant='secondary' className='text-[10px]'>
+                        </h4>
+                        <Badge
+                            variant='secondary'
+                            className='text-[10px] bg-sidebar-accent/50 text-sidebar-accent-foreground'
+                        >
                             {decks.length}
                         </Badge>
-                    </h4>
+                    </div>
 
-                    {isLoading ? (
-                        <div className='space-y-2'>
-                            <Skeleton className='h-6 w-full' />
-                            <Skeleton className='h-6 w-full' />
-                            <Skeleton className='h-6 w-full' />
-                        </div>
-                    ) : latestDecks.length > 0 ? (
-                        <ScrollArea className='max-h-48'>
-                            <div className='space-y-1.5'>
-                                {latestDecks.map((deck) => (
-                                    <Link
-                                        key={deck._id}
-                                        to={`/deck/${deck._id}`}
-                                        className='flex items-center justify-between rounded-md p-1.5 text-xs hover:bg-primary/5 transition-colors'
-                                    >
-                                        <span className='font-medium truncate max-w-[150px]'>{deck.name}</span>
-                                        <Badge
-                                            variant='outline'
-                                            className='ml-1 bg-muted/30 text-muted-foreground text-[10px] px-1.5'
-                                        >
-                                            {formatDistanceToNow(new Date(deck.updatedAt), { addSuffix: true })}
-                                        </Badge>
-                                    </Link>
-                                ))}
+                    <div className='rounded-lg border border-sidebar-border bg-sidebar-accent/30 p-3'>
+                        {isLoading ? (
+                            <div className='space-y-2'>
+                                <Skeleton className='h-8 w-full' />
+                                <Skeleton className='h-8 w-full' />
+                                <Skeleton className='h-8 w-full' />
                             </div>
-                        </ScrollArea>
-                    ) : (
-                        <div className='flex flex-col items-center justify-center py-3 text-center'>
-                            <BadgeInfo className='h-4 w-4 text-muted-foreground mb-2' />
-                            <p className='text-xs text-muted-foreground'>No decks yet</p>
-                        </div>
-                    )}
+                        ) : latestDecks.length > 0 ? (
+                            <ScrollArea className='max-h-48'>
+                                <div className='space-y-1'>
+                                    {latestDecks.map((deck) => (
+                                        <Link
+                                            key={deck._id}
+                                            to={`/deck/${deck._id}`}
+                                            className='flex items-center justify-between rounded-md p-2 text-sm hover:bg-sidebar-accent/50 transition-colors group'
+                                        >
+                                            <span className='font-medium truncate max-w-[140px] text-sidebar-foreground group-hover:text-sidebar-primary transition-colors'>
+                                                {deck.name}
+                                            </span>
+                                            <Badge
+                                                variant='outline'
+                                                className='ml-2 bg-sidebar/50 border-sidebar-border text-sidebar-foreground/60 text-[10px] px-2 py-0.5'
+                                            >
+                                                {formatDistanceToNow(new Date(deck.updatedAt), { addSuffix: true })}
+                                            </Badge>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </ScrollArea>
+                        ) : (
+                            <div className='flex flex-col items-center justify-center py-6 text-center'>
+                                <BadgeInfo className='h-8 w-8 text-sidebar-foreground/40 mb-3' />
+                                <p className='text-sm text-sidebar-foreground/60 mb-2'>No decks yet</p>
+                                <p className='text-xs text-sidebar-foreground/40'>
+                                    Create your first deck to get started
+                                </p>
+                            </div>
+                        )}
 
-                    {decks.length > 5 && (
-                        <Link
-                            to='/my-decks'
-                            className='mt-3 text-xs text-primary flex items-center justify-center hover:underline w-full pt-2 border-t border-border/40'
-                        >
-                            View all decks
-                        </Link>
-                    )}
+                        {decks.length > 5 && (
+                            <div className='mt-3 pt-3 border-t border-sidebar-border'>
+                                <Link
+                                    to='/my-decks'
+                                    className='text-xs text-sidebar-primary hover:text-sidebar-primary/80 flex items-center justify-center hover:underline w-full transition-colors'
+                                >
+                                    View all {decks.length} decks
+                                </Link>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </SidebarContent>
 
-            <SidebarFooter className='border-t border-border/40 pt-3'>
+            <SidebarFooter className='border-t border-sidebar-border bg-sidebar/50 backdrop-blur-sm'>
                 <NavUser user={user!} />
             </SidebarFooter>
 
-            <SidebarRail className='bg-muted/30 border-border/40' />
+            <SidebarRail />
         </Sidebar>
     );
 }

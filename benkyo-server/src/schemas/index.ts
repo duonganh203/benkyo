@@ -48,7 +48,10 @@ const UserSchema = new Schema({
         maximum_interval: { type: Number, default: 36500 },
         w: {
             type: [Number],
-            default: [0.4, 0.6, 2.4, 5.8, 4.93, 9.93, 5.8, 19.25, 1.64, 1.01, 1.55, 0.1, 3.0, 0.9]
+            default: [
+                0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395,
+                0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621
+            ]
         },
         enable_fuzz: { type: Boolean, default: false },
         enable_short_term: { type: Boolean, default: true },
@@ -76,7 +79,6 @@ const DeckSchema = new Schema({
     updatedAt: { type: Date, default: Date.now },
     cardCount: { type: Number, default: 0 },
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    subscribers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     avgRating: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 },
     popularity: { type: Number, default: 0 },

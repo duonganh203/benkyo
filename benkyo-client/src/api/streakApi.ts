@@ -1,7 +1,7 @@
 import { api } from '.';
 
 export const studyStreak = async () => {
-    const { data } = await api.post('/streak/study');
+    const { data } = await api.patch('/streak/study');
     return data;
 };
 

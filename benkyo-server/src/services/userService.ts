@@ -17,3 +17,16 @@ export const updateUserService = async (userId: string, userData: z.infer<typeof
         avatar: updateUser.avatar
     };
 };
+export const listUserAccountsService = async () => {
+    const users = await User.find();
+    return users.map((user) => ({
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        isPro: user.isPro,
+        proExpiryDate: user.proExpiryDate,
+        createdAt: user.createdAt,
+        role: user.role
+    }));
+};

@@ -27,7 +27,6 @@ import Payment from './pages/payment';
 import Packages from './pages/package';
 import Community from './pages/community';
 import TopLearners from './pages/top-streak-study';
-
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -52,23 +51,23 @@ const App = () => {
                         </Route>
                         <Route element={<GlobalLayout />}>
                             <Route path='/' element={<Marketing />} />
-                            <Route element={<ProtectedRoute />}>
-                                <Route path='/home' element={<ProgressPage />} />
-                                <Route path='/deck/:id' element={<DeckDetail />} />
-                                <Route path='/deck/:deckId/create-card' element={<CreateCard />} />
-                                <Route path='/deck/:deckId/edit-card/:cardId' element={<UpdateCard />} />
-                                <Route path='/profile' element={<Profile />} />
-                                <Route path='/my-decks' element={<Library />} />
-                                <Route path='/study/:id' element={<StudyCard />} />
-                                <Route path='do-quiz/:quizId' element={<Quiz />} />
-                                <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />
-                                <Route path='/quizzes' element={<Quizzes />} />
-                                <Route path='/ai-chat' element={<AIChat />} />
-                                <Route path='/payment/:packageId' element={<Payment />} />
-                                <Route path='/package' element={<Packages />} />
-                                <Route path='/community' element={<Community />} />
-                                <Route path='/top-learners' element={<TopLearners />} />
-                            </Route>
+                        </Route>
+                        <Route element={<ProtectedRoute />}>
+                            <Route path='/home' element={<ProgressPage />} />
+                            <Route path='/deck/:id' element={<DeckDetail />} />
+                            <Route path='/deck/:deckId/create-card' element={<CreateCard />} />
+                            <Route path='/deck/:deckId/edit-card/:cardId' element={<UpdateCard />} />
+                            <Route path='/profile' element={<Profile />} />
+                            <Route path='/my-decks' element={<Library />} />
+                            <Route path='/study/:id' element={<StudyCard />} />
+                            <Route path='do-quiz/:quizId' element={<Quiz />} />
+                            <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />
+                            <Route path='/quizzes' element={<Quizzes />} />
+                            <Route path='/ai-chat' element={<AIChat />} />
+                            <Route path='/payment/:packageId' element={<Payment />} />
+                            <Route path='/package' element={<Packages />} />
+                            <Route path='/community' element={<Community />} />
+                            <Route path='/top-learners' element={<TopLearners />} />
                         </Route>
                     </Routes>
                     <ModalProvider />
