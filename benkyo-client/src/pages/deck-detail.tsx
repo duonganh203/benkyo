@@ -39,6 +39,7 @@ import useDuplicateDeck from '@/hooks/queries/use-duplicate-deck';
 import { useGenerateQuizModal } from '@/hooks/stores/use-generate-quiz-modal';
 import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-public-deck-modal';
 import useMe from '@/hooks/queries/use-me';
+import FlashcardViewer from '@/components/flashcard-viewer';
 
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -49,6 +50,7 @@ const DeckDetail = () => {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState('cards');
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const { open } = useGenerateQuizModal((store) => store);
 
     const publicStatus = [
@@ -288,6 +290,7 @@ const DeckDetail = () => {
                                 <NotebookPen className='mr-2 h-5 w-5' />
                                 Do Quiz
                             </Button>
+
                             {currentUser && deckData.owner._id === currentUser._id && (
                                 <Button
                                     onClick={(e) => {
@@ -390,6 +393,7 @@ const DeckDetail = () => {
                             <TabsTrigger value='cards' className='transition-all'>
                                 Cards
                             </TabsTrigger>
+
                             <TabsTrigger value='stats' className='transition-all'>
                                 Statistics
                             </TabsTrigger>
@@ -401,6 +405,16 @@ const DeckDetail = () => {
                         </TabsList>
 
                         <TabsContent value='cards' className='animate-fade-in'>
+                            {cardsData && cardsData.length > 0 && (
+                                <div className='mb-8 animate-fade-in'>
+                                    <FlashcardViewer
+                                        cards={filteredCards.length > 0 ? filteredCards : cardsData}
+                                        initialIndex={0}
+                                        onCardChange={setCurrentCardIndex}
+                                    />
+                                </div>
+                            )}
+
                             {/* Search and Add button */}
                             <div className='flex flex-col md:flex-row justify-between mb-4 gap-4 animate-slide-up'>
                                 <div className='flex-1'>
@@ -473,11 +487,14 @@ const DeckDetail = () => {
                                     {filteredCards.map((card, index) => {
                                         const status = getLearningStatus(card);
                                         const delay = Math.min(index * 100, 900);
+                                        const isCurrentCard = index === currentCardIndex;
 
                                         return (
                                             <Card
                                                 key={card._id}
-                                                className={`overflow-hidden hover:shadow-md transition-all animate-slide-up animation-delay-${delay}`}
+                                                className={`overflow-hidden hover:shadow-md transition-all animate-slide-up animation-delay-${delay} ${
+                                                    isCurrentCard ? 'ring-2 ring-primary shadow-lg' : ''
+                                                }`}
                                             >
                                                 <CardContent className='p-0'>
                                                     <div className='grid grid-cols-1 md:grid-cols-2'>
@@ -508,6 +525,11 @@ const DeckDetail = () => {
                                                             )}
                                                         </div>
                                                         <div className='flex items-center gap-4'>
+                                                            {isCurrentCard && (
+                                                                <Badge variant='default' className='text-xs'>
+                                                                    Current
+                                                                </Badge>
+                                                            )}
                                                             <div className='flex items-center gap-1 text-sm'>
                                                                 <div
                                                                     className={`w-2 h-2 rounded-full ${status.stateColor}`}
@@ -518,46 +540,49 @@ const DeckDetail = () => {
                                                                 <Calendar className='h-3 w-3 mr-1' />
                                                                 <span>{status.dueText}</span>
                                                             </div>
-                                                            {currentUser && deckData.owner._id === currentUser._id && (
-                                                                <DropdownMenu>
-                                                                    <DropdownMenuTrigger asChild>
-                                                                        <Button variant='ghost' size='sm'>
-                                                                            <MoreHorizontal className='h-4 w-4' />
-                                                                        </Button>
-                                                                    </DropdownMenuTrigger>
-                                                                    <DropdownMenuContent align='end'>
-                                                                        <DropdownMenuItem
-                                                                            onClick={() =>
-                                                                                navigate(
-                                                                                    `/deck/${id}/edit-card/${card._id}`
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            <Edit className='mr-2 h-4 w-4' />
-                                                                            <span>Edit</span>
-                                                                        </DropdownMenuItem>
-                                                                        <DropdownMenuItem
-                                                                            onClick={() => {
-                                                                                handleDelete(card._id);
-                                                                            }}
-                                                                        >
-                                                                            <Trash2 className='mr-2 h-4 w-4' />
-                                                                            <span>Delete</span>
-                                                                        </DropdownMenuItem>
-                                                                        <DropdownMenuItem
-                                                                            onClick={() => {
-                                                                                getToast(
-                                                                                    'success',
-                                                                                    'Card progress has been reset'
-                                                                                );
-                                                                            }}
-                                                                        >
-                                                                            <RefreshCcw className='mr-2 h-4 w-4' />
-                                                                            <span>Reset Progress</span>
-                                                                        </DropdownMenuItem>
-                                                                    </DropdownMenuContent>
-                                                                </DropdownMenu>
-                                                            )}
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button variant='ghost' size='sm'>
+                                                                        <MoreHorizontal className='h-4 w-4' />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align='end'>
+                                                                    {currentUser &&
+                                                                        deckData.owner._id === currentUser._id && (
+                                                                            <>
+                                                                                <DropdownMenuItem
+                                                                                    onClick={() =>
+                                                                                        navigate(
+                                                                                            `/deck/${id}/edit-card/${card._id}`
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <Edit className='mr-2 h-4 w-4' />
+                                                                                    <span>Edit</span>
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem
+                                                                                    onClick={() => {
+                                                                                        handleDelete(card._id);
+                                                                                    }}
+                                                                                >
+                                                                                    <Trash2 className='mr-2 h-4 w-4' />
+                                                                                    <span>Delete</span>
+                                                                                </DropdownMenuItem>
+                                                                                <DropdownMenuItem
+                                                                                    onClick={() => {
+                                                                                        getToast(
+                                                                                            'success',
+                                                                                            'Card progress has been reset'
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <RefreshCcw className='mr-2 h-4 w-4' />
+                                                                                    <span>Reset Progress</span>
+                                                                                </DropdownMenuItem>
+                                                                            </>
+                                                                        )}
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
                                                         </div>
                                                     </div>
                                                 </CardContent>
