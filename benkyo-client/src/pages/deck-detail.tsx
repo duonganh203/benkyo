@@ -540,49 +540,46 @@ const DeckDetail = () => {
                                                                 <Calendar className='h-3 w-3 mr-1' />
                                                                 <span>{status.dueText}</span>
                                                             </div>
-                                                            <DropdownMenu>
-                                                                <DropdownMenuTrigger asChild>
-                                                                    <Button variant='ghost' size='sm'>
-                                                                        <MoreHorizontal className='h-4 w-4' />
-                                                                    </Button>
-                                                                </DropdownMenuTrigger>
-                                                                <DropdownMenuContent align='end'>
-                                                                    {currentUser &&
-                                                                        deckData.owner._id === currentUser._id && (
-                                                                            <>
-                                                                                <DropdownMenuItem
-                                                                                    onClick={() =>
-                                                                                        navigate(
-                                                                                            `/deck/${id}/edit-card/${card._id}`
-                                                                                        )
-                                                                                    }
-                                                                                >
-                                                                                    <Edit className='mr-2 h-4 w-4' />
-                                                                                    <span>Edit</span>
-                                                                                </DropdownMenuItem>
-                                                                                <DropdownMenuItem
-                                                                                    onClick={() => {
-                                                                                        handleDelete(card._id);
-                                                                                    }}
-                                                                                >
-                                                                                    <Trash2 className='mr-2 h-4 w-4' />
-                                                                                    <span>Delete</span>
-                                                                                </DropdownMenuItem>
-                                                                                <DropdownMenuItem
-                                                                                    onClick={() => {
-                                                                                        getToast(
-                                                                                            'success',
-                                                                                            'Card progress has been reset'
-                                                                                        );
-                                                                                    }}
-                                                                                >
-                                                                                    <RefreshCcw className='mr-2 h-4 w-4' />
-                                                                                    <span>Reset Progress</span>
-                                                                                </DropdownMenuItem>
-                                                                            </>
-                                                                        )}
-                                                                </DropdownMenuContent>
-                                                            </DropdownMenu>
+                                                            {currentUser && deckData.owner._id === currentUser._id && (
+                                                                <DropdownMenu>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <Button variant='ghost' size='sm'>
+                                                                            <MoreHorizontal className='h-4 w-4' />
+                                                                        </Button>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent align='end'>
+                                                                        <DropdownMenuItem
+                                                                            onClick={() =>
+                                                                                navigate(
+                                                                                    `/deck/${id}/edit-card/${card._id}`
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <Edit className='mr-2 h-4 w-4' />
+                                                                            <span>Edit</span>
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem
+                                                                            onClick={() => {
+                                                                                handleDelete(card._id);
+                                                                            }}
+                                                                        >
+                                                                            <Trash2 className='mr-2 h-4 w-4' />
+                                                                            <span>Delete</span>
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem
+                                                                            onClick={() => {
+                                                                                getToast(
+                                                                                    'success',
+                                                                                    'Card progress has been reset'
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <RefreshCcw className='mr-2 h-4 w-4' />
+                                                                            <span>Reset Progress</span>
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </CardContent>
