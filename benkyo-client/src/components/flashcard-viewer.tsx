@@ -77,7 +77,7 @@ const FlashcardViewer = ({ cards, initialIndex = 0, onCardChange }: FlashcardVie
         <div className='w-full'>
             <div className='flex items-center justify-between mb-6'>
                 <div className='flex items-center gap-4'>
-                    <h2 className='text-2xl font-bold'>Flashcard Viewer</h2>
+                    <h2 className='text-2xl font-bold'>Flashcard Preview</h2>
                 </div>
                 <div className='flex items-center gap-4'>
                     <span className='text-sm text-muted-foreground'>
