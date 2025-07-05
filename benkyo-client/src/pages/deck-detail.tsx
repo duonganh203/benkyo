@@ -492,9 +492,7 @@ const DeckDetail = () => {
                                         return (
                                             <Card
                                                 key={card._id}
-                                                className={`overflow-hidden hover:shadow-md transition-all animate-slide-up animation-delay-${delay} ${
-                                                    isCurrentCard ? 'ring-2 ring-primary shadow-lg' : ''
-                                                }`}
+                                                className={`overflow-hidden hover:shadow-md transition-all animate-slide-up animation-delay-${delay}`}
                                             >
                                                 <CardContent className='p-0'>
                                                     <div className='grid grid-cols-1 md:grid-cols-2'>
