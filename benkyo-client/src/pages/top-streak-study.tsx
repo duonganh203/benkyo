@@ -94,7 +94,16 @@ const TopLearners = () => {
                             >
                                 <div className='absolute -top-14 left-1/2 -translate-x-1/2'>
                                     <div className='w-20 h-20 bg-background rounded-full flex items-center justify-center shadow border-4 border-border mb-2'>
-                                        <span className='text-xl font-bold'>{learner.avatar}</span>
+                                        {learner.avatar?.startsWith('http') ? (
+                                            <img
+                                                src={learner.avatar}
+                                                alt={learner.name}
+                                                className='w-full h-full object-cover rounded-full'
+                                                loading='lazy'
+                                            />
+                                        ) : (
+                                            <span className='text-2xl font-bold'>{learner.name.charAt(0)}</span>
+                                        )}
                                     </div>
                                     <div className='flex justify-center'>{getPodiumIcon(index + 1)}</div>
                                 </div>
@@ -131,8 +140,17 @@ const TopLearners = () => {
                                             <div className='w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-base shadow-md'>
                                                 #{index + 4}
                                             </div>
-                                            <div className='w-10 h-10 bg-background rounded-xl flex items-center justify-center border-2 border-border'>
-                                                <span className='font-bold'>{learner.avatar}</span>
+                                            <div className='w-10 h-10 bg-background rounded-xl flex items-center justify-center border-1 border-border'>
+                                                {learner.avatar?.startsWith('http') ? (
+                                                    <img
+                                                        src={learner.avatar}
+                                                        alt={learner.name}
+                                                        className='w-full h-full object-cover rounded-xl'
+                                                        loading='lazy'
+                                                    />
+                                                ) : (
+                                                    <span className='text-sm font-bold'>{learner.name.charAt(0)}</span>
+                                                )}
                                             </div>
                                         </div>
                                         <div>
