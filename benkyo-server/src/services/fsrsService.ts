@@ -427,7 +427,7 @@ export const getDueCards = async (userId: string, deckId: string) => {
     });
 
     // Use deck FSRS parameters if available, otherwise fall back to user deck state or defaults
-    const newCardsPerDay = userDeckState?.newCardsPerDay || fsrsParams.card_limit || 20;
+    const newCardsPerDay = fsrsParams.card_limit || 20;
     const reviewsPerDay = userDeckState?.reviewsPerDay || 100;
 
     const newCardsSeenToday = await Revlog.countDocuments({
