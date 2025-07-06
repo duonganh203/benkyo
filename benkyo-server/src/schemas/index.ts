@@ -55,7 +55,7 @@ const UserSchema = new Schema({
         },
         enable_fuzz: { type: Boolean, default: false },
         enable_short_term: { type: Boolean, default: true },
-        card_limit: { type: Number, default: 50 },
+        card_limit: { type: Number, default: 20 },
         lapses: { type: Number, default: 8 }
     },
     decks: [{ type: Schema.Types.ObjectId, ref: 'Deck' }],
