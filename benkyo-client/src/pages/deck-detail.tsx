@@ -278,32 +278,34 @@ const DeckDetail = () => {
                         </div>
 
                         <div className='flex items-center gap-2'>
-                            <Button onClick={() => navigate(`/study/${id}`)} className='transition-transform'>
-                                <GraduationCap className='mr-2 h-5 w-5' />
-                                Study Now
-                            </Button>
-
-                            <Button
-                                onClick={() => open(id!)}
-                                className='transition-transform hover:bg-blue-500 hover:text-white'
-                                variant='outline'
-                            >
-                                <NotebookPen className='mr-2 h-5 w-5' />
-                                Do Quiz
-                            </Button>
-
                             {currentUser && deckData.owner._id === currentUser._id && (
-                                <Button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        openSendReqPublicModal(id!);
-                                    }}
-                                    variant='outline'
-                                    size='sm'
-                                    className='px-3 py-2 h-auto text-primary hover:text-primary hover:bg-primary/10'
-                                >
-                                    <Earth className='h-8 w-8' />
-                                </Button>
+                                <>
+                                    <Button onClick={() => navigate(`/study/${id}`)} className='transition-transform'>
+                                        <GraduationCap className='mr-2 h-5 w-5' />
+                                        Study Now
+                                    </Button>
+
+                                    <Button
+                                        onClick={() => open(id!)}
+                                        className='transition-transform hover:bg-blue-500 hover:text-white'
+                                        variant='outline'
+                                    >
+                                        <NotebookPen className='mr-2 h-5 w-5' />
+                                        Do Quiz
+                                    </Button>
+
+                                    <Button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            openSendReqPublicModal(id!);
+                                        }}
+                                        variant='outline'
+                                        size='sm'
+                                        className='px-3 py-2 h-auto text-primary hover:text-primary hover:bg-primary/10'
+                                    >
+                                        <Earth className='h-8 w-8' />
+                                    </Button>
+                                </>
                             )}
                             {currentUser && deckData.owner._id === currentUser._id && (
                                 <DropdownMenu>
