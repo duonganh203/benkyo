@@ -10,9 +10,10 @@ import {
     getPublicDecksService,
     getRequestPulbicDeckService,
     reviewPublicDeckService,
-    duplicateDeckService
+    duplicateDeckService,
+    updateDeckFsrsParamsService
 } from '~/services/deckService';
-import { createDeckValidation } from '~/validations/deckValidation';
+import { createDeckValidation, updateDeckFsrsParamsValidation } from '~/validations/deckValidation';
 
 export const createDeck = async (req: Request, res: Response) => {
     const deckData = req.body;
@@ -85,4 +86,16 @@ export const duplicateDeck = async (req: Request, res: Response) => {
     const userId = req.user._id;
     const result = await duplicateDeckService(userId, id);
     return res.json({ message: result.message });
+};
+
+export const updateDeckFsrsParams = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const fsrsParams = req.body;
+
+    // Validate the FSRS parameters
+    const validatedParams = updateDeckFsrsParamsValidation.parse(fsrsParams);
+
+    const result = await updateDeckFsrsParamsService(userId, id, validatedParams);
+    return res.json({ message: 'FSRS parameters updated successfully', data: result });
 };

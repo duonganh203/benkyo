@@ -10,7 +10,8 @@ import {
     getPublicDecks,
     getRequestPulbicDeck,
     reviewPublicServiceDeck,
-    sendReqPublicDeck
+    sendReqPublicDeck,
+    updateDeckFsrsParams
 } from '~/controllers/deckController';
 import { errorHandler } from '~/errorHandler';
 import adminAuthMiddleware from '~/middlewares/adminAuthMiddleware';
@@ -29,5 +30,6 @@ deckRoutes.post('/:id/duplicate', [authMiddleware], errorHandler(duplicateDeck))
 deckRoutes.get('/:id/cards', [authMiddleware], errorHandler(getCards));
 deckRoutes.delete('/:id', [authMiddleware], errorHandler(deleteDeck));
 deckRoutes.patch('/:id/request-public', [authMiddleware], errorHandler(sendReqPublicDeck));
+deckRoutes.patch('/:id/fsrs', [authMiddleware], errorHandler(updateDeckFsrsParams));
 
 export default deckRoutes;

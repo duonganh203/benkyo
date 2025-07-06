@@ -217,3 +217,18 @@ export const reviewPublicDeckService = async (
 
     return { message: 'Deck status and note updated successfully' };
 };
+
+export const updateDeckFsrsParamsService = async (userId: string, deckId: string, fsrsParams: any) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!deck.owner.equals(userId)) {
+        throw new ForbiddenRequestsException('You do not have permission to update this deck', ErrorCode.FORBIDDEN);
+    }
+
+    const updatedDeck = await Deck.findByIdAndUpdate(deckId, { $set: { fsrsParams } }, { new: true });
+
+    return updatedDeck?.fsrsParams;
+};

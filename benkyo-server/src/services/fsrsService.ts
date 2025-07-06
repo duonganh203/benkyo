@@ -1,4 +1,4 @@
-import { User, Card, Revlog, Rating, State, UserDeckState } from '~/schemas';
+import { User, Card, Revlog, Rating, State, UserDeckState, Deck } from '~/schemas';
 import mongoose from 'mongoose';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
@@ -170,7 +170,20 @@ export const processReview = async (
         throw new NotFoundException('User or FSRS parameters not found', ErrorCode.NOT_FOUND);
     }
 
-    const fsrsParams = user.fsrsParams as unknown as FSRSParams;
+    // Get the card to find its deck
+    const card = await Card.findById(cardId);
+    if (!card) {
+        throw new NotFoundException('Card not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Get deck to check for deck-specific FSRS parameters
+    const deck = await Deck.findById(card.deck);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Prefer deck FSRS parameters over user parameters
+    const fsrsParams = (deck.fsrsParams as unknown as FSRSParams) || (user.fsrsParams as unknown as FSRSParams);
     const now = new Date();
 
     const lastReview = await Revlog.findOne(
@@ -266,10 +279,7 @@ export const processReview = async (
     });
 
     // Update deck statistics
-    const card = await Card.findById(cardId);
-    if (card) {
-        await updateDeckStatistics(userId, card.deck.toString(), currentState, newState, now);
-    }
+    await updateDeckStatistics(userId, card.deck.toString(), currentState, newState, now);
 
     // Check for lapse threshold
     if (rating === Rating.AGAIN) {
@@ -356,6 +366,15 @@ export const getDueCards = async (userId: string, deckId: string) => {
         throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
     }
 
+    // Get deck to check for deck-specific FSRS parameters
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Prefer deck FSRS parameters over user parameters
+    const fsrsParams = (deck.fsrsParams as unknown as FSRSParams) || (user.fsrsParams as unknown as FSRSParams);
+
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -407,7 +426,8 @@ export const getDueCards = async (userId: string, deckId: string) => {
         deck: deckId
     });
 
-    const newCardsPerDay = userDeckState?.newCardsPerDay || 20;
+    // Use deck FSRS parameters if available, otherwise fall back to user deck state or defaults
+    const newCardsPerDay = userDeckState?.newCardsPerDay || fsrsParams.card_limit || 20;
     const reviewsPerDay = userDeckState?.reviewsPerDay || 100;
 
     const newCardsSeenToday = await Revlog.countDocuments({
@@ -494,7 +514,20 @@ export const skipCardService = async (userId: string, cardId: string) => {
         throw new NotFoundException('User or FSRS parameters not found', ErrorCode.NOT_FOUND);
     }
 
-    const fsrsParams = user.fsrsParams as unknown as FSRSParams;
+    // Get the card to find its deck
+    const card = await Card.findById(cardId);
+    if (!card) {
+        throw new NotFoundException('Card not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Get deck to check for deck-specific FSRS parameters
+    const deck = await Deck.findById(card.deck);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Prefer deck FSRS parameters over user parameters
+    const fsrsParams = (deck.fsrsParams as unknown as FSRSParams) || (user.fsrsParams as unknown as FSRSParams);
     const now = new Date();
 
     // Set due date far in the future (effectively skipping)

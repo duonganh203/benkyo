@@ -83,7 +83,16 @@ const DeckSchema = new Schema({
     ratingCount: { type: Number, default: 0 },
     popularity: { type: Number, default: 0 },
     reviewedBy: { type: Schema.Types.ObjectId, ref: 'User' },
-    reviewNote: { type: String }
+    reviewNote: { type: String },
+    fsrsParams: {
+        request_retention: { type: Number },
+        maximum_interval: { type: Number },
+        w: { type: [Number] },
+        enable_fuzz: { type: Boolean },
+        enable_short_term: { type: Boolean },
+        card_limit: { type: Number },
+        lapses: { type: Number }
+    }
 });
 
 const CardSchema = new Schema({
