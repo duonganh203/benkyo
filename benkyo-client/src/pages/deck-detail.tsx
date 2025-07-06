@@ -40,6 +40,7 @@ import { useGenerateQuizModal } from '@/hooks/stores/use-generate-quiz-modal';
 import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-public-deck-modal';
 import useMe from '@/hooks/queries/use-me';
 import FlashcardViewer from '@/components/flashcard-viewer';
+import { DeckFSRSSettingsForm } from '@/components/forms/deck-fsrs-settings-form';
 
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -601,81 +602,89 @@ const DeckDetail = () => {
 
                         {currentUser && deckData.owner._id === currentUser._id && (
                             <TabsContent value='settings' className='animate-fade-in'>
-                                <Card className='hover:shadow-md transition-shadow'>
-                                    <CardContent className='p-6'>
-                                        <h2 className='text-xl font-semibold mb-4'>Deck Settings</h2>
+                                <div className='space-y-6'>
+                                    {/* FSRS Settings */}
+                                    <DeckFSRSSettingsForm deck={deckData} />
 
-                                        <div className='space-y-6'>
-                                            <div>
-                                                <h3 className='text-md font-medium mb-2'>General Settings</h3>
-                                                <p className='text-muted-foreground mb-4'>
-                                                    General settings coming soon. This feature is under development.
-                                                </p>
-                                            </div>
+                                    {/* General Settings */}
+                                    <Card className='hover:shadow-md transition-shadow'>
+                                        <CardContent className='p-6'>
+                                            <h2 className='text-xl font-semibold mb-4'>General Settings</h2>
 
-                                            <div className='border-t pt-6'>
-                                                <h3 className='text-md font-medium text-destructive flex items-center mb-4'>
-                                                    <Trash2 className='h-4 w-4 mr-2' />
-                                                    Delete Deck
-                                                </h3>
+                                            <div className='space-y-6'>
+                                                <div>
+                                                    <h3 className='text-md font-medium mb-2'>Deck Information</h3>
+                                                    <p className='text-muted-foreground mb-4'>
+                                                        General settings coming soon. This feature is under development.
+                                                    </p>
+                                                </div>
 
-                                                {!isDeletingDeck ? (
-                                                    <div>
-                                                        <p className='text-muted-foreground mb-4'>
-                                                            Deleting a deck will permanently remove it and all its
-                                                            cards. This action cannot be undone.
-                                                        </p>
+                                                <div className='border-t pt-6'>
+                                                    <h3 className='text-md font-medium text-destructive flex items-center mb-4'>
+                                                        <Trash2 className='h-4 w-4 mr-2' />
+                                                        Delete Deck
+                                                    </h3>
 
-                                                        {confirmDelete ? (
-                                                            <div className='bg-destructive/10 border border-destructive/30 rounded-lg p-4 mb-4'>
-                                                                <div className='flex items-start'>
-                                                                    <AlertCircle className='h-5 w-5 text-destructive mt-0.5 mr-3 flex-shrink-0' />
-                                                                    <div>
-                                                                        <h4 className='font-medium text-destructive'>
-                                                                            Are you absolutely sure?
-                                                                        </h4>
-                                                                        <p className='text-sm text-muted-foreground mb-3'>
-                                                                            This will delete "{deckData?.name}" and all{' '}
-                                                                            {cardsData?.length || 0} cards. You cannot
-                                                                            recover this data.
-                                                                        </p>
-                                                                        <div className='flex gap-2'>
-                                                                            <Button
-                                                                                variant='destructive'
-                                                                                onClick={handleDeleteDeck}
-                                                                            >
-                                                                                Yes, Delete Deck
-                                                                            </Button>
-                                                                            <Button
-                                                                                variant='outline'
-                                                                                onClick={() => setConfirmDelete(false)}
-                                                                            >
-                                                                                Cancel
-                                                                            </Button>
+                                                    {!isDeletingDeck ? (
+                                                        <div>
+                                                            <p className='text-muted-foreground mb-4'>
+                                                                Deleting a deck will permanently remove it and all its
+                                                                cards. This action cannot be undone.
+                                                            </p>
+
+                                                            {confirmDelete ? (
+                                                                <div className='bg-destructive/10 border border-destructive/30 rounded-lg p-4 mb-4'>
+                                                                    <div className='flex items-start'>
+                                                                        <AlertCircle className='h-5 w-5 text-destructive mt-0.5 mr-3 flex-shrink-0' />
+                                                                        <div>
+                                                                            <h4 className='font-medium text-destructive'>
+                                                                                Are you absolutely sure?
+                                                                            </h4>
+                                                                            <p className='text-sm text-muted-foreground mb-3'>
+                                                                                This will delete "{deckData?.name}" and
+                                                                                all {cardsData?.length || 0} cards. You
+                                                                                cannot recover this data.
+                                                                            </p>
+                                                                            <div className='flex gap-2'>
+                                                                                <Button
+                                                                                    variant='destructive'
+                                                                                    onClick={handleDeleteDeck}
+                                                                                >
+                                                                                    Yes, Delete Deck
+                                                                                </Button>
+                                                                                <Button
+                                                                                    variant='outline'
+                                                                                    onClick={() =>
+                                                                                        setConfirmDelete(false)
+                                                                                    }
+                                                                                >
+                                                                                    Cancel
+                                                                                </Button>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        ) : (
-                                                            <Button
-                                                                variant='destructive'
-                                                                onClick={() => setConfirmDelete(true)}
-                                                            >
-                                                                Delete Deck
+                                                            ) : (
+                                                                <Button
+                                                                    variant='destructive'
+                                                                    onClick={() => setConfirmDelete(true)}
+                                                                >
+                                                                    Delete Deck
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <div className='flex items-center gap-2'>
+                                                            <Button variant='destructive' disabled>
+                                                                <span className='animate-pulse'>Deleting...</span>
                                                             </Button>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    <div className='flex items-center gap-2'>
-                                                        <Button variant='destructive' disabled>
-                                                            <span className='animate-pulse'>Deleting...</span>
-                                                        </Button>
-                                                    </div>
-                                                )}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                        </CardContent>
+                                    </Card>
+                                </div>
                             </TabsContent>
                         )}
                     </Tabs>
