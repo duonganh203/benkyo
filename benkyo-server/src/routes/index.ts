@@ -8,8 +8,8 @@ import quizRoutes from './quizRoute';
 import documentRoutes from './documentRoute';
 import chatRoutes from './chatRoute';
 import paymentRoutes from './paymentRoute';
+import packageRoutes from './packageRouter';
 import streakRoutes from './streakRoute';
-
 const rootRouter: Router = Router();
 
 rootRouter.use('/auth', authRoutes);
@@ -22,6 +22,7 @@ rootRouter.use('/quiz', quizRoutes);
 rootRouter.use('/documents', documentRoutes);
 rootRouter.use('/chat', chatRoutes);
 rootRouter.use('/payment', paymentRoutes);
+rootRouter.use('/package', packageRoutes);
 rootRouter.use('/streak', streakRoutes);
 
 export default rootRouter;
