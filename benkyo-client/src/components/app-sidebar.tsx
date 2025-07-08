@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Home, Library, Package, Settings2, Sparkles, Clock, BadgeInfo, NotebookPen, Cat } from 'lucide-react';
+import { Home, Library, Package, Settings2, Sparkles, Clock, BadgeInfo, NotebookPen, Cat, Medal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -61,6 +61,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     title: 'SUPER CAT',
                     url: '/ai-chat',
                     icon: Cat,
+                    highlight: true
+                },
+                {
+                    title: 'Top Learners',
+                    url: '/top-learners',
+                    icon: Medal,
                     highlight: true
                 },
                 {
