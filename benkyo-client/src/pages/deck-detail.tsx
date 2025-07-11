@@ -12,7 +12,8 @@ import {
     RefreshCcw,
     AlertCircle,
     NotebookPen,
-    Earth
+    Earth,
+    Copy
 } from 'lucide-react';
 import { formatDistanceToNow, isBefore } from 'date-fns';
 import useGetDeckById from '@/hooks/queries/use-get-deck-id';
@@ -34,17 +35,23 @@ import {
 import { Skeleton } from '../components/ui/skeleton';
 import { getToast } from '@/utils/getToast';
 import useDeleteDeck from '@/hooks/queries/use-delete-deck';
+import useDuplicateDeck from '@/hooks/queries/use-duplicate-deck';
 import { useGenerateQuizModal } from '@/hooks/stores/use-generate-quiz-modal';
 import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-public-deck-modal';
+import useMe from '@/hooks/queries/use-me';
+import FlashcardViewer from '@/components/flashcard-viewer';
+import { DeckFSRSSettingsForm } from '@/components/forms/deck-fsrs-settings-form';
 
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { data: currentUser } = useMe();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState('cards');
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const { open } = useGenerateQuizModal((store) => store);
 
     const publicStatus = [
@@ -72,6 +79,10 @@ const DeckDetail = () => {
     const { data: cardsData, isLoading: isCardsLoading } = useGetDeckCards(id!);
     const { mutateAsync: deleteCardMutate } = useDeleteCard();
     const { mutateAsync: deleteDeckMutate, isPending: isDeletingDeck } = useDeleteDeck(id!);
+    const { mutateAsync: duplicateDeck, isPending: isDuplicating } = useDuplicateDeck(id!);
+
+    console.log(deckData?.owner._id, 'deckData?.owner._id');
+    console.log(currentUser?._id, 'currentUser?._id');
 
     const queryClient = useQueryClient();
 
@@ -203,6 +214,14 @@ const DeckDetail = () => {
             }
         );
     };
+    const handleDuplicateDeck = async () => {
+        try {
+            await duplicateDeck({ deckId: id! });
+            getToast('success', 'Deck duplicated successfully!');
+        } catch (error) {
+            getToast('error', `${error}`);
+        }
+    };
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
@@ -259,54 +278,76 @@ const DeckDetail = () => {
                         </div>
 
                         <div className='flex items-center gap-2'>
-                            <Button onClick={() => navigate(`/study/${id}`)} className='transition-transform'>
-                                <GraduationCap className='mr-2 h-5 w-5' />
-                                Study Now
-                            </Button>
-
-                            <Button
-                                onClick={() => open(id!)}
-                                className='transition-transform hover:bg-blue-500 hover:text-white'
-                                variant='outline'
-                            >
-                                <NotebookPen className='mr-2 h-5 w-5' />
-                                Do Quiz
-                            </Button>
-                            <Button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    openSendReqPublicModal(id!);
-                                }}
-                                variant='outline'
-                                size='sm'
-                                className='px-3 py-2 h-auto text-primary hover:text-primary hover:bg-primary/10'
-                            >
-                                <Earth className='h-8 w-8' />
-                            </Button>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant='outline' size='icon'>
-                                        <MoreHorizontal className='h-5 w-5' />
+                            {currentUser && deckData.owner._id === currentUser._id && (
+                                <>
+                                    <Button onClick={() => navigate(`/study/${id}`)} className='transition-transform'>
+                                        <GraduationCap className='mr-2 h-5 w-5' />
+                                        Study Now
                                     </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align='end'>
-                                    <DropdownMenuItem>
-                                        <Edit className='mr-2 h-4 w-4' />
-                                        <span>Edit Deck</span>
-                                    </DropdownMenuItem>
 
-                                    <DropdownMenuItem
-                                        className='text-destructive'
-                                        onClick={() => {
-                                            setActiveTab('settings');
-                                            setConfirmDelete(true);
-                                        }}
+                                    <Button
+                                        onClick={() => open(id!)}
+                                        className='transition-transform hover:bg-blue-500 hover:text-white'
+                                        variant='outline'
                                     >
-                                        <Trash2 className='mr-2 h-4 w-4' />
-                                        <span>Delete Deck</span>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                                        <NotebookPen className='mr-2 h-5 w-5' />
+                                        Do Quiz
+                                    </Button>
+
+                                    <Button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            openSendReqPublicModal(id!);
+                                        }}
+                                        variant='outline'
+                                        size='sm'
+                                        className='px-3 py-2 h-auto text-primary hover:text-primary hover:bg-primary/10'
+                                    >
+                                        <Earth className='h-8 w-8' />
+                                    </Button>
+                                </>
+                            )}
+                            {currentUser && deckData.owner._id === currentUser._id && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant='outline' size='icon'>
+                                            <MoreHorizontal className='h-5 w-5' />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align='end'>
+                                        <DropdownMenuItem>
+                                            <Edit className='mr-2 h-4 w-4' />
+                                            <span>Edit Deck</span>
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem
+                                            className='text-destructive'
+                                            onClick={() => {
+                                                setActiveTab('settings');
+                                                setConfirmDelete(true);
+                                            }}
+                                        >
+                                            <Trash2 className='mr-2 h-4 w-4' />
+                                            <span>Delete Deck</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
+                            {currentUser && deckData.publicStatus === 2 && deckData.owner._id !== currentUser._id && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant='outline' size='icon'>
+                                            <MoreHorizontal className='h-5 w-5' />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align='end'>
+                                        <DropdownMenuItem onClick={handleDuplicateDeck} disabled={isDuplicating}>
+                                            <Copy className='mr-2 h-4 w-4' />
+                                            <span>Duplicate Deck</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                         </div>
                     </div>
 
@@ -355,15 +396,28 @@ const DeckDetail = () => {
                             <TabsTrigger value='cards' className='transition-all'>
                                 Cards
                             </TabsTrigger>
+
                             <TabsTrigger value='stats' className='transition-all'>
                                 Statistics
                             </TabsTrigger>
-                            <TabsTrigger value='settings' className='transition-all'>
-                                Settings
-                            </TabsTrigger>
+                            {currentUser && deckData.owner._id === currentUser._id && (
+                                <TabsTrigger value='settings' className='transition-all'>
+                                    Settings
+                                </TabsTrigger>
+                            )}
                         </TabsList>
 
                         <TabsContent value='cards' className='animate-fade-in'>
+                            {cardsData && cardsData.length > 0 && (
+                                <div className='mb-8 animate-fade-in'>
+                                    <FlashcardViewer
+                                        cards={filteredCards.length > 0 ? filteredCards : cardsData}
+                                        initialIndex={0}
+                                        onCardChange={setCurrentCardIndex}
+                                    />
+                                </div>
+                            )}
+
                             {/* Search and Add button */}
                             <div className='flex flex-col md:flex-row justify-between mb-4 gap-4 animate-slide-up'>
                                 <div className='flex-1'>
@@ -374,13 +428,15 @@ const DeckDetail = () => {
                                         className='w-full transition-all focus:ring-2 focus:ring-blue-500'
                                     />
                                 </div>
-                                <Button
-                                    onClick={() => navigate(`/deck/${id}/create-card`)}
-                                    className='transition-transform'
-                                >
-                                    <Plus className='mr-2 h-4 w-4' />
-                                    Add Card
-                                </Button>
+                                {currentUser && deckData.owner._id === currentUser._id && (
+                                    <Button
+                                        onClick={() => navigate(`/deck/${id}/create-card`)}
+                                        className='transition-transform'
+                                    >
+                                        <Plus className='mr-2 h-4 w-4' />
+                                        Add Card
+                                    </Button>
+                                )}
                             </div>
 
                             {allTags.length > 0 && (
@@ -417,21 +473,24 @@ const DeckDetail = () => {
                                             ? "This deck doesn't have any cards yet."
                                             : 'No cards match your search criteria.'}
                                     </p>
-                                    {cardsData?.length === 0 && (
-                                        <Button
-                                            onClick={() => navigate(`/deck/${id}/create-card`)}
-                                            className='transition-transform animate-slide-up'
-                                        >
-                                            <Plus className='mr-2 h-4 w-4' />
-                                            Add Your First Card
-                                        </Button>
-                                    )}
+                                    {cardsData?.length === 0 &&
+                                        currentUser &&
+                                        deckData.owner._id === currentUser._id && (
+                                            <Button
+                                                onClick={() => navigate(`/deck/${id}/create-card`)}
+                                                className='transition-transform animate-slide-up'
+                                            >
+                                                <Plus className='mr-2 h-4 w-4' />
+                                                Add Your First Card
+                                            </Button>
+                                        )}
                                 </div>
                             ) : (
                                 <div className='grid gap-4'>
                                     {filteredCards.map((card, index) => {
                                         const status = getLearningStatus(card);
                                         const delay = Math.min(index * 100, 900);
+                                        const isCurrentCard = index === currentCardIndex;
 
                                         return (
                                             <Card
@@ -467,6 +526,11 @@ const DeckDetail = () => {
                                                             )}
                                                         </div>
                                                         <div className='flex items-center gap-4'>
+                                                            {isCurrentCard && (
+                                                                <Badge variant='default' className='text-xs'>
+                                                                    Current
+                                                                </Badge>
+                                                            )}
                                                             <div className='flex items-center gap-1 text-sm'>
                                                                 <div
                                                                     className={`w-2 h-2 rounded-full ${status.stateColor}`}
@@ -477,44 +541,46 @@ const DeckDetail = () => {
                                                                 <Calendar className='h-3 w-3 mr-1' />
                                                                 <span>{status.dueText}</span>
                                                             </div>
-                                                            <DropdownMenu>
-                                                                <DropdownMenuTrigger asChild>
-                                                                    <Button variant='ghost' size='sm'>
-                                                                        <MoreHorizontal className='h-4 w-4' />
-                                                                    </Button>
-                                                                </DropdownMenuTrigger>
-                                                                <DropdownMenuContent align='end'>
-                                                                    <DropdownMenuItem
-                                                                        onClick={() =>
-                                                                            navigate(
-                                                                                `/deck/${id}/edit-card/${card._id}`
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <Edit className='mr-2 h-4 w-4' />
-                                                                        <span>Edit</span>
-                                                                    </DropdownMenuItem>
-                                                                    <DropdownMenuItem
-                                                                        onClick={() => {
-                                                                            handleDelete(card._id);
-                                                                        }}
-                                                                    >
-                                                                        <Trash2 className='mr-2 h-4 w-4' />
-                                                                        <span>Delete</span>
-                                                                    </DropdownMenuItem>
-                                                                    <DropdownMenuItem
-                                                                        onClick={() => {
-                                                                            getToast(
-                                                                                'success',
-                                                                                'Card progress has been reset'
-                                                                            );
-                                                                        }}
-                                                                    >
-                                                                        <RefreshCcw className='mr-2 h-4 w-4' />
-                                                                        <span>Reset Progress</span>
-                                                                    </DropdownMenuItem>
-                                                                </DropdownMenuContent>
-                                                            </DropdownMenu>
+                                                            {currentUser && deckData.owner._id === currentUser._id && (
+                                                                <DropdownMenu>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <Button variant='ghost' size='sm'>
+                                                                            <MoreHorizontal className='h-4 w-4' />
+                                                                        </Button>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent align='end'>
+                                                                        <DropdownMenuItem
+                                                                            onClick={() =>
+                                                                                navigate(
+                                                                                    `/deck/${id}/edit-card/${card._id}`
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            <Edit className='mr-2 h-4 w-4' />
+                                                                            <span>Edit</span>
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem
+                                                                            onClick={() => {
+                                                                                handleDelete(card._id);
+                                                                            }}
+                                                                        >
+                                                                            <Trash2 className='mr-2 h-4 w-4' />
+                                                                            <span>Delete</span>
+                                                                        </DropdownMenuItem>
+                                                                        <DropdownMenuItem
+                                                                            onClick={() => {
+                                                                                getToast(
+                                                                                    'success',
+                                                                                    'Card progress has been reset'
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <RefreshCcw className='mr-2 h-4 w-4' />
+                                                                            <span>Reset Progress</span>
+                                                                        </DropdownMenuItem>
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </CardContent>
@@ -536,83 +602,93 @@ const DeckDetail = () => {
                             </Card>
                         </TabsContent>
 
-                        <TabsContent value='settings' className='animate-fade-in'>
-                            <Card className='hover:shadow-md transition-shadow'>
-                                <CardContent className='p-6'>
-                                    <h2 className='text-xl font-semibold mb-4'>Deck Settings</h2>
+                        {currentUser && deckData.owner._id === currentUser._id && (
+                            <TabsContent value='settings' className='animate-fade-in'>
+                                <div className='space-y-6'>
+                                    {/* FSRS Settings */}
+                                    <DeckFSRSSettingsForm deck={deckData} />
 
-                                    <div className='space-y-6'>
-                                        <div>
-                                            <h3 className='text-md font-medium mb-2'>General Settings</h3>
-                                            <p className='text-muted-foreground mb-4'>
-                                                General settings coming soon. This feature is under development.
-                                            </p>
-                                        </div>
+                                    {/* General Settings */}
+                                    <Card className='hover:shadow-md transition-shadow'>
+                                        <CardContent className='p-6'>
+                                            <h2 className='text-xl font-semibold mb-4'>General Settings</h2>
 
-                                        <div className='border-t pt-6'>
-                                            <h3 className='text-md font-medium text-destructive flex items-center mb-4'>
-                                                <Trash2 className='h-4 w-4 mr-2' />
-                                                Delete Deck
-                                            </h3>
-
-                                            {!isDeletingDeck ? (
+                                            <div className='space-y-6'>
                                                 <div>
+                                                    <h3 className='text-md font-medium mb-2'>Deck Information</h3>
                                                     <p className='text-muted-foreground mb-4'>
-                                                        Deleting a deck will permanently remove it and all its cards.
-                                                        This action cannot be undone.
+                                                        General settings coming soon. This feature is under development.
                                                     </p>
+                                                </div>
 
-                                                    {confirmDelete ? (
-                                                        <div className='bg-destructive/10 border border-destructive/30 rounded-lg p-4 mb-4'>
-                                                            <div className='flex items-start'>
-                                                                <AlertCircle className='h-5 w-5 text-destructive mt-0.5 mr-3 flex-shrink-0' />
-                                                                <div>
-                                                                    <h4 className='font-medium text-destructive'>
-                                                                        Are you absolutely sure?
-                                                                    </h4>
-                                                                    <p className='text-sm text-muted-foreground mb-3'>
-                                                                        This will delete "{deckData?.name}" and all{' '}
-                                                                        {cardsData?.length || 0} cards. You cannot
-                                                                        recover this data.
-                                                                    </p>
-                                                                    <div className='flex gap-2'>
-                                                                        <Button
-                                                                            variant='destructive'
-                                                                            onClick={handleDeleteDeck}
-                                                                        >
-                                                                            Yes, Delete Deck
-                                                                        </Button>
-                                                                        <Button
-                                                                            variant='outline'
-                                                                            onClick={() => setConfirmDelete(false)}
-                                                                        >
-                                                                            Cancel
-                                                                        </Button>
+                                                <div className='border-t pt-6'>
+                                                    <h3 className='text-md font-medium text-destructive flex items-center mb-4'>
+                                                        <Trash2 className='h-4 w-4 mr-2' />
+                                                        Delete Deck
+                                                    </h3>
+
+                                                    {!isDeletingDeck ? (
+                                                        <div>
+                                                            <p className='text-muted-foreground mb-4'>
+                                                                Deleting a deck will permanently remove it and all its
+                                                                cards. This action cannot be undone.
+                                                            </p>
+
+                                                            {confirmDelete ? (
+                                                                <div className='bg-destructive/10 border border-destructive/30 rounded-lg p-4 mb-4'>
+                                                                    <div className='flex items-start'>
+                                                                        <AlertCircle className='h-5 w-5 text-destructive mt-0.5 mr-3 flex-shrink-0' />
+                                                                        <div>
+                                                                            <h4 className='font-medium text-destructive'>
+                                                                                Are you absolutely sure?
+                                                                            </h4>
+                                                                            <p className='text-sm text-muted-foreground mb-3'>
+                                                                                This will delete "{deckData?.name}" and
+                                                                                all {cardsData?.length || 0} cards. You
+                                                                                cannot recover this data.
+                                                                            </p>
+                                                                            <div className='flex gap-2'>
+                                                                                <Button
+                                                                                    variant='destructive'
+                                                                                    onClick={handleDeleteDeck}
+                                                                                >
+                                                                                    Yes, Delete Deck
+                                                                                </Button>
+                                                                                <Button
+                                                                                    variant='outline'
+                                                                                    onClick={() =>
+                                                                                        setConfirmDelete(false)
+                                                                                    }
+                                                                                >
+                                                                                    Cancel
+                                                                                </Button>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            ) : (
+                                                                <Button
+                                                                    variant='destructive'
+                                                                    onClick={() => setConfirmDelete(true)}
+                                                                >
+                                                                    Delete Deck
+                                                                </Button>
+                                                            )}
                                                         </div>
                                                     ) : (
-                                                        <Button
-                                                            variant='destructive'
-                                                            onClick={() => setConfirmDelete(true)}
-                                                        >
-                                                            Delete Deck
-                                                        </Button>
+                                                        <div className='flex items-center gap-2'>
+                                                            <Button variant='destructive' disabled>
+                                                                <span className='animate-pulse'>Deleting...</span>
+                                                            </Button>
+                                                        </div>
                                                     )}
                                                 </div>
-                                            ) : (
-                                                <div className='flex items-center gap-2'>
-                                                    <Button variant='destructive' disabled>
-                                                        <span className='animate-pulse'>Deleting...</span>
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </TabsContent>
+                        )}
                     </Tabs>
                 </div>
             )}

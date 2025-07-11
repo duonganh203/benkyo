@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ArrowRight, Check, X, Clock, BarChart, PenIcon } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,10 +19,13 @@ import useGetDueCards from '@/hooks/queries/use-get-due-cards';
 import useSubmitReview from '@/hooks/queries/use-submit-review';
 import { getToast } from '@/utils/getToast';
 import useSkipCard from '@/hooks/queries/use-skip-card';
+import { useStudyFlagStore } from '@/hooks/stores/use-study-store';
+import useUpdateStudyStreak from '@/hooks/queries/use-update-study-streak';
 
 const StudyCard = () => {
     const { id: deckId } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
     const [showAnswer, setShowAnswer] = useState(false);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -37,10 +41,37 @@ const StudyCard = () => {
 
     const timerRef = useRef<number | null>(null);
     const startTimeRef = useRef<number>(Date.now());
+    const streakLoggedRef = useRef(false);
 
     const { data: dueCards = [], isLoading } = useGetDueCards(deckId!);
 
     const { mutate: submitReview } = useSubmitReview(deckId!);
+
+    const { mutate: updateStreak } = useUpdateStudyStreak();
+
+    const logStreakOnce = () => {
+        if (streakLoggedRef.current) return;
+        streakLoggedRef.current = true;
+
+        updateStreak(undefined, {
+            onSuccess: (data) => {
+                if (data.updated) {
+                    setJustStudied(true, data.studyStreak);
+                }
+                queryClient.invalidateQueries({ queryKey: ['studyStreak'] });
+            },
+            onError: (err) => {
+                console.error('[STREAK] update failed', err);
+                setJustStudied(true, null);
+            }
+        });
+    };
+
+    useEffect(() => {
+        return () => {
+            streakLoggedRef.current = false;
+        };
+    }, [deckId]);
 
     useEffect(() => {
         setCards(dueCards);
@@ -66,9 +97,13 @@ const StudyCard = () => {
         setCurrentCardTime(0);
     }, [currentCardIndex]);
 
-    const handleRate = (rating: Rating) => {
-        if (!cards.length || currentCardIndex >= cards.length) return;
+    const { setJustStudied } = useStudyFlagStore();
 
+    const handleRate = (rating: Rating) => {
+        const isLastCard = currentCardIndex + 1 === cards.length;
+        if (isLastCard) logStreakOnce();
+
+        if (!cards.length || currentCardIndex >= cards.length) return;
         const currentCard = cards[currentCardIndex];
         const reviewTime = Math.round((Date.now() - startTimeRef.current) / 1000);
 
@@ -76,24 +111,20 @@ const StudyCard = () => {
             { cardId: currentCard._id, rating, reviewTime },
             {
                 onSuccess: () => {
-                    setStats((prev) => ({
-                        ...prev,
-                        studied: prev.studied + 1
-                    }));
+                    setStats((prev) => ({ ...prev, studied: prev.studied + 1 }));
                     nextCard();
                 },
-                onError: () => {
-                    getToast('error', 'Failed to submit rating');
-                }
+                onError: () => getToast('error', 'Failed to submit rating')
             }
         );
     };
+
     const { mutate: skipCard } = useSkipCard(deckId!);
 
     const nextCard = () => {
         const nextIndex = currentCardIndex + 1;
-
         if (nextIndex >= cards.length) {
+            logStreakOnce();
             if (timerRef.current) {
                 clearInterval(timerRef.current);
                 timerRef.current = null;
@@ -103,10 +134,6 @@ const StudyCard = () => {
             setCurrentCardIndex(nextIndex);
             setShowAnswer(false);
         }
-    };
-
-    const handleShowAnswer = () => {
-        setShowAnswer(true);
     };
 
     const formatTime = (seconds: number): string => {
@@ -122,7 +149,6 @@ const StudyCard = () => {
 
     const handleSkip = () => {
         if (!cards.length || currentCardIndex >= cards.length) return;
-
         const currentCard = cards[currentCardIndex];
         skipCard(
             { cardId: currentCard._id },
@@ -130,9 +156,7 @@ const StudyCard = () => {
                 onSuccess: () => {
                     nextCard();
                 },
-                onError: () => {
-                    getToast('error', 'Failed to skip card');
-                }
+                onError: () => getToast('error', 'Failed to skip card')
             }
         );
     };
@@ -314,7 +338,7 @@ const StudyCard = () => {
                             Skip
                         </Button>
                         <Button
-                            onClick={handleShowAnswer}
+                            onClick={() => setShowAnswer(true)}
                             className='w-full transition-all hover:brightness-110 active:scale-95'
                         >
                             Show Answer

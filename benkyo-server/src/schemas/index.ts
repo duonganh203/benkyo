@@ -55,13 +55,14 @@ const UserSchema = new Schema({
         },
         enable_fuzz: { type: Boolean, default: false },
         enable_short_term: { type: Boolean, default: true },
-        card_limit: { type: Number, default: 50 },
+        card_limit: { type: Number, default: 20 },
         lapses: { type: Number, default: 8 }
     },
     decks: [{ type: Schema.Types.ObjectId, ref: 'Deck' }],
     stats: {
         totalReviews: { type: Number, default: 0 },
         studyStreak: { type: Number, default: 0 },
+        longestStudyStreak: { type: Number, default: 0 },
         lastStudyDate: { type: Date }
     }
 });
@@ -78,12 +79,20 @@ const DeckSchema = new Schema({
     updatedAt: { type: Date, default: Date.now },
     cardCount: { type: Number, default: 0 },
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    subscribers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     avgRating: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 },
     popularity: { type: Number, default: 0 },
     reviewedBy: { type: Schema.Types.ObjectId, ref: 'User' },
-    reviewNote: { type: String }
+    reviewNote: { type: String },
+    fsrsParams: {
+        request_retention: { type: Number },
+        maximum_interval: { type: Number },
+        w: { type: [Number] },
+        enable_fuzz: { type: Boolean },
+        enable_short_term: { type: Boolean },
+        card_limit: { type: Number },
+        lapses: { type: Number }
+    }
 });
 
 const CardSchema = new Schema({

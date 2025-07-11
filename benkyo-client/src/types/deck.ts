@@ -10,6 +10,16 @@ export interface DeckDetails {
     name: string;
     description?: string;
     publicStatus: number;
+    owner: Owner;
+    fsrsParams?: {
+        request_retention?: number;
+        maximum_interval?: number;
+        w?: number[];
+        enable_fuzz?: boolean;
+        enable_short_term?: boolean;
+        card_limit?: number;
+        lapses?: number;
+    };
 }
 export interface DeckInterface {
     _id: string;
@@ -18,11 +28,12 @@ export interface DeckInterface {
     cardCount: number;
     updatedAt: string;
     createdAt: string;
-    owner: Onwer;
+    owner: Owner;
     isPublic: boolean;
 }
 
-interface Onwer {
+interface Owner {
+    _id: string;
     name: string;
     avatar?: string;
 }

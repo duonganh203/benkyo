@@ -22,7 +22,7 @@ const Community = () => {
             <div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8'>
                 <h1 className='text-3xl font-bold flex items-center gap-2 text-foreground'>
                     <Book className='h-8 w-8 text-primary' />
-                    Comunity
+                    Community
                 </h1>
 
                 <div className='relative w-full md:w-64 mt-2 md:mt-0'>
