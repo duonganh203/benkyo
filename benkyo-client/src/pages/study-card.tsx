@@ -153,7 +153,7 @@ const StudyCard = () => {
         skipCard(
             { cardId: currentCard._id },
             {
-                onSuccess: () => {
+                onSuccess: async () => {
                     nextCard();
                 },
                 onError: () => getToast('error', 'Failed to skip card')
@@ -161,7 +161,7 @@ const StudyCard = () => {
         );
     };
 
-    const endStudySession = () => {
+    const endStudySession = async () => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
             timerRef.current = null;
