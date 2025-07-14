@@ -11,6 +11,7 @@ export type ClassUserResponseDto = {
     _id: string;
     name: string;
     description: string;
+    owner: string;
     bannerUrl: string;
     visibility: 'public' | 'private';
     requiredApprovalToJoin: boolean;
