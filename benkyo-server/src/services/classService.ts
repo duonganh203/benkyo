@@ -32,5 +32,14 @@ export const createClassService = async (userId: string, data: ClassStateType) =
         $push: { userClassStates: userState._id }
     });
 
-    return savedClass;
+    return {
+        _id: savedClass._id.toString(),
+        name: savedClass.name,
+        description: savedClass.description,
+        owner: savedClass.owner.toString(),
+        bannerUrl: savedClass.bannerUrl,
+        visibility: savedClass.visibility,
+        requiredApprovalToJoin: savedClass.requiredApprovalToJoin,
+        message: 'Create class successfully'
+    };
 };
