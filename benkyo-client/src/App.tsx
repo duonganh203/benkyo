@@ -26,6 +26,7 @@ import AIChat from './pages/ai-chat';
 import Payment from './pages/payment';
 import Packages from './pages/package';
 import Community from './pages/community';
+import CreateClass from './pages/create-class';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -67,6 +68,7 @@ const App = () => {
                             <Route path='/payment/:packageId' element={<Payment />} />
                             <Route path='/package' element={<Packages />} />
                             <Route path='/community' element={<Community />} />
+                            <Route path='/class/create' element={<CreateClass />} />
                         </Route>
                     </Routes>
                     <ModalProvider />
