@@ -10,6 +10,7 @@ import chatRoutes from './chatRoute';
 import paymentRoutes from './paymentRoute';
 import packageRoutes from './packageRouter';
 import streakRoutes from './streakRoute';
+import classRoutes from './classRoute';
 const rootRouter: Router = Router();
 
 rootRouter.use('/auth', authRoutes);
@@ -24,5 +25,6 @@ rootRouter.use('/chat', chatRoutes);
 rootRouter.use('/payment', paymentRoutes);
 rootRouter.use('/package', packageRoutes);
 rootRouter.use('/streak', streakRoutes);
+rootRouter.use('/class', classRoutes);
 
 export default rootRouter;
