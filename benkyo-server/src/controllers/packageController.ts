@@ -20,8 +20,6 @@ export const listPackages = async (req: Request, res: Response) => {
     const result = await listPackagesService();
     res.json(result);
 };
-
-// UPDATE package
 export const updatePackage = async (req: Request, res: Response) => {
     const { packageId } = req.params;
     const data = updatePackageValidation.parse(req.body);

@@ -10,7 +10,6 @@ import chatRoutes from './chatRoute';
 import paymentRoutes from './paymentRoute';
 import packageRoutes from './packageRouter';
 import streakRoutes from './streakRoute';
-
 const rootRouter: Router = Router();
 
 rootRouter.use('/auth', authRoutes);
