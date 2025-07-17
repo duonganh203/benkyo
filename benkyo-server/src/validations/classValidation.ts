@@ -1,6 +1,10 @@
 import z from 'zod';
 
 export const classValidation = z.object({
+    _id: z
+        .string()
+        .regex(/^[a-f\d]{24}$/i, 'Invalid class ID')
+        .optional(),
     name: z.string().min(1, 'Class name is required'),
     description: z.string().min(1, 'Description is required'),
     bannerUrl: z.string().url({ message: 'Invalid image URL' }).min(1, 'Banner is required'),

@@ -230,7 +230,7 @@ const CreateClass = () => {
                                         type='button'
                                         variant='outline'
                                         className='flex-1'
-                                        onClick={() => navigate('/class')}
+                                        onClick={() => navigate('/class/list')}
                                     >
                                         Cancel
                                     </Button>
