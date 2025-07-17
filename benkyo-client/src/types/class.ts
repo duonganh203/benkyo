@@ -17,3 +17,27 @@ export type ClassUserResponseDto = {
     requiredApprovalToJoin: boolean;
     message?: string;
 };
+
+export type ClassListItemUserResponseDto = {
+    _id: string;
+    name: string;
+    description: string;
+    owner: string;
+    bannerUrl: string;
+    progress: number;
+    requiredApprovalToJoin: boolean;
+    createdAt: Date;
+};
+
+export type ClassJoinResponseDto = {
+    message: string;
+};
+
+export type ClassJoinRequestDto = {
+    classId: string;
+};
+
+export type ClassRejectRequestJoinDto = {
+    classId: string;
+    userId: string;
+};

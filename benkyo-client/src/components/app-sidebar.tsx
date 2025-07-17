@@ -64,6 +64,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     highlight: true
                 },
                 {
+                    title: 'Classes',
+                    url: '/class/list',
+                    icon: Settings2
+                },
+                {
                     title: 'Settings',
                     url: '/profile',
                     icon: Settings2
