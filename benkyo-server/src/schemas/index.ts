@@ -243,6 +243,48 @@ const PackageSchema = new Schema(
     { timestamps: true }
 );
 
+const ClassSchema = new Schema(
+    {
+        name: { type: String, required: true },
+        description: { type: String, required: true },
+        bannerUrl: { type: String, required: true },
+        owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        visibility: { type: String, enum: ['public', 'private'], default: 'private' },
+        requiredApprovalToJoin: { type: Boolean, default: false },
+        visited: [
+            {
+                userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                count: { type: Number, default: 0 },
+                lastVisit: { type: Date, default: Date.now }
+            }
+        ],
+
+        joinRequests: [
+            {
+                user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                requestDate: { type: Date, default: Date.now }
+            }
+        ],
+        users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        desks: [{ type: Schema.Types.ObjectId, ref: 'Deck' }],
+        userClassStates: [{ type: Schema.Types.ObjectId, ref: 'UserClassState' }]
+    },
+    { timestamps: true }
+);
+
+const UserClassStateSchema = new Schema(
+    {
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        class: { type: Schema.Types.ObjectId, ref: 'Class', required: true },
+        points: { type: Number, default: 0 },
+        studyStreak: { type: Number, default: 0 },
+        lastStudyDate: { type: Date }
+    },
+    { timestamps: true }
+);
+
+export const Class = model('Class', ClassSchema);
+export const UserClassState = model('UserClassState', UserClassStateSchema);
 export const User = model('User', UserSchema);
 export const Deck = model('Deck', DeckSchema);
 export const Card = model('Card', CardSchema);
@@ -258,4 +300,6 @@ export const Transaction = model('Transaction', TransactionSchema);
 export const Package = model('Package', PackageSchema);
 export type TransactionType = InferSchemaType<typeof TransactionSchema>;
 export type ConversationType = InferSchemaType<typeof ConversationSchema>;
+export type ClassStateType = InferSchemaType<typeof ClassSchema>;
+export type UserClassStateType = InferSchemaType<typeof UserClassStateSchema>;
 export { Rating, State, PublicStatus, PackageType, PackageDuration };
