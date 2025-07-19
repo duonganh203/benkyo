@@ -16,13 +16,17 @@ export const classValidation = z.object({
     requiredApprovalToJoin: z.boolean(),
 
     visited: z
-        .array(
-            z.object({
-                userId: z.string().regex(/^[a-f\d]{24}$/i, 'Invalid user ID'),
-                count: z.number().nonnegative().default(0),
-                lastVisit: z.date().optional()
-            })
-        )
+        .object({
+            count: z.number().nonnegative().default(0),
+            history: z
+                .array(
+                    z.object({
+                        userId: z.string().regex(/^[a-f\d]{24}$/i, 'Invalid user ID'),
+                        lastVisit: z.date().optional()
+                    })
+                )
+                .optional()
+        })
         .optional(),
 
     joinRequests: z

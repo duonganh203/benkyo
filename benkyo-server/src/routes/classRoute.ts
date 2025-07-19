@@ -11,7 +11,10 @@ classRoutes.get('/list', errorHandler(classController.getClassListUser));
 classRoutes.get('/my-class', errorHandler(classController.getMyClassList));
 classRoutes.get('/suggested', errorHandler(classController.getSuggestedClassList));
 classRoutes.get('/:_id/update-by-id', errorHandler(classController.getClassUpdateById));
+classRoutes.get('/:_id/management', errorHandler(classController.getClassManagementById));
 
+classRoutes.post('/accept', errorHandler(classController.acceptJoinRequest));
+classRoutes.post('/reject', errorHandler(classController.rejectJoinRequest));
 classRoutes.post('/create', errorHandler(classController.createClass));
 classRoutes.post('/:_id/request', errorHandler(classController.requestJoinClass));
 

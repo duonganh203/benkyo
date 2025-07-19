@@ -88,6 +88,18 @@ export const getMyClassList = async (req: Request, res: Response) => {
     }
 };
 
+export const getClassManagementById = async (req: Request, res: Response) => {
+    try {
+        const classId = req.params._id;
+        const userId = req.user._id;
+        const classData = await classService.getClassManagementByIdService(classId, userId);
+
+        res.status(200).json(classData);
+    } catch (error) {
+        res.status(400).json({ message: 'Failed to get class list', error });
+    }
+};
+
 export const getSuggestedClassList = async (req: Request, res: Response) => {
     try {
         const userId = req.user._id;
@@ -106,9 +118,36 @@ export const requestJoinClass = async (req: Request, res: Response) => {
     try {
         const { _id } = req.params;
         const userId = req.user._id;
-        const result = await classService.requestJoinClassService(_id, userId);
+        const result = await classService.requestJoinClasssService(_id, userId);
         res.status(200).json(result);
     } catch (error) {
         res.status(400).json({ message: 'Failed request join class', error });
+    }
+};
+
+export const acceptJoinRequest = async (req: Request, res: Response) => {
+    try {
+        const classId = req.query.classId as string;
+        const requestUserId = req.query.userId as string;
+        const ownerId = req.user._id;
+
+        const result = await classService.acceptJoinRequestService(classId, requestUserId, ownerId);
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(400).json({ message: 'Failed to accept join request', error });
+    }
+};
+
+export const rejectJoinRequest = async (req: Request, res: Response) => {
+    try {
+        const classId = req.query.classId as string;
+        const requestUserId = req.query.userId as string;
+        const ownerId = req.user._id;
+        const result = await classService.rejectJoinRequestService(classId, requestUserId, ownerId);
+
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(400).json({ message: 'Failed to reject join request', error });
     }
 };

@@ -12,9 +12,10 @@ import { Button } from '@/components/ui/button';
 import { getToast } from '@/utils/getToast';
 import useCreateClass from '@/hooks/queries/use-create-class';
 import uploadToCloudinary from '@/utils/uploadToCloudinary';
-import { classSchema, ClassStateType } from '@/schemas/classSchema';
+import { classSchema } from '@/schemas/classSchema';
 import { z } from 'zod';
 import useAuthStore from '@/hooks/stores/use-auth-store';
+import { ClassUserRequestDto } from '@/types/class';
 
 const CreateClass = () => {
     const navigate = useNavigate();
@@ -41,12 +42,12 @@ const CreateClass = () => {
 
     const { mutateAsync: createClassMutation } = useCreateClass();
 
-    const onSubmit = async (values: ClassStateType) => {
+    const onSubmit = async (values: ClassUserRequestDto) => {
         setIsSubmitting(true);
         try {
             const response = await createClassMutation(values);
             getToast('success', response.message);
-            navigate(`/class/${response._id}/manage`);
+            navigate(`/class/${response._id}/management`);
         } catch {
             getToast('error', 'Failed to create class');
         } finally {

@@ -251,14 +251,15 @@ const ClassSchema = new Schema(
         owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         visibility: { type: String, enum: ['public', 'private'], default: 'private' },
         requiredApprovalToJoin: { type: Boolean, default: false },
-        visited: [
-            {
-                userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-                count: { type: Number, default: 0 },
-                lastVisit: { type: Date, default: Date.now }
-            }
-        ],
-
+        visited: {
+            count: { type: Number, default: 0 },
+            history: [
+                {
+                    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                    lastVisit: { type: Date, default: Date.now }
+                }
+            ]
+        },
         joinRequests: [
             {
                 user: { type: Schema.Types.ObjectId, ref: 'User', required: true },

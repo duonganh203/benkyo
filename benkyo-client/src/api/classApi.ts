@@ -1,6 +1,7 @@
 import {
     ClassJoinResponseDto,
     ClassListItemUserResponseDto,
+    ClassManagementResponseDto,
     ClassUserRequestDto,
     ClassUserResponseDto
 } from '@/types/class';
@@ -53,6 +54,15 @@ export const requestJoinClassApi = async (classId: string) => {
 };
 
 export const rejectJoinClassApi = async (classId: string, userId: string) => {
-    const response = await api.get(`/class/reject?classId=${classId}&userId=${userId}`);
+    const response = await api.post(`/class/reject?classId=${classId}&userId=${userId}`);
     return response.data as ClassJoinResponseDto;
+};
+
+export const acceptJoinClassApi = async (classId: string, userId: string) => {
+    const response = await api.post(`/class/accept?classId=${classId}&userId=${userId}`);
+    return response.data as ClassJoinResponseDto;
+};
+export const getClassManagemenById = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/management`);
+    return response.data as ClassManagementResponseDto;
 };

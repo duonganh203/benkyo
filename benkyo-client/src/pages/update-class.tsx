@@ -11,11 +11,12 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { getToast } from '@/utils/getToast';
 import uploadToCloudinary from '@/utils/uploadToCloudinary';
-import { classSchema, ClassStateType } from '@/schemas/classSchema';
+import { classSchema } from '@/schemas/classSchema';
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import { z } from 'zod';
 import useGetClassUpdateById from '@/hooks/queries/use-get-class-update-id';
 import useUpdateClass from '@/hooks/queries/use-update-class';
+import { ClassUserRequestDto } from '@/types/class';
 
 const UpdateClass = () => {
     const { _id } = useParams<{ _id: string }>();
@@ -68,7 +69,7 @@ const UpdateClass = () => {
         }
     }, [data]);
 
-    const onSubmit = async (values: ClassStateType) => {
+    const onSubmit = async (values: ClassUserRequestDto) => {
         setIsSubmitting(true);
         try {
             const response = await updateClassMutation({ _id, data: values });
