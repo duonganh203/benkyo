@@ -47,9 +47,9 @@ export type ClassAcceptRequestJoinDto = {
     userId: string;
 };
 
-type PopulatedUser = {
+export type PopulatedUser = {
     _id: string;
-    fullName: string;
+    name: string;
     email: string;
     avatar: string;
 };
@@ -64,7 +64,8 @@ export type ClassVisited = {
     history: ClassVisitEntry[];
 };
 
-type JoinRequest = {
+export type JoinRequest = {
+    _id: string;
     user: PopulatedUser;
     requestDate: Date;
 };
@@ -107,4 +108,29 @@ export type ClassManagementResponseDto = {
     userClassStates: UserClassStatePopulated[];
     createdAt: Date;
     updatedAt: Date;
+};
+
+export type InviteMemberResponseDto = {
+    message: string;
+};
+
+export type InviteMemberClassRequestDto = {
+    classId: string;
+    inviteEmail: string;
+};
+
+export type AcceptRejectInviteClassRequestDto = {
+    classId: string;
+};
+
+export type AcceptRejectInviteClassResponseDto = {
+    message: string;
+};
+
+export type RemoveUserClassRequestDto = {
+    classId: string;
+    userId: string;
+};
+export type RemoveUserClassResponseDto = {
+    message: string;
 };

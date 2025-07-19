@@ -1,9 +1,9 @@
 import { Types } from 'mongoose';
-import { BadRequestsException } from '~/exceptions/badRequests';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { Class, Deck, User, UserClassState, UserDeckState } from '~/schemas';
+import { sendToUser } from '~/utils/socketServer';
 import { ClassStateType } from '~/validations/classValidation';
 
 export const createClassService = async (userId: string, data: ClassStateType) => {
@@ -114,8 +114,7 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
         classes.map(async (classItem) => {
             const totalDecks = classItem.desks.length;
             const studiedDeckCount = await UserDeckState.countDocuments({
-                user: userId,
-                deck: { $in: classItem.desks.map((deck: any) => deck._id) }
+                user: userId
             });
             const progress = totalDecks > 0 ? Math.round((studiedDeckCount / totalDecks) * 100) : 0;
 
@@ -204,46 +203,42 @@ export const requestJoinClasssService = async (classId: string, userId: Types.Ob
 };
 
 export const getClassManagementByIdService = async (classId: string, userId: Types.ObjectId) => {
-    try {
-        const existingClass = await Class.findById(classId)
-            .populate({
-                path: 'users',
-                select: '_id fullName email avatar'
-            })
-            .populate({
-                path: 'owner',
-                select: '_id fullName email avatar'
-            })
-            .populate({
-                path: 'joinRequests.user',
-                select: '_id fullName email avatar'
-            })
-            .populate({
-                path: 'userClassStates',
-                populate: {
-                    path: 'user',
-                    select: '_id fullName email avatar'
-                }
-            })
-            .populate({
-                path: 'visited.history.userId',
-                select: '_id fullName email avatar'
-            })
+    const existingClass = await Class.findById(classId)
+        .populate({
+            path: 'users',
+            select: '_id name email avatar'
+        })
+        .populate({
+            path: 'owner',
+            select: '_id name email avatar'
+        })
+        .populate({
+            path: 'joinRequests.user',
+            select: '_id name email avatar'
+        })
+        .populate({
+            path: 'userClassStates',
+            populate: {
+                path: 'user',
+                select: '_id name email avatar'
+            }
+        })
+        .populate({
+            path: 'visited.history.userId',
+            select: '_id name email avatar'
+        })
 
-            .populate({
-                path: 'desks'
-            })
-            .lean();
+        .populate({
+            path: 'desks'
+        })
+        .lean();
 
-        if (!existingClass) throw new Error('Class not found');
+    if (!existingClass) throw new Error('Class not found');
 
-        if (!existingClass.owner._id.equals(userId))
-            throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
+    if (!existingClass.owner._id.equals(userId))
+        throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
 
-        return existingClass;
-    } catch (error) {
-        console.log('Error in getClassManagementByIdService:', error);
-    }
+    return existingClass;
 };
 
 export const acceptJoinRequestService = async (classId: string, requestUserId: string, ownerId: string) => {
@@ -280,4 +275,122 @@ export const rejectJoinRequestService = async (classId: string, requestUserId: s
     await existingClass.save();
 
     return { message: 'Join request rejected' };
+};
+
+export const inviteMemberToClassService = async (classId: string, ownerId: Types.ObjectId, targetUserEmail: string) => {
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    if (!existingClass.owner.equals(ownerId)) {
+        throw new ForbiddenRequestsException('You are not authorized', ErrorCode.FORBIDDEN);
+    }
+
+    const targetUser = await User.findOne({ email: targetUserEmail });
+    if (!targetUser) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
+    const alreadyInvited = existingClass.invitedUsers.some((entry) => entry.user.equals(targetUser._id));
+    if (alreadyInvited) return { message: 'User already invited' };
+
+    const alreadyJoined = existingClass.users.some((entry) => entry.equals(targetUser._id));
+    if (alreadyJoined) return { message: 'User is already a member' };
+
+    existingClass.invitedUsers.push({
+        user: targetUser._id,
+        invitedAt: new Date()
+    });
+
+    await existingClass.save();
+
+    sendToUser(targetUser.email, {
+        type: 'invite',
+        payload: {
+            classId: existingClass._id.toString(),
+            className: existingClass.name,
+            description: existingClass.description
+        }
+    });
+
+    return { message: 'User invited successfully' };
+};
+
+export const acceptInviteClassService = async (classId: string, userId: string) => {
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    const isInvited = existingClass.invitedUsers.some((entry) => entry.user.equals(userId));
+    if (!isInvited) throw new ForbiddenRequestsException('You are not invited to this class', ErrorCode.FORBIDDEN);
+
+    const alreadyMember = existingClass.users.some((entry) => entry.equals(userId));
+    if (alreadyMember) return { message: 'You are already a member of this class' };
+
+    existingClass.invitedUsers.pull({ user: new Types.ObjectId(userId) });
+
+    existingClass.users.push(new Types.ObjectId(userId));
+
+    await existingClass.save();
+
+    return { message: 'Accepted class invitation successfully' };
+};
+
+export const rejectInviteClassService = async (classId: string, userId: string) => {
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    const wasInvited = existingClass.invitedUsers.some((entry) => entry.user.equals(userId));
+    if (!wasInvited) return { message: 'You were not invited to this class' };
+
+    existingClass.invitedUsers.pull({ user: new Types.ObjectId(userId) });
+
+    await existingClass.save();
+
+    return { message: 'Rejected class invitation successfully' };
+};
+
+export const getInviteClassService = async (userId: Types.ObjectId) => {
+    const invitedClasses = await Class.find({
+        invitedUsers: { $elemMatch: { user: userId } }
+    })
+        .select('_id name description invitedUsers')
+        .lean();
+
+    if (!invitedClasses) return [];
+
+    const notifications = invitedClasses.map((cls) => {
+        const latestInvite = [...cls.invitedUsers]
+            .filter((u) => u.user.toString() === userId.toString())
+            .sort((a, b) => new Date(b.invitedAt).getTime() - new Date(a.invitedAt).getTime())[0];
+
+        return {
+            id: cls._id.toString(),
+            classId: cls._id.toString(),
+            className: cls.name,
+            description: cls.description,
+            type: 'invite',
+            createdAt: latestInvite?.invitedAt,
+            message: `You were invited to class: ${cls.name}`
+        };
+    });
+
+    return notifications;
+};
+
+export const removeUserFromClassService = async (classId: string, userId: string, ownerId: Types.ObjectId) => {
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    if (!existingClass.owner.equals(ownerId))
+        throw new ForbiddenRequestsException(
+            'You do not have permission to remove users from this class',
+            ErrorCode.FORBIDDEN
+        );
+
+    if (!existingClass.users.some((user) => user.equals(userId)))
+        throw new NotFoundException('User not found in this class', ErrorCode.NOT_FOUND);
+
+    existingClass.users = existingClass.users.filter((user) => !user.equals(userId));
+    await existingClass.save();
+
+    await UserClassState.deleteOne({ class: classId, user: userId });
+
+    return { message: 'User removed from class successfully' };
 };
