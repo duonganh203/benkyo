@@ -251,6 +251,12 @@ const ClassSchema = new Schema(
         owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         visibility: { type: String, enum: ['public', 'private'], default: 'private' },
         requiredApprovalToJoin: { type: Boolean, default: false },
+        invitedUsers: [
+            {
+                user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                invitedAt: { type: Date, default: Date.now }
+            }
+        ],
         visited: {
             count: { type: Number, default: 0 },
             history: [

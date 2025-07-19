@@ -3,9 +3,11 @@ import {
     ClassListItemUserResponseDto,
     ClassManagementResponseDto,
     ClassUserRequestDto,
-    ClassUserResponseDto
+    ClassUserResponseDto,
+    InviteMemberResponseDto
 } from '@/types/class';
 import { api } from '.';
+import { ClassNotification } from '@/types/notification';
 
 export const createClassApi = async (data: ClassUserRequestDto) => {
     const response = await api.post('/class/create', data);
@@ -65,4 +67,29 @@ export const acceptJoinClassApi = async (classId: string, userId: string) => {
 export const getClassManagemenById = async (classId: string) => {
     const response = await api.get(`/class/${classId}/management`);
     return response.data as ClassManagementResponseDto;
+};
+
+export const inviteMemberToClassApi = async (classId: string, email: string) => {
+    const response = await api.post(`/class/invite?classId=${classId}&email=${email}`);
+    return response.data as InviteMemberResponseDto;
+};
+
+export const acceptInviteClassApi = async (classId: string) => {
+    const response = await api.post(`/class/accept-invite?classId=${classId}`);
+    return response.data as { message: string };
+};
+
+export const rejectInviteClassApi = async (classId: string) => {
+    const response = await api.post(`/class/reject-invite?classId=${classId}`);
+    return response.data as { message: string };
+};
+
+export const getInviteClassApi = async () => {
+    const response = await api.get(`/class/invited`);
+    return response.data as ClassNotification[];
+};
+
+export const removeUserFromClassApi = async (classId: string, userId: string) => {
+    const response = await api.get(`/class/remove?classId=${classId}&userId=${userId}`);
+    return response.data as ClassJoinResponseDto;
 };

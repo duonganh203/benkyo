@@ -1,5 +1,17 @@
 import { useMemo } from 'react';
-import { Home, Library, Package, Settings2, Sparkles, Clock, BadgeInfo, NotebookPen, Cat } from 'lucide-react';
+import {
+    Home,
+    Library,
+    Package,
+    Settings2,
+    Sparkles,
+    Clock,
+    BadgeInfo,
+    NotebookPen,
+    Cat,
+    Bell,
+    School
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -22,6 +34,7 @@ import { useCreateDeckModal } from '@/hooks/stores/use-create-deck-modal';
 import useGetUserDecks from '@/hooks/queries/use-get-user-decks';
 import { Skeleton } from './ui/skeleton';
 import { ScrollArea } from './ui/scroll-area';
+import { useNotificationStore } from '@/hooks/stores/use-notification-store';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { user } = useAuthStore((store) => store);
@@ -32,9 +45,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         return [...decks].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 5);
     }, [decks]);
 
+    const notificationCount = useNotificationStore((state) => state.notifications.length);
+
     const navData = useMemo(
         () => ({
             navMain: [
+                {
+                    title: 'Notifications',
+                    url: '/notification',
+                    icon: Bell,
+                    badge: notificationCount.toString()
+                },
                 {
                     title: 'Home',
                     url: '/home',
@@ -66,7 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {
                     title: 'Classes',
                     url: '/class/list',
-                    icon: Settings2
+                    icon: School
                 },
                 {
                     title: 'Settings',
@@ -75,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 }
             ]
         }),
-        [decks.length]
+        [decks.length, notificationCount]
     );
 
     return (

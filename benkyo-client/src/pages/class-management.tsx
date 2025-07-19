@@ -1,12 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { UserX, UserCheck, Users, Calendar, Eye, Settings, Play, CalendarIcon, Plus } from 'lucide-react';
+import { UserX, Users, Calendar, Eye, Settings, Play, CalendarIcon, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { getToast } from '@/utils/getToast';
 import useAuthStore from '@/hooks/stores/use-auth-store';
@@ -17,151 +16,41 @@ import useRejectJoinClass from '@/hooks/queries/use-reject-join-request';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@radix-ui/react-select';
 import { Label } from '@radix-ui/react-label';
-
-const ConfirmDeleteDialog = ({
-    open,
-    className,
-    onClose,
-    onConfirm
-}: {
-    open: boolean;
-    className: string;
-    onClose: () => void;
-    onConfirm: () => void;
-}) => {
-    const [input, setInput] = useState('');
-
-    const handleConfirm = () => {
-        if (input === className) {
-            onConfirm();
-            setInput('');
-        }
-    };
-
-    const handleClose = () => {
-        setInput('');
-        onClose();
-    };
-
-    return (
-        <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className='sm:max-w-md'>
-                <DialogHeader>
-                    <DialogTitle>Confirm Class Deletion</DialogTitle>
-                </DialogHeader>
-                <p className='text-sm text-muted-foreground'>
-                    To confirm, type the class name <strong>"{className}"</strong> below.
-                </p>
-                <Input placeholder='Enter class name' value={input} onChange={(e) => setInput(e.target.value)} />
-                <DialogFooter>
-                    <Button variant='outline' onClick={handleClose}>
-                        Cancel
-                    </Button>
-                    <Button variant='destructive' disabled={input !== className} onClick={handleConfirm}>
-                        Delete Class
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
-};
-
-const JoinRequestsSection = ({ classItem, onAccept, onReject }: any) => {
-    if (!classItem.joinRequests || classItem.joinRequests.length === 0) return null;
-
-    return (
-        <Card className='mt-6'>
-            <CardHeader className='pb-3'>
-                <CardTitle className='flex items-center gap-2 text-lg'>
-                    <Users className='w-5 h-5' />
-                    Join Requests ({classItem.joinRequests.length})
-                </CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-                {classItem.joinRequests.map((request: any) => (
-                    <div
-                        key={request._id}
-                        className='flex items-center justify-between p-4 bg-muted/50 rounded-lg border'
-                    >
-                        <div className='flex items-center gap-4 flex-1'>
-                            <Avatar className='w-12 h-12'>
-                                <AvatarImage src={request.user?.avatar} alt={request.user?.name} />
-                                <AvatarFallback className='text-sm'>
-                                    {request.user?.name
-                                        ?.split(' ')
-                                        .map((n: any) => n[0])
-                                        .join('')
-                                        .toUpperCase()}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className='flex-1 min-w-0'>
-                                <div className='font-semibold text-foreground truncate'>{request.user?.name}</div>
-                                <div className='text-sm text-muted-foreground truncate'>{request.user?.email}</div>
-                                {request.message && (
-                                    <div className='text-sm text-muted-foreground mt-1 italic line-clamp-2'>
-                                        "{request.message}"
-                                    </div>
-                                )}
-                                <div className='text-xs text-muted-foreground mt-1'>
-                                    {new Date(request.requestDate).toLocaleString()}
-                                </div>
-                            </div>
-                        </div>
-                        <div className='flex gap-2 ml-4'>
-                            <Button
-                                size='sm'
-                                className='bg-green-600 hover:bg-green-700'
-                                onClick={() => onAccept(request._id)}
-                            >
-                                <UserCheck className='w-4 h-4 mr-1' />
-                                Accept
-                            </Button>
-                            <Button size='sm' variant='destructive' onClick={() => onReject(request._id)}>
-                                <UserX className='w-4 h-4 mr-1' />
-                                Reject
-                            </Button>
-                        </div>
-                    </div>
-                ))}
-            </CardContent>
-        </Card>
-    );
-};
-
-const StatCard = ({ icon: Icon, label, value }: any) => (
-    <Card className='p-4 min-w-0'>
-        <div className='flex items-center gap-3'>
-            <div className='p-2 bg-primary/10 rounded-lg flex-shrink-0'>
-                <Icon className='w-5 h-5 text-primary' />
-            </div>
-            <div className='flex-1 min-w-0'>
-                <div className='text-2xl font-bold'>{value}</div>
-                <div className='text-sm text-muted-foreground font-medium'>{label}</div>
-            </div>
-        </div>
-    </Card>
-);
+import useInviteMemberToClassApi from '@/hooks/queries/use-invite-member-class';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import StatCard from '@/components/stat-card';
+import JoinRequestsSection from '@/components/join-request.section';
+import useRemoveUserFromClass from '@/hooks/queries/use-remove-user-class';
+import { AddDeckToClassRequestDto } from '@/types/deck';
 
 const UserClassManagement = () => {
     const { _id = '' } = useParams();
     const classId = _id;
     const navigate = useNavigate();
+
+    const [inviteEmail, setInviteEmail] = useState('');
     const { user } = useAuthStore((store) => store);
     const { data: classItem, isLoading, isError, refetch } = useGetClassManagemenById(classId);
+    console.log('classItem', classItem);
+
     const { mutateAsync: acceptRequest } = useAcceptJoinClass();
+    const { mutateAsync: inviteMember } = useInviteMemberToClassApi();
     const { mutateAsync: rejectRequest } = useRejectJoinClass();
     const { mutateAsync: deleteClass } = useDeleteclass();
+    const { mutateAsync: removeUserFromClass } = useRemoveUserFromClass();
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showAddDeskDialog, setShowAddDeskDialog] = useState(false);
     const [showCreateQuizDialog, setShowCreateQuizDialog] = useState(false);
     const [showCreateScheduleDialog, setShowCreateScheduleDialog] = useState(false);
     const [showInviteDialog, setShowInviteDialog] = useState(false);
+    const [showMembersDialog, setShowMembersDialog] = useState(false);
 
-    const isOwner =
-        user?._id &&
-        classItem &&
-        ((typeof classItem.owner === 'string' && classItem.owner === user._id) ||
-            (typeof classItem.owner === 'object' && classItem.owner._id === user._id));
+    const [removeUserId, setRemoveUserId] = useState<string | null>(null);
+
+    if (classItem && classItem.owner.email !== user?.email) {
+        navigate('/class/list');
+        return null;
+    }
 
     const handleAccept = async (userId: string) => {
         if (!classId) return;
@@ -170,15 +59,45 @@ const UserClassManagement = () => {
         getToast('success', 'Join request accepted.');
     };
 
+    const handleInviteMember = async () => {
+        if (!classId || !inviteEmail) return;
+        try {
+            await inviteMember({ classId, inviteEmail });
+            await refetch();
+            getToast('success', 'Member invited successfully!');
+            setShowInviteDialog(false);
+            setInviteEmail('');
+        } catch {
+            getToast('error', 'Failed to invite member.');
+        }
+    };
+
     const handleReject = async (userId: string) => {
         if (!classId) return;
         await rejectRequest({ classId, userId });
         await refetch();
         getToast('success', 'Join request rejected.');
     };
+    // Sửa hàm này để chỉ set user cần xóa, không gọi window.confirm nữa
+    const handleRemoveUser = (userId: string) => {
+        setRemoveUserId(userId);
+    };
+
+    // Hàm xác nhận xóa user
+    const handleConfirmRemoveUser = async () => {
+        if (!removeUserId) return;
+        try {
+            await removeUserFromClass({ classId, userId: removeUserId });
+            getToast('success', 'User removed from class successfully!');
+            await refetch();
+        } catch {
+            getToast('error', 'Failed to remove user.');
+        } finally {
+            setRemoveUserId(null);
+        }
+    };
 
     const handleDeleteConfirm = async () => {
-        if (!classItem) return;
         await deleteClass(classId);
         getToast('success', 'Class deleted successfully!');
         navigate('/');
@@ -190,17 +109,20 @@ const UserClassManagement = () => {
             navigate('/');
             return;
         }
-        const validOwner =
-            (typeof classItem.owner === 'string' && classItem.owner === user._id) ||
-            (typeof classItem.owner === 'object' && classItem.owner?._id === user._id);
-        if (!validOwner) {
+
+        if (classItem.owner._id !== user._id) {
             getToast('error', 'You are not authorized to access this class.');
-            navigate('/');
+            navigate('/class/list');
         }
     }, [isLoading, isError, classItem, user?._id, navigate]);
 
     if (isLoading) return <p className='text-center mt-10 text-gray-500'>Loading class...</p>;
-    if (!isOwner || !classItem) return null;
+
+    if (!classItem) {
+        getToast('error', 'Class not found.');
+        navigate('/class/list');
+        return;
+    }
 
     return (
         <div className='min-h-screen bg-background'>
@@ -239,7 +161,9 @@ const UserClassManagement = () => {
                 </Card>
 
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
-                    <StatCard icon={Users} label='Members' value={classItem.users?.length || 0} />
+                    <div onClick={() => setShowMembersDialog(true)} className='cursor-pointer'>
+                        <StatCard icon={Users} label='Members' value={classItem.users?.length || 0} />
+                    </div>
                     <StatCard icon={Settings} label='Desks' value={classItem.desks?.length || 0} />
                     <StatCard icon={Eye} label='Visits' value={classItem.visited?.count || 0} />
                     <StatCard icon={Calendar} label='Tracked States' value={classItem.userClassStates?.length || 0} />
@@ -265,7 +189,7 @@ const UserClassManagement = () => {
                                 <DialogTitle>Select Desk to Add</DialogTitle>
                             </DialogHeader>
                             <div className='space-y-3 max-h-60 overflow-y-auto'>
-                                {classItem.desks?.map((desk: any) => (
+                                {classItem.desks?.map((desk: AddDeckToClassRequestDto) => (
                                     <div
                                         key={desk._id}
                                         className='p-2 border rounded-md flex justify-between items-center'
@@ -292,7 +216,7 @@ const UserClassManagement = () => {
                                         <SelectValue placeholder='Choose desk' />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {classItem.desks?.map((desk: any) => (
+                                        {classItem.desks?.map((desk: AddDeckToClassRequestDto) => (
                                             <SelectItem key={desk._id} value={desk._id}>
                                                 {desk.name}
                                             </SelectItem>
@@ -303,6 +227,7 @@ const UserClassManagement = () => {
                             </div>
                         </DialogContent>
                     </Dialog>
+
                     <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
                         <DialogContent className='sm:max-w-md'>
                             <DialogHeader>
@@ -310,8 +235,14 @@ const UserClassManagement = () => {
                             </DialogHeader>
                             <div className='space-y-4'>
                                 <Label>Please enter email member you want to invite</Label>
-                                <Input placeholder='Enter email' />
-                                <Button className='w-full'>Invite</Button>
+                                <Input
+                                    placeholder='Enter email'
+                                    value={inviteEmail}
+                                    onChange={(e) => setInviteEmail(e.target.value)}
+                                />
+                                <Button className='w-full' onClick={handleInviteMember}>
+                                    Invite
+                                </Button>
                             </div>
                         </DialogContent>
                     </Dialog>
@@ -330,6 +261,43 @@ const UserClassManagement = () => {
                             </div>
                         </DialogContent>
                     </Dialog>
+                    <Dialog open={showMembersDialog} onOpenChange={setShowMembersDialog}>
+                        <DialogContent className='sm:max-w-md'>
+                            <DialogHeader>
+                                <DialogTitle>Class Members</DialogTitle>
+                            </DialogHeader>
+                            <div className='space-y-3 max-h-60 overflow-y-auto'>
+                                {classItem.users?.length > 0 ? (
+                                    classItem.users.map((member: any) => (
+                                        <div
+                                            key={member._id}
+                                            className='flex items-center gap-3 p-2 border rounded-md justify-between'
+                                        >
+                                            <div className='flex items-center gap-3'>
+                                                <img
+                                                    src={member.avatar}
+                                                    alt={member.email}
+                                                    className='w-8 h-8 rounded-full'
+                                                />
+                                                <span className='text-sm font-medium truncate'>{member.email}</span>
+                                            </div>
+                                            {member._id !== classItem.owner._id && (
+                                                <Button
+                                                    variant='destructive'
+                                                    size='sm'
+                                                    onClick={() => handleRemoveUser(member._id)}
+                                                >
+                                                    Remove
+                                                </Button>
+                                            )}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className='text-sm text-muted-foreground'>No members found.</p>
+                                )}
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                 </div>
 
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
@@ -342,7 +310,7 @@ const UserClassManagement = () => {
                                 <div className='flex justify-between items-center'>
                                     <span className='text-sm text-muted-foreground'>Owner</span>
                                     <span className='font-medium'>
-                                        {classItem.owner?.fullName || classItem.owner?.email || 'Unknown'}
+                                        {classItem.owner?.name || classItem.owner?.email || 'Unknown'}
                                     </span>
                                 </div>
                                 <Separator />
@@ -410,6 +378,50 @@ const UserClassManagement = () => {
 
                 <JoinRequestsSection classItem={classItem} onAccept={handleAccept} onReject={handleReject} />
 
+                <Dialog open={showMembersDialog} onOpenChange={setShowMembersDialog}>
+                    <DialogContent className='sm:max-w-md'>
+                        <DialogHeader>
+                            <DialogTitle>Class Members</DialogTitle>
+                        </DialogHeader>
+                        <div className='space-y-3 max-h-60 overflow-y-auto'>
+                            {classItem.users?.length > 0 ? (
+                                classItem.users.map((member: any) => (
+                                    <div
+                                        key={member._id}
+                                        className='flex items-center gap-3 p-2 border rounded-md justify-between'
+                                    >
+                                        <div className='flex items-center gap-3'>
+                                            <img
+                                                src={member.avatar}
+                                                alt={member.email}
+                                                className='w-8 h-8 rounded-full'
+                                            />
+                                            <span className='text-sm font-medium truncate'>{member.email}</span>
+                                        </div>
+                                        {member._id !== classItem.owner._id && (
+                                            <Button
+                                                variant='destructive'
+                                                size='sm'
+                                                onClick={() => handleRemoveUser(member._id)}
+                                            >
+                                                Remove
+                                            </Button>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <p className='text-sm text-muted-foreground'>No members found.</p>
+                            )}
+                        </div>
+                    </DialogContent>
+                </Dialog>
+                <ConfirmDeleteDialog
+                    open={!!removeUserId}
+                    className='user'
+                    onClose={() => setRemoveUserId(null)}
+                    onConfirm={handleConfirmRemoveUser}
+                    description='Are you sure you want to remove this user from the class?'
+                />
                 <ConfirmDeleteDialog
                     open={showDeleteDialog}
                     className={classItem.name}
