@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { BadRequestsException } from '~/exceptions/badRequests';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
@@ -99,7 +100,9 @@ export const getClassListUserService = async () => {
 export const getMyClassListService = async (userId: Types.ObjectId, page: number, limit: number) => {
     const skip = (page - 1) * limit;
 
-    const classes = await Class.find({ users: userId })
+    const classes = await Class.find({
+        $or: [{ users: userId }, { owner: userId }]
+    })
         .populate('desks')
         .select('_id name description requiredApprovalToJoin desks bannerUrl createdAt')
         .skip(skip)
@@ -142,7 +145,11 @@ export const getSuggestedListService = async (userId: Types.ObjectId, page: numb
     const skip = (page - 1) * limit;
 
     const [suggestedClasses, totalCount] = await Promise.all([
-        Class.find({ users: { $ne: userId }, visibility: 'public' })
+        Class.find({
+            users: { $ne: userId },
+            owner: { $ne: userId },
+            visibility: 'public'
+        })
             .select('_id name description requiredApprovalToJoin bannerUrl createdAt owner')
             .sort({ createdAt: -1 })
             .skip(skip)
@@ -169,7 +176,7 @@ export const getSuggestedListService = async (userId: Types.ObjectId, page: numb
     };
 };
 
-export const requestJoinClassService = async (classId: string, userId: Types.ObjectId) => {
+export const requestJoinClasssService = async (classId: string, userId: Types.ObjectId) => {
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
@@ -194,4 +201,83 @@ export const requestJoinClassService = async (classId: string, userId: Types.Obj
     await existingClass.save();
 
     return { message: 'Join request sent successfully' };
+};
+
+export const getClassManagementByIdService = async (classId: string, userId: Types.ObjectId) => {
+    try {
+        const existingClass = await Class.findById(classId)
+            .populate({
+                path: 'users',
+                select: '_id fullName email avatar'
+            })
+            .populate({
+                path: 'owner',
+                select: '_id fullName email avatar'
+            })
+            .populate({
+                path: 'joinRequests.user',
+                select: '_id fullName email avatar'
+            })
+            .populate({
+                path: 'userClassStates',
+                populate: {
+                    path: 'user',
+                    select: '_id fullName email avatar'
+                }
+            })
+            .populate({
+                path: 'visited.history.userId',
+                select: '_id fullName email avatar'
+            })
+
+            .populate({
+                path: 'desks'
+            })
+            .lean();
+
+        if (!existingClass) throw new Error('Class not found');
+
+        if (!existingClass.owner._id.equals(userId))
+            throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
+
+        return existingClass;
+    } catch (error) {
+        console.log('Error in getClassManagementByIdService:', error);
+    }
+};
+
+export const acceptJoinRequestService = async (classId: string, requestUserId: string, ownerId: string) => {
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    if (!existingClass.owner.equals(ownerId)) throw new ForbiddenRequestsException('Unauthorized', ErrorCode.FORBIDDEN);
+
+    const joinRequestIndex = existingClass.joinRequests.findIndex((req) => req.user.equals(requestUserId));
+
+    if (joinRequestIndex === -1) throw new NotFoundException('Join request not found', ErrorCode.NOT_FOUND);
+
+    existingClass.joinRequests.splice(joinRequestIndex, 1);
+
+    existingClass.users.push(new Types.ObjectId(requestUserId));
+
+    await existingClass.save();
+
+    return { message: 'Join request accepted' };
+};
+
+export const rejectJoinRequestService = async (classId: string, requestUserId: string, ownerId: string) => {
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    if (!existingClass.owner.equals(ownerId)) throw new ForbiddenRequestsException('Unauthorized', ErrorCode.FORBIDDEN);
+
+    const joinRequestIndex = existingClass.joinRequests.findIndex((req) => req.user.equals(requestUserId));
+
+    if (joinRequestIndex === -1) throw new NotFoundException('Join request not found', ErrorCode.NOT_FOUND);
+
+    existingClass.joinRequests.splice(joinRequestIndex, 1);
+
+    await existingClass.save();
+
+    return { message: 'Join request rejected' };
 };
