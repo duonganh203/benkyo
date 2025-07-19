@@ -10,6 +10,8 @@ import fs from 'fs-extra';
 import rootRouter from './routes';
 import { errorMiddleware } from './middlewares/errorsMiddleware';
 import { initPineconeIndex } from './services/pineconeService';
+import { createServer } from 'http';
+import { setupWebSocket } from './utils/socketServer';
 
 // Create uploads directory if it doesn't exist
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -18,6 +20,7 @@ fs.ensureDirSync(uploadDir);
 fs.ensureDirSync(documentsDir);
 
 const app: Express = express();
+const server = createServer(app);
 const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGO_URI;
 app.use(express.json());
@@ -37,8 +40,10 @@ connect(MONGO_URI!)
     })
     .catch((err) => console.error(err));
 
+setupWebSocket(server);
+
 app.use('/api', rootRouter);
 app.use(errorMiddleware);
-app.listen(PORT, () => {
-    console.log('Server is running on http://localhost:' + PORT);
+server.listen(PORT, () => {
+    console.log(` Server (Express + WebSocket) is running on http://localhost:${PORT}`);
 });

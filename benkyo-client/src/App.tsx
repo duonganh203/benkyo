@@ -26,6 +26,12 @@ import AIChat from './pages/ai-chat';
 import Payment from './pages/payment';
 import Packages from './pages/package';
 import Community from './pages/community';
+import CreateClass from './pages/create-class';
+import UpdateClass from './pages/update-class';
+import ClassListUser from './pages/classt-list-user';
+import ClassManagement from './pages/class-management';
+import Notifications from './pages/notification';
+import { InviteDialog } from './components/invite-dialog';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -67,9 +73,15 @@ const App = () => {
                             <Route path='/payment/:packageId' element={<Payment />} />
                             <Route path='/package' element={<Packages />} />
                             <Route path='/community' element={<Community />} />
+                            <Route path='/class/create' element={<CreateClass />} />
+                            <Route path='/class/:_id/update' element={<UpdateClass />} />
+                            <Route path='/class/list' element={<ClassListUser />} />
+                            <Route path='/class/:_id/management' element={<ClassManagement />} />
+                            <Route path='/notification' element={<Notifications />} />
                         </Route>
                     </Routes>
                     <ModalProvider />
+                    <InviteDialog />
                 </Router>
                 <Toaster closeButton richColors position='top-right' />
             </ThemeProvider>

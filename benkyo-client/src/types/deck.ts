@@ -37,3 +37,8 @@ interface Owner {
     name: string;
     avatar?: string;
 }
+
+export interface AddDeckToClassRequestDto {
+    _id: string;
+    name: string;
+}
