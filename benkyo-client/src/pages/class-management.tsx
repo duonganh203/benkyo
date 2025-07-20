@@ -1,27 +1,33 @@
-import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { UserX, Users, Calendar, Eye, Settings, Play, CalendarIcon, Plus } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { UserX, Users, Calendar, Eye, Settings, Play, Plus } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { getToast } from '@/utils/getToast';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectTrigger, SelectValue } from '@radix-ui/react-select';
+import { Label } from '@radix-ui/react-label';
+
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import StatCard from '@/components/stat-card';
+import JoinRequestsSection from '@/components/join-request.section';
+
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import useDeleteclass from '@/hooks/queries/use-delete-class';
 import useGetClassManagemenById from '@/hooks/queries/use-get-class-management-id';
 import useAcceptJoinClass from '@/hooks/queries/use-accept-join-request';
 import useRejectJoinClass from '@/hooks/queries/use-reject-join-request';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@radix-ui/react-select';
-import { Label } from '@radix-ui/react-label';
 import useInviteMemberToClassApi from '@/hooks/queries/use-invite-member-class';
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import StatCard from '@/components/stat-card';
-import JoinRequestsSection from '@/components/join-request.section';
 import useRemoveUserFromClass from '@/hooks/queries/use-remove-user-class';
-import { AddDeckToClassRequestDto } from '@/types/deck';
+
+import { getToast } from '@/utils/getToast';
+import useGetDeckToAddClass from '@/hooks/queries/use-get-decks-to-class';
+import AddDeckDialog from '@/components/add-deck-dialog';
+import useRemoveDeckFromClass from '@/hooks/queries/use-remove-deck-from-class';
 
 const UserClassManagement = () => {
     const { _id = '' } = useParams();
@@ -29,23 +35,24 @@ const UserClassManagement = () => {
     const navigate = useNavigate();
 
     const [inviteEmail, setInviteEmail] = useState('');
-    const { user } = useAuthStore((store) => store);
-    const { data: classItem, isLoading, isError, refetch } = useGetClassManagemenById(classId);
-    console.log('classItem', classItem);
-
-    const { mutateAsync: acceptRequest } = useAcceptJoinClass();
-    const { mutateAsync: inviteMember } = useInviteMemberToClassApi();
-    const { mutateAsync: rejectRequest } = useRejectJoinClass();
-    const { mutateAsync: deleteClass } = useDeleteclass();
-    const { mutateAsync: removeUserFromClass } = useRemoveUserFromClass();
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const [showAddDeskDialog, setShowAddDeskDialog] = useState(false);
+    const [showAddDeckDialog, setShowAddDeckDialog] = useState(false);
     const [showCreateQuizDialog, setShowCreateQuizDialog] = useState(false);
     const [showCreateScheduleDialog, setShowCreateScheduleDialog] = useState(false);
     const [showInviteDialog, setShowInviteDialog] = useState(false);
     const [showMembersDialog, setShowMembersDialog] = useState(false);
-
     const [removeUserId, setRemoveUserId] = useState<string | null>(null);
+    const [showDecksDialog, setShowDecksDialog] = useState(false);
+
+    const { user } = useAuthStore((store) => store);
+    const { data: classItem, isLoading, isError, refetch } = useGetClassManagemenById(classId);
+    const { mutateAsync: acceptRequest } = useAcceptJoinClass();
+    const { mutateAsync: rejectRequest } = useRejectJoinClass();
+    const { mutateAsync: inviteMember } = useInviteMemberToClassApi();
+    const { mutateAsync: deleteClass } = useDeleteclass();
+    const { mutateAsync: removeUserFromClass } = useRemoveUserFromClass();
+    const { mutateAsync: removeDeckFromClass } = useRemoveDeckFromClass();
+    const { data: availableDecks = [], refetch: getNewDeck } = useGetDeckToAddClass(classId);
 
     if (classItem && classItem.owner.email !== user?.email) {
         navigate('/class/list');
@@ -57,6 +64,13 @@ const UserClassManagement = () => {
         await acceptRequest({ classId, userId });
         await refetch();
         getToast('success', 'Join request accepted.');
+    };
+
+    const handleReject = async (userId: string) => {
+        if (!classId) return;
+        await rejectRequest({ classId, userId });
+        await refetch();
+        getToast('success', 'Join request rejected.');
     };
 
     const handleInviteMember = async () => {
@@ -72,18 +86,20 @@ const UserClassManagement = () => {
         }
     };
 
-    const handleReject = async (userId: string) => {
-        if (!classId) return;
-        await rejectRequest({ classId, userId });
-        await refetch();
-        getToast('success', 'Join request rejected.');
-    };
-    // Sửa hàm này để chỉ set user cần xóa, không gọi window.confirm nữa
     const handleRemoveUser = (userId: string) => {
         setRemoveUserId(userId);
     };
 
-    // Hàm xác nhận xóa user
+    const handleRemoveDeck = async (deckId: string) => {
+        try {
+            await removeDeckFromClass({ classId, deckId });
+            await refetch();
+            getToast('success', 'Deck removed successfully.');
+        } catch {
+            getToast('error', 'Failed to remove deck.');
+        }
+    };
+
     const handleConfirmRemoveUser = async () => {
         if (!removeUserId) return;
         try {
@@ -123,6 +139,7 @@ const UserClassManagement = () => {
         navigate('/class/list');
         return;
     }
+    console.log('classItem', classItem);
 
     return (
         <div className='min-h-screen bg-background'>
@@ -164,7 +181,10 @@ const UserClassManagement = () => {
                     <div onClick={() => setShowMembersDialog(true)} className='cursor-pointer'>
                         <StatCard icon={Users} label='Members' value={classItem.users?.length || 0} />
                     </div>
-                    <StatCard icon={Settings} label='Desks' value={classItem.desks?.length || 0} />
+                    <div onClick={() => setShowDecksDialog(true)} className='cursor-pointer'>
+                        <StatCard icon={Settings} label='Decks' value={classItem.decks?.length || 0} />
+                    </div>
+
                     <StatCard icon={Eye} label='Visits' value={classItem.visited?.count || 0} />
                     <StatCard icon={Calendar} label='Tracked States' value={classItem.userClassStates?.length || 0} />
                 </div>
@@ -172,35 +192,24 @@ const UserClassManagement = () => {
                     <Button variant='outline' onClick={() => setShowInviteDialog(true)}>
                         <Users className='w-4 h-4 mr-2' /> Invite Members
                     </Button>
-                    <Button variant='outline' onClick={() => setShowAddDeskDialog(true)}>
-                        <Plus className='w-4 h-4 mr-2' /> Add Desk
-                    </Button>
-                    <Button variant='outline' onClick={() => setShowCreateScheduleDialog(true)}>
-                        <CalendarIcon className='w-4 h-4 mr-2' /> Create Schedule Learning
+                    <Button variant='outline' onClick={() => setShowAddDeckDialog(true)}>
+                        <Plus className='w-4 h-4 mr-2' /> Add Deck
                     </Button>
                     <Button variant='outline' onClick={() => setShowCreateQuizDialog(true)}>
                         <Play className='w-4 h-4 mr-2' /> Create Quiz
                     </Button>
                 </div>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
-                    <Dialog open={showAddDeskDialog} onOpenChange={setShowAddDeskDialog}>
-                        <DialogContent className='sm:max-w-md'>
-                            <DialogHeader>
-                                <DialogTitle>Select Desk to Add</DialogTitle>
-                            </DialogHeader>
-                            <div className='space-y-3 max-h-60 overflow-y-auto'>
-                                {classItem.desks?.map((desk: AddDeckToClassRequestDto) => (
-                                    <div
-                                        key={desk._id}
-                                        className='p-2 border rounded-md flex justify-between items-center'
-                                    >
-                                        <div className='font-medium truncate'>{desk.name}</div>
-                                        <Button size='sm'>Add</Button>
-                                    </div>
-                                ))}
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    <AddDeckDialog
+                        open={showAddDeckDialog}
+                        onOpenChange={setShowAddDeckDialog}
+                        classId={classId}
+                        existingDecks={availableDecks}
+                        onAddSuccess={async () => {
+                            await refetch();
+                            await getNewDeck();
+                        }}
+                    />
 
                     <Dialog open={showCreateQuizDialog} onOpenChange={setShowCreateQuizDialog}>
                         <DialogContent className='sm:max-w-md'>
@@ -210,17 +219,17 @@ const UserClassManagement = () => {
                             <div className='space-y-4'>
                                 <Label>Quiz Name</Label>
                                 <Input placeholder='Enter quiz name' />
-                                <Label>Select Desk</Label>
+                                <Label>Select Deck</Label>
                                 <Select>
                                     <SelectTrigger>
-                                        <SelectValue placeholder='Choose desk' />
+                                        <SelectValue placeholder='Choose deck' />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {classItem.desks?.map((desk: AddDeckToClassRequestDto) => (
-                                            <SelectItem key={desk._id} value={desk._id}>
-                                                {desk.name}
+                                        {/* {classItem.decks?.map((deck: AddDeckToClassRequestDto) => (
+                                            <SelectItem key={deck._id} value={deck._id}>
+                                                {deck.name}
                                             </SelectItem>
-                                        ))}
+                                        ))} */}
                                     </SelectContent>
                                 </Select>
                                 <Button className='w-full'>Create</Button>
@@ -415,6 +424,45 @@ const UserClassManagement = () => {
                         </div>
                     </DialogContent>
                 </Dialog>
+                <Dialog open={showDecksDialog} onOpenChange={setShowDecksDialog}>
+                    <DialogContent className='sm:max-w-md'>
+                        <DialogHeader>
+                            <DialogTitle>Class Decks</DialogTitle>
+                        </DialogHeader>
+                        <div className='space-y-3 max-h-60 overflow-y-auto'>
+                            {classItem.decks?.length > 0 ? (
+                                classItem.decks.map((deck: any) => (
+                                    <div
+                                        key={deck._id}
+                                        className='p-3 border rounded-md flex justify-between items-center gap-4 hover:bg-muted transition'
+                                    >
+                                        <div
+                                            className='flex-1 cursor-pointer'
+                                            onClick={() => navigate(`/deck/${deck.deck._id}`)}
+                                        >
+                                            <p className='font-medium truncate'>{deck.deck.name}</p>
+                                            {deck.description && (
+                                                <p className='text-sm text-muted-foreground truncate'>
+                                                    {deck.description}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <Button
+                                            variant='destructive'
+                                            size='sm'
+                                            onClick={() => handleRemoveDeck(deck.deck._id)}
+                                        >
+                                            Remove
+                                        </Button>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className='text-sm text-muted-foreground'>No decks found.</p>
+                            )}
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
                 <ConfirmDeleteDialog
                     open={!!removeUserId}
                     className='user'

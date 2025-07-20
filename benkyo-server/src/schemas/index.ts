@@ -273,7 +273,14 @@ const ClassSchema = new Schema(
             }
         ],
         users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-        desks: [{ type: Schema.Types.ObjectId, ref: 'Deck' }],
+        decks: [
+            {
+                deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: true },
+                description: { type: String },
+                startTime: { type: Date },
+                endTime: { type: Date }
+            }
+        ],
         userClassStates: [{ type: Schema.Types.ObjectId, ref: 'UserClassState' }]
     },
     { timestamps: true }

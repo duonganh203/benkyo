@@ -39,7 +39,16 @@ export const classValidation = z.object({
         .optional(),
 
     users: z.array(z.string().regex(/^[a-f\d]{24}$/i, 'Invalid user ID')).optional(),
-    desks: z.array(z.string().regex(/^[a-f\d]{24}$/i, 'Invalid deck ID')).optional(),
+    decks: z
+        .array(
+            z.object({
+                deck: z.string().regex(/^[a-f\d]{24}$/i, 'Invalid deck ID'),
+                description: z.string().optional(),
+                startTime: z.coerce.date().optional(),
+                endTime: z.coerce.date().optional()
+            })
+        )
+        .optional(),
     userClassStates: z.array(z.string().regex(/^[a-f\d]{24}$/i, 'Invalid userClassState ID')).optional()
 });
 

@@ -54,8 +54,42 @@ export type PopulatedUser = {
     avatar: string;
 };
 
+export type JoinRequest = {
+    _id: string;
+    user: PopulatedUser;
+    requestDate: Date;
+};
+
+export type ClassDeck = {
+    deck: ClassDeckSummary;
+    description?: string;
+    startTime?: Date;
+    endTime?: Date;
+};
+
+export type ClassDeckSummary = {
+    _id: string;
+    name: string;
+    description?: string;
+    owner: string;
+    cardCount: number;
+};
+
+export type ClassUser = {
+    _id: string;
+    name: string;
+    email: string;
+    avatar: string;
+};
+
+export type ClassJoinRequest = {
+    _id: string;
+    user: ClassUser;
+    requestDate: Date;
+};
+
 export type ClassVisitEntry = {
-    userId: PopulatedUser | null;
+    userId: ClassUser | null;
     lastVisit: string;
 };
 
@@ -64,13 +98,7 @@ export type ClassVisited = {
     history: ClassVisitEntry[];
 };
 
-export type JoinRequest = {
-    _id: string;
-    user: PopulatedUser;
-    requestDate: Date;
-};
-
-type UserClassState = {
+export type ClassUserState = {
     _id: string;
     user: string;
     class: string;
@@ -81,16 +109,8 @@ type UserClassState = {
     updatedAt: Date;
 };
 
-type UserClassStatePopulated = Omit<UserClassState, 'user'> & {
-    user: PopulatedUser;
-};
-
-type Deck = {
-    _id: string;
-    name: string;
-    description?: string;
-    owner: string;
-    cardCount: number;
+export type ClassUserStatePopulated = Omit<ClassUserState, 'user'> & {
+    user: ClassUser;
 };
 
 export type ClassManagementResponseDto = {
@@ -98,14 +118,14 @@ export type ClassManagementResponseDto = {
     name: string;
     description: string;
     bannerUrl: string;
-    owner: PopulatedUser;
+    owner: ClassUser;
     visibility: 'public' | 'private';
     requiredApprovalToJoin: boolean;
-    users: PopulatedUser[];
-    joinRequests: JoinRequest[];
+    users: ClassUser[];
+    joinRequests: ClassJoinRequest[];
     visited: ClassVisited;
-    desks: Deck[];
-    userClassStates: UserClassStatePopulated[];
+    decks: ClassDeck[];
+    userClassStates: ClassUserStatePopulated[];
     createdAt: Date;
     updatedAt: Date;
 };
@@ -133,4 +153,30 @@ export type RemoveUserClassRequestDto = {
 };
 export type RemoveUserClassResponseDto = {
     message: string;
+};
+
+export type RemoveDeckClassRequestDto = {
+    classId: string;
+    deckId: string;
+};
+export type RemoveDeckClassResponseDto = {
+    message: string;
+};
+
+export type AddDeckToClassRequestDto = {
+    classId: string;
+    deckId: string;
+    description?: string;
+    startTime?: Date;
+    endTime?: Date;
+};
+
+export type AddDeckToClassResponseDto = {
+    message: string;
+};
+
+export type DeckToAddClassResponseDto = {
+    _id: string;
+    name: string;
+    description: string;
 };

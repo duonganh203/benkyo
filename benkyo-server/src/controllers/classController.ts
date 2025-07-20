@@ -222,3 +222,54 @@ export const removeUserFromClass = async (req: Request, res: Response) => {
         res.status(400).json({ message: 'Failed to remove user from class', error });
     }
 };
+
+export const removeDeckFromClass = async (req: Request, res: Response) => {
+    try {
+        const classId = req.query.classId as string;
+        const deckId = req.query.deckId as string;
+        const ownerId = req.user._id;
+
+        if (!classId || !deckId) {
+            return res.status(400).json({ message: 'Missing classId or deckId' });
+        }
+
+        const result = await classService.removeDeckFromClassService(classId, deckId, ownerId);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(400).json({ message: 'Failed to remove deck from class', error });
+    }
+};
+
+export const addDeckToClass = async (req: Request, res: Response) => {
+    try {
+        const ownerId = req.user._id;
+        const { classId, deckId, description, startTime, endTime } = req.body;
+
+        if (!classId || !deckId) {
+            return res.status(400).json({ message: 'Missing classId or deckId' });
+        }
+
+        const result = await classService.addDeckToClassService({
+            classId,
+            deckId,
+            description,
+            startTime,
+            endTime,
+            ownerId
+        });
+
+        res.status(200).json({ ...result, message: 'Deck added to class successfully' });
+    } catch (error) {
+        res.status(400).json({ message: 'Failed to add deck to class', error });
+    }
+};
+
+export const getDecksToAddToClass = async (req: Request, res: Response) => {
+    try {
+        const { _id } = req.params;
+        const decks = await classService.getDecksToAddToClassService(_id);
+        res.status(200).json(decks);
+    } catch (error) {
+        res.status(400).json({ message: 'Failed to get deck to add class', error });
+    }
+};

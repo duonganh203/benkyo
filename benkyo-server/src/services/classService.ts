@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { Class, Deck, User, UserClassState, UserDeckState } from '~/schemas';
+import { Class, Deck, PublicStatus, User, UserClassState, UserDeckState } from '~/schemas';
 import { sendToUser } from '~/utils/socketServer';
 import { ClassStateType } from '~/validations/classValidation';
 
@@ -70,7 +70,6 @@ export const deleteClassService = async (classId: string, userId: Types.ObjectId
         throw new ForbiddenRequestsException('You do not have permission to delete this class', ErrorCode.FORBIDDEN);
 
     await UserClassState.deleteMany({ class: classId });
-    await Deck.deleteMany({ _id: { $in: existingClass.desks } });
     await Class.findByIdAndDelete(classId);
 
     return { message: 'Delete class successfully' };
@@ -103,8 +102,8 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
     const classes = await Class.find({
         $or: [{ users: userId }, { owner: userId }]
     })
-        .populate('desks')
-        .select('_id name description requiredApprovalToJoin desks bannerUrl createdAt')
+        .populate('decks.deck')
+        .select('_id name description requiredApprovalToJoin decks bannerUrl createdAt')
         .skip(skip)
         .limit(limit);
 
@@ -112,7 +111,7 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
 
     const result = await Promise.all(
         classes.map(async (classItem) => {
-            const totalDecks = classItem.desks.length;
+            const totalDecks = classItem.decks.length;
             const studiedDeckCount = await UserDeckState.countDocuments({
                 user: userId
             });
@@ -125,7 +124,7 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
                 requiredApprovalToJoin: classItem.requiredApprovalToJoin,
                 bannerUrl: classItem.bannerUrl,
                 users: classItem.users,
-                desks: classItem.desks,
+                decks: classItem.decks,
                 createdAt: classItem.createdAt,
                 progress
             };
@@ -227,9 +226,12 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
             path: 'visited.history.userId',
             select: '_id name email avatar'
         })
-
         .populate({
-            path: 'desks'
+            path: 'decks',
+            populate: {
+                path: 'deck',
+                select: '_id name'
+            }
         })
         .lean();
 
@@ -393,4 +395,96 @@ export const removeUserFromClassService = async (classId: string, userId: string
     await UserClassState.deleteOne({ class: classId, user: userId });
 
     return { message: 'User removed from class successfully' };
+};
+
+export const removeDeckFromClassService = async (classId: string, deckId: string, ownerId: Types.ObjectId) => {
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!existingClass.owner.equals(ownerId)) {
+        throw new ForbiddenRequestsException(
+            'You do not have permission to remove decks from this class',
+            ErrorCode.FORBIDDEN
+        );
+    }
+
+    const deckExists = existingClass.decks.some((deckEntry) => deckEntry.deck.equals(deckId));
+
+    if (!deckExists) {
+        throw new NotFoundException('Deck not found in this class', ErrorCode.NOT_FOUND);
+    }
+
+    existingClass.decks.pull({ deck: new Types.ObjectId(deckId) });
+
+    await existingClass.save();
+
+    await UserClassState.deleteMany({ class: classId, deck: deckId });
+
+    return { message: 'Deck removed from class successfully' };
+};
+
+export const addDeckToClassService = async ({
+    classId,
+    deckId,
+    description,
+    startTime,
+    endTime,
+    ownerId
+}: {
+    classId: string;
+    deckId: string;
+    description?: string;
+    startTime?: Date;
+    endTime?: Date;
+    ownerId: string;
+}) => {
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    if (!existingClass.owner.equals(ownerId))
+        throw new ForbiddenRequestsException('Only class owner can add decks', ErrorCode.FORBIDDEN);
+
+    const deck = await Deck.findById(deckId);
+    if (!deck) throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+
+    const isApproved = deck.publicStatus === 2;
+    const isOwnedByClassOwner = deck.owner.equals(ownerId);
+
+    if (!isApproved && !isOwnedByClassOwner)
+        throw new ForbiddenRequestsException('You can only add approved or owned decks', ErrorCode.FORBIDDEN);
+
+    const alreadyAdded = existingClass.decks.some((d) => d.deck.equals(deckId));
+    if (alreadyAdded) throw new ForbiddenRequestsException('Deck already exists in this class', ErrorCode.FORBIDDEN);
+
+    if (startTime && endTime && startTime > endTime)
+        throw new ForbiddenRequestsException('Start time must be before end time', ErrorCode.FORBIDDEN);
+
+    existingClass.decks.push({
+        deck: new Types.ObjectId(deckId),
+        description,
+        startTime,
+        endTime
+    });
+
+    await existingClass.save();
+    return { message: 'Deck added successfully' };
+};
+
+export const getDecksToAddToClassService = async (classId: string) => {
+    const classDoc = await Class.findById(classId);
+    if (!classDoc) throw new Error('Class not found');
+
+    const ownerId = classDoc.owner.toString();
+    const existingDeckIds = classDoc.decks.map((d) => d.deck.toString());
+
+    const decks = await Deck.find({
+        _id: { $nin: existingDeckIds },
+        $or: [{ owner: ownerId }, { publicStatus: PublicStatus.APPROVED }]
+    })
+        .select('_id name description')
+        .sort({ createdAt: -1 });
+
+    return decks;
 };
