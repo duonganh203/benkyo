@@ -39,7 +39,7 @@ export const classSchema = z.object({
         .optional(),
 
     users: z.array(z.string().regex(/^[a-f\d]{24}$/i, 'Invalid user ID')).optional(),
-    desks: z.array(z.string().regex(/^[a-f\d]{24}$/i, 'Invalid deck ID')).optional(),
+    decks: z.array(z.string().regex(/^[a-f\d]{24}$/i, 'Invalid deck ID')).optional(),
     userClassStates: z.array(z.string().regex(/^[a-f\d]{24}$/i, 'Invalid userClassState ID')).optional()
 });
 

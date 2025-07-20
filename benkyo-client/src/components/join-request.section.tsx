@@ -11,8 +11,6 @@ type JoinRequestsSectionProps = {
 };
 
 const JoinRequestsSection = ({ classItem, onAccept, onReject }: JoinRequestsSectionProps) => {
-    console.log('JoinRequestsSection classItem:', classItem);
-
     if (!classItem.joinRequests || classItem.joinRequests.length === 0) return null;
 
     return (
