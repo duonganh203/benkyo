@@ -6,13 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectTrigger, SelectValue } from '@radix-ui/react-select';
-import { Label } from '@radix-ui/react-label';
 
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import StatCard from '@/components/stat-card';
 import JoinRequestsSection from '@/components/join-request.section';
 
@@ -28,6 +22,14 @@ import { getToast } from '@/utils/getToast';
 import useGetDeckToAddClass from '@/hooks/queries/use-get-decks-to-class';
 import AddDeckDialog from '@/components/add-deck-dialog';
 import useRemoveDeckFromClass from '@/hooks/queries/use-remove-deck-from-class';
+import ClassMembersModal from '@/components/modals/class-members-modal';
+import CreateQuizModal from '@/components/modals/create-quiz.modal';
+import InviteMemberModal from '@/components/modals/invite-member-modal';
+import CreateScheduleModal from '@/components/modals/create-schedule-modal';
+import ConfirmDeleteUserModal from '@/components/modals/confirm-delete-user-modal';
+import ConfirmDeleteClassModal from '@/components/modals/confirm-delete-class-modal';
+import ConfirmDeleteDeckModal from '@/components/modals/confirm-delete-deck-modal';
+import ClassDecksModal from '@/components/modals/class-decks-modal';
 
 const UserClassManagement = () => {
     const { _id = '' } = useParams();
@@ -41,8 +43,9 @@ const UserClassManagement = () => {
     const [showCreateScheduleDialog, setShowCreateScheduleDialog] = useState(false);
     const [showInviteDialog, setShowInviteDialog] = useState(false);
     const [showMembersDialog, setShowMembersDialog] = useState(false);
-    const [removeUserId, setRemoveUserId] = useState<string | null>(null);
     const [showDecksDialog, setShowDecksDialog] = useState(false);
+    const [removeUserId, setRemoveUserId] = useState<string | null>(null);
+    const [removeDeckId, setRemoveDeckId] = useState<string | null>(null);
 
     const { user } = useAuthStore((store) => store);
     const { data: classItem, isLoading, isError, refetch } = useGetClassManagemenById(classId);
@@ -61,16 +64,28 @@ const UserClassManagement = () => {
 
     const handleAccept = async (userId: string) => {
         if (!classId) return;
-        await acceptRequest({ classId, userId });
-        await refetch();
-        getToast('success', 'Join request accepted.');
+        try {
+            await acceptRequest({ classId, userId });
+            await refetch();
+            getToast('success', 'Join request accepted.');
+        } catch (error) {
+            getToast('error', 'Failed to accept join request. Please try again.');
+        }
+    };
+
+    const handleRemoveDeck = (deckId: string) => {
+        setRemoveDeckId(deckId);
     };
 
     const handleReject = async (userId: string) => {
         if (!classId) return;
-        await rejectRequest({ classId, userId });
-        await refetch();
-        getToast('success', 'Join request rejected.');
+        try {
+            await rejectRequest({ classId, userId });
+            await refetch();
+            getToast('success', 'Join request rejected.');
+        } catch (error) {
+            getToast('error', 'Failed to reject join request. Please try again.');
+        }
     };
 
     const handleInviteMember = async () => {
@@ -82,7 +97,7 @@ const UserClassManagement = () => {
             setShowInviteDialog(false);
             setInviteEmail('');
         } catch {
-            getToast('error', 'Failed to invite member.');
+            getToast('error', 'Member invitation failed. Please try again.');
         }
     };
 
@@ -90,13 +105,16 @@ const UserClassManagement = () => {
         setRemoveUserId(userId);
     };
 
-    const handleRemoveDeck = async (deckId: string) => {
+    const handleConfirmRemoveDeck = async () => {
+        if (!removeDeckId || !classId) return;
         try {
-            await removeDeckFromClass({ classId, deckId });
+            await removeDeckFromClass({ classId, deckId: removeDeckId });
             await refetch();
             getToast('success', 'Deck removed successfully.');
         } catch {
-            getToast('error', 'Failed to remove deck.');
+            getToast('error', 'Unable to remove deck from class.');
+        } finally {
+            setRemoveDeckId(null);
         }
     };
 
@@ -107,16 +125,21 @@ const UserClassManagement = () => {
             getToast('success', 'User removed from class successfully!');
             await refetch();
         } catch {
-            getToast('error', 'Failed to remove user.');
+            getToast('error', 'Unable to remove user from class.');
         } finally {
             setRemoveUserId(null);
         }
     };
 
-    const handleDeleteConfirm = async () => {
-        await deleteClass(classId);
-        getToast('success', 'Class deleted successfully!');
-        navigate('/');
+    const handleDeleteConfirmClass = async () => {
+        if (!classId) return;
+        try {
+            await deleteClass(classId);
+            getToast('success', 'Class deleted successfully!');
+            navigate('/class/list');
+        } catch (error) {
+            getToast('error', 'Failed to delete class.');
+        }
     };
 
     useEffect(() => {
@@ -139,7 +162,6 @@ const UserClassManagement = () => {
         navigate('/class/list');
         return;
     }
-    console.log('classItem', classItem);
 
     return (
         <div className='min-h-screen bg-background'>
@@ -211,102 +233,58 @@ const UserClassManagement = () => {
                         }}
                     />
 
-                    <Dialog open={showCreateQuizDialog} onOpenChange={setShowCreateQuizDialog}>
-                        <DialogContent className='sm:max-w-md'>
-                            <DialogHeader>
-                                <DialogTitle>Create Quiz</DialogTitle>
-                            </DialogHeader>
-                            <div className='space-y-4'>
-                                <Label>Quiz Name</Label>
-                                <Input placeholder='Enter quiz name' />
-                                <Label>Select Deck</Label>
-                                <Select>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder='Choose deck' />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {/* {classItem.decks?.map((deck: AddDeckToClassRequestDto) => (
-                                            <SelectItem key={deck._id} value={deck._id}>
-                                                {deck.name}
-                                            </SelectItem>
-                                        ))} */}
-                                    </SelectContent>
-                                </Select>
-                                <Button className='w-full'>Create</Button>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    <CreateQuizModal open={showCreateQuizDialog} onOpenChange={setShowCreateQuizDialog} />
 
-                    <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
-                        <DialogContent className='sm:max-w-md'>
-                            <DialogHeader>
-                                <DialogTitle>Invite Member</DialogTitle>
-                            </DialogHeader>
-                            <div className='space-y-4'>
-                                <Label>Please enter email member you want to invite</Label>
-                                <Input
-                                    placeholder='Enter email'
-                                    value={inviteEmail}
-                                    onChange={(e) => setInviteEmail(e.target.value)}
-                                />
-                                <Button className='w-full' onClick={handleInviteMember}>
-                                    Invite
-                                </Button>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    <InviteMemberModal
+                        open={showInviteDialog}
+                        onOpenChange={setShowInviteDialog}
+                        email={inviteEmail}
+                        setEmail={setInviteEmail}
+                        onInvite={handleInviteMember}
+                    />
 
-                    <Dialog open={showCreateScheduleDialog} onOpenChange={setShowCreateScheduleDialog}>
-                        <DialogContent className='sm:max-w-md'>
-                            <DialogHeader>
-                                <DialogTitle>Create Schedule</DialogTitle>
-                            </DialogHeader>
-                            <div className='space-y-4'>
-                                <Label>Schedule Title</Label>
-                                <Input placeholder='Enter title' />
-                                <Label>Description</Label>
-                                <Textarea placeholder='Enter description' />
-                                <Button className='w-full'>Create</Button>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
-                    <Dialog open={showMembersDialog} onOpenChange={setShowMembersDialog}>
-                        <DialogContent className='sm:max-w-md'>
-                            <DialogHeader>
-                                <DialogTitle>Class Members</DialogTitle>
-                            </DialogHeader>
-                            <div className='space-y-3 max-h-60 overflow-y-auto'>
-                                {classItem.users?.length > 0 ? (
-                                    classItem.users.map((member: any) => (
-                                        <div
-                                            key={member._id}
-                                            className='flex items-center gap-3 p-2 border rounded-md justify-between'
-                                        >
-                                            <div className='flex items-center gap-3'>
-                                                <img
-                                                    src={member.avatar}
-                                                    alt={member.email}
-                                                    className='w-8 h-8 rounded-full'
-                                                />
-                                                <span className='text-sm font-medium truncate'>{member.email}</span>
-                                            </div>
-                                            {member._id !== classItem.owner._id && (
-                                                <Button
-                                                    variant='destructive'
-                                                    size='sm'
-                                                    onClick={() => handleRemoveUser(member._id)}
-                                                >
-                                                    Remove
-                                                </Button>
-                                            )}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className='text-sm text-muted-foreground'>No members found.</p>
-                                )}
-                            </div>
-                        </DialogContent>
-                    </Dialog>
+                    <CreateScheduleModal
+                        open={showCreateScheduleDialog}
+                        onOpenChange={setShowCreateScheduleDialog}
+                        onCreate={(title, description) => {
+                            console.log('Create schedule:', title, description);
+                        }}
+                    />
+
+                    <ClassMembersModal
+                        open={showMembersDialog}
+                        onOpenChange={setShowMembersDialog}
+                        users={classItem.users}
+                        ownerId={classItem.owner._id}
+                        onRemoveUser={handleRemoveUser}
+                    />
+
+                    <ClassDecksModal
+                        open={showDecksDialog}
+                        onOpenChange={setShowDecksDialog}
+                        decks={classItem.decks}
+                        onRemoveDeck={handleRemoveDeck}
+                        onDeckClick={(deckId) => navigate(`/deck/${deckId}`)}
+                    />
+
+                    <ConfirmDeleteDeckModal
+                        open={!!removeDeckId}
+                        onClose={() => setRemoveDeckId(null)}
+                        onConfirm={handleConfirmRemoveDeck}
+                    />
+
+                    <ConfirmDeleteUserModal
+                        open={!!removeUserId}
+                        onClose={() => setRemoveUserId(null)}
+                        onConfirm={handleConfirmRemoveUser}
+                    />
+
+                    <ConfirmDeleteClassModal
+                        open={showDeleteDialog}
+                        className={classItem.name}
+                        onClose={() => setShowDeleteDialog(false)}
+                        onConfirm={handleDeleteConfirmClass}
+                    />
                 </div>
 
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
@@ -384,98 +362,7 @@ const UserClassManagement = () => {
                         </CardContent>
                     </Card>
                 </div>
-
                 <JoinRequestsSection classItem={classItem} onAccept={handleAccept} onReject={handleReject} />
-
-                <Dialog open={showMembersDialog} onOpenChange={setShowMembersDialog}>
-                    <DialogContent className='sm:max-w-md'>
-                        <DialogHeader>
-                            <DialogTitle>Class Members</DialogTitle>
-                        </DialogHeader>
-                        <div className='space-y-3 max-h-60 overflow-y-auto'>
-                            {classItem.users?.length > 0 ? (
-                                classItem.users.map((member: any) => (
-                                    <div
-                                        key={member._id}
-                                        className='flex items-center gap-3 p-2 border rounded-md justify-between'
-                                    >
-                                        <div className='flex items-center gap-3'>
-                                            <img
-                                                src={member.avatar}
-                                                alt={member.email}
-                                                className='w-8 h-8 rounded-full'
-                                            />
-                                            <span className='text-sm font-medium truncate'>{member.email}</span>
-                                        </div>
-                                        {member._id !== classItem.owner._id && (
-                                            <Button
-                                                variant='destructive'
-                                                size='sm'
-                                                onClick={() => handleRemoveUser(member._id)}
-                                            >
-                                                Remove
-                                            </Button>
-                                        )}
-                                    </div>
-                                ))
-                            ) : (
-                                <p className='text-sm text-muted-foreground'>No members found.</p>
-                            )}
-                        </div>
-                    </DialogContent>
-                </Dialog>
-                <Dialog open={showDecksDialog} onOpenChange={setShowDecksDialog}>
-                    <DialogContent className='sm:max-w-md'>
-                        <DialogHeader>
-                            <DialogTitle>Class Decks</DialogTitle>
-                        </DialogHeader>
-                        <div className='space-y-3 max-h-60 overflow-y-auto'>
-                            {classItem.decks?.length > 0 ? (
-                                classItem.decks.map((deck: any) => (
-                                    <div
-                                        key={deck._id}
-                                        className='p-3 border rounded-md flex justify-between items-center gap-4 hover:bg-muted transition'
-                                    >
-                                        <div
-                                            className='flex-1 cursor-pointer'
-                                            onClick={() => navigate(`/deck/${deck.deck._id}`)}
-                                        >
-                                            <p className='font-medium truncate'>{deck.deck.name}</p>
-                                            {deck.description && (
-                                                <p className='text-sm text-muted-foreground truncate'>
-                                                    {deck.description}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <Button
-                                            variant='destructive'
-                                            size='sm'
-                                            onClick={() => handleRemoveDeck(deck.deck._id)}
-                                        >
-                                            Remove
-                                        </Button>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className='text-sm text-muted-foreground'>No decks found.</p>
-                            )}
-                        </div>
-                    </DialogContent>
-                </Dialog>
-
-                <ConfirmDeleteDialog
-                    open={!!removeUserId}
-                    className='user'
-                    onClose={() => setRemoveUserId(null)}
-                    onConfirm={handleConfirmRemoveUser}
-                    description='Are you sure you want to remove this user from the class?'
-                />
-                <ConfirmDeleteDialog
-                    open={showDeleteDialog}
-                    className={classItem.name}
-                    onClose={() => setShowDeleteDialog(false)}
-                    onConfirm={handleDeleteConfirm}
-                />
             </div>
         </div>
     );

@@ -23,7 +23,7 @@ export const updateClassApi = async (_id: string, data: ClassUserRequestDto) => 
 };
 
 export const deleteClassApi = async (_id: string) => {
-    const response = await api.put(`/class/${_id}/delete`);
+    const response = await api.delete(`/class/${_id}/delete`);
     return response.data as { message: string };
 };
 
