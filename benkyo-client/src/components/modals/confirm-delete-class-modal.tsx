@@ -3,19 +3,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 
-type ConfirmDeleteDialogProps = {
+type ConfirmDeleteClassModalProps = {
     open: boolean;
     onClose: () => void;
     onConfirm: () => void;
     className: string;
-    description?: string;
 };
 
-const ConfirmDeleteDialog = ({ open, onClose, onConfirm, className, description }: ConfirmDeleteDialogProps) => {
+const ConfirmDeleteClassModal = ({ open, onClose, onConfirm, className }: ConfirmDeleteClassModalProps) => {
     const [inputValue, setInputValue] = useState('');
 
     const handleConfirm = () => {
-        if (description || inputValue === className) {
+        if (inputValue === className) {
             onConfirm();
             setInputValue('');
         }
@@ -33,25 +32,19 @@ const ConfirmDeleteDialog = ({ open, onClose, onConfirm, className, description 
                     <DialogTitle>Confirm Deletion</DialogTitle>
                 </DialogHeader>
                 <p className='text-sm text-muted-foreground'>
-                    {description || 'Are you sure you want to delete this class? This action cannot be undone.'}
+                    To delete this class, please type the '{className}'' below. This action cannot be undone.
                 </p>
-                {!description && (
-                    <Input
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder='Enter class name'
-                    />
-                )}
+                <Input
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder='Enter class name'
+                />
                 <DialogFooter>
                     <Button variant='outline' onClick={handleClose}>
                         Cancel
                     </Button>
-                    <Button
-                        variant='destructive'
-                        onClick={handleConfirm}
-                        disabled={!description && inputValue !== className}
-                    >
-                        Delete Class
+                    <Button variant='destructive' onClick={handleConfirm} disabled={inputValue !== className}>
+                        Remove Class
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -59,4 +52,4 @@ const ConfirmDeleteDialog = ({ open, onClose, onConfirm, className, description 
     );
 };
 
-export default ConfirmDeleteDialog;
+export default ConfirmDeleteClassModal;
