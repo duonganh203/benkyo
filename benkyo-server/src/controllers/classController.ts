@@ -273,3 +273,10 @@ export const getDecksToAddToClass = async (req: Request, res: Response) => {
         res.status(400).json({ message: 'Failed to get deck to add class', error });
     }
 };
+
+export const getClassUserById = async (req: Request, res: Response) => {
+    const { _id } = req.params;
+    const userId = req.user.id;
+    const classItem = await classService.getClassUserByIdService(_id, userId);
+    res.json(classItem);
+};

@@ -488,3 +488,89 @@ export const getDecksToAddToClassService = async (classId: string) => {
 
     return decks;
 };
+
+export const getClassUserByIdService = async (classId: string, userId: string) => {
+    const existingClass = await Class.findById(classId)
+        .select(
+            'name description owner users decks bannerUrl requiredApprovalToJoin userClassStates createdAt status visibility visited'
+        )
+        .populate('owner', '_id name')
+        .populate('users', 'name email')
+        .populate({
+            path: 'decks',
+            select: 'name description cardCount startTime endTime'
+        })
+        .populate({
+            path: 'decks.deck',
+            select: 'name cardCount avgRating'
+        })
+        .populate({
+            path: 'userClassStates',
+            populate: {
+                path: 'user',
+                select: '_id name email avatar'
+            }
+        });
+
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const visitHistory = existingClass.visited?.history;
+
+    if (visitHistory) {
+        const alreadyVisited = visitHistory.some(
+            (visit: any) =>
+                visit.userId.toString() === userId && new Date(visit.lastVisit).toISOString().split('T')[0] === todayStr
+        );
+
+        if (!alreadyVisited) {
+            visitHistory.push({
+                userId,
+                lastVisit: new Date()
+            });
+            await existingClass.save();
+        }
+    }
+
+    const totalCards = existingClass.decks?.reduce((sum: number, d: any) => sum + (d.deck?.cardCount || 0), 0) || 0;
+
+    const totalLearned = 0;
+    const completionRate = totalCards > 0 ? Math.round((totalLearned / totalCards) * 100) : 0;
+
+    const sortedTopUserStates = (existingClass.userClassStates as any[])
+        .filter((ucs) => ucs.user._id.toString() !== existingClass.owner._id.toString())
+        .sort((a, b) => b.points - a.points)
+        .slice(0, 5);
+
+    return {
+        _id: existingClass._id.toString(),
+        name: existingClass.name,
+        description: existingClass.description,
+        users: existingClass.users.map((u: any) => ({
+            _id: u._id.toString(),
+            name: u.name,
+            email: u.email
+        })),
+        decks: existingClass.decks.map((d: any) => ({
+            decks: existingClass.decks.map((d: any) => ({
+                _id: d.deck?._id?.toString(),
+                name: d.deck?.name,
+                cardCount: d.deck?.cardCount || 0,
+                avgRating: d.deck?.avgRating || 0,
+                description: d.description || '',
+                startTime: d.startTime,
+                endTime: d.endTime
+            }))
+        })),
+        owner: {
+            _id: existingClass.owner._id.toString()
+        },
+        visibility: existingClass.visibility,
+        requiredApprovalToJoin: existingClass.requiredApprovalToJoin,
+        createdAt: existingClass.createdAt,
+        userClassStates: sortedTopUserStates,
+        completionRate,
+        visited: existingClass.visited,
+        bannerUrl: existingClass.bannerUrl
+    };
+};

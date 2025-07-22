@@ -258,7 +258,6 @@ const ClassSchema = new Schema(
             }
         ],
         visited: {
-            count: { type: Number, default: 0 },
             history: [
                 {
                     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
