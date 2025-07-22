@@ -11,6 +11,7 @@ env:
     VITE_GOOGLE_AI_KEY: ${{secrets.VITE_GOOGLE_AI_KEY}}
     VITE_PAYMENT_BANK_ID: ${{secrets.VITE_PAYMENT_BANK_ID}}
     VITE_PAYMENT_BANK_ACCOUNT_NO: ${{secrets.VITE_PAYMENT_BANK_ACCOUNT_NO}}
+    VITE_WS_URL: ${{secrets.VITE_WS_URL}}
 
 jobs:
     publish:
