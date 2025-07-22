@@ -9,8 +9,9 @@ import {
     BadgeInfo,
     NotebookPen,
     Cat,
-    Bell,
-    School
+    Medal,
+    School,
+    Bell
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
@@ -82,6 +83,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     title: 'SUPER CAT',
                     url: '/ai-chat',
                     icon: Cat,
+                    highlight: true
+                },
+                {
+                    title: 'Top Learners',
+                    url: '/top-learners',
+                    icon: Medal,
                     highlight: true
                 },
                 {
