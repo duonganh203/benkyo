@@ -47,7 +47,7 @@ const ClassListUser = () => {
                     {Array(3)
                         .fill(0)
                         .map((_, i) => (
-                            <Card key={i} className='overflow-hidden h-64 pl-4'>
+                            <Card key={i} className='overflow-hidden h-64'>
                                 <Skeleton className='h-full w-full' />
                             </Card>
                         ))}
