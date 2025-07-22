@@ -32,6 +32,7 @@ import ClassListUser from './pages/classt-list-user';
 import ClassManagement from './pages/class-management';
 import Notifications from './pages/notification';
 import { InviteDialog } from './components/invite-dialog';
+import ClassDetailUser from './pages/class-detail-user';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -78,6 +79,7 @@ const App = () => {
                             <Route path='/class/list' element={<ClassListUser />} />
                             <Route path='/class/:_id/management' element={<ClassManagement />} />
                             <Route path='/notification' element={<Notifications />} />
+                            <Route path='/class/:classId' element={<ClassDetailUser />} />
                         </Route>
                     </Routes>
                     <ModalProvider />

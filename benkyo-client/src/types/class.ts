@@ -180,3 +180,31 @@ export type DeckToAddClassResponseDto = {
     name: string;
     description: string;
 };
+
+export type GetClassUserByIdResponseDto = {
+    _id: string;
+    name: string;
+    description: string;
+    users: ClassUser[];
+    decks: {
+        _id: string;
+        name: string;
+        description: string;
+        cardCount: number;
+        startTime: Date;
+        endTime: Date;
+    }[];
+    owner: {
+        _id: string;
+        name: string;
+    };
+    visibility: 'public' | 'private';
+    requiredApprovalToJoin: boolean;
+    createdAt: Date;
+    userClassStates: ClassUserStatePopulated[];
+    completionRate: number;
+    bannerUrl: string;
+    visited: {
+        history: string[];
+    };
+};

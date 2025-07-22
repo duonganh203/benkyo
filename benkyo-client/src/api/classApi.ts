@@ -6,6 +6,7 @@ import {
     ClassUserRequestDto,
     ClassUserResponseDto,
     DeckToAddClassResponseDto,
+    GetClassUserByIdResponseDto,
     InviteMemberResponseDto,
     RemoveUserClassResponseDto
 } from '@/types/class';
@@ -110,4 +111,9 @@ export const addDeckToClassApi = async (data: AddDeckToClassRequestDto) => {
 export const getDecksToAddToClassApi = async (classId: string) => {
     const response = await api.get(`/class/${classId}/decks-to-add`);
     return response.data as DeckToAddClassResponseDto[];
+};
+
+export const getClassUserByIdApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/user-detail`);
+    return response.data as GetClassUserByIdResponseDto;
 };
