@@ -40,7 +40,7 @@ connect(MONGO_URI!)
     })
     .catch((err) => console.error(err));
 
-setupWebSocket(server);
+setupWebSocket(server, '/api');
 
 app.use('/api', rootRouter);
 app.use(errorMiddleware);

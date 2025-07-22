@@ -11,8 +11,8 @@ type IncomingMessage = {
     className?: string;
 };
 
-export const setupWebSocket = (server: HttpServer) => {
-    const wss = new Server({ server });
+export const setupWebSocket = (server: HttpServer, path = '/api') => {
+    const wss = new Server({ server, path });
 
     wss.on('connection', (ws: WebSocket) => {
         ws.on('message', (msg: RawData) => {
