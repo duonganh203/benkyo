@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { updateUserService, listUserAccountsService } from '~/services/userService';
+import { updateUserService, listUserAccountsService, getAccountStatsService } from '~/services/userService';
 import { updateUserValidation } from '~/validations/userValidation';
 
 export const updateUserProfile = async (req: Request, res: Response) => {
@@ -11,4 +11,8 @@ export const updateUserProfile = async (req: Request, res: Response) => {
 export const listUserAccounts = async (req: Request, res: Response) => {
     const users = await listUserAccountsService();
     res.json(users);
+};
+export const getAccountStats = async (req: Request, res: Response) => {
+    const stats = await getAccountStatsService();
+    res.json(stats);
 };

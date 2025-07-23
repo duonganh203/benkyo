@@ -26,7 +26,34 @@ export const listUserAccountsService = async () => {
         avatar: user.avatar,
         isPro: user.isPro,
         proExpiryDate: user.proExpiryDate,
+        proType: user.proType,
         createdAt: user.createdAt,
         role: user.role
     }));
+};
+
+export const getAccountStatsService = async () => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    const totalAccounts = await User.countDocuments();
+    const newAccountsThisMonth = await User.countDocuments({
+        createdAt: { $gte: startOfMonth }
+    });
+
+    const newAccountsLastMonth = await User.countDocuments({
+        createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth }
+    });
+
+    const growthPercentage =
+        newAccountsLastMonth === 0
+            ? 100
+            : Math.round(((newAccountsThisMonth - newAccountsLastMonth) / newAccountsLastMonth) * 100);
+
+    return {
+        totalAccounts,
+        newAccountsThisMonth,
+        growthPercentage
+    };
 };
