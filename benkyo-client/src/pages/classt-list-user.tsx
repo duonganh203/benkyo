@@ -18,6 +18,7 @@ const ClassListUser = () => {
         hasNextPage: hasMoreMyClass,
         isLoading: isLoadingMyClass
     } = useGetMyClass();
+    console.log('myClassPages', myClassPages);
 
     const {
         data: suggestedClassPages,
@@ -57,9 +58,9 @@ const ClassListUser = () => {
             ) : (
                 <>
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-                        {items.map((c, i) => (
-                            <div key={c._id} className='pl-4'>
-                                <ClassCard classItem={c} index={i} variant={variant} />
+                        {items.map((classItem, i) => (
+                            <div key={classItem._id} className='pl-4'>
+                                <ClassCard classItem={classItem} index={i} variant={variant} />
                             </div>
                         ))}
                     </div>
@@ -88,6 +89,7 @@ const ClassListUser = () => {
                         </Link>
                     )}
                 </div>
+
                 {renderSection(
                     'Your Classes',
                     myClasses,
@@ -96,6 +98,7 @@ const ClassListUser = () => {
                     hasMoreMyClass ?? false,
                     'my-class'
                 )}
+
                 {renderSection(
                     'Suggested Classes',
                     suggestedClasses,

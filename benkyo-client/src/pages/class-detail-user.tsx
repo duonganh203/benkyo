@@ -20,6 +20,7 @@ function ClassDetailUser() {
     const [studyingDeck, setStudyingDeck] = useState<DeckInClass | null>(null);
 
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
+    console.log('classData', classData);
 
     if (!classId) {
         return (
@@ -47,25 +48,35 @@ function ClassDetailUser() {
 
     const isOwner = user?._id === classData.owner._id;
     const totalLearnersCount = classData.users?.length || 0;
-    const allDecksRaw = classData.decks?.flatMap((group: any) => group.decks || []) || [];
-    const totalDecksCount = allDecksRaw.length;
+
+    const allDecksRaw = classData.decks || [];
+    const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
+    const scheduledDecks = allDecks.filter((deck: any) => deck.startTime && deck.endTime);
+    const moreDecks = allDecks.filter((deck: any) => !deck.startTime || !deck.endTime);
 
     const topLearners =
         classData.userClassStates
-            ?.map((ucs: any) => ({
-                id: ucs.user._id,
-                name: ucs.user.name,
-                avatar: ucs.user.avatar,
-                points: ucs.points,
-                streak: ucs.studyStreak || 0
-            }))
+            ?.map((ucs: any) => {
+                return {
+                    id: ucs.user._id,
+                    name: ucs.user.name,
+                    avatar: ucs.user.avatar,
+                    points: ucs.completedCardIds?.length || 0,
+                    streak: 0
+                };
+            })
             .sort((a: any, b: any) => b.points - a.points)
             .slice(0, 5) || [];
 
-    const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
+    const totalCompletedCards =
+        classData.userClassStates?.reduce((sum: number, ucs: any) => {
+            const isScheduled = scheduledDecks.some((deck: any) => deck._id === ucs.deck);
+            if (!isScheduled) return sum;
+            return sum + (ucs.completedCardIds?.length || 0);
+        }, 0) || 0;
+    const totalScheduledCards = scheduledDecks.reduce((sum, deck: any) => sum + (deck.cardCount || 0), 0);
 
-    const scheduledDecks = allDecks.filter((deck: any) => deck.startTime && deck.endTime);
-    const moreDecks = allDecks.filter((deck: any) => !deck.startTime || !deck.endTime);
+    const completionRate = totalScheduledCards > 0 ? Math.round((totalCompletedCards / totalScheduledCards) * 100) : 0;
 
     const startStudyMode = (deck: DeckInClass) => setStudyingDeck(deck);
     const closeStudyDialog = () => setStudyingDeck(null);
@@ -82,12 +93,12 @@ function ClassDetailUser() {
                             bannerUrl: classData.bannerUrl,
                             visibility: classData.visibility,
                             requiredApprovalToJoin: classData.requiredApprovalToJoin,
-                            completionRate: classData.completionRate
+                            completionRate: completionRate
                         }}
                         isExpanded={isExpanded}
                         onToggleExpanded={() => setIsExpanded(!isExpanded)}
                         totalLearnersCount={totalLearnersCount}
-                        totalDecksCount={totalDecksCount}
+                        totalDecksCount={classData.decks.length}
                     />
                 </div>
 
@@ -107,7 +118,7 @@ function ClassDetailUser() {
                     <StatsGrid
                         totalLearnersCount={totalLearnersCount}
                         createdAt={classData.createdAt}
-                        completionRate={classData.completionRate || 0}
+                        completionRate={completionRate}
                         visited={classData.visited.history.length || 0}
                     />
                 </div>
@@ -150,6 +161,7 @@ function ClassDetailUser() {
                             </div>
                         )}
                     </div>
+
                     <aside className='lg:col-span-1'>
                         <TopLearners topLearners={topLearners} />
                     </aside>

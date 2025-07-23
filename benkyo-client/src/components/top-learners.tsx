@@ -8,8 +8,7 @@ export interface TopLearner {
     id: string;
     name: string;
     avatar: string;
-    points: number;
-    streak: number;
+    correctCount?: number;
 }
 
 export interface TopLearnersProps {
@@ -43,6 +42,8 @@ const TopLearners = ({ topLearners }: TopLearnersProps) => {
         }
     };
 
+    const sortedLearners = [...topLearners].sort((a, b) => (b.correctCount ?? 0) - (a.correctCount ?? 0));
+
     return (
         <Card className='p-6 h-fit'>
             <div className='flex items-center space-x-2 mb-6'>
@@ -50,9 +51,9 @@ const TopLearners = ({ topLearners }: TopLearnersProps) => {
                 <h2 className='text-xl font-bold'>Top Diligent Learners</h2>
             </div>
 
-            {topLearners && topLearners.length > 0 ? (
+            {sortedLearners.length > 0 ? (
                 <div className='space-y-4'>
-                    {topLearners.map((learner, index) => (
+                    {sortedLearners.map((learner, index) => (
                         <div
                             key={learner.id}
                             className='flex items-center space-x-4 p-3 rounded-lg hover:bg-muted/50 transition-all duration-300 hover:scale-105 animate-fade-in-up'
@@ -84,9 +85,8 @@ const TopLearners = ({ topLearners }: TopLearnersProps) => {
                                 </div>
                                 <div className='flex items-center justify-between mt-1'>
                                     <p className='text-sm text-muted-foreground'>
-                                        {learner.points.toLocaleString()} points
+                                        {(learner.correctCount ?? 0).toLocaleString()} cards
                                     </p>
-                                    <p className='text-xs text-green-600'>🔥 {learner.streak} days</p>
                                 </div>
                             </div>
                         </div>

@@ -10,6 +10,8 @@ export interface DeckInClass {
     avgRating?: number;
     startTime?: Date;
     endTime?: Date;
+    correctCount?: number;
+    totalCount?: number;
 }
 
 export interface DeckCardProps {
@@ -19,12 +21,10 @@ export interface DeckCardProps {
 }
 
 const DeckCard = ({ deck, index, onStartStudy }: DeckCardProps) => {
-    const getProgressPercentage = (completed: number, total: number) => {
-        if (total === 0) return 0;
-        return Math.round((completed / total) * 100);
-    };
+    const correct = deck.correctCount ?? 0;
+    const total = deck.totalCount ?? deck.cardCount;
 
-    const progressPercentage = getProgressPercentage(0, deck.cardCount);
+    const progressPercentage = total > 0 ? Math.round((correct / total) * 100) : 0;
 
     return (
         <Card
@@ -56,7 +56,9 @@ const DeckCard = ({ deck, index, onStartStudy }: DeckCardProps) => {
                             style={{ width: `${progressPercentage}%` }}
                         />
                     </div>
-                    <p className='text-xs text-muted-foreground'>0/{deck.cardCount} cards studied</p>
+                    <p className='text-xs text-muted-foreground'>
+                        {correct}/{total} cards studied
+                    </p>
                 </div>
             </div>
 
