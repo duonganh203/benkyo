@@ -13,19 +13,6 @@ export const createClassService = async (userId: string, data: ClassStateType) =
     const newClass = new Class({ ...data, owner: userId });
     const savedClass = await newClass.save();
 
-    const userState = new UserClassState({
-        user: new Types.ObjectId(userId),
-        class: savedClass._id,
-        points: 0,
-        studyStreak: 0,
-        lastStudyDate: null
-    });
-
-    await userState.save();
-
-    await Class.findByIdAndUpdate(savedClass._id, { $push: { userClassStates: userState._id } });
-    await Class.findByIdAndUpdate(savedClass._id, { $push: { userClassStates: userState._id } });
-
     return {
         _id: savedClass._id.toString(),
         name: savedClass.name,
@@ -111,11 +98,27 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
 
     const result = await Promise.all(
         classes.map(async (classItem) => {
-            const totalDecks = classItem.decks.length;
-            const studiedDeckCount = await UserDeckState.countDocuments({
-                user: userId
+            const classDeckIds = classItem.decks.map((d) => d.deck?._id?.toString()).filter(Boolean);
+            const scheduledDeckIds = classItem.decks
+                .filter((d) => d.startTime && d.endTime)
+                .map((d) => d.deck?._id?.toString())
+                .filter(Boolean);
+
+            const userStates = await UserClassState.find({
+                user: userId,
+                class: classItem._id,
+                deck: { $in: scheduledDeckIds }
             });
-            const progress = totalDecks > 0 ? Math.round((studiedDeckCount / totalDecks) * 100) : 0;
+
+            let totalCompleted = 0;
+            let totalCards = 0;
+
+            for (const state of userStates) {
+                totalCompleted += state.completedCardIds?.length || 0;
+                totalCards += state.totalCount || 0;
+            }
+
+            const progress = totalCards > 0 ? Math.round((totalCompleted / totalCards) * 100) : 0;
 
             return {
                 _id: classItem._id,
@@ -123,7 +126,6 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
                 description: classItem.description,
                 requiredApprovalToJoin: classItem.requiredApprovalToJoin,
                 bannerUrl: classItem.bannerUrl,
-                users: classItem.users,
                 decks: classItem.decks,
                 createdAt: classItem.createdAt,
                 progress
@@ -133,9 +135,7 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
 
     return {
         data: result,
-        currentPage: page,
-        totalPages: Math.ceil(totalCount / limit),
-        hasMore: skip + result.length < totalCount
+        total: totalCount
     };
 };
 
@@ -497,10 +497,6 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
         .populate('owner', '_id name')
         .populate('users', 'name email')
         .populate({
-            path: 'decks',
-            select: 'name description cardCount startTime endTime'
-        })
-        .populate({
             path: 'decks.deck',
             select: 'name cardCount avgRating'
         })
@@ -532,9 +528,49 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
         }
     }
 
-    const totalCards = existingClass.decks?.reduce((sum: number, d: any) => sum + (d.deck?.cardCount || 0), 0) || 0;
+    const deckRefs = existingClass.decks || [];
+    const deckIds = deckRefs.map((d: any) => d.deck?._id).filter(Boolean);
 
-    const totalLearned = 0;
+    const userDeckStates = await UserClassState.find({
+        user: userId,
+        class: classId,
+        deck: { $in: deckIds }
+    });
+
+    const progressMap = new Map<string, { correctCount: number; totalCount: number }>();
+    let totalCards = 0;
+    let totalLearned = 0;
+
+    for (const state of userDeckStates) {
+        const deckId = state.deck.toString();
+        progressMap.set(deckId, {
+            correctCount: state.correctCount || 0,
+            totalCount: state.totalCount || 0
+        });
+        totalCards += state.totalCount || 0;
+        totalLearned += state.correctCount || 0;
+    }
+
+    const decks = deckRefs.map((d: any) => {
+        const deckData = d.deck;
+        const progress = progressMap.get(deckData?._id.toString()) || {
+            correctCount: 0,
+            totalCount: deckData?.cardCount || 0
+        };
+
+        return {
+            _id: deckData?._id.toString(),
+            name: deckData?.name,
+            cardCount: deckData?.cardCount || 0,
+            avgRating: deckData?.avgRating || 0,
+            description: d.description || '',
+            startTime: d.startTime,
+            endTime: d.endTime,
+            correctCount: progress.correctCount,
+            totalCount: progress.totalCount
+        };
+    });
+
     const completionRate = totalCards > 0 ? Math.round((totalLearned / totalCards) * 100) : 0;
 
     const sortedTopUserStates = (existingClass.userClassStates as any[])
@@ -551,17 +587,7 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
             name: u.name,
             email: u.email
         })),
-        decks: existingClass.decks.map((d: any) => ({
-            decks: existingClass.decks.map((d: any) => ({
-                _id: d.deck?._id?.toString(),
-                name: d.deck?.name,
-                cardCount: d.deck?.cardCount || 0,
-                avgRating: d.deck?.avgRating || 0,
-                description: d.description || '',
-                startTime: d.startTime,
-                endTime: d.endTime
-            }))
-        })),
+        decks,
         owner: {
             _id: existingClass.owner._id.toString()
         },
@@ -573,4 +599,43 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
         visited: existingClass.visited,
         bannerUrl: existingClass.bannerUrl
     };
+};
+
+export const updateUserClassStateOnCardStudied = async ({
+    userId,
+    classId,
+    deckId,
+    cardId,
+    isCorrect
+}: StudyCardParams) => {
+    let userState = await UserClassState.findOne({ user: userId, class: classId, deck: deckId });
+
+    const now = new Date();
+
+    if (!userState) {
+        userState = new UserClassState({
+            user: userId,
+            class: classId,
+            deck: deckId,
+            completedCardIds: [cardId],
+            correctCount: isCorrect ? 1 : 0,
+            totalCount: 1,
+            startTime: now,
+            endTime: now,
+            duration: 0
+        });
+    } else {
+        if (!userState.completedCardIds.includes(cardId)) {
+            userState.completedCardIds.push(cardId);
+        }
+
+        if (isCorrect) userState.correctCount += 1;
+        userState.totalCount += 1;
+
+        userState.endTime = now;
+        userState.duration = Math.floor((now.getTime() - userState.startTime.getTime()) / 1000);
+    }
+
+    await userState.save();
+    return userState;
 };
