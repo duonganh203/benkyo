@@ -109,6 +109,8 @@ export const createClassQuizService = async (
 
     const newQuiz = new Quiz({
         class: classId,
+        title: quizData.title,
+        description: quizData.description,
         createdBy: userId,
         createdAt: new Date(),
         questions: quizData.questions
@@ -142,7 +144,17 @@ export const updateQuizService = async (
 
     updateQuizValidation.parse(updatedData);
 
-    quiz.set('questions', updatedData.questions);
+    if (updatedData.title !== undefined) {
+        quiz.title = updatedData.title;
+    }
+
+    if (updatedData.description !== undefined) {
+        quiz.description = updatedData.description;
+    }
+
+    if (updatedData.questions !== undefined) {
+        quiz.set('questions', updatedData.questions);
+    }
     await quiz.save();
 
     return { id: quiz._id };

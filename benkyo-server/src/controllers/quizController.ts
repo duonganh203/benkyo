@@ -60,7 +60,7 @@ export const createClassQuiz = async (req: Request, res: Response) => {
 export const getClassQuizzes = async (req: Request, res: Response) => {
     const { _id: classId } = req.params;
     const quizzes = await getClassQuizzesService(classId);
-    res.json({ data: quizzes });
+    return res.json(quizzes);
 };
 
 export const updateClassQuizzes = async (req: Request, res: Response) => {

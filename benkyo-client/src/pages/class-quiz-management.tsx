@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, BookOpen, Zap } from 'lucide-react';
@@ -6,15 +6,18 @@ import { QuizCardClass } from '@/components/quiz-card-class';
 
 import { AIQuizModal } from '@/components/modals/ai-create-quiz-modal';
 import { CreateQuizModal } from '@/components/modals/create-quiz-modal';
+import { useParams } from 'react-router-dom';
+import useGetAllClassQuiz from '@/hooks/queries/use-get-class-quiz';
 
 export interface Quiz {
     id: string;
     title: string;
-    description: string;
-    questions: Question[];
+    description?: string;
+    classId: string;
     createdAt: Date;
     type: 'manual' | 'ai';
     deck?: string;
+    questions: Question[];
 }
 
 export interface Question {
@@ -22,46 +25,11 @@ export interface Question {
     question: string;
     options: string[];
     correctAnswer: number;
-    explanation?: string;
 }
 
 const ClassQuizManagement = () => {
-    const [quizzes, setQuizzes] = useState<Quiz[]>([
-        {
-            id: '1',
-            title: 'Math Fundamentals',
-            description: 'Basic arithmetic and algebra concepts',
-            questions: [
-                {
-                    id: '1',
-                    question: 'What is 2 + 2?',
-                    options: ['3', '4', '5', '6'],
-                    correctAnswer: 1,
-                    explanation: '2 + 2 equals 4'
-                }
-            ],
-            createdAt: new Date(),
-            type: 'manual'
-        },
-        {
-            id: '2',
-            title: 'Science Basics',
-            description: 'Introduction to scientific concepts',
-            questions: [
-                {
-                    id: '1',
-                    question: 'What is H2O?',
-                    options: ['Oxygen', 'Water', 'Hydrogen', 'Carbon'],
-                    correctAnswer: 1,
-                    explanation: 'H2O is the chemical formula for water'
-                }
-            ],
-            createdAt: new Date(),
-            type: 'ai',
-            deck: 'Science Fundamentals'
-        }
-    ]);
-
+    const { _id: classId } = useParams<{ _id: string }>();
+    const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showAIModal, setShowAIModal] = useState(false);
 
@@ -69,10 +37,44 @@ const ClassQuizManagement = () => {
         const newQuiz: Quiz = {
             ...quiz,
             id: Date.now().toString(),
-            createdAt: new Date()
+            createdAt: new Date(),
+            classId: classId || ''
         };
         setQuizzes([...quizzes, newQuiz]);
         setShowCreateModal(false);
+    };
+
+    const { data: fetchedQuizzes } = useGetAllClassQuiz(classId || '');
+
+    useEffect(() => {
+        console.log('useEffect triggered. fetchedQuizzes:', fetchedQuizzes);
+
+        if (fetchedQuizzes && Array.isArray(fetchedQuizzes)) {
+            const transformed = fetchedQuizzes.map(
+                (quiz): Quiz => ({
+                    id: quiz._id,
+                    title: quiz.title ?? 'Untitled Quiz',
+                    description: quiz.description ?? '',
+                    classId: quiz.class ?? '',
+                    createdAt: new Date(quiz.createdAt),
+                    type: quiz.type ?? 'manual',
+                    deck: quiz.deck,
+                    questions: (quiz.questions ?? []).map((q) => ({
+                        id: q._id,
+                        question: q.questionText,
+                        options: q.choices,
+                        correctAnswer: q.correctAnswer
+                    }))
+                })
+            );
+
+            console.log('Transformed quizzes:', transformed);
+            setQuizzes(transformed);
+        }
+    }, [fetchedQuizzes]);
+
+    const handleEditQuiz = (updated: Quiz) => {
+        setQuizzes((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
     };
 
     const handleDeleteQuiz = (quizId: string) => {
@@ -81,7 +83,6 @@ const ClassQuizManagement = () => {
 
     return (
         <div className='min-h-screen bg-background'>
-            {/* Header */}
             <div className='bg-background border-b border-border'>
                 <div className='container mx-auto px-4 py-6'>
                     <div className='flex items-center justify-between'>
@@ -110,7 +111,6 @@ const ClassQuizManagement = () => {
                 </div>
             </div>
 
-            {/* Stats Cards */}
             <div className='container mx-auto px-4 py-6'>
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
                     <Card className='bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-800 dark:to-blue-600 text-white shadow-lg'>
@@ -121,7 +121,6 @@ const ClassQuizManagement = () => {
                             <div className='text-3xl font-bold'>{quizzes.length}</div>
                         </CardContent>
                     </Card>
-
                     <Card className='bg-gradient-to-r from-green-600 to-green-500 dark:from-green-800 dark:to-green-600 text-white shadow-lg'>
                         <CardHeader className='pb-3'>
                             <CardTitle className='text-lg font-medium'>Manual Quizzes</CardTitle>
@@ -132,7 +131,6 @@ const ClassQuizManagement = () => {
                             </div>
                         </CardContent>
                     </Card>
-
                     <Card className='bg-gradient-to-r from-purple-600 to-purple-400 dark:from-purple-800 dark:to-purple-600 text-white shadow-lg'>
                         <CardHeader className='pb-3'>
                             <CardTitle className='text-lg font-medium'>AI Generated</CardTitle>
@@ -143,7 +141,6 @@ const ClassQuizManagement = () => {
                     </Card>
                 </div>
 
-                {/* Quizzes Grid */}
                 <div className='mb-6'>
                     <h2 className='text-2xl font-bold mb-4 text-foreground'>Your Quizzes</h2>
                     {quizzes.length === 0 ? (
@@ -172,15 +169,24 @@ const ClassQuizManagement = () => {
                     ) : (
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                             {quizzes.map((quiz) => (
-                                <QuizCardClass key={quiz.id} quiz={quiz} onDelete={handleDeleteQuiz} />
+                                <QuizCardClass
+                                    key={quiz.id}
+                                    quiz={quiz}
+                                    onDelete={handleDeleteQuiz}
+                                    onEdit={handleEditQuiz}
+                                />
                             ))}
                         </div>
                     )}
                 </div>
             </div>
 
-            <CreateQuizModal open={showCreateModal} onOpenChange={setShowCreateModal} onSubmit={handleCreateQuiz} />
-
+            <CreateQuizModal
+                open={showCreateModal}
+                onOpenChange={setShowCreateModal}
+                onSubmit={handleCreateQuiz}
+                classId={classId || ''}
+            />
             <AIQuizModal open={showAIModal} onOpenChange={setShowAIModal} onSubmit={handleCreateQuiz} />
         </div>
     );

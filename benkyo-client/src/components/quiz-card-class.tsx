@@ -15,18 +15,28 @@ import {
 } from './ui/alert-dialog';
 import { useState } from 'react';
 import { CreateQuizModal } from './modals/create-quiz-modal';
+import useClassDeleteQuiz from '@/hooks/queries/use-delete-quiz';
 
 interface QuizCardProps {
     quiz: Quiz;
-    onDelete: (quizId: string) => void;
     onEdit: (quiz: Quiz) => void;
+    onDelete: (quizId: string) => void;
 }
 
-export const QuizCardClass = ({ quiz, onDelete, onEdit }: QuizCardProps) => {
+export const QuizCardClass = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
+
+    const { mutate: deleteQuiz } = useClassDeleteQuiz(quiz.classId || '', quiz.id);
     const handleDelete = () => {
-        onDelete(quiz.id);
+        deleteQuiz(
+            { classId: quiz.classId || '', quizId: quiz.id },
+            {
+                onSuccess: () => {
+                    onDelete(quiz.id);
+                }
+            }
+        );
         setShowDeleteDialog(false);
     };
 
@@ -84,7 +94,6 @@ export const QuizCardClass = ({ quiz, onDelete, onEdit }: QuizCardProps) => {
 
             <CardContent className='pt-0'>
                 <div className='space-y-4'>
-                    {/* Quiz Stats */}
                     <div className='flex items-center gap-4 text-sm text-muted-foreground'>
                         <div className='flex items-center gap-1'>
                             <BookOpen className='w-4 h-4' />
@@ -96,7 +105,6 @@ export const QuizCardClass = ({ quiz, onDelete, onEdit }: QuizCardProps) => {
                         </div>
                     </div>
 
-                    {/* Deck info for AI quizzes */}
                     {quiz.type === 'ai' && quiz.deck && (
                         <div className='flex items-center gap-2 p-2 bg-muted/50 rounded-md'>
                             <Zap className='w-4 h-4 text-primary' />
@@ -104,7 +112,6 @@ export const QuizCardClass = ({ quiz, onDelete, onEdit }: QuizCardProps) => {
                         </div>
                     )}
 
-                    {/* Sample question preview */}
                     {quiz.questions.length > 0 && (
                         <div className='p-3 bg-muted/30 rounded-md border-l-4 border-primary'>
                             <p className='text-sm font-medium text-foreground mb-1'>Sample Question:</p>
@@ -112,7 +119,6 @@ export const QuizCardClass = ({ quiz, onDelete, onEdit }: QuizCardProps) => {
                         </div>
                     )}
 
-                    {/* Actions */}
                     <div className='flex gap-2 pt-2'>
                         <Button size='sm' className='flex-1 bg-primary hover:bg-primary/90 text-primary-foreground'>
                             <Play className='w-4 h-4 mr-2' />

@@ -146,6 +146,9 @@ const UserDeckStateSchema = new Schema({
 });
 const QuizSchema = new Schema({
     deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: false },
+    title: { type: String, required: false },
+    description: { type: String, required: false },
+    type: { type: String, enum: ['manual', 'ai'], default: 'manual', required: false },
     class: { type: Schema.Types.ObjectId, ref: 'Class', required: false },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     createdAt: { type: Date, default: Date.now },

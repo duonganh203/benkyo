@@ -7,26 +7,38 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Trash2, Save } from 'lucide-react';
 import { Quiz, Question } from '@/pages/class-quiz-management';
+import { useCreateClassQuiz } from '@/hooks/queries/use-create-class-quiz';
+import useUpdateClassQuiz from '@/hooks/queries/use-update-class-quiz';
 
 interface CreateQuizModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onSubmit: (quiz: Omit<Quiz, 'id' | 'createdAt'>) => void;
+    onSubmit: (quiz: Quiz) => void;
     initialData?: Quiz;
+    classId?: string;
 }
 
-export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData }: CreateQuizModalProps) => {
+export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData, classId }: CreateQuizModalProps) => {
     const [title, setTitle] = useState(initialData?.title || '');
     const [description, setDescription] = useState(initialData?.description || '');
-    const [questions, setQuestions] = useState<Question[]>(initialData?.questions || []);
+    const [questions, setQuestions] = useState<Question[]>(
+        initialData?.questions.map((q) => ({
+            ...q,
+            options: Array.isArray(q.options)
+                ? (q.options as (string | { text: string })[]).map((opt) => (typeof opt === 'string' ? opt : opt.text))
+                : []
+        })) || []
+    );
+
+    const { mutate: createQuiz } = useCreateClassQuiz();
+    const { mutate: updateQuiz } = useUpdateClassQuiz();
 
     const addQuestion = () => {
         const newQuestion: Question = {
             id: Date.now().toString(),
             question: '',
             options: ['', '', '', ''],
-            correctAnswer: 0,
-            explanation: ''
+            correctAnswer: 0
         };
         setQuestions([...questions, newQuestion]);
     };
@@ -49,25 +61,86 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData }: C
         setQuestions(questions.filter((q) => q.id !== id));
     };
 
+    const transformQuestions = (qs: Question[]) =>
+        qs.map((q) => ({
+            id: q.id,
+            questionText: q.question,
+            correctAnswer: q.correctAnswer,
+            choices: q.options.map((opt) => ({ text: opt }))
+        }));
+
     const handleSubmit = () => {
         if (!title.trim() || questions.length === 0) return;
 
         const validQuestions = questions.filter((q) => q.question.trim() && q.options.every((opt) => opt.trim()));
-
         if (validQuestions.length === 0) return;
 
-        onSubmit({
-            title: title.trim(),
-            description: description.trim(),
-            questions: validQuestions,
-            type: initialData?.type || 'manual'
-        });
+        const finalClassId = initialData?.classId || classId || '';
+        const finalDeckId = initialData?.deck || '';
 
-        // Reset form only if not editing
-        if (!initialData) {
-            setTitle('');
-            setDescription('');
-            setQuestions([]);
+        if (initialData) {
+            // EDIT MODE
+            updateQuiz(
+                {
+                    classId: finalClassId,
+                    quizId: initialData.id,
+                    data: {
+                        title: title.trim(),
+                        description: description.trim(),
+                        deckId: finalDeckId,
+                        questions: transformQuestions(validQuestions)
+                    }
+                },
+                {
+                    onSuccess: () => {
+                        onSubmit({
+                            id: initialData.id,
+                            createdAt: initialData.createdAt,
+                            classId: finalClassId,
+                            title: title.trim(),
+                            description: description.trim(),
+                            type: initialData.type,
+                            questions: validQuestions
+                        });
+                        onOpenChange(false);
+                    },
+                    onError: (err) => {
+                        console.error('Quiz update failed:', err?.response?.data?.message || err?.message || err);
+                    }
+                }
+            );
+        } else {
+            // CREATE MODE
+            createQuiz(
+                {
+                    classId: finalClassId,
+                    deckId: finalDeckId,
+                    title: title.trim(),
+                    description: description.trim(),
+                    questions: transformQuestions(validQuestions)
+                },
+                {
+                    onSuccess: () => {
+                        onSubmit({
+                            id: Date.now().toString(),
+                            createdAt: new Date(),
+                            classId: finalClassId,
+                            title: title.trim(),
+                            description: description.trim(),
+                            type: 'manual',
+                            questions: validQuestions
+                        });
+
+                        onOpenChange(false);
+                        setTitle('');
+                        setDescription('');
+                        setQuestions([]);
+                    },
+                    onError: (err) => {
+                        console.error('Quiz creation failed:', err?.response?.data?.message || err?.message || err);
+                    }
+                }
+            );
         }
     };
 
@@ -86,7 +159,6 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData }: C
                 </DialogHeader>
 
                 <div className='space-y-6 py-4'>
-                    {/* Quiz Details */}
                     <div className='space-y-4'>
                         <div>
                             <Label htmlFor='title' className='text-base font-medium'>
@@ -116,7 +188,6 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData }: C
                         </div>
                     </div>
 
-                    {/* Questions */}
                     <div className='space-y-4'>
                         <div className='flex items-center justify-between'>
                             <h3 className='text-lg font-semibold'>Questions</h3>
@@ -201,19 +272,6 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData }: C
                                                     Select the radio button next to the correct answer
                                                 </p>
                                             </div>
-
-                                            <div>
-                                                <Label className='text-sm font-medium'>Explanation (Optional)</Label>
-                                                <Textarea
-                                                    value={question.explanation || ''}
-                                                    onChange={(e) =>
-                                                        updateQuestion(question.id, 'explanation', e.target.value)
-                                                    }
-                                                    placeholder='Explain why this is the correct answer...'
-                                                    className='mt-1'
-                                                    rows={2}
-                                                />
-                                            </div>
                                         </CardContent>
                                     </Card>
                                 ))}
@@ -221,18 +279,15 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData }: C
                         )}
                     </div>
 
-                    {/* Actions */}
                     <div className='flex gap-3 justify-end pt-4 border-t'>
                         <Button variant='outline' onClick={() => onOpenChange(false)}>
                             Cancel
                         </Button>
-                        <Button
-                            onClick={handleSubmit}
-                            disabled={!title.trim() || questions.length === 0}
-                            className='bg-primary hover:bg-primary-hover'
-                        >
-                            <Save className='w-4 h-4 mr-2' />
-                            {initialData ? 'Update Quiz' : 'Create Quiz'}
+                        <Button onClick={handleSubmit} className='bg-primary hover:bg-primary-hover'>
+                            <>
+                                <Save className='w-4 h-4 mr-2' />
+                                {initialData ? 'Update Quiz' : 'Create Quiz'}
+                            </>
                         </Button>
                     </div>
                 </div>

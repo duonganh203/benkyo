@@ -1,6 +1,8 @@
 import z from 'zod';
 
 export const createQuizValidation = z.object({
+    title: z.string().min(1, 'Title is required').optional(),
+    description: z.string().optional(),
     deckId: z.string().min(1, 'Deck ID is required'),
     questions: z
         .array(
@@ -35,6 +37,8 @@ export const saveQuizAttemptValidation = z.object({
 });
 
 export const updateQuizValidation = z.object({
+    title: z.string().min(1, 'Title is required').optional(),
+    description: z.string().optional(),
     questions: z
         .array(
             z.object({
