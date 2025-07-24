@@ -21,16 +21,15 @@ import { ClassVisitEntry } from '@/types/class';
 
 import { getToast } from '@/utils/getToast';
 import useGetDeckToAddClass from '@/hooks/queries/use-get-decks-to-class';
-import AddDeckDialog from '@/components/add-deck-dialog';
 import useRemoveDeckFromClass from '@/hooks/queries/use-remove-deck-from-class';
 import ClassMembersModal from '@/components/modals/class-members-modal';
 import CreateQuizModal from '@/components/modals/create-quiz.modal';
 import InviteMemberModal from '@/components/modals/invite-member-modal';
-import CreateScheduleModal from '@/components/modals/create-schedule-modal';
 import ConfirmDeleteUserModal from '@/components/modals/confirm-delete-user-modal';
 import ConfirmDeleteClassModal from '@/components/modals/confirm-delete-class-modal';
 import ConfirmDeleteDeckModal from '@/components/modals/confirm-delete-deck-modal';
 import ClassDecksModal from '@/components/modals/class-decks-modal';
+import AddDeckModal from '@/components/modals/class-add-deck-modal';
 
 const UserClassManagement = () => {
     const { _id = '' } = useParams();
@@ -39,9 +38,8 @@ const UserClassManagement = () => {
 
     const [inviteEmail, setInviteEmail] = useState('');
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const [showAddDeckDialog, setShowAddDeckDialog] = useState(false);
+    const [showAddDeckModal, setShowAddDeckModal] = useState(false);
     const [showCreateQuizDialog, setShowCreateQuizDialog] = useState(false);
-    const [showCreateScheduleDialog, setShowCreateScheduleDialog] = useState(false);
     const [showInviteDialog, setShowInviteDialog] = useState(false);
     const [showMembersDialog, setShowMembersDialog] = useState(false);
     const [showDecksDialog, setShowDecksDialog] = useState(false);
@@ -215,7 +213,7 @@ const UserClassManagement = () => {
                     <Button variant='outline' onClick={() => setShowInviteDialog(true)}>
                         <Users className='w-4 h-4 mr-2' /> Invite Members
                     </Button>
-                    <Button variant='outline' onClick={() => setShowAddDeckDialog(true)}>
+                    <Button variant='outline' onClick={() => setShowAddDeckModal(true)}>
                         <Plus className='w-4 h-4 mr-2' /> Add Deck
                     </Button>
                     <Button variant='outline' onClick={() => setShowCreateQuizDialog(true)}>
@@ -223,9 +221,9 @@ const UserClassManagement = () => {
                     </Button>
                 </div>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
-                    <AddDeckDialog
-                        open={showAddDeckDialog}
-                        onOpenChange={setShowAddDeckDialog}
+                    <AddDeckModal
+                        open={showAddDeckModal}
+                        onOpenChange={setShowAddDeckModal}
                         classId={classId}
                         existingDecks={availableDecks}
                         onAddSuccess={async () => {
@@ -242,14 +240,6 @@ const UserClassManagement = () => {
                         email={inviteEmail}
                         setEmail={setInviteEmail}
                         onInvite={handleInviteMember}
-                    />
-
-                    <CreateScheduleModal
-                        open={showCreateScheduleDialog}
-                        onOpenChange={setShowCreateScheduleDialog}
-                        onCreate={(title, description) => {
-                            console.log('Create schedule:', title, description);
-                        }}
                     />
 
                     <ClassMembersModal
