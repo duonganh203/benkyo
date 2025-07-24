@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import {
     Home,
     Library,
@@ -36,17 +36,25 @@ import useGetUserDecks from '@/hooks/queries/use-get-user-decks';
 import { Skeleton } from './ui/skeleton';
 import { ScrollArea } from './ui/scroll-area';
 import { useNotificationStore } from '@/hooks/stores/use-notification-store';
+import { getInviteClassApi } from '@/api/classApi';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { user } = useAuthStore((store) => store);
     const { open } = useCreateDeckModal((store) => store);
     const { data: decks = [], isLoading } = useGetUserDecks();
+    const setNotifications = useNotificationStore((s) => s.setNotifications);
 
     const latestDecks = useMemo(() => {
         return [...decks].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 5);
     }, [decks]);
 
     const notificationCount = useNotificationStore((state) => state.notifications.length);
+
+    useEffect(() => {
+        if (user) {
+            getInviteClassApi().then(setNotifications);
+        }
+    }, [user, setNotifications]);
 
     const navData = useMemo(
         () => ({
