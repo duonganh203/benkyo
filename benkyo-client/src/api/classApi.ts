@@ -117,3 +117,41 @@ export const getClassUserByIdApi = async (classId: string) => {
     const response = await api.get(`/class/${classId}/user-detail`);
     return response.data as GetClassUserByIdResponseDto;
 };
+
+export const getClassDeckSessionHistoryApi = async (classId: string, deckId: string) => {
+    const response = await api.get(`/class/${classId}/deck/${deckId}/session/history`);
+    return response.data.data;
+};
+
+export const getClassDeckSessionBestApi = async (classId: string, deckId: string) => {
+    const response = await api.get(`/class/${classId}/deck/${deckId}/session/best`);
+    return response.data.data;
+};
+
+export const startClassDeckSessionApi = async (classId: string, deckId: string, forceNew?: boolean) => {
+    const response = await api.post(`/class/${classId}/deck/${deckId}/session/start`, { forceNew });
+    return response.data;
+};
+
+export const saveClassDeckAnswerApi = async (
+    classId: string,
+    deckId: string,
+    sessionId: string,
+    cardId: string,
+    correct: boolean
+) => {
+    const response = await api.post(`/class/${classId}/deck/${deckId}/session/answer`, {
+        sessionId,
+        cardId,
+        correct
+    });
+    return response.data;
+};
+
+export const endClassDeckSessionApi = async (classId: string, deckId: string, sessionId: string, duration: number) => {
+    const response = await api.post(`/class/${classId}/deck/${deckId}/session/end`, {
+        sessionId,
+        duration
+    });
+    return response.data;
+};

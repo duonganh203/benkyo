@@ -531,32 +531,45 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
     const deckRefs = existingClass.decks || [];
     const deckIds = deckRefs.map((d: any) => d.deck?._id).filter(Boolean);
 
-    const userDeckStates = await UserClassState.find({
-        user: userId,
-        class: classId,
-        deck: { $in: deckIds }
-    });
+    const bestSessions = await UserClassState.aggregate([
+        {
+            $match: {
+                user: new Types.ObjectId(userId),
+                class: new Types.ObjectId(classId),
+                deck: { $in: deckIds },
+                endTime: { $exists: true }
+            }
+        },
+        {
+            $sort: { correctCount: -1, endTime: -1 }
+        },
+        {
+            $group: {
+                _id: '$deck',
+                bestSession: { $first: '$$ROOT' }
+            }
+        }
+    ]);
 
     const progressMap = new Map<string, { correctCount: number; totalCount: number }>();
-    let totalCards = 0;
-    let totalLearned = 0;
 
-    for (const state of userDeckStates) {
-        const deckId = state.deck.toString();
+    for (const result of bestSessions) {
+        const deckId = result._id.toString();
+        const session = result.bestSession;
         progressMap.set(deckId, {
-            correctCount: state.correctCount || 0,
-            totalCount: state.totalCount || 0
+            correctCount: session.correctCount || 0,
+            totalCount: session.totalCount || 0
         });
-        totalCards += state.totalCount || 0;
-        totalLearned += state.correctCount || 0;
     }
 
     const decks = deckRefs.map((d: any) => {
         const deckData = d.deck;
         const progress = progressMap.get(deckData?._id.toString()) || {
             correctCount: 0,
-            totalCount: deckData?.cardCount || 0
+            totalCount: 0
         };
+
+        const actualTotalCount = progress.totalCount > 0 ? progress.totalCount : deckData?.cardCount || 0;
 
         return {
             _id: deckData?._id.toString(),
@@ -567,11 +580,20 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
             startTime: d.startTime,
             endTime: d.endTime,
             correctCount: progress.correctCount,
-            totalCount: progress.totalCount
+            totalCount: actualTotalCount
         };
     });
 
-    const completionRate = totalCards > 0 ? Math.round((totalLearned / totalCards) * 100) : 0;
+    const scheduledDecks = decks.filter((deck) => deck.startTime && deck.endTime);
+    let completionRate = 0;
+
+    if (scheduledDecks.length > 0) {
+        const totalProgress = scheduledDecks.reduce((sum, deck) => {
+            const deckProgress = deck.totalCount > 0 ? (deck.correctCount / deck.totalCount) * 100 : 0;
+            return sum + deckProgress;
+        }, 0);
+        completionRate = Math.round(totalProgress / scheduledDecks.length);
+    }
 
     const sortedTopUserStates = (existingClass.userClassStates as any[])
         .filter((ucs) => ucs.user._id.toString() !== existingClass.owner._id.toString())

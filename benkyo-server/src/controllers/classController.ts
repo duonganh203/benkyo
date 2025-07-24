@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import { classValidation } from '~/validations/classValidation';
 import * as classService from '../services/classService';
+import { UserClassState } from '../schemas';
+import { Types } from 'mongoose';
+import { Card } from '../schemas';
 
 export const createClass = async (req: Request, res: Response) => {
     const classData = classValidation.parse(req.body);
@@ -34,7 +37,8 @@ export const updateClass = async (req: Request, res: Response) => {
             message: 'Update Class successfully'
         });
     } catch (error) {
-        res.status(400).json({ message: 'Failed to update class', error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ message: 'Failed to update class', error: errMsg });
     }
 };
 
@@ -47,7 +51,8 @@ export const deleteClass = async (req: Request, res: Response) => {
 
         res.status(200).json(result);
     } catch (error) {
-        res.status(400).json({ message: 'Failed to delete class', error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ message: 'Failed to delete class', error: errMsg });
     }
 };
 
@@ -60,7 +65,8 @@ export const getClassUpdateById = async (req: Request, res: Response) => {
 
         res.status(200).json(classData);
     } catch (error) {
-        res.status(400).json({ message: 'Failed to get class', error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ message: 'Failed to get class', error: errMsg });
     }
 };
 
@@ -70,7 +76,8 @@ export const getClassListUser = async (req: Request, res: Response) => {
 
         res.status(200).json(classData);
     } catch (error) {
-        res.status(400).json({ message: 'Failed to get class list', error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ message: 'Failed to get class list', error: errMsg });
     }
 };
 
@@ -84,7 +91,8 @@ export const getMyClassList = async (req: Request, res: Response) => {
 
         res.status(200).json(classData);
     } catch (error) {
-        res.status(400).json({ message: 'Failed to get class list', error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ message: 'Failed to get class list', error: errMsg });
     }
 };
 
@@ -96,7 +104,8 @@ export const getClassManagementById = async (req: Request, res: Response) => {
 
         res.status(200).json(classData);
     } catch (error) {
-        res.status(400).json({ message: 'Failed to get class list', error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ message: 'Failed to get class', error: errMsg });
     }
 };
 
@@ -110,7 +119,8 @@ export const getSuggestedClassList = async (req: Request, res: Response) => {
 
         res.status(200).json(classData);
     } catch (error) {
-        res.status(400).json({ message: 'Failed to get class list', error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ message: 'Failed to get class list', error: errMsg });
     }
 };
 
@@ -202,7 +212,8 @@ export const getInviteClass = async (req: Request, res: Response) => {
         const result = await classService.getInviteClassService(userId);
         res.status(200).json(result);
     } catch (error) {
-        res.status(400).json({ message: 'Failed to get invite class list', error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ message: 'Failed to get invite class list', error: errMsg });
     }
 };
 
@@ -260,7 +271,8 @@ export const addDeckToClass = async (req: Request, res: Response) => {
 
         res.status(200).json({ ...result, message: 'Deck added to class successfully' });
     } catch (error) {
-        res.status(400).json({ message: 'Failed to add deck to class', error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ message: 'Failed to add deck to class', error: errMsg });
     }
 };
 
@@ -270,7 +282,8 @@ export const getDecksToAddToClass = async (req: Request, res: Response) => {
         const decks = await classService.getDecksToAddToClassService(_id);
         res.status(200).json(decks);
     } catch (error) {
-        res.status(400).json({ message: 'Failed to get deck to add class', error });
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ message: 'Failed to get deck to add class', error: errMsg });
     }
 };
 
@@ -279,4 +292,232 @@ export const getClassUserById = async (req: Request, res: Response) => {
     const userId = req.user.id;
     const classItem = await classService.getClassUserByIdService(_id, userId);
     res.json(classItem);
+};
+
+export const startClassStudySession = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user._id;
+        const classId = req.params.classId;
+        const deckId = req.params.deckId;
+        const forceNew = req.body.forceNew === true;
+
+        const unfinishedSession = await UserClassState.findOne({
+            user: userId,
+            class: classId,
+            deck: deckId,
+            endTime: { $exists: false }
+        });
+
+        if (unfinishedSession && !forceNew) {
+            return res
+                .status(200)
+                .json({ success: true, data: unfinishedSession, message: 'Resume unfinished session' });
+        }
+
+        const newSession = await UserClassState.create({
+            user: userId,
+            class: classId,
+            deck: deckId,
+            completedCardIds: [],
+            correctCount: 0,
+            totalCount: 0,
+            startTime: new Date()
+        });
+        return res.status(201).json({ success: true, data: newSession, message: 'Started new session' });
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        res.status(400).json({ success: false, error: errMsg });
+    }
+};
+
+export const startClassDeckSession = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user._id;
+        const { classId, deckId } = req.params;
+        const { forceNew } = req.body || {};
+
+        const allCards = await Card.find({ deck: deckId }).lean();
+
+        let session = await UserClassState.findOne({
+            user: userId,
+            class: classId,
+            deck: deckId,
+            endTime: { $exists: false }
+        });
+
+        if (!session && !forceNew) {
+            session = await UserClassState.findOne({
+                user: userId,
+                class: classId,
+                deck: deckId
+            }).sort({ createdAt: -1 });
+
+            if (session) {
+                session.endTime = undefined;
+                await session.save();
+            }
+        }
+
+        if (session && !forceNew) {
+            const remainingCards = allCards.filter(
+                (card) =>
+                    !session!.completedCardIds.some((completedId) => completedId.toString() === card._id.toString())
+            );
+
+            const isResumed = session.completedCardIds.length > 0;
+
+            return res.status(200).json({
+                success: true,
+                data: session,
+                cards: remainingCards,
+                resumed: isResumed
+            });
+        }
+
+        session = new UserClassState({
+            user: userId,
+            class: classId,
+            deck: deckId,
+            completedCardIds: [],
+            correctCount: 0,
+            totalCount: 0,
+            startTime: new Date()
+        });
+        await session.save();
+
+        return res.status(201).json({
+            success: true,
+            data: session,
+            cards: allCards,
+            resumed: false
+        });
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        return res.status(500).json({ success: false, error: errMsg });
+    }
+};
+
+export const saveClassDeckAnswer = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user._id;
+        const { classId, deckId } = req.params;
+        const { sessionId, cardId, correct } = req.body;
+
+        const session = await UserClassState.findOne({
+            _id: sessionId,
+            user: userId,
+            class: classId,
+            deck: deckId
+        });
+
+        if (!session) {
+            return res.status(404).json({ success: false, error: 'Session not found' });
+        }
+
+        if (!session.completedCardIds.includes(cardId)) {
+            session.completedCardIds.push(cardId);
+
+            if (correct) {
+                session.correctCount += 1;
+            }
+            session.totalCount += 1;
+        }
+
+        await session.save();
+
+        return res.status(200).json({ success: true, data: session });
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        return res.status(500).json({ success: false, error: errMsg });
+    }
+};
+
+export const endClassDeckSession = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user._id;
+        const { classId, deckId } = req.params;
+        const { sessionId, duration } = req.body;
+
+        const session = await UserClassState.findOne({
+            _id: sessionId,
+            user: userId,
+            class: classId,
+            deck: deckId
+        });
+        if (!session) {
+            return res.status(404).json({ success: false, error: 'Session not found' });
+        }
+
+        session.duration = duration;
+        session.endTime = new Date();
+        await session.save();
+
+        return res.status(200).json({ success: true, data: session });
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        return res.status(500).json({ success: false, error: errMsg });
+    }
+};
+
+export const getClassDeckSessionHistory = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user._id;
+        const { classId, deckId } = req.params;
+        const sessions = await UserClassState.find({
+            user: userId,
+            class: classId,
+            deck: deckId
+        }).sort({ startTime: -1 });
+        return res.status(200).json({ success: true, data: sessions });
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        return res.status(500).json({ success: false, error: errMsg });
+    }
+};
+
+export const getClassDeckSessionBest = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user._id;
+        const { classId, deckId } = req.params;
+        const bestSession = await UserClassState.findOne({
+            user: userId,
+            class: classId,
+            deck: deckId,
+            endTime: { $exists: true }
+        }).sort({ correctCount: -1, endTime: -1 });
+        return res.status(200).json({ success: true, data: bestSession });
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        return res.status(500).json({ success: false, error: errMsg });
+    }
+};
+
+export const getClassDeckSessionLeaderboard = async (req: Request, res: Response) => {
+    try {
+        const { classId, deckId } = req.params;
+        const pipeline = [
+            {
+                $match: {
+                    class: new Types.ObjectId(classId),
+                    deck: new Types.ObjectId(deckId),
+                    endTime: { $exists: true }
+                }
+            },
+            { $sort: { correctCount: -1 as -1, endTime: -1 as -1 } },
+            {
+                $group: {
+                    _id: '$user',
+                    session: { $first: '$$ROOT' }
+                }
+            },
+            { $replaceRoot: { newRoot: '$session' } },
+            { $sort: { correctCount: -1 as -1, endTime: -1 as -1 } },
+            { $limit: 10 }
+        ];
+        const leaderboard = await UserClassState.aggregate(pipeline);
+        return res.status(200).json({ success: true, data: leaderboard });
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        return res.status(500).json({ success: false, error: errMsg });
+    }
 };

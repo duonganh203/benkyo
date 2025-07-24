@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Loader2, Settings2 } from 'lucide-react';
+import { Loader2, Settings2, Clock } from 'lucide-react';
 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -12,15 +12,25 @@ import ClassHeader from '@/components/class-header';
 import DeckCard from '@/components/deck-card';
 import TopLearners from '@/components/top-learners';
 import StatsGrid from '@/components/stats-grid';
+import ClassStudyDialog from '@/components/modals/ClassStudyDialog';
+import useStartClassDeckSession from '@/hooks/queries/use-start-class-deck-session';
+import { getToast } from '@/utils/getToast';
 
 function ClassDetailUser() {
     const { user } = useAuthStore();
     const { classId } = useParams<{ classId: string }>();
     const [isExpanded, setIsExpanded] = useState(false);
     const [studyingDeck, setStudyingDeck] = useState<DeckInClass | null>(null);
+    const [classSession, setClassSession] = useState<any>(null);
+    const [sessionCards, setSessionCards] = useState<any[]>([]);
+    const [loadingSession, setLoadingSession] = useState(false);
+    const [isResumedSession, setIsResumedSession] = useState(false);
+    const [showResumeDialog, setShowResumeDialog] = useState(false);
+    const [pendingDeck, setPendingDeck] = useState<DeckInClass | null>(null);
+    const [pendingSessionData, setPendingSessionData] = useState<any>(null);
 
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
-    console.log('classData', classData);
+    const { mutateAsync: startSession } = useStartClassDeckSession();
 
     if (!classId) {
         return (
@@ -68,18 +78,84 @@ function ClassDetailUser() {
             .sort((a: any, b: any) => b.points - a.points)
             .slice(0, 5) || [];
 
-    const totalCompletedCards =
-        classData.userClassStates?.reduce((sum: number, ucs: any) => {
-            const isScheduled = scheduledDecks.some((deck: any) => deck._id === ucs.deck);
-            if (!isScheduled) return sum;
-            return sum + (ucs.completedCardIds?.length || 0);
-        }, 0) || 0;
-    const totalScheduledCards = scheduledDecks.reduce((sum, deck: any) => sum + (deck.cardCount || 0), 0);
+    let completionRate = 0;
+    if (scheduledDecks.length > 0) {
+        const totalProgress = scheduledDecks.reduce((sum, deck: any) => {
+            const deckProgress = deck.totalCount > 0 ? (deck.correctCount / deck.totalCount) * 100 : 0;
+            return sum + deckProgress;
+        }, 0);
+        completionRate = Math.round(totalProgress / scheduledDecks.length);
+    }
 
-    const completionRate = totalScheduledCards > 0 ? Math.round((totalCompletedCards / totalScheduledCards) * 100) : 0;
+    const startStudyMode = async (deck: DeckInClass) => {
+        setLoadingSession(true);
+        try {
+            const res = await startSession({
+                classId: classId!,
+                deckId: deck._id
+            });
 
-    const startStudyMode = (deck: DeckInClass) => setStudyingDeck(deck);
-    const closeStudyDialog = () => setStudyingDeck(null);
+            setSessionCards(res.cards || []);
+
+            if (res.resumed) {
+                setPendingDeck(deck);
+                setPendingSessionData(res.data);
+                setShowResumeDialog(true);
+            } else {
+                setClassSession(res.data);
+                setIsResumedSession(false);
+                setStudyingDeck(deck);
+            }
+        } finally {
+            setLoadingSession(false);
+        }
+    };
+
+    const closeStudyDialog = () => {
+        setStudyingDeck(null);
+        setSessionCards([]);
+        setClassSession(null);
+        setIsResumedSession(false);
+    };
+
+    const handleContinueSession = () => {
+        if (pendingDeck && pendingSessionData) {
+            setClassSession(pendingSessionData);
+            setIsResumedSession(true);
+            setStudyingDeck(pendingDeck);
+            setShowResumeDialog(false);
+            setPendingDeck(null);
+            setPendingSessionData(null);
+        }
+    };
+
+    const handleStartNewSession = async () => {
+        if (pendingDeck) {
+            try {
+                const res2 = await startSession({
+                    classId: classId!,
+                    deckId: pendingDeck._id,
+                    forceNew: true
+                });
+                setClassSession(res2.data);
+                setSessionCards(res2.cards || []);
+                setIsResumedSession(false);
+                setStudyingDeck(pendingDeck);
+                setShowResumeDialog(false);
+                setPendingDeck(null);
+                setPendingSessionData(null);
+            } catch (error) {
+                getToast('error', 'Failed to start new session');
+            }
+        }
+    };
+
+    const handleCloseResumeDialog = () => {
+        setShowResumeDialog(false);
+        setPendingDeck(null);
+        setPendingSessionData(null);
+        setLoadingSession(false);
+    };
 
     return (
         <div className='min-h-screen bg-background'>
@@ -136,7 +212,12 @@ function ClassDetailUser() {
                                     {scheduledDecks.map((deck, index) => (
                                         <DeckCard
                                             key={`scheduled-${deck._id}`}
-                                            deck={deck}
+                                            deck={
+                                                {
+                                                    ...(deck as any),
+                                                    totalCount: (deck as any).totalCount ?? (deck as any).cardCount
+                                                } as DeckInClass
+                                            }
                                             index={index}
                                             onStartStudy={startStudyMode}
                                         />
@@ -152,7 +233,12 @@ function ClassDetailUser() {
                                     {moreDecks.map((deck, index) => (
                                         <DeckCard
                                             key={`more-${deck._id}`}
-                                            deck={deck}
+                                            deck={
+                                                {
+                                                    ...(deck as any),
+                                                    totalCount: (deck as any).totalCount ?? (deck as any).cardCount
+                                                } as DeckInClass
+                                            }
                                             index={index}
                                             onStartStudy={startStudyMode}
                                         />
@@ -169,14 +255,58 @@ function ClassDetailUser() {
             </main>
 
             <Dialog open={!!studyingDeck} onOpenChange={(isOpen) => !isOpen && closeStudyDialog()}>
-                <DialogContent className='max-w-4xl w-[90vw] h-[90vh] p-0 border-0 z-50'>
-                    {studyingDeck && (
-                        <iframe
-                            src={`/study/${studyingDeck._id}?view=iframe`}
-                            className='w-full h-full border-0'
-                            title={`Study: ${studyingDeck.name}`}
+                <DialogContent className='max-w-2xl w-full'>
+                    {studyingDeck && classSession && (
+                        <ClassStudyDialog
+                            open={!!studyingDeck}
+                            onClose={closeStudyDialog}
+                            classId={classId}
+                            deckId={studyingDeck._id}
+                            session={classSession}
+                            cards={sessionCards}
+                            isResumedSession={isResumedSession}
                         />
                     )}
+                    {loadingSession && (
+                        <div className='flex items-center justify-center h-full'>Loading session...</div>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={showResumeDialog} onOpenChange={(isOpen) => !isOpen && handleCloseResumeDialog()}>
+                <DialogContent className='max-w-md w-full'>
+                    <div className='text-center py-6'>
+                        <div className='mb-4'>
+                            <div className='mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4'>
+                                <Clock className='h-6 w-6 text-blue-600' />
+                            </div>
+                            <h3 className='text-lg font-semibold mb-2'>Unfinished Session</h3>
+                            <p className='text-muted-foreground text-sm'>
+                                You have an unfinished study session for this deck. Continue or start a new one?
+                            </p>
+                        </div>
+
+                        {pendingSessionData && (
+                            <div className='mb-6 p-3 bg-muted rounded-lg'>
+                                <p className='text-sm'>
+                                    <strong>{pendingSessionData.completedCardIds?.length || 0}</strong> flashcards
+                                    completed
+                                </p>
+                                <p className='text-xs text-muted-foreground mt-1'>
+                                    Started: {new Date(pendingSessionData.startTime).toLocaleString('en-US')}
+                                </p>
+                            </div>
+                        )}
+
+                        <div className='flex gap-3'>
+                            <Button variant='outline' onClick={handleStartNewSession} className='flex-1'>
+                                Start New
+                            </Button>
+                            <Button onClick={handleContinueSession} className='flex-1'>
+                                Continue
+                            </Button>
+                        </div>
+                    </div>
                 </DialogContent>
             </Dialog>
         </div>

@@ -208,3 +208,56 @@ export type GetClassUserByIdResponseDto = {
         history: string[];
     };
 };
+
+export type ClassStudySession = {
+    _id: string;
+    user: string;
+    class: string;
+    deck: string;
+    completedCardIds: string[];
+    correctCount: number;
+    totalCount: number;
+    startTime: Date;
+    endTime?: Date;
+    duration?: number;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
+export type ClassStudySessionHistory = {
+    _id: string;
+    correctCount: number;
+    totalCount: number;
+    startTime: string;
+    endTime: string;
+    duration: number;
+};
+
+export type StartClassDeckSessionResponseDto = {
+    success: boolean;
+    data: ClassStudySession;
+    cards: any[];
+    resumed: boolean;
+    message?: string;
+};
+
+export type SaveClassDeckAnswerRequestDto = {
+    sessionId: string;
+    cardId: string;
+    correct: boolean;
+};
+
+export type SaveClassDeckAnswerResponseDto = {
+    success: boolean;
+    data: ClassStudySession;
+};
+
+export type EndClassDeckSessionRequestDto = {
+    sessionId: string;
+    duration: number;
+};
+
+export type EndClassDeckSessionResponseDto = {
+    success: boolean;
+    data: ClassStudySession;
+};

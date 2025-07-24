@@ -24,11 +24,22 @@ classRoutes.post('/create', errorHandler(classController.createClass));
 classRoutes.post('/invite', errorHandler(classController.inviteMemberToClass));
 classRoutes.post('/add-deck', errorHandler(classController.addDeckToClass));
 classRoutes.post('/:_id/request', errorHandler(classController.requestJoinClass));
+classRoutes.post('/:classId/deck/:deckId/study/start', errorHandler(classController.startClassStudySession));
 
 classRoutes.put('/:_id/update', errorHandler(classController.updateClass));
 
 classRoutes.delete('/:_id/delete', errorHandler(classController.deleteClass));
 classRoutes.delete('/remove-user', errorHandler(classController.removeUserFromClass));
 classRoutes.delete('/remove-deck', errorHandler(classController.removeDeckFromClass));
+
+classRoutes.post('/:classId/deck/:deckId/session/start', errorHandler(classController.startClassDeckSession));
+classRoutes.post('/:classId/deck/:deckId/session/answer', errorHandler(classController.saveClassDeckAnswer));
+classRoutes.post('/:classId/deck/:deckId/session/end', errorHandler(classController.endClassDeckSession));
+classRoutes.get('/:classId/deck/:deckId/session/history', errorHandler(classController.getClassDeckSessionHistory));
+classRoutes.get('/:classId/deck/:deckId/session/best', errorHandler(classController.getClassDeckSessionBest));
+classRoutes.get(
+    '/:classId/deck/:deckId/session/leaderboard',
+    errorHandler(classController.getClassDeckSessionLeaderboard)
+);
 
 export default classRoutes;

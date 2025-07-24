@@ -22,7 +22,10 @@ export interface DeckCardProps {
 
 const DeckCard = ({ deck, index, onStartStudy }: DeckCardProps) => {
     const correct = deck.correctCount ?? 0;
-    const total = deck.totalCount ?? deck.cardCount;
+    const total =
+        deck.totalCount === undefined || deck.totalCount === null || deck.totalCount === 0
+            ? deck.cardCount
+            : deck.totalCount;
 
     const progressPercentage = total > 0 ? Math.round((correct / total) * 100) : 0;
 
