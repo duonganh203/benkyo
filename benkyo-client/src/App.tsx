@@ -33,6 +33,7 @@ import ClassManagement from './pages/class-management';
 import Notifications from './pages/notification';
 import { InviteDialog } from './components/invite-dialog';
 import ClassDetailUser from './pages/class-detail-user';
+import TopLearners from './pages/top-study-streak';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -73,6 +74,7 @@ const App = () => {
                             <Route path='/ai-chat' element={<AIChat />} />
                             <Route path='/payment/:packageId' element={<Payment />} />
                             <Route path='/package' element={<Packages />} />
+                            <Route path='/top-learners' element={<TopLearners />} />
                             <Route path='/community' element={<Community />} />
                             <Route path='/class/create' element={<CreateClass />} />
                             <Route path='/class/:_id/update' element={<UpdateClass />} />
