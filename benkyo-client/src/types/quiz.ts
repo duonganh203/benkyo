@@ -1,4 +1,5 @@
 export interface createQuizPayload {
+    classId: string;
     deckId: string;
     questions: Question[];
 }

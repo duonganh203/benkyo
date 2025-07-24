@@ -11,6 +11,7 @@ import {
 } from '@/types/class';
 import { api } from '.';
 import { ClassNotification } from '@/types/notification';
+import { createQuizPayload, CreateQuizRes } from '@/types/quiz';
 
 export const createClassApi = async (data: ClassUserRequestDto) => {
     const response = await api.post('/class/create', data);
@@ -110,4 +111,9 @@ export const addDeckToClassApi = async (data: AddDeckToClassRequestDto) => {
 export const getDecksToAddToClassApi = async (classId: string) => {
     const response = await api.get(`/class/${classId}/decks-to-add`);
     return response.data as DeckToAddClassResponseDto[];
+};
+
+export const createClassQuizApi = async ({ classId, questions }: createQuizPayload) => {
+    const response = await api.post(`/class/${classId}/management/quiz`, { questions });
+    return response.data as CreateQuizRes;
 };
