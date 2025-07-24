@@ -145,7 +145,8 @@ const UserDeckStateSchema = new Schema({
     }
 });
 const QuizSchema = new Schema({
-    deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: true },
+    deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: false },
+    class: { type: Schema.Types.ObjectId, ref: 'Class', required: false },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     createdAt: { type: Date, default: Date.now },
     questions: [

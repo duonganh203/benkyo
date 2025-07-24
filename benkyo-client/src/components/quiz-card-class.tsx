@@ -3,13 +3,42 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Play, Edit, Trash2, Zap, BookOpen, Calendar } from 'lucide-react';
 import { Quiz } from '@/pages/class-quiz-management';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle
+} from './ui/alert-dialog';
+import { useState } from 'react';
+import { CreateQuizModal } from './modals/create-quiz-modal';
 
 interface QuizCardProps {
     quiz: Quiz;
     onDelete: (quizId: string) => void;
+    onEdit: (quiz: Quiz) => void;
 }
 
-export const QuizCardClass = ({ quiz, onDelete }: QuizCardProps) => {
+export const QuizCardClass = ({ quiz, onDelete, onEdit }: QuizCardProps) => {
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const handleDelete = () => {
+        onDelete(quiz.id);
+        setShowDeleteDialog(false);
+    };
+
+    const handleEdit = (updatedQuiz: Omit<Quiz, 'id' | 'createdAt'>) => {
+        onEdit({
+            ...updatedQuiz,
+            id: quiz.id,
+            createdAt: quiz.createdAt
+        });
+        setShowEditModal(false);
+    };
+
     const formatDate = (date: Date) => {
         return new Intl.DateTimeFormat('en-US', {
             month: 'short',
@@ -89,15 +118,52 @@ export const QuizCardClass = ({ quiz, onDelete }: QuizCardProps) => {
                             <Play className='w-4 h-4 mr-2' />
                             Start Quiz
                         </Button>
-                        <Button size='sm' variant='outline' className='text-foreground hover:bg-muted'>
+                        <Button
+                            size='sm'
+                            variant='outline'
+                            className='text-foreground hover:bg-muted'
+                            onClick={() => setShowEditModal(true)}
+                        >
                             <Edit className='w-4 h-4' />
                         </Button>
-                        <Button size='sm' variant='destructive' className='hover:bg-destructive/90'>
+                        <Button
+                            size='sm'
+                            variant='destructive'
+                            className='hover:bg-destructive/90'
+                            onClick={() => setShowDeleteDialog(true)}
+                        >
                             <Trash2 className='w-4 h-4' />
                         </Button>
                     </div>
                 </div>
             </CardContent>
+
+            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Quiz</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to delete "{quiz.title}"? This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDelete}
+                            className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <CreateQuizModal
+                open={showEditModal}
+                onOpenChange={setShowEditModal}
+                onSubmit={handleEdit}
+                initialData={quiz}
+            />
         </Card>
     );
 };

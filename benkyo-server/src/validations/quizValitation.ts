@@ -33,3 +33,21 @@ export const saveQuizAttemptValidation = z.object({
         )
         .min(1, 'At least one response is required')
 });
+
+export const updateQuizValidation = z.object({
+    questions: z
+        .array(
+            z.object({
+                questionText: z.string().min(1, 'Question text is required'),
+                choices: z
+                    .array(
+                        z.object({
+                            text: z.string().min(1, 'Choice text is required')
+                        })
+                    )
+                    .min(2, 'At least two choices are required'),
+                correctAnswer: z.number().int().min(0, 'Correct answer must be at least 0')
+            })
+        )
+        .min(1, 'At least one question is required')
+});

@@ -1,16 +1,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from '@/components/ui/dialog';
-import { Plus, BookOpen, Zap, Edit, Trash2, Play } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Plus, BookOpen, Zap } from 'lucide-react';
 import { QuizCardClass } from '@/components/quiz-card-class';
+
+import { AIQuizModal } from '@/components/modals/ai-create-quiz-modal';
+import { CreateQuizModal } from '@/components/modals/create-quiz-modal';
 
 export interface Quiz {
     id: string;
@@ -91,7 +86,7 @@ const ClassQuizManagement = () => {
                 <div className='container mx-auto px-4 py-6'>
                     <div className='flex items-center justify-between'>
                         <div>
-                            <h1 className='text-3xl font-bold text-foreground'>My Class Dashboard</h1>
+                            <h1 className='text-3xl font-bold text-foreground'>My Class</h1>
                             <p className='text-muted-foreground mt-1'>Create and manage your quizzes</p>
                         </div>
                         <div className='flex gap-3'>
@@ -183,6 +178,10 @@ const ClassQuizManagement = () => {
                     )}
                 </div>
             </div>
+
+            <CreateQuizModal open={showCreateModal} onOpenChange={setShowCreateModal} onSubmit={handleCreateQuiz} />
+
+            <AIQuizModal open={showAIModal} onOpenChange={setShowAIModal} onSubmit={handleCreateQuiz} />
         </div>
     );
 };
