@@ -181,19 +181,32 @@ export type DeckToAddClassResponseDto = {
     description: string;
 };
 
+export interface DeckInClass {
+    _id: string;
+    name: string;
+    description?: string;
+    cardCount: number;
+    avgRating?: number;
+    startTime?: Date;
+    endTime?: Date;
+    correctCount?: number;
+    totalCount?: number;
+}
+
+export type TopLearner = {
+    id: string;
+    name: string;
+    avatar: string;
+    points: number;
+    streak: number;
+};
+
 export type GetClassUserByIdResponseDto = {
     _id: string;
     name: string;
     description: string;
     users: ClassUser[];
-    decks: {
-        _id: string;
-        name: string;
-        description: string;
-        cardCount: number;
-        startTime: Date;
-        endTime: Date;
-    }[];
+    decks: DeckInClass[];
     owner: {
         _id: string;
         name: string;
@@ -233,10 +246,24 @@ export type ClassStudySessionHistory = {
     duration: number;
 };
 
+export type ClassStudyCard = {
+    _id: string;
+    front: string;
+    back: string;
+    tags?: string[];
+    media?: ClassCardMedia[];
+};
+
+export type ClassCardMedia = {
+    type: 'image' | 'audio' | 'video';
+    url: string;
+    filename?: string;
+};
+
 export type StartClassDeckSessionResponseDto = {
     success: boolean;
     data: ClassStudySession;
-    cards: any[];
+    cards: ClassStudyCard[];
     resumed: boolean;
     message?: string;
 };

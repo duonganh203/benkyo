@@ -1,18 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, Clock, Star } from 'lucide-react';
-
-export interface DeckInClass {
-    _id: string;
-    name: string;
-    description?: string;
-    cardCount: number;
-    avgRating?: number;
-    startTime?: Date;
-    endTime?: Date;
-    correctCount?: number;
-    totalCount?: number;
-}
+import { DeckInClass } from '@/types/class';
 
 export interface DeckCardProps {
     deck: DeckInClass;

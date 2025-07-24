@@ -5,6 +5,20 @@ import { ErrorCode } from '~/exceptions/root';
 import { Class, Deck, PublicStatus, User, UserClassState, UserDeckState } from '~/schemas';
 import { sendToUser } from '~/utils/socketServer';
 import { ClassStateType } from '~/validations/classValidation';
+import {
+    VisitHistoryEntry,
+    ClassDeckRef,
+    PopulatedUser,
+    ClassProgressData,
+    ClassDeckProgress,
+    GetClassUserByIdResponse,
+    MongooseDeckRef,
+    MongooseUserRef,
+    MongooseVisitEntry,
+    MongooseUserClassState,
+    MongooseClass,
+    MongooseOwnerRef
+} from '~/types/classTypes';
 
 export const createClassService = async (userId: string, data: ClassStateType) => {
     const user = await User.findById(userId);
@@ -489,7 +503,7 @@ export const getDecksToAddToClassService = async (classId: string) => {
     return decks;
 };
 
-export const getClassUserByIdService = async (classId: string, userId: string) => {
+export const getClassUserByIdService = async (classId: string, userId: string): Promise<GetClassUserByIdResponse> => {
     const existingClass = await Class.findById(classId)
         .select(
             'name description owner users decks bannerUrl requiredApprovalToJoin userClassStates createdAt status visibility visited'
@@ -515,13 +529,13 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
 
     if (visitHistory) {
         const alreadyVisited = visitHistory.some(
-            (visit: any) =>
+            (visit: VisitHistoryEntry) =>
                 visit.userId.toString() === userId && new Date(visit.lastVisit).toISOString().split('T')[0] === todayStr
         );
 
         if (!alreadyVisited) {
             visitHistory.push({
-                userId,
+                userId: new Types.ObjectId(userId),
                 lastVisit: new Date()
             });
             await existingClass.save();
@@ -572,8 +586,8 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
         const actualTotalCount = progress.totalCount > 0 ? progress.totalCount : deckData?.cardCount || 0;
 
         return {
-            _id: deckData?._id.toString(),
-            name: deckData?.name,
+            _id: deckData?._id.toString() || '',
+            name: deckData?.name || '',
             cardCount: deckData?.cardCount || 0,
             avgRating: deckData?.avgRating || 0,
             description: d.description || '',
@@ -584,11 +598,11 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
         };
     });
 
-    const scheduledDecks = decks.filter((deck) => deck.startTime && deck.endTime);
+    const scheduledDecks = decks.filter((deck: any) => deck.startTime && deck.endTime);
     let completionRate = 0;
 
     if (scheduledDecks.length > 0) {
-        const totalProgress = scheduledDecks.reduce((sum, deck) => {
+        const totalProgress = scheduledDecks.reduce((sum: any, deck: any) => {
             const deckProgress = deck.totalCount > 0 ? (deck.correctCount / deck.totalCount) * 100 : 0;
             return sum + deckProgress;
         }, 0);
@@ -596,8 +610,8 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
     }
 
     const sortedTopUserStates = (existingClass.userClassStates as any[])
-        .filter((ucs) => ucs.user._id.toString() !== existingClass.owner._id.toString())
-        .sort((a, b) => b.points - a.points)
+        .filter((ucs: any) => ucs.user._id.toString() !== existingClass.owner._id.toString())
+        .sort((a: any, b: any) => b.points - a.points)
         .slice(0, 5);
 
     return {
@@ -611,14 +625,17 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
         })),
         decks,
         owner: {
-            _id: existingClass.owner._id.toString()
+            _id: existingClass.owner._id ? existingClass.owner._id.toString() : existingClass.owner.toString(),
+            name: (existingClass.owner as any).name || ''
         },
         visibility: existingClass.visibility,
         requiredApprovalToJoin: existingClass.requiredApprovalToJoin,
         createdAt: existingClass.createdAt,
         userClassStates: sortedTopUserStates,
         completionRate,
-        visited: existingClass.visited,
+        visited: {
+            history: (existingClass.visited?.history || []).map((h: any) => h.userId?.toString() || '')
+        },
         bannerUrl: existingClass.bannerUrl
     };
 };

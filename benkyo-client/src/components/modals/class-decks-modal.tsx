@@ -1,15 +1,16 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { ClassDeck } from '@/types/class';
 
-type Props = {
+type ClassDecksModalProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    decks: any;
+    decks: ClassDeck[];
     onRemoveDeck: (deckId: string) => void;
     onDeckClick: (deckId: string) => void;
 };
 
-const ClassDecksModal = ({ open, onOpenChange, decks, onRemoveDeck, onDeckClick }: Props) => (
+const ClassDecksModal = ({ open, onOpenChange, decks, onRemoveDeck, onDeckClick }: ClassDecksModalProps) => (
     <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className='sm:max-w-md'>
             <DialogHeader>
@@ -17,9 +18,9 @@ const ClassDecksModal = ({ open, onOpenChange, decks, onRemoveDeck, onDeckClick 
             </DialogHeader>
             <div className='space-y-3 max-h-60 overflow-y-auto'>
                 {decks.length > 0 ? (
-                    decks.map((deck: any) => (
+                    decks.map((deck: ClassDeck) => (
                         <div
-                            key={deck._id}
+                            key={deck.deck._id}
                             className='p-3 border rounded-md flex justify-between items-center gap-4 hover:bg-muted transition'
                         >
                             <div className='flex-1 cursor-pointer' onClick={() => onDeckClick(deck.deck._id)}>

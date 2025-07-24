@@ -17,6 +17,7 @@ import useAcceptJoinClass from '@/hooks/queries/use-accept-join-request';
 import useRejectJoinClass from '@/hooks/queries/use-reject-join-request';
 import useInviteMemberToClassApi from '@/hooks/queries/use-invite-member-class';
 import useRemoveUserFromClass from '@/hooks/queries/use-remove-user-class';
+import { ClassVisitEntry } from '@/types/class';
 
 import { getToast } from '@/utils/getToast';
 import useGetDeckToAddClass from '@/hooks/queries/use-get-decks-to-class';
@@ -334,7 +335,7 @@ const UserClassManagement = () => {
                         <CardContent>
                             {classItem.visited?.history && classItem.visited.history.length > 0 ? (
                                 <div className='space-y-3'>
-                                    {classItem.visited.history.slice(0, 5).map((visit: any, i: number) => (
+                                    {classItem.visited.history.slice(0, 5).map((visit: ClassVisitEntry, i: number) => (
                                         <div
                                             key={i}
                                             className='flex justify-between items-center p-3 bg-muted/50 rounded-lg'

@@ -6,7 +6,6 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
 import useAuthStore from '@/hooks/stores/use-auth-store';
-import { DeckInClass } from '@/components/deck-card';
 import useGetClassUserById from '@/hooks/queries/use-get-class-user-id';
 import ClassHeader from '@/components/class-header';
 import DeckCard from '@/components/deck-card';
@@ -15,19 +14,20 @@ import StatsGrid from '@/components/stats-grid';
 import ClassStudyDialog from '@/components/modals/ClassStudyDialog';
 import useStartClassDeckSession from '@/hooks/queries/use-start-class-deck-session';
 import { getToast } from '@/utils/getToast';
+import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
 
 function ClassDetailUser() {
     const { user } = useAuthStore();
     const { classId } = useParams<{ classId: string }>();
     const [isExpanded, setIsExpanded] = useState(false);
     const [studyingDeck, setStudyingDeck] = useState<DeckInClass | null>(null);
-    const [classSession, setClassSession] = useState<any>(null);
-    const [sessionCards, setSessionCards] = useState<any[]>([]);
+    const [classSession, setClassSession] = useState<ClassStudySession | null>(null);
+    const [sessionCards, setSessionCards] = useState<ClassStudyCard[]>([]);
     const [loadingSession, setLoadingSession] = useState(false);
     const [isResumedSession, setIsResumedSession] = useState(false);
     const [showResumeDialog, setShowResumeDialog] = useState(false);
     const [pendingDeck, setPendingDeck] = useState<DeckInClass | null>(null);
-    const [pendingSessionData, setPendingSessionData] = useState<any>(null);
+    const [pendingSessionData, setPendingSessionData] = useState<ClassStudySession | null>(null);
 
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
     const { mutateAsync: startSession } = useStartClassDeckSession();
@@ -61,27 +61,30 @@ function ClassDetailUser() {
 
     const allDecksRaw = classData.decks || [];
     const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
-    const scheduledDecks = allDecks.filter((deck: any) => deck.startTime && deck.endTime);
-    const moreDecks = allDecks.filter((deck: any) => !deck.startTime || !deck.endTime);
+    const scheduledDecks = allDecks.filter((deck: DeckInClass) => deck.startTime && deck.endTime);
+    const moreDecks = allDecks.filter((deck: DeckInClass) => !deck.startTime || !deck.endTime);
 
-    const topLearners =
+    const topLearners: TopLearner[] =
         classData.userClassStates
-            ?.map((ucs: any) => {
+            ?.map((ucs) => {
                 return {
                     id: ucs.user._id,
                     name: ucs.user.name,
                     avatar: ucs.user.avatar,
-                    points: ucs.completedCardIds?.length || 0,
-                    streak: 0
+                    points: ucs.points || 0,
+                    streak: ucs.studyStreak || 0
                 };
             })
-            .sort((a: any, b: any) => b.points - a.points)
+            .sort((a: TopLearner, b: TopLearner) => b.points - a.points)
             .slice(0, 5) || [];
 
     let completionRate = 0;
     if (scheduledDecks.length > 0) {
-        const totalProgress = scheduledDecks.reduce((sum, deck: any) => {
-            const deckProgress = deck.totalCount > 0 ? (deck.correctCount / deck.totalCount) * 100 : 0;
+        const totalProgress = scheduledDecks.reduce((sum, deck: DeckInClass) => {
+            const deckProgress =
+                deck.totalCount && deck.totalCount > 0 && deck.correctCount
+                    ? (deck.correctCount / deck.totalCount) * 100
+                    : 0;
             return sum + deckProgress;
         }, 0);
         completionRate = Math.round(totalProgress / scheduledDecks.length);
@@ -212,12 +215,10 @@ function ClassDetailUser() {
                                     {scheduledDecks.map((deck, index) => (
                                         <DeckCard
                                             key={`scheduled-${deck._id}`}
-                                            deck={
-                                                {
-                                                    ...(deck as any),
-                                                    totalCount: (deck as any).totalCount ?? (deck as any).cardCount
-                                                } as DeckInClass
-                                            }
+                                            deck={{
+                                                ...deck,
+                                                totalCount: deck.totalCount ?? deck.cardCount
+                                            }}
                                             index={index}
                                             onStartStudy={startStudyMode}
                                         />
@@ -233,12 +234,10 @@ function ClassDetailUser() {
                                     {moreDecks.map((deck, index) => (
                                         <DeckCard
                                             key={`more-${deck._id}`}
-                                            deck={
-                                                {
-                                                    ...(deck as any),
-                                                    totalCount: (deck as any).totalCount ?? (deck as any).cardCount
-                                                } as DeckInClass
-                                            }
+                                            deck={{
+                                                ...deck,
+                                                totalCount: deck.totalCount ?? deck.cardCount
+                                            }}
                                             index={index}
                                             onStartStudy={startStudyMode}
                                         />

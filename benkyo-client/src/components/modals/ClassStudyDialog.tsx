@@ -10,23 +10,16 @@ import useGetClassDeckSessionHistory from '@/hooks/queries/use-get-class-deck-se
 import useSaveClassDeckAnswer from '@/hooks/queries/use-save-class-deck-answer';
 import useEndClassDeckSession from '@/hooks/queries/use-end-class-deck-session';
 import { getToast } from '@/utils/getToast';
+import { ClassStudySession, ClassStudyCard } from '@/types/class';
 
 interface ClassStudyDialogProps {
     open: boolean;
     onClose: () => void;
     classId: string;
     deckId: string;
-    session: any;
-    cards: CardType[];
+    session: ClassStudySession;
+    cards: ClassStudyCard[];
     isResumedSession?: boolean;
-}
-
-interface CardType {
-    _id: string;
-    front: string;
-    back: string;
-    tags?: string[];
-    media?: { type: string; url: string; filename?: string }[];
 }
 
 const ClassStudyDialog: React.FC<ClassStudyDialogProps> = ({
