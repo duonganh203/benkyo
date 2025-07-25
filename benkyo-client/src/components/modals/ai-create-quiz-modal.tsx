@@ -47,22 +47,19 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit }: AIQuizModalProps) 
                 id: '1',
                 question: `What is a fundamental concept in ${topic}?`,
                 options: ['Option A', 'Option B', 'Option C', 'Option D'],
-                correctAnswer: 1,
-                explanation: `This is the correct answer because it demonstrates the core principle of ${topic}.`
+                correctAnswer: 1
             },
             {
                 id: '2',
                 question: `Which statement best describes ${topic}?`,
                 options: ['Statement 1', 'Statement 2', 'Statement 3', 'Statement 4'],
-                correctAnswer: 0,
-                explanation: `This statement accurately captures the essence of ${topic}.`
+                correctAnswer: 0
             },
             {
                 id: '3',
                 question: `How does ${topic} apply in real-world scenarios?`,
                 options: ['Application A', 'Application B', 'Application C', 'Application D'],
-                correctAnswer: 2,
-                explanation: `This application shows the practical relevance of ${topic}.`
+                correctAnswer: 2
             }
         ];
 
@@ -71,7 +68,8 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit }: AIQuizModalProps) 
             description: description || `AI-generated quiz covering ${topic} concepts`,
             questions: sampleQuestions.slice(0, parseInt(questionCount)),
             type: 'ai' as const,
-            deck: topic
+            deck: topic,
+            classId: ''
         };
 
         setIsGenerating(false);
