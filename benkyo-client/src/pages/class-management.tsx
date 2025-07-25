@@ -23,7 +23,6 @@ import useGetDeckToAddClass from '@/hooks/queries/use-get-decks-to-class';
 import AddDeckDialog from '@/components/add-deck-dialog';
 import useRemoveDeckFromClass from '@/hooks/queries/use-remove-deck-from-class';
 import ClassMembersModal from '@/components/modals/class-members-modal';
-import CreateQuizModal from '@/components/modals/create-quiz.modal';
 import InviteMemberModal from '@/components/modals/invite-member-modal';
 import CreateScheduleModal from '@/components/modals/create-schedule-modal';
 import ConfirmDeleteUserModal from '@/components/modals/confirm-delete-user-modal';
@@ -36,10 +35,13 @@ const UserClassManagement = () => {
     const classId = _id;
     const navigate = useNavigate();
 
+    const handleCreateQuiz = () => {
+        navigate(`/class/${classId}/management/quizzes`);
+    };
+
     const [inviteEmail, setInviteEmail] = useState('');
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showAddDeckDialog, setShowAddDeckDialog] = useState(false);
-    const [showCreateQuizDialog, setShowCreateQuizDialog] = useState(false);
     const [showCreateScheduleDialog, setShowCreateScheduleDialog] = useState(false);
     const [showInviteDialog, setShowInviteDialog] = useState(false);
     const [showMembersDialog, setShowMembersDialog] = useState(false);
@@ -217,7 +219,7 @@ const UserClassManagement = () => {
                     <Button variant='outline' onClick={() => setShowAddDeckDialog(true)}>
                         <Plus className='w-4 h-4 mr-2' /> Add Deck
                     </Button>
-                    <Button variant='outline' onClick={() => setShowCreateQuizDialog(true)}>
+                    <Button variant='outline' onClick={() => handleCreateQuiz()}>
                         <Play className='w-4 h-4 mr-2' /> Create Quiz
                     </Button>
                 </div>
@@ -232,8 +234,6 @@ const UserClassManagement = () => {
                             await getNewDeck();
                         }}
                     />
-
-                    <CreateQuizModal open={showCreateQuizDialog} onOpenChange={setShowCreateQuizDialog} />
 
                     <InviteMemberModal
                         open={showInviteDialog}

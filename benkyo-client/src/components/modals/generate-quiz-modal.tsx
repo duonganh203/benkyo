@@ -117,7 +117,7 @@ export const GenerateQuizModal = () => {
                         setGenerationStage('complete');
                         getToast('success', `Successfully generated Quiz`);
                         close();
-                        navigate(`/do-quiz/${data.id}`);
+                        navigate(`/do-quiz/${data._id}`);
                     },
                     onError: (error) => {
                         getToast('error', 'Failed to generate quiz');
