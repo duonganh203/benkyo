@@ -60,7 +60,9 @@ const ClassListUser = () => {
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
                         {items.map((classItem, i) => (
                             <div key={classItem._id} className='pl-4'>
-                                <ClassCard classItem={classItem} index={i} variant={variant} />
+                                <Link to={`/class/${classItem._id}`} className='cursor-pointer block'>
+                                    <ClassCard classItem={classItem} index={i} variant={variant} />
+                                </Link>
                             </div>
                         ))}
                     </div>

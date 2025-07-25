@@ -10,6 +10,7 @@ import { ScheduleNotificationCard } from '@/components/schedule-notification-car
 import { getToast } from '@/utils/getToast';
 import { useNotificationStore } from '@/hooks/stores/use-notification-store';
 import { UnifiedNotification } from '@/types/class';
+import { Button } from '@/components/ui/button';
 
 const Notifications = () => {
     const { data: allNotificationsData, isLoading, error, refetch } = useGetAllNotifications();
@@ -78,12 +79,12 @@ const Notifications = () => {
                 <Card className='w-full max-w-md'>
                     <CardContent className='pt-6 text-center'>
                         <p className='text-destructive mb-4'>Failed to load notifications</p>
-                        <button
+                        <Button
                             onClick={() => window.location.reload()}
                             className='px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90'
                         >
                             Retry
-                        </button>
+                        </Button>
                     </CardContent>
                 </Card>
             </div>

@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp, Users, BookOpen, TrendingUp } from 'lucide-react';
 
 export interface ClassHeaderProps {
@@ -44,12 +45,14 @@ const ClassHeader = ({
                         <h1 className='text-4xl font-bold mb-2'>{classData.name}</h1>
                         <p className='text-lg opacity-90'>{classData.description}</p>
                     </div>
-                    <button
+                    <Button
+                        variant='ghost'
+                        size='icon'
                         onClick={onToggleExpanded}
-                        className='bg-white/20 hover:bg-white/30 rounded-full p-3 transition-all duration-300 hover:scale-110'
+                        className='bg-white/20 hover:bg-white/30 rounded-full p-3 transition-all duration-300 hover:scale-110 text-white cursor-pointer'
                     >
                         {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-                    </button>
+                    </Button>
                 </div>
 
                 <div className='flex space-x-6 mt-6'>
