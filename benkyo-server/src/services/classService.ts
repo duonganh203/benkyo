@@ -913,3 +913,129 @@ export const getAllNotificationsService = async (userId: Types.ObjectId) => {
         throw error;
     }
 };
+
+interface MemberProgress {
+    userId: string;
+    userName: string;
+    userEmail: string;
+    userAvatar: string;
+    overallProgress: number;
+    overdueCount: number;
+    upcomingCount: number;
+    deckProgresses: Array<{
+        deckId: string;
+        deckName: string;
+        description: string;
+        startTime?: Date;
+        endTime?: Date;
+        progress: number;
+        totalCards: number;
+        completedCards: number;
+        isOverdue: boolean;
+        hoursOverdue?: number;
+        hoursUntilDeadline?: number;
+    }>;
+}
+
+export const getClassMemberProgressService = async (classId: string, requesterId: Types.ObjectId) => {
+    const currentDate = new Date();
+
+    const classItem = await Class.findById(classId).populate('owner users', 'name email avatar');
+    if (!classItem) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!classItem.owner._id.equals(requesterId)) {
+        throw new ForbiddenRequestsException('Only class owner can view member progress', ErrorCode.FORBIDDEN);
+    }
+
+    const memberProgresses: MemberProgress[] = [];
+
+    const members = classItem.users as any[];
+
+    for (const member of members) {
+        const memberProgress: MemberProgress = {
+            userId: member._id.toString(),
+            userName: member.name,
+            userEmail: member.email,
+            userAvatar: member.avatar || '',
+            overallProgress: 0,
+            overdueCount: 0,
+            upcomingCount: 0,
+            deckProgresses: []
+        };
+
+        const classWithDecks = await Class.findById(classId)
+            .populate({
+                path: 'decks.deck',
+                select: 'name cardCount'
+            })
+            .lean();
+
+        if (classWithDecks?.decks) {
+            const scheduledDecks = classWithDecks.decks.filter((d: any) => d.startTime && d.endTime);
+
+            let totalProgress = 0;
+            let deckCount = 0;
+
+            for (const deckRef of scheduledDecks) {
+                const deck = deckRef.deck as any;
+                if (!deck) continue;
+
+                const userState = await UserClassState.findOne({
+                    user: member._id,
+                    class: classId,
+                    deck: deck._id
+                });
+
+                const totalCards = deck.cardCount || 0;
+                const completedCards = userState?.completedCardIds?.length || 0;
+                const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
+
+                const endTime = deckRef.endTime ? new Date(deckRef.endTime) : new Date();
+                const isOverdue = endTime < currentDate && progress < 100;
+                const isUpcoming =
+                    endTime > currentDate && endTime <= new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+                if (isOverdue) memberProgress.overdueCount++;
+                if (isUpcoming && progress < 100) memberProgress.upcomingCount++;
+
+                const hoursOverdue = isOverdue
+                    ? Math.floor((currentDate.getTime() - endTime.getTime()) / (1000 * 60 * 60))
+                    : undefined;
+                const hoursUntilDeadline = !isOverdue
+                    ? Math.floor((endTime.getTime() - currentDate.getTime()) / (1000 * 60 * 60))
+                    : undefined;
+
+                memberProgress.deckProgresses.push({
+                    deckId: deck._id.toString(),
+                    deckName: deck.name,
+                    description: deckRef.description || '',
+                    startTime: deckRef.startTime ? new Date(deckRef.startTime) : undefined,
+                    endTime: deckRef.endTime ? new Date(deckRef.endTime) : undefined,
+                    progress,
+                    totalCards,
+                    completedCards,
+                    isOverdue,
+                    hoursOverdue,
+                    hoursUntilDeadline
+                });
+
+                totalProgress += progress;
+                deckCount++;
+            }
+
+            memberProgress.overallProgress = deckCount > 0 ? Math.round(totalProgress / deckCount) : 0;
+        }
+
+        memberProgresses.push(memberProgress);
+    }
+    memberProgresses.sort((a, b) => {
+        if (a.overdueCount !== b.overdueCount) {
+            return b.overdueCount - a.overdueCount;
+        }
+        return a.overallProgress - b.overallProgress;
+    });
+
+    return memberProgresses;
+};

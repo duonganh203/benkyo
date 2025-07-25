@@ -7,13 +7,14 @@ const classRoutes: Router = Router();
 
 classRoutes.use(authMiddleware);
 
-classRoutes.get('/list', errorHandler(classController.getClassListUser));
-classRoutes.get('/my-class', errorHandler(classController.getMyClassList));
-classRoutes.get('/suggested', errorHandler(classController.getSuggestedClassList));
+classRoutes.get('/:_id/member-progress', errorHandler(classController.getClassMemberProgress));
 classRoutes.get('/:_id/update-by-id', errorHandler(classController.getClassUpdateById));
 classRoutes.get('/:_id/management', errorHandler(classController.getClassManagementById));
 classRoutes.get('/:_id/decks-to-add', classController.getDecksToAddToClass);
 classRoutes.get('/:_id/user-detail', errorHandler(classController.getClassUserById));
+classRoutes.get('/list', errorHandler(classController.getClassListUser));
+classRoutes.get('/my-class', errorHandler(classController.getMyClassList));
+classRoutes.get('/suggested', errorHandler(classController.getSuggestedClassList));
 classRoutes.get('/notifications/all', errorHandler(classController.getAllNotifications));
 classRoutes.get('/schedules/overdue', errorHandler(classController.getOverdueSchedules));
 classRoutes.get('/schedules/upcoming', errorHandler(classController.getUpcomingDeadlines));

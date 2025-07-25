@@ -587,3 +587,16 @@ export const getAllNotifications = async (req: Request, res: Response, next: Nex
         next(error);
     }
 };
+
+export const getClassMemberProgress = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { _id } = req.params;
+        const requesterId = req.user._id;
+
+        const memberProgresses = await classService.getClassMemberProgressService(_id, requesterId);
+
+        res.status(200).json(memberProgresses);
+    } catch (error) {
+        next(error);
+    }
+};
