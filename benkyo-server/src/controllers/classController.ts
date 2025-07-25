@@ -364,6 +364,29 @@ export const startClassDeckSession = async (req: Request, res: Response) => {
                     !session!.completedCardIds.some((completedId) => completedId.toString() === card._id.toString())
             );
 
+            if (remainingCards.length === 0) {
+                session.endTime = new Date();
+                await session.save();
+
+                session = new UserClassState({
+                    user: userId,
+                    class: classId,
+                    deck: deckId,
+                    completedCardIds: [],
+                    correctCount: 0,
+                    totalCount: 0,
+                    startTime: new Date()
+                });
+                await session.save();
+
+                return res.status(201).json({
+                    success: true,
+                    data: session,
+                    cards: allCards,
+                    resumed: false
+                });
+            }
+
             const isResumed = session.completedCardIds.length > 0;
 
             return res.status(200).json({
