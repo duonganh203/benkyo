@@ -1,3 +1,5 @@
+import type { ClassNotification } from './notification';
+
 export type ClassUserRequestDto = {
     name: string;
     description: string;
@@ -287,4 +289,74 @@ export type EndClassDeckSessionRequestDto = {
 export type EndClassDeckSessionResponseDto = {
     success: boolean;
     data: ClassStudySession;
+};
+
+export type OverdueSchedule = {
+    classId: string;
+    className: string;
+    deckId: string;
+    deckName: string;
+    description: string;
+    endTime: Date;
+    progress: number;
+    totalCards: number;
+    completedCards: number;
+    hoursOverdue: number;
+    isOverdue: boolean;
+};
+
+export type UpcomingDeadline = {
+    classId: string;
+    className: string;
+    deckId: string;
+    deckName: string;
+    description: string;
+    endTime: Date;
+    progress: number;
+    totalCards: number;
+    completedCards: number;
+    hoursUntilDeadline: number;
+    isOverdue: boolean;
+};
+
+export type ScheduleNotification = OverdueSchedule | UpcomingDeadline;
+
+export type NormalizedInviteNotification = ClassNotification & {
+    notificationType: 'invite';
+    sortTime: Date;
+    priority: number;
+};
+
+export type NormalizedOverdueNotification = OverdueSchedule & {
+    notificationType: 'overdue';
+    sortTime: Date;
+    priority: number;
+};
+
+export type NormalizedUpcomingNotification = UpcomingDeadline & {
+    notificationType: 'upcoming';
+    sortTime: Date;
+    priority: number;
+};
+
+export type UnifiedNotification =
+    | NormalizedInviteNotification
+    | NormalizedOverdueNotification
+    | NormalizedUpcomingNotification;
+
+export type AllNotificationsResponse = {
+    all: UnifiedNotification[];
+    invites: ClassNotification[];
+    schedules: {
+        overdue: OverdueSchedule[];
+        upcoming: UpcomingDeadline[];
+        criticalUpcoming: UpcomingDeadline[];
+    };
+    summary: {
+        totalInvites: number;
+        totalOverdue: number;
+        totalUpcoming: number;
+        totalCritical: number;
+        totalAll: number;
+    };
 };

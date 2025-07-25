@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { classValidation } from '~/validations/classValidation';
 import * as classService from '../services/classService';
 import { UserClassState } from '../schemas';
@@ -519,5 +519,48 @@ export const getClassDeckSessionLeaderboard = async (req: Request, res: Response
     } catch (error) {
         const errMsg = error instanceof Error ? error.message : String(error);
         return res.status(500).json({ success: false, error: errMsg });
+    }
+};
+
+export const getOverdueSchedules = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user._id;
+        const overdueSchedules = await classService.getOverdueSchedulesService(userId);
+
+        res.status(200).json({
+            success: true,
+            data: overdueSchedules,
+            message: 'Overdue schedules retrieved successfully'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getUpcomingDeadlines = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user._id;
+        const upcomingDeadlines = await classService.getUpcomingDeadlinesService(userId);
+        res.status(200).json({
+            success: true,
+            data: upcomingDeadlines,
+            message: 'Upcoming deadlines retrieved successfully'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getAllNotifications = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user._id;
+        const notifications = await classService.getAllNotificationsService(userId);
+        res.status(200).json({
+            success: true,
+            data: notifications,
+            message: 'All notifications retrieved successfully'
+        });
+    } catch (error) {
+        next(error);
     }
 };

@@ -20,6 +20,53 @@ import {
     MongooseOwnerRef
 } from '~/types/classTypes';
 
+interface NormalizedNotification {
+    notificationType: 'invite' | 'overdue' | 'upcoming';
+    sortTime: Date;
+    priority: number;
+}
+
+interface NormalizedInviteNotification extends NormalizedNotification {
+    id: string;
+    classId: string;
+    className: string;
+    description: string;
+    type: string;
+    createdAt: Date;
+    message: string;
+    notificationType: 'invite';
+}
+
+interface NormalizedScheduleNotification extends NormalizedNotification {
+    classId: string;
+    className: string;
+    deckId: string;
+    deckName: string;
+    description: string;
+    endTime: Date;
+    progress: number;
+    totalCards: number;
+    completedCards: number;
+    notificationType: 'overdue' | 'upcoming';
+}
+
+interface NormalizedOverdueNotification extends NormalizedScheduleNotification {
+    hoursOverdue: number;
+    isOverdue: boolean;
+    notificationType: 'overdue';
+}
+
+interface NormalizedUpcomingNotification extends NormalizedScheduleNotification {
+    hoursUntilDeadline: number;
+    isOverdue: boolean;
+    notificationType: 'upcoming';
+}
+
+type UnifiedNotification =
+    | NormalizedInviteNotification
+    | NormalizedOverdueNotification
+    | NormalizedUpcomingNotification;
+
 export const createClassService = async (userId: string, data: ClassStateType) => {
     const user = await User.findById(userId);
     if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
@@ -241,11 +288,8 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
             select: '_id name email avatar'
         })
         .populate({
-            path: 'decks',
-            populate: {
-                path: 'deck',
-                select: '_id name'
-            }
+            path: 'decks.deck',
+            select: '_id name description cardCount avgRating'
         })
         .lean();
 
@@ -254,7 +298,18 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
     if (!existingClass.owner._id.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
 
-    return existingClass;
+    const formattedClass = {
+        ...existingClass,
+        decks:
+            existingClass.decks?.map((deckItem: any) => ({
+                deck: deckItem.deck,
+                description: deckItem.description,
+                startTime: deckItem.startTime,
+                endTime: deckItem.endTime
+            })) || []
+    };
+
+    return formattedClass;
 };
 
 export const acceptJoinRequestService = async (classId: string, requestUserId: string, ownerId: string) => {
@@ -638,4 +693,223 @@ export const getClassUserByIdService = async (classId: string, userId: string): 
         },
         bannerUrl: existingClass.bannerUrl
     };
+};
+
+export const getOverdueSchedulesService = async (userId: Types.ObjectId) => {
+    const currentDate = new Date();
+    const oneDayAgo = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+
+    const userClasses = await Class.find({
+        users: userId
+    })
+        .populate({
+            path: 'decks.deck',
+            select: 'name cardCount'
+        })
+        .select('_id name decks')
+        .lean();
+
+    interface OverdueSchedule {
+        classId: string;
+        className: string;
+        deckId: string;
+        deckName: string;
+        description: string;
+        endTime: Date;
+        progress: number;
+        totalCards: number;
+        completedCards: number;
+        hoursOverdue: number;
+        isOverdue: boolean;
+    }
+
+    const overdueSchedules: OverdueSchedule[] = [];
+
+    for (const classItem of userClasses) {
+        if (!classItem.decks) continue;
+
+        const scheduledDecks = classItem.decks.filter(
+            (d: any) =>
+                d.startTime && d.endTime && new Date(d.endTime) < currentDate && new Date(d.endTime) >= oneDayAgo
+        );
+
+        for (const deckRef of scheduledDecks) {
+            const deck = deckRef.deck as any;
+            if (!deck || !deckRef.endTime) continue;
+
+            const userState = await UserClassState.findOne({
+                user: userId,
+                class: classItem._id,
+                deck: deck._id
+            });
+
+            const totalCards = deck.cardCount || 0;
+            const completedCards = userState?.completedCardIds?.length || 0;
+            const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
+
+            if (progress < 100) {
+                const hoursOverdue = Math.floor(
+                    (currentDate.getTime() - new Date(deckRef.endTime).getTime()) / (1000 * 60 * 60)
+                );
+
+                overdueSchedules.push({
+                    classId: classItem._id.toString(),
+                    className: classItem.name,
+                    deckId: deck._id.toString(),
+                    deckName: deck.name,
+                    description: deckRef.description || '',
+                    endTime: deckRef.endTime,
+                    progress,
+                    totalCards,
+                    completedCards,
+                    hoursOverdue,
+                    isOverdue: true
+                });
+            }
+        }
+    }
+
+    return overdueSchedules;
+};
+
+export const getUpcomingDeadlinesService = async (userId: Types.ObjectId) => {
+    const currentDate = new Date();
+    const nextWeek = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    const userClasses = await Class.find({
+        users: userId
+    })
+        .populate({
+            path: 'decks.deck',
+            select: 'name cardCount'
+        })
+        .select('_id name decks')
+        .lean();
+
+    interface UpcomingDeadline {
+        classId: string;
+        className: string;
+        deckId: string;
+        deckName: string;
+        description: string;
+        endTime: Date;
+        progress: number;
+        totalCards: number;
+        completedCards: number;
+        hoursUntilDeadline: number;
+        isOverdue: boolean;
+    }
+
+    const upcomingDeadlines: UpcomingDeadline[] = [];
+
+    for (const classItem of userClasses) {
+        if (!classItem.decks) continue;
+
+        const scheduledDecks = classItem.decks.filter(
+            (d: any) => d.startTime && d.endTime && new Date(d.endTime) > currentDate && new Date(d.endTime) <= nextWeek
+        );
+
+        for (const deckRef of scheduledDecks) {
+            const deck = deckRef.deck as any;
+            if (!deck?._id || !deckRef.endTime) continue;
+
+            const userState = await UserClassState.findOne({
+                user: userId,
+                class: classItem._id,
+                deck: deck._id
+            });
+
+            const totalCards = deck.cardCount || 0;
+            const completedCards = userState?.completedCardIds?.length || 0;
+            const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
+
+            const endTime = new Date(deckRef.endTime);
+            const hoursUntilDeadline = Math.floor((endTime.getTime() - currentDate.getTime()) / (1000 * 60 * 60));
+
+            upcomingDeadlines.push({
+                classId: classItem._id.toString(),
+                className: classItem.name,
+                deckId: deck._id.toString(),
+                deckName: deck.name || 'Unknown Deck',
+                description: deckRef.description || '',
+                endTime: deckRef.endTime,
+                progress,
+                totalCards,
+                completedCards,
+                hoursUntilDeadline,
+                isOverdue: false
+            });
+        }
+    }
+
+    return upcomingDeadlines.sort((a, b) => a.hoursUntilDeadline - b.hoursUntilDeadline);
+};
+
+export const getAllNotificationsService = async (userId: Types.ObjectId) => {
+    try {
+        const [inviteNotifications, overdueSchedules, upcomingDeadlines] = await Promise.all([
+            getInviteClassService(userId),
+            getOverdueSchedulesService(userId),
+            getUpcomingDeadlinesService(userId)
+        ]);
+
+        const criticalUpcoming = upcomingDeadlines.filter((deadline) => deadline.hoursUntilDeadline <= 48);
+
+        const normalizedInvites: NormalizedInviteNotification[] = inviteNotifications.map((invite) => ({
+            ...invite,
+            notificationType: 'invite' as const,
+            sortTime: new Date(invite.createdAt || new Date()),
+            priority: 2
+        }));
+
+        const normalizedOverdue: NormalizedOverdueNotification[] = overdueSchedules.map((schedule) => ({
+            ...schedule,
+            notificationType: 'overdue' as const,
+            sortTime: new Date(schedule.endTime),
+            priority: 1
+        }));
+
+        const normalizedUpcoming: NormalizedUpcomingNotification[] = criticalUpcoming.map((deadline) => ({
+            ...deadline,
+            notificationType: 'upcoming' as const,
+            sortTime: new Date(deadline.endTime),
+            priority: 1
+        }));
+
+        const allNotifications: UnifiedNotification[] = [
+            ...normalizedOverdue,
+            ...normalizedUpcoming,
+            ...normalizedInvites
+        ].sort((a, b) => {
+            if (a.priority !== b.priority) {
+                return a.priority - b.priority;
+            }
+            if (a.notificationType === 'invite' && b.notificationType === 'invite') {
+                return new Date(b.sortTime).getTime() - new Date(a.sortTime).getTime();
+            }
+            return new Date(a.sortTime).getTime() - new Date(b.sortTime).getTime();
+        });
+
+        const response = {
+            all: allNotifications,
+            invites: inviteNotifications,
+            schedules: {
+                overdue: overdueSchedules,
+                upcoming: upcomingDeadlines,
+                criticalUpcoming: criticalUpcoming
+            },
+            summary: {
+                totalInvites: inviteNotifications.length,
+                totalOverdue: overdueSchedules.length,
+                totalUpcoming: upcomingDeadlines.length,
+                totalCritical: criticalUpcoming.length,
+                totalAll: allNotifications.length
+            }
+        };
+
+        return response;
+    } catch (error) {
+        console.error('Error fetching all notifications:', error);
+        throw error;
+    }
 };

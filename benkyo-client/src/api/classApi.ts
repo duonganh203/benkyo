@@ -155,3 +155,18 @@ export const endClassDeckSessionApi = async (classId: string, deckId: string, se
     });
     return response.data;
 };
+
+export const getOverdueSchedules = async () => {
+    const response = await api.get('/class/schedules/overdue');
+    return response.data;
+};
+
+export const getUpcomingDeadlines = async () => {
+    const response = await api.get('/class/schedules/upcoming');
+    return response.data;
+};
+
+export const getAllNotifications = async () => {
+    const response = await api.get('/class/notifications/all');
+    return response.data;
+};

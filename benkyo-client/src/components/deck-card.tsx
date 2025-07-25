@@ -52,6 +52,49 @@ const DeckCard = ({ deck, index, onStartStudy }: DeckCardProps) => {
                         {correct}/{total} cards studied
                     </p>
                 </div>
+
+                {(deck.startTime || deck.endTime) && (
+                    <div className='mt-3 p-2 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-md'>
+                        <div className='flex items-center gap-1 text-xs font-medium text-blue-800 mb-1'>
+                            <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
+                                <path
+                                    fillRule='evenodd'
+                                    d='M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
+                                    clipRule='evenodd'
+                                />
+                            </svg>
+                            <span>Lịch học</span>
+                        </div>
+                        <div className='text-xs space-y-1'>
+                            {deck.startTime && (
+                                <div className='flex items-center justify-between'>
+                                    <span className='text-green-700 font-medium'>Bắt đầu:</span>
+                                    <span className='text-green-800 bg-green-100 px-1.5 py-0.5 rounded text-xs'>
+                                        {new Date(deck.startTime).toLocaleDateString('vi-VN', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </span>
+                                </div>
+                            )}
+                            {deck.endTime && (
+                                <div className='flex items-center justify-between'>
+                                    <span className='text-red-700 font-medium'>Kết thúc:</span>
+                                    <span className='text-red-800 bg-red-100 px-1.5 py-0.5 rounded text-xs'>
+                                        {new Date(deck.endTime).toLocaleDateString('vi-VN', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className='flex items-center justify-between p-6 pt-4 border-t bg-gray-50/50 dark:bg-black/20'>
