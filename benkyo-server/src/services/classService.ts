@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { Class, Deck, PublicStatus, User, UserClassState, UserDeckState } from '~/schemas';
+import { Class, Deck, PublicStatus, User, UserClassState, UserDeckState, Card } from '~/schemas';
 import { sendToUser } from '~/utils/socketServer';
 import { ClassStateType } from '~/validations/classValidation';
 import {
@@ -20,6 +20,7 @@ import {
     MongooseOwnerRef,
     PopulatedDeck
 } from '~/types/classTypes';
+import { BadRequestsException } from '~/exceptions/badRequests';
 
 interface NormalizedNotification {
     notificationType: 'invite' | 'overdue' | 'upcoming';
@@ -1071,4 +1072,170 @@ export const getClassMemberProgressService = async (classId: string, requesterId
     }
 
     return memberProgresses;
+};
+
+export const startClassDeckSessionService = async (
+    userId: string,
+    classId: string,
+    deckId: string,
+    forceNew: boolean
+) => {
+    if (!userId || !classId || !deckId) {
+        throw new BadRequestsException('Missing required parameters', ErrorCode.UNPROCESSALE_ENTITY);
+    }
+
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    const userClassState = await UserClassState.findOne({
+        user: new Types.ObjectId(userId),
+        class: new Types.ObjectId(classId)
+    });
+    if (!userClassState) {
+        throw new ForbiddenRequestsException('User is not a member of this class', ErrorCode.FORBIDDEN);
+    }
+
+    const allCards = await Card.find({ deck: new Types.ObjectId(deckId) }).lean();
+
+    let session = await UserClassState.findOne({
+        user: new Types.ObjectId(userId),
+        class: new Types.ObjectId(classId),
+        deck: new Types.ObjectId(deckId),
+        endTime: { $exists: false }
+    });
+
+    if (!session && !forceNew) {
+        session = await UserClassState.findOne({
+            user: new Types.ObjectId(userId),
+            class: new Types.ObjectId(classId),
+            deck: new Types.ObjectId(deckId)
+        }).sort({ createdAt: -1 });
+
+        if (session) {
+            session.endTime = undefined;
+            await session.save();
+        }
+    }
+
+    if (session && !forceNew) {
+        const remainingCards = allCards.filter(
+            (card) => !session!.completedCardIds.some((completedId) => completedId.toString() === card._id.toString())
+        );
+
+        if (remainingCards.length === 0) {
+            session.endTime = new Date();
+            await session.save();
+
+            session = new UserClassState({
+                user: new Types.ObjectId(userId),
+                class: new Types.ObjectId(classId),
+                deck: new Types.ObjectId(deckId),
+                completedCardIds: [],
+                correctCount: 0,
+                totalCount: 0,
+                startTime: new Date()
+            });
+            await session.save();
+
+            return {
+                session,
+                cards: allCards,
+                resumed: false
+            };
+        }
+
+        const isResumed = session.completedCardIds.length > 0;
+
+        return {
+            session,
+            cards: remainingCards,
+            resumed: isResumed
+        };
+    }
+
+    session = new UserClassState({
+        user: new Types.ObjectId(userId),
+        class: new Types.ObjectId(classId),
+        deck: new Types.ObjectId(deckId),
+        completedCardIds: [],
+        correctCount: 0,
+        totalCount: 0,
+        startTime: new Date()
+    });
+    await session.save();
+
+    return {
+        session,
+        cards: allCards,
+        resumed: false
+    };
+};
+
+export const saveClassDeckAnswerService = async (
+    userId: string,
+    classId: string,
+    deckId: string,
+    sessionId: string,
+    cardId: string,
+    correct: boolean
+) => {
+    const session = await UserClassState.findOne({
+        _id: sessionId,
+        user: new Types.ObjectId(userId),
+        class: new Types.ObjectId(classId),
+        deck: new Types.ObjectId(deckId)
+    });
+
+    if (!session) {
+        throw new NotFoundException('Session not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!session.completedCardIds.includes(new Types.ObjectId(cardId))) {
+        session.completedCardIds.push(new Types.ObjectId(cardId));
+
+        if (correct) {
+            session.correctCount += 1;
+        }
+        session.totalCount += 1;
+    }
+
+    await session.save();
+    return session;
+};
+
+export const endClassDeckSessionService = async (
+    userId: string,
+    classId: string,
+    deckId: string,
+    sessionId: string,
+    duration: number
+) => {
+    const session = await UserClassState.findOne({
+        _id: sessionId,
+        user: new Types.ObjectId(userId),
+        class: new Types.ObjectId(classId),
+        deck: new Types.ObjectId(deckId)
+    });
+
+    if (!session) {
+        throw new NotFoundException('Session not found', ErrorCode.NOT_FOUND);
+    }
+
+    session.duration = duration;
+    session.endTime = new Date();
+    await session.save();
+
+    return session;
+};
+
+export const getClassDeckSessionHistoryService = async (userId: string, classId: string, deckId: string) => {
+    const sessions = await UserClassState.find({
+        user: new Types.ObjectId(userId),
+        class: new Types.ObjectId(classId),
+        deck: new Types.ObjectId(deckId)
+    }).sort({ startTime: -1 });
+
+    return sessions;
 };

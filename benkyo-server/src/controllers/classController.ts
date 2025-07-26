@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { classValidation } from '~/validations/classValidation';
 import * as classService from '../services/classService';
-import { UserClassState } from '../schemas';
-import { Types } from 'mongoose';
-import { Card } from '../schemas';
 
 export const createClass = async (req: Request, res: Response) => {
     try {
@@ -298,124 +295,23 @@ export const getClassUserById = async (req: Request, res: Response) => {
     }
 };
 
-export const startClassStudySession = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user._id;
-        const classId = req.params.classId;
-        const deckId = req.params.deckId;
-        const forceNew = req.body.forceNew === true;
-
-        const unfinishedSession = await UserClassState.findOne({
-            user: userId,
-            class: classId,
-            deck: deckId,
-            endTime: { $exists: false }
-        });
-
-        if (unfinishedSession && !forceNew) {
-            return res.status(200).json(unfinishedSession);
-        }
-
-        const newSession = await UserClassState.create({
-            user: userId,
-            class: classId,
-            deck: deckId,
-            completedCardIds: [],
-            correctCount: 0,
-            totalCount: 0,
-            startTime: new Date()
-        });
-        return res.status(201).json(newSession);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        res.status(400).json({ error: errMsg });
-    }
-};
-
 export const startClassDeckSession = async (req: Request, res: Response) => {
     try {
         const userId = req.user._id;
         const { classId, deckId } = req.params;
         const { forceNew } = req.body || {};
 
-        const allCards = await Card.find({ deck: deckId }).lean();
+        const result = await classService.startClassDeckSessionService(userId, classId, deckId, forceNew);
 
-        let session = await UserClassState.findOne({
-            user: userId,
-            class: classId,
-            deck: deckId,
-            endTime: { $exists: false }
-        });
-
-        if (!session && !forceNew) {
-            session = await UserClassState.findOne({
-                user: userId,
-                class: classId,
-                deck: deckId
-            }).sort({ createdAt: -1 });
-
-            if (session) {
-                session.endTime = undefined;
-                await session.save();
-            }
-        }
-
-        if (session && !forceNew) {
-            const remainingCards = allCards.filter(
-                (card) =>
-                    !session!.completedCardIds.some((completedId) => completedId.toString() === card._id.toString())
-            );
-
-            if (remainingCards.length === 0) {
-                session.endTime = new Date();
-                await session.save();
-
-                session = new UserClassState({
-                    user: userId,
-                    class: classId,
-                    deck: deckId,
-                    completedCardIds: [],
-                    correctCount: 0,
-                    totalCount: 0,
-                    startTime: new Date()
-                });
-                await session.save();
-
-                return res.status(201).json({
-                    session,
-                    cards: allCards,
-                    resumed: false
-                });
-            }
-
-            const isResumed = session.completedCardIds.length > 0;
-
-            return res.status(200).json({
-                session,
-                cards: remainingCards,
-                resumed: isResumed
-            });
-        }
-
-        session = new UserClassState({
-            user: userId,
-            class: classId,
-            deck: deckId,
-            completedCardIds: [],
-            correctCount: 0,
-            totalCount: 0,
-            startTime: new Date()
-        });
-        await session.save();
-
-        return res.status(201).json({
-            session,
-            cards: allCards,
-            resumed: false
+        res.status(201).json({
+            success: true,
+            data: result.session,
+            cards: result.cards,
+            resumed: result.resumed
         });
     } catch (error) {
         const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(500).json({ error: errMsg });
+        return res.status(500).json({ success: false, error: errMsg });
     }
 };
 
@@ -425,32 +321,22 @@ export const saveClassDeckAnswer = async (req: Request, res: Response) => {
         const { classId, deckId } = req.params;
         const { sessionId, cardId, correct } = req.body;
 
-        const session = await UserClassState.findOne({
-            _id: sessionId,
-            user: userId,
-            class: classId,
-            deck: deckId
+        const result = await classService.saveClassDeckAnswerService(
+            userId,
+            classId,
+            deckId,
+            sessionId,
+            cardId,
+            correct
+        );
+
+        return res.status(200).json({
+            success: true,
+            data: result
         });
-
-        if (!session) {
-            return res.status(404).json({ error: 'Session not found' });
-        }
-
-        if (!session.completedCardIds.includes(cardId)) {
-            session.completedCardIds.push(cardId);
-
-            if (correct) {
-                session.correctCount += 1;
-            }
-            session.totalCount += 1;
-        }
-
-        await session.save();
-
-        return res.status(200).json(session);
     } catch (error) {
         const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(500).json({ error: errMsg });
+        return res.status(500).json({ success: false, error: errMsg });
     }
 };
 
@@ -460,24 +346,15 @@ export const endClassDeckSession = async (req: Request, res: Response) => {
         const { classId, deckId } = req.params;
         const { sessionId, duration } = req.body;
 
-        const session = await UserClassState.findOne({
-            _id: sessionId,
-            user: userId,
-            class: classId,
-            deck: deckId
+        const result = await classService.endClassDeckSessionService(userId, classId, deckId, sessionId, duration);
+
+        return res.status(200).json({
+            success: true,
+            data: result
         });
-        if (!session) {
-            return res.status(404).json({ error: 'Session not found' });
-        }
-
-        session.duration = duration;
-        session.endTime = new Date();
-        await session.save();
-
-        return res.status(200).json(session);
     } catch (error) {
         const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(500).json({ error: errMsg });
+        return res.status(500).json({ success: false, error: errMsg });
     }
 };
 
@@ -485,59 +362,10 @@ export const getClassDeckSessionHistory = async (req: Request, res: Response) =>
     try {
         const userId = req.user._id;
         const { classId, deckId } = req.params;
-        const sessions = await UserClassState.find({
-            user: userId,
-            class: classId,
-            deck: deckId
-        }).sort({ startTime: -1 });
-        return res.status(200).json(sessions);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(500).json({ error: errMsg });
-    }
-};
 
-export const getClassDeckSessionBest = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user._id;
-        const { classId, deckId } = req.params;
-        const bestSession = await UserClassState.findOne({
-            user: userId,
-            class: classId,
-            deck: deckId,
-            endTime: { $exists: true }
-        }).sort({ correctCount: -1, endTime: -1 });
-        return res.status(200).json(bestSession);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(500).json({ error: errMsg });
-    }
-};
+        const result = await classService.getClassDeckSessionHistoryService(userId, classId, deckId);
 
-export const getClassDeckSessionLeaderboard = async (req: Request, res: Response) => {
-    try {
-        const { classId, deckId } = req.params;
-        const pipeline = [
-            {
-                $match: {
-                    class: new Types.ObjectId(classId),
-                    deck: new Types.ObjectId(deckId),
-                    endTime: { $exists: true }
-                }
-            },
-            { $sort: { correctCount: -1 as -1, endTime: -1 as -1 } },
-            {
-                $group: {
-                    _id: '$user',
-                    session: { $first: '$$ROOT' }
-                }
-            },
-            { $replaceRoot: { newRoot: '$session' } },
-            { $sort: { correctCount: -1 as -1, endTime: -1 as -1 } },
-            { $limit: 10 }
-        ];
-        const leaderboard = await UserClassState.aggregate(pipeline);
-        return res.status(200).json(leaderboard);
+        return res.status(200).json(result);
     } catch (error) {
         const errMsg = error instanceof Error ? error.message : String(error);
         return res.status(500).json({ error: errMsg });

@@ -123,11 +123,6 @@ export const getClassDeckSessionHistoryApi = async (classId: string, deckId: str
     return response.data;
 };
 
-export const getClassDeckSessionBestApi = async (classId: string, deckId: string) => {
-    const response = await api.get(`/class/${classId}/deck/${deckId}/session/best`);
-    return response.data;
-};
-
 export const startClassDeckSessionApi = async (classId: string, deckId: string, forceNew?: boolean) => {
     const response = await api.post(`/class/${classId}/deck/${deckId}/session/start`, { forceNew });
     return response.data;
@@ -173,16 +168,6 @@ export const getAllNotifications = async () => {
 
 export const getClassMemberProgressApi = async (classId: string) => {
     const response = await api.get(`/class/${classId}/member-progress`);
-    return response.data;
-};
-
-export const getClassDeckSessionLeaderboardApi = async (classId: string, deckId: string) => {
-    const response = await api.get(`/class/${classId}/deck/${deckId}/session/leaderboard`);
-    return response.data;
-};
-
-export const startClassStudySessionApi = async (classId: string, deckId: string, forceNew?: boolean) => {
-    const response = await api.post(`/class/${classId}/deck/${deckId}/study/start`, { forceNew });
     return response.data;
 };
 
