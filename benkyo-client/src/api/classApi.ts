@@ -38,16 +38,16 @@ export const getClassListUserApi = async () => {
     return response.data as ClassUserResponseDto[];
 };
 
-export const getMyClassApi = async (page: number = 1) => {
-    const response = await api.get(`/class/my-class?page=${page}`);
+export const getMyClassApi = async (page: number = 1, search?: string) => {
+    const response = await api.get(`/class/my-class?page=${page}${search ? `&search=${search}` : ''}`);
     return response.data as {
         data: ClassListItemUserResponseDto[];
         hasMore: boolean;
     };
 };
 
-export const getSuggestedClassApi = async (page: number = 1) => {
-    const response = await api.get(`/class/suggested?page=${page}`);
+export const getSuggestedClassApi = async (page: number = 1, search?: string) => {
+    const response = await api.get(`/class/suggested?page=${page}${search ? `&search=${search}` : ''}`);
     return response.data as {
         data: ClassListItemUserResponseDto[];
         hasMore: boolean;

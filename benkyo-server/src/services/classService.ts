@@ -145,18 +145,24 @@ export const getClassListUserService = async () => {
     return existingClasses;
 };
 
-export const getMyClassListService = async (userId: Types.ObjectId, page: number, limit: number) => {
+export const getMyClassListService = async (userId: Types.ObjectId, page: number, limit: number, search?: string) => {
     const skip = (page - 1) * limit;
 
+    const searchQuery = search ? { name: { $regex: search, $options: 'i' } } : {};
+
     const classes = await Class.find({
-        $or: [{ users: userId }, { owner: userId }]
+        $or: [{ users: userId }, { owner: userId }],
+        ...searchQuery
     })
         .populate('decks.deck')
         .select('_id name description requiredApprovalToJoin decks bannerUrl createdAt')
         .skip(skip)
         .limit(limit);
 
-    const totalCount = await Class.countDocuments({ users: userId });
+    const totalCount = await Class.countDocuments({
+        $or: [{ users: userId }, { owner: userId }],
+        ...searchQuery
+    });
 
     const result = await Promise.all(
         classes.map(async (classItem) => {
@@ -201,21 +207,25 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
     };
 };
 
-export const getSuggestedListService = async (userId: Types.ObjectId, page: number, limit: number) => {
+export const getSuggestedListService = async (userId: Types.ObjectId, page: number, limit: number, search?: string) => {
     const skip = (page - 1) * limit;
 
+    const searchQuery = search ? { name: { $regex: search, $options: 'i' } } : {};
+    const baseQuery = {
+        users: { $ne: userId },
+        owner: { $ne: userId },
+        visibility: 'public',
+        ...searchQuery
+    };
+
     const [suggestedClasses, totalCount] = await Promise.all([
-        Class.find({
-            users: { $ne: userId },
-            owner: { $ne: userId },
-            visibility: 'public'
-        })
+        Class.find(baseQuery)
             .select('_id name description requiredApprovalToJoin bannerUrl createdAt owner')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit),
 
-        Class.countDocuments({ users: { $ne: userId } })
+        Class.countDocuments(baseQuery)
     ]);
 
     const data = suggestedClasses.map((classItem) => ({
