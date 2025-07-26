@@ -1089,12 +1089,33 @@ export const startClassDeckSessionService = async (
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
 
-    const userClassState = await UserClassState.findOne({
+    const classDoc = await Class.findById(classId);
+    if (!classDoc) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    const isMember = classDoc.users.some((user) => user.equals(userId)) || classDoc.owner.equals(userId);
+
+    if (!isMember) {
+        throw new ForbiddenRequestsException('User is not a member of this class', ErrorCode.FORBIDDEN);
+    }
+
+    let userClassState = await UserClassState.findOne({
         user: new Types.ObjectId(userId),
         class: new Types.ObjectId(classId)
     });
+
     if (!userClassState) {
-        throw new ForbiddenRequestsException('User is not a member of this class', ErrorCode.FORBIDDEN);
+        userClassState = new UserClassState({
+            user: new Types.ObjectId(userId),
+            class: new Types.ObjectId(classId),
+            deck: new Types.ObjectId(deckId),
+            completedCardIds: [],
+            correctCount: 0,
+            totalCount: 0,
+            startTime: new Date()
+        });
+        await userClassState.save();
     }
 
     const allCards = await Card.find({ deck: new Types.ObjectId(deckId) }).lean();

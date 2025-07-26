@@ -108,7 +108,7 @@ const ClassStudyDialog: React.FC<ClassStudyDialogProps> = ({
                 correct
             });
 
-            queryClient.invalidateQueries({ queryKey: ['class-user', classId] });
+            queryClient.invalidateQueries({ queryKey: ['classClassUserId', classId] });
         } catch (error) {
             getToast('error', 'Failed to save answer');
         }
