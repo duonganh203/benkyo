@@ -187,7 +187,12 @@ const ClassQuizManagement = () => {
                 onSubmit={handleCreateQuiz}
                 classId={classId || ''}
             />
-            <AIQuizModal open={showAIModal} onOpenChange={setShowAIModal} onSubmit={handleCreateQuiz} />
+            <AIQuizModal
+                open={showAIModal}
+                onOpenChange={setShowAIModal}
+                onSubmit={handleCreateQuiz}
+                classId={classId || ''}
+            />
         </div>
     );
 };

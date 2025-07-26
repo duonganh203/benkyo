@@ -3,6 +3,7 @@ import z from 'zod';
 export const createQuizValidation = z.object({
     title: z.string().min(1, 'Title is required').optional(),
     description: z.string().optional(),
+    type: z.enum(['manual', 'ai']).default('manual').optional(),
     deckId: z.string().min(1, 'Deck ID is required'),
     questions: z
         .array(

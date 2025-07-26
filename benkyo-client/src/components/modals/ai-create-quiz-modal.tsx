@@ -7,84 +7,137 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Zap, Loader, Sparkles } from 'lucide-react';
-import { Quiz, Question } from '@/pages/class-quiz-management';
+import { Quiz } from '@/pages/class-quiz-management';
+import useGetUserDecks from '@/hooks/queries/use-get-user-decks';
+import { generateQuizFromFlashcards } from '@/utils/genAIQuiz';
+import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
+import { useCreateClassAIQuiz } from '@/hooks/queries/use-create-class-quiz-by-ai';
 
 interface AIQuizModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit: (quiz: Omit<Quiz, 'id' | 'createdAt'>) => void;
+    classId?: string;
 }
 
-const sampleDecks = [
-    'Mathematics Fundamentals',
-    'Science Basics',
-    'History Overview',
-    'Language Arts',
-    'Geography Essentials',
-    'Physics Concepts',
-    'Chemistry Basics',
-    'Biology Introduction'
-];
-
-export const AIQuizModal = ({ open, onOpenChange, onSubmit }: AIQuizModalProps) => {
+export const AIQuizModal = ({ open, onOpenChange, onSubmit, classId }: AIQuizModalProps) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [selectedDeck, setSelectedDeck] = useState('');
+    const [selectedDeckId, setSelectedDeckId] = useState('');
     const [customTopic, setCustomTopic] = useState('');
-    const [difficulty, setDifficulty] = useState('medium');
+    const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
     const [questionCount, setQuestionCount] = useState('5');
     const [isGenerating, setIsGenerating] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // Fetch user's decks
+    const { data: userDecks, isLoading: isLoadingDecks } = useGetUserDecks();
+
+    // Fetch selected deck details
+    const { data: selectedDeck } = useGetDeckCards(selectedDeckId);
+
+    const { mutateAsync: createQuiz } = useCreateClassAIQuiz();
 
     const generateQuiz = async () => {
         setIsGenerating(true);
+        setError(null);
 
-        // Simulate AI generation with sample questions
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        try {
+            let generatedQuestions: Array<{
+                questionText: string;
+                choices: { text: string }[];
+                correctAnswer: number;
+            }> = [];
 
-        const topic = customTopic || selectedDeck;
-        const sampleQuestions: Question[] = [
-            {
-                id: '1',
-                question: `What is a fundamental concept in ${topic}?`,
-                options: ['Option A', 'Option B', 'Option C', 'Option D'],
-                correctAnswer: 1
-            },
-            {
-                id: '2',
-                question: `Which statement best describes ${topic}?`,
-                options: ['Statement 1', 'Statement 2', 'Statement 3', 'Statement 4'],
-                correctAnswer: 0
-            },
-            {
-                id: '3',
-                question: `How does ${topic} apply in real-world scenarios?`,
-                options: ['Application A', 'Application B', 'Application C', 'Application D'],
-                correctAnswer: 2
+            if (selectedDeckId && selectedDeck) {
+                const flashcards = selectedDeck.map((card) => ({
+                    front: card.front,
+                    back: card.back
+                }));
+
+                if (flashcards.length < 4) {
+                    throw new Error('Selected deck must have at least 4 flashcards to generate a quiz.');
+                }
+
+                generatedQuestions = await generateQuizFromFlashcards(flashcards, parseInt(questionCount), difficulty);
+
+                // Ensure choices are properly formatted
+                generatedQuestions = generatedQuestions.map((question) => ({
+                    ...question,
+                    choices: question.choices.map((choice) => (typeof choice === 'string' ? { text: choice } : choice))
+                }));
+            } else if (customTopic.trim()) {
+                generatedQuestions = await generateQuizFromFlashcards(
+                    [{ front: customTopic, back: customTopic }],
+                    parseInt(questionCount),
+                    difficulty
+                );
+
+                // Ensure choices are properly formatted
+                generatedQuestions = generatedQuestions.map((question) => ({
+                    ...question,
+                    choices: question.choices.map((choice) => (typeof choice === 'string' ? { text: choice } : choice))
+                }));
             }
-        ];
 
-        const generatedQuiz = {
-            title: title || `${topic} Quiz`,
-            description: description || `AI-generated quiz covering ${topic} concepts`,
-            questions: sampleQuestions.slice(0, parseInt(questionCount)),
-            type: 'ai' as const,
-            deck: topic,
-            classId: ''
-        };
+            const deckName = selectedDeckId
+                ? userDecks?.find((deck) => deck._id === selectedDeckId)?.name
+                : customTopic;
 
-        setIsGenerating(false);
-        onSubmit(generatedQuiz);
+            const payload = {
+                title: title || `${deckName || 'Custom Topic'} Quiz`,
+                description: description || `AI-generated quiz about ${deckName || customTopic}`,
+                questions: generatedQuestions.map((q) => ({
+                    questionText: q.questionText,
+                    choices: q.choices.map((c) =>
+                        typeof c === 'string' ? { text: c } : typeof c?.text === 'string' ? c : { text: String(c) }
+                    ),
+                    correctAnswer: q.correctAnswer
+                })),
+                type: 'ai',
+                classId: classId,
+                deckId: selectedDeckId
+            };
 
-        // Reset form
-        setTitle('');
-        setDescription('');
-        setSelectedDeck('');
-        setCustomTopic('');
-        setDifficulty('medium');
-        setQuestionCount('5');
+            console.log('Final payload:', payload);
+
+            const savedQuiz = await createQuiz(payload);
+
+            console.log('Quiz created successfully:', savedQuiz);
+
+            onSubmit({
+                title: savedQuiz.quiz.title || 'AI Generated Quiz',
+                description: savedQuiz.quiz.description || '',
+                classId: savedQuiz.quiz.class,
+                deck: savedQuiz.quiz.deck || '',
+                questions: savedQuiz.quiz.questions.map((q) => ({
+                    id: q._id,
+                    question: q.questionText,
+                    options: q.choices,
+                    correctAnswer: q.correctAnswer
+                })),
+                type: 'ai' as const
+            });
+
+            // Reset form
+            setTitle('');
+            setDescription('');
+            setSelectedDeckId('');
+            setCustomTopic('');
+            setDifficulty('Medium');
+            setQuestionCount('5');
+
+            // Close modal
+            onOpenChange(false);
+        } catch (err) {
+            console.error('Error generating quiz:', err);
+            setError(err instanceof Error ? err.message : 'Failed to generate quiz. Please try again.');
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
-    const canGenerate = (selectedDeck || customTopic.trim()) && !isGenerating;
+    const canGenerate = (selectedDeckId || customTopic.trim()) && !isGenerating;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -95,7 +148,7 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit }: AIQuizModalProps) 
                         AI Quiz Generator
                     </DialogTitle>
                     <DialogDescription>
-                        Let AI create a quiz for you based on your chosen topic or deck
+                        Let AI create a quiz for you based on your chosen deck or topic
                     </DialogDescription>
                 </DialogHeader>
 
@@ -139,15 +192,24 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit }: AIQuizModalProps) 
                             </div>
 
                             <div>
-                                <Label className='text-sm font-medium'>Select from Deck</Label>
-                                <Select value={selectedDeck} onValueChange={setSelectedDeck}>
+                                <Label className='text-sm font-medium'>Select from Your Decks</Label>
+                                <Select
+                                    value={selectedDeckId}
+                                    onValueChange={(value) => {
+                                        setSelectedDeckId(value);
+                                        if (value) setCustomTopic('');
+                                    }}
+                                    disabled={isLoadingDecks}
+                                >
                                     <SelectTrigger className='mt-1'>
-                                        <SelectValue placeholder='Choose a pre-made deck...' />
+                                        <SelectValue
+                                            placeholder={isLoadingDecks ? 'Loading your decks...' : 'Choose a deck...'}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {sampleDecks.map((deck) => (
-                                            <SelectItem key={deck} value={deck}>
-                                                {deck}
+                                        {userDecks?.map((deck) => (
+                                            <SelectItem key={deck._id} value={deck._id}>
+                                                {deck.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -163,11 +225,12 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit }: AIQuizModalProps) 
                                     onChange={(e) => {
                                         setCustomTopic(e.target.value);
                                         if (e.target.value.trim()) {
-                                            setSelectedDeck('');
+                                            setSelectedDeckId('');
                                         }
                                     }}
                                     placeholder='Enter any topic you want...'
                                     className='mt-1'
+                                    disabled={!!selectedDeckId}
                                 />
                             </div>
                         </CardContent>
@@ -177,14 +240,17 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit }: AIQuizModalProps) 
                     <div className='grid grid-cols-2 gap-4'>
                         <div>
                             <Label className='text-sm font-medium'>Difficulty Level</Label>
-                            <Select value={difficulty} onValueChange={setDifficulty}>
+                            <Select
+                                value={difficulty}
+                                onValueChange={(value: 'Easy' | 'Medium' | 'Hard') => setDifficulty(value)}
+                            >
                                 <SelectTrigger className='mt-1'>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value='easy'>Easy</SelectItem>
-                                    <SelectItem value='medium'>Medium</SelectItem>
-                                    <SelectItem value='hard'>Hard</SelectItem>
+                                    <SelectItem value='Easy'>Easy</SelectItem>
+                                    <SelectItem value='Medium'>Medium</SelectItem>
+                                    <SelectItem value='Hard'>Hard</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -204,6 +270,8 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit }: AIQuizModalProps) 
                             </Select>
                         </div>
                     </div>
+
+                    {error && <div className='text-red-500 text-sm mt-2'>{error}</div>}
 
                     {/* Actions */}
                     <div className='flex gap-3 justify-end pt-4 border-t'>

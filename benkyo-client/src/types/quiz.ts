@@ -95,3 +95,25 @@ export interface CreateQuizRes {
     type?: 'manual' | 'ai';
     deck?: string;
 }
+
+export interface CreateQuizAIRes {
+    quiz: {
+        _id: string;
+        class: string;
+        createdAt: string;
+        createdBy: {
+            name: string;
+        };
+        questions: {
+            _id: string;
+            questionText: string;
+            choices: string[];
+            correctAnswer: number;
+            explanation?: string;
+        }[];
+        title?: string;
+        description?: string;
+        type?: 'manual' | 'ai';
+        deck?: string;
+    };
+}

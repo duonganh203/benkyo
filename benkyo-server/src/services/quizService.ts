@@ -96,7 +96,7 @@ export const getAllQuizAttemptsService = async (userId: string) => {
 export const createClassQuizService = async (
     userId: string,
     classId: string,
-    quizData: z.infer<typeof createQuizValidation> & { deck: string }
+    quizData: z.infer<typeof createQuizValidation>
 ) => {
     const classDoc = await Class.findById(classId);
     if (!classDoc) {
@@ -113,12 +113,15 @@ export const createClassQuizService = async (
         description: quizData.description,
         createdBy: userId,
         createdAt: new Date(),
-        questions: quizData.questions
+        questions: quizData.questions,
+        deck: quizData.deckId,
+        type: quizData.type
     });
 
+    console.log('Received quizData.type:', quizData.type);
     await newQuiz.save();
 
-    return { id: newQuiz._id };
+    return newQuiz;
 };
 
 export const getClassQuizzesService = async (classId: string) => {
