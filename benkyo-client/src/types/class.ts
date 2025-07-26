@@ -281,8 +281,7 @@ export type ClassCardMedia = {
 };
 
 export type StartClassDeckSessionResponseDto = {
-    success: boolean;
-    data: ClassStudySession;
+    session: ClassStudySession;
     cards: ClassStudyCard[];
     resumed: boolean;
     message?: string;
@@ -294,20 +293,14 @@ export type SaveClassDeckAnswerRequestDto = {
     correct: boolean;
 };
 
-export type SaveClassDeckAnswerResponseDto = {
-    success: boolean;
-    data: ClassStudySession;
-};
+export type SaveClassDeckAnswerResponseDto = ClassStudySession;
 
 export type EndClassDeckSessionRequestDto = {
     sessionId: string;
     duration: number;
 };
 
-export type EndClassDeckSessionResponseDto = {
-    success: boolean;
-    data: ClassStudySession;
-};
+export type EndClassDeckSessionResponseDto = ClassStudySession;
 
 export type OverdueSchedule = {
     classId: string;

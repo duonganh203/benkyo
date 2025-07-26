@@ -103,10 +103,10 @@ function ClassDetailUser() {
 
             if (res.resumed) {
                 setPendingDeck(deck);
-                setPendingSessionData(res.data);
+                setPendingSessionData(res.session);
                 setShowResumeDialog(true);
             } else {
-                setClassSession(res.data);
+                setClassSession(res.session);
                 setIsResumedSession(false);
                 setStudyingDeck(deck);
             }
@@ -141,7 +141,7 @@ function ClassDetailUser() {
                     deckId: pendingDeck._id,
                     forceNew: true
                 });
-                setClassSession(res2.data);
+                setClassSession(res2.session);
                 setSessionCards(res2.cards || []);
                 setIsResumedSession(false);
                 setStudyingDeck(pendingDeck);
