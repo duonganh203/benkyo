@@ -17,7 +17,8 @@ import {
     MongooseVisitEntry,
     MongooseUserClassState,
     MongooseClass,
-    MongooseOwnerRef
+    MongooseOwnerRef,
+    PopulatedDeck
 } from '~/types/classTypes';
 
 interface NormalizedNotification {
@@ -196,7 +197,7 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
 
     return {
         data: result,
-        total: totalCount
+        hasMore: skip + result.length < totalCount
     };
 };
 
@@ -229,8 +230,6 @@ export const getSuggestedListService = async (userId: Types.ObjectId, page: numb
 
     return {
         data,
-        currentPage: page,
-        totalPages: Math.ceil(totalCount / limit),
         hasMore: skip + data.length < totalCount
     };
 };
@@ -262,6 +261,26 @@ export const requestJoinClasssService = async (classId: string, userId: Types.Ob
     return { message: 'Join request sent successfully' };
 };
 
+const updateVisitedHistory = async (classId: string, userId: Types.ObjectId) => {
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) return;
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const visitHistory = existingClass.visited?.history || [];
+
+    const alreadyVisitedToday = visitHistory.some((visit: any) => {
+        const visitDate = new Date(visit.lastVisit).toISOString().split('T')[0];
+        return visit.userId.toString() === userId.toString() && visitDate === todayStr;
+    });
+
+    if (!alreadyVisitedToday) {
+        await Class.updateOne(
+            { _id: classId },
+            { $push: { 'visited.history': { userId: userId, lastVisit: new Date() } } }
+        );
+    }
+};
+
 export const getClassManagementByIdService = async (classId: string, userId: Types.ObjectId) => {
     const existingClass = await Class.findById(classId)
         .populate({
@@ -288,8 +307,12 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
             select: '_id name email avatar'
         })
         .populate({
+            path: 'invitedUsers.user',
+            select: '_id name email avatar'
+        })
+        .populate({
             path: 'decks.deck',
-            select: '_id name description cardCount avgRating'
+            select: '_id name description cardCount'
         })
         .lean();
 
@@ -297,6 +320,44 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
 
     if (!existingClass.owner._id.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
+
+    updateVisitedHistory(classId, userId).catch(console.error);
+
+    const currentDate = new Date();
+    let overdueMembersCount = 0;
+
+    if (existingClass.decks && existingClass.users) {
+        for (const member of existingClass.users) {
+            let hasOverdue = false;
+
+            for (const deckItem of existingClass.decks) {
+                if (deckItem.endTime && new Date(deckItem.endTime) < currentDate) {
+                    const deckData = deckItem.deck;
+                    if (typeof deckData === 'object' && deckData !== null && 'cardCount' in deckData) {
+                        const populatedDeck = deckData as PopulatedDeck;
+                        const userState = await UserClassState.findOne({
+                            user: member._id,
+                            class: classId,
+                            deck: populatedDeck._id
+                        });
+
+                        const totalCards = populatedDeck.cardCount;
+                        const completedCards = userState?.completedCardIds?.length || 0;
+                        const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
+
+                        if (progress < 100) {
+                            hasOverdue = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasOverdue) {
+                overdueMembersCount++;
+            }
+        }
+    }
 
     const formattedClass = {
         ...existingClass,
@@ -306,7 +367,21 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
                 description: deckItem.description,
                 startTime: deckItem.startTime,
                 endTime: deckItem.endTime
-            })) || []
+            })) || [],
+        visited: {
+            ...existingClass.visited,
+            history: (existingClass.visited?.history || [])
+                .sort((a: any, b: any) => new Date(b.lastVisit).getTime() - new Date(a.lastVisit).getTime())
+                .filter(
+                    (visit: any, index: number, arr: any[]) =>
+                        arr.findIndex((v: any) => v.userId.toString() === visit.userId.toString()) === index
+                )
+                .map((visit: any) => ({
+                    userId: visit.userId,
+                    lastVisit: visit.lastVisit
+                }))
+        },
+        overdueMembersCount
     };
 
     return formattedClass;
@@ -579,56 +654,29 @@ export const getClassUserByIdService = async (classId: string, userId: string): 
 
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
-    const todayStr = new Date().toISOString().split('T')[0];
-    const visitHistory = existingClass.visited?.history;
-
-    if (visitHistory) {
-        const alreadyVisited = visitHistory.some(
-            (visit: VisitHistoryEntry) =>
-                visit.userId.toString() === userId && new Date(visit.lastVisit).toISOString().split('T')[0] === todayStr
-        );
-
-        if (!alreadyVisited) {
-            visitHistory.push({
-                userId: new Types.ObjectId(userId),
-                lastVisit: new Date()
-            });
-            await existingClass.save();
-        }
-    }
+    await updateVisitedHistory(classId, new Types.ObjectId(userId));
 
     const deckRefs = existingClass.decks || [];
     const deckIds = deckRefs.map((d: any) => d.deck?._id).filter(Boolean);
 
-    const bestSessions = await UserClassState.aggregate([
-        {
-            $match: {
-                user: new Types.ObjectId(userId),
-                class: new Types.ObjectId(classId),
-                deck: { $in: deckIds },
-                endTime: { $exists: true }
-            }
-        },
-        {
-            $sort: { correctCount: -1, endTime: -1 }
-        },
-        {
-            $group: {
-                _id: '$deck',
-                bestSession: { $first: '$$ROOT' }
-            }
-        }
-    ]);
+    const allSessions = await UserClassState.find({
+        user: userId,
+        class: classId,
+        deck: { $in: deckIds },
+        endTime: { $exists: true }
+    })
+        .sort({ correctCount: -1, endTime: -1 })
+        .lean();
 
     const progressMap = new Map<string, { correctCount: number; totalCount: number }>();
-
-    for (const result of bestSessions) {
-        const deckId = result._id.toString();
-        const session = result.bestSession;
-        progressMap.set(deckId, {
-            correctCount: session.correctCount || 0,
-            totalCount: session.totalCount || 0
-        });
+    for (const session of allSessions) {
+        const deckId = session.deck.toString();
+        if (!progressMap.has(deckId)) {
+            progressMap.set(deckId, {
+                correctCount: session.correctCount || 0,
+                totalCount: session.totalCount || 0
+            });
+        }
     }
 
     const decks = deckRefs.map((d: any) => {
@@ -700,7 +748,8 @@ export const getOverdueSchedulesService = async (userId: Types.ObjectId) => {
     const oneDayAgo = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
 
     const userClasses = await Class.find({
-        users: userId
+        users: userId,
+        owner: { $ne: userId }
     })
         .populate({
             path: 'decks.deck',
@@ -777,7 +826,8 @@ export const getUpcomingDeadlinesService = async (userId: Types.ObjectId) => {
     const nextWeek = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
 
     const userClasses = await Class.find({
-        users: userId
+        users: userId,
+        owner: { $ne: userId }
     })
         .populate({
             path: 'decks.deck',
@@ -846,72 +896,75 @@ export const getUpcomingDeadlinesService = async (userId: Types.ObjectId) => {
 };
 
 export const getAllNotificationsService = async (userId: Types.ObjectId) => {
-    try {
-        const [inviteNotifications, overdueSchedules, upcomingDeadlines] = await Promise.all([
-            getInviteClassService(userId),
-            getOverdueSchedulesService(userId),
-            getUpcomingDeadlinesService(userId)
-        ]);
+    const [inviteNotifications, overdueSchedules, upcomingDeadlines] = await Promise.all([
+        getInviteClassService(userId),
+        getOverdueSchedulesService(userId),
+        getUpcomingDeadlinesService(userId)
+    ]);
 
-        const criticalUpcoming = upcomingDeadlines.filter((deadline) => deadline.hoursUntilDeadline <= 48);
+    const normalizedInvites: NormalizedInviteNotification[] = inviteNotifications.map((invite) => ({
+        ...invite,
+        notificationType: 'invite' as const,
+        sortTime: new Date(invite.createdAt || new Date()),
+        priority: 2
+    }));
 
-        const normalizedInvites: NormalizedInviteNotification[] = inviteNotifications.map((invite) => ({
-            ...invite,
-            notificationType: 'invite' as const,
-            sortTime: new Date(invite.createdAt || new Date()),
-            priority: 2
-        }));
+    const normalizedOverdue: NormalizedOverdueNotification[] = overdueSchedules.map((schedule) => ({
+        ...schedule,
+        notificationType: 'overdue' as const,
+        sortTime: new Date(schedule.endTime),
+        priority: 1
+    }));
 
-        const normalizedOverdue: NormalizedOverdueNotification[] = overdueSchedules.map((schedule) => ({
-            ...schedule,
-            notificationType: 'overdue' as const,
-            sortTime: new Date(schedule.endTime),
-            priority: 1
-        }));
+    const normalizedUpcoming: NormalizedUpcomingNotification[] = upcomingDeadlines.map((deadline) => ({
+        ...deadline,
+        notificationType: 'upcoming' as const,
+        sortTime: new Date(deadline.endTime),
+        priority: deadline.hoursUntilDeadline <= 24 ? 3 : 4
+    }));
 
-        const normalizedUpcoming: NormalizedUpcomingNotification[] = criticalUpcoming.map((deadline) => ({
-            ...deadline,
-            notificationType: 'upcoming' as const,
-            sortTime: new Date(deadline.endTime),
-            priority: 1
-        }));
+    const allNotifications = [...normalizedInvites, ...normalizedOverdue, ...normalizedUpcoming].sort((a, b) => {
+        if (a.notificationType === 'invite' && b.notificationType === 'invite') {
+            return new Date(b.sortTime).getTime() - new Date(a.sortTime).getTime();
+        }
+        return a.priority - b.priority;
+    });
 
-        const allNotifications: UnifiedNotification[] = [
-            ...normalizedOverdue,
-            ...normalizedUpcoming,
-            ...normalizedInvites
-        ].sort((a, b) => {
-            if (a.priority !== b.priority) {
-                return a.priority - b.priority;
-            }
-            if (a.notificationType === 'invite' && b.notificationType === 'invite') {
-                return new Date(b.sortTime).getTime() - new Date(a.sortTime).getTime();
-            }
-            return new Date(a.sortTime).getTime() - new Date(b.sortTime).getTime();
-        });
+    return {
+        all: allNotifications,
+        invites: inviteNotifications,
+        schedules: {
+            overdue: overdueSchedules,
+            upcoming: upcomingDeadlines,
+            criticalUpcoming: upcomingDeadlines.filter((d) => d.hoursUntilDeadline <= 24)
+        },
+        summary: {
+            totalInvites: inviteNotifications.length,
+            totalOverdue: overdueSchedules.length,
+            totalUpcoming: upcomingDeadlines.length,
+            totalCritical: upcomingDeadlines.filter((d) => d.hoursUntilDeadline <= 24).length,
+            totalAll: allNotifications.length
+        }
+    };
+};
 
-        const response = {
-            all: allNotifications,
-            invites: inviteNotifications,
-            schedules: {
-                overdue: overdueSchedules,
-                upcoming: upcomingDeadlines,
-                criticalUpcoming: criticalUpcoming
-            },
-            summary: {
-                totalInvites: inviteNotifications.length,
-                totalOverdue: overdueSchedules.length,
-                totalUpcoming: upcomingDeadlines.length,
-                totalCritical: criticalUpcoming.length,
-                totalAll: allNotifications.length
-            }
-        };
+export const cancelInviteService = async (classId: string, userId: string, ownerId: Types.ObjectId) => {
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
-        return response;
-    } catch (error) {
-        console.error('Error fetching all notifications:', error);
-        throw error;
+    if (!existingClass.owner.equals(ownerId)) {
+        throw new ForbiddenRequestsException('Only class owner can cancel invites', ErrorCode.FORBIDDEN);
     }
+
+    const wasInvited = existingClass.invitedUsers.some((entry) => entry.user.equals(userId));
+    if (!wasInvited) {
+        return { message: 'User was not invited to this class' };
+    }
+
+    existingClass.invitedUsers.pull({ user: new Types.ObjectId(userId) });
+    await existingClass.save();
+
+    return { message: 'Invite cancelled successfully' };
 };
 
 interface MemberProgress {
@@ -938,104 +991,74 @@ interface MemberProgress {
 }
 
 export const getClassMemberProgressService = async (classId: string, requesterId: Types.ObjectId) => {
-    const currentDate = new Date();
+    const existingClass = await Class.findById(classId)
+        .populate({
+            path: 'users',
+            select: '_id name email avatar'
+        })
+        .populate({
+            path: 'decks.deck',
+            select: '_id name description cardCount'
+        })
+        .lean();
 
-    const classItem = await Class.findById(classId).populate('owner users', 'name email avatar');
-    if (!classItem) {
-        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
-    }
-
-    if (!classItem.owner._id.equals(requesterId)) {
-        throw new ForbiddenRequestsException('Only class owner can view member progress', ErrorCode.FORBIDDEN);
-    }
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
     const memberProgresses: MemberProgress[] = [];
 
-    const members = classItem.users as any[];
+    for (const member of existingClass.users as any[]) {
+        const userClassStates = await UserClassState.find({
+            user: member._id,
+            class: classId
+        }).populate('deck', '_id name description cardCount');
 
-    for (const member of members) {
-        const memberProgress: MemberProgress = {
+        const deckProgresses = existingClass.decks.map((classDeck: any) => {
+            const userClassState = userClassStates.find((ucs: any) => ucs.deck._id.equals(classDeck.deck._id));
+            const totalCards = classDeck.deck.cardCount || 0;
+            const completedCards = userClassState?.completedCardIds?.length || 0;
+            const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
+            const endTime = classDeck.endTime;
+            const isOverdue = endTime ? new Date() > endTime : false;
+            const hoursOverdue =
+                endTime && isOverdue ? Math.floor((new Date().getTime() - endTime.getTime()) / (1000 * 60 * 60)) : 0;
+            const hoursUntilDeadline =
+                endTime && !isOverdue ? Math.floor((endTime.getTime() - new Date().getTime()) / (1000 * 60 * 60)) : 0;
+
+            return {
+                deckId: classDeck.deck._id.toString(),
+                deckName: classDeck.deck.name,
+                description: classDeck.description || '',
+                startTime: classDeck.startTime ? new Date(classDeck.startTime) : undefined,
+                endTime: classDeck.endTime ? new Date(classDeck.endTime) : undefined,
+                progress,
+                totalCards,
+                completedCards,
+                isOverdue,
+                hoursOverdue: isOverdue ? hoursOverdue : undefined,
+                hoursUntilDeadline: !isOverdue ? hoursUntilDeadline : undefined
+            };
+        });
+
+        const overdueCount = deckProgresses.filter((dp) => dp.isOverdue).length;
+        const upcomingCount = deckProgresses.filter(
+            (dp) => !dp.isOverdue && dp.hoursUntilDeadline !== undefined && dp.hoursUntilDeadline <= 24
+        ).length;
+        const overallProgress =
+            deckProgresses.length > 0
+                ? deckProgresses.reduce((sum, dp) => sum + dp.progress, 0) / deckProgresses.length
+                : 0;
+
+        memberProgresses.push({
             userId: member._id.toString(),
             userName: member.name,
             userEmail: member.email,
-            userAvatar: member.avatar || '',
-            overallProgress: 0,
-            overdueCount: 0,
-            upcomingCount: 0,
-            deckProgresses: []
-        };
-
-        const classWithDecks = await Class.findById(classId)
-            .populate({
-                path: 'decks.deck',
-                select: 'name cardCount'
-            })
-            .lean();
-
-        if (classWithDecks?.decks) {
-            const scheduledDecks = classWithDecks.decks.filter((d: any) => d.startTime && d.endTime);
-
-            let totalProgress = 0;
-            let deckCount = 0;
-
-            for (const deckRef of scheduledDecks) {
-                const deck = deckRef.deck as any;
-                if (!deck) continue;
-
-                const userState = await UserClassState.findOne({
-                    user: member._id,
-                    class: classId,
-                    deck: deck._id
-                });
-
-                const totalCards = deck.cardCount || 0;
-                const completedCards = userState?.completedCardIds?.length || 0;
-                const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
-
-                const endTime = deckRef.endTime ? new Date(deckRef.endTime) : new Date();
-                const isOverdue = endTime < currentDate && progress < 100;
-                const isUpcoming =
-                    endTime > currentDate && endTime <= new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-                if (isOverdue) memberProgress.overdueCount++;
-                if (isUpcoming && progress < 100) memberProgress.upcomingCount++;
-
-                const hoursOverdue = isOverdue
-                    ? Math.floor((currentDate.getTime() - endTime.getTime()) / (1000 * 60 * 60))
-                    : undefined;
-                const hoursUntilDeadline = !isOverdue
-                    ? Math.floor((endTime.getTime() - currentDate.getTime()) / (1000 * 60 * 60))
-                    : undefined;
-
-                memberProgress.deckProgresses.push({
-                    deckId: deck._id.toString(),
-                    deckName: deck.name,
-                    description: deckRef.description || '',
-                    startTime: deckRef.startTime ? new Date(deckRef.startTime) : undefined,
-                    endTime: deckRef.endTime ? new Date(deckRef.endTime) : undefined,
-                    progress,
-                    totalCards,
-                    completedCards,
-                    isOverdue,
-                    hoursOverdue,
-                    hoursUntilDeadline
-                });
-
-                totalProgress += progress;
-                deckCount++;
-            }
-
-            memberProgress.overallProgress = deckCount > 0 ? Math.round(totalProgress / deckCount) : 0;
-        }
-
-        memberProgresses.push(memberProgress);
+            userAvatar: member.avatar,
+            overallProgress: Math.round(overallProgress),
+            overdueCount,
+            upcomingCount,
+            deckProgresses
+        });
     }
-    memberProgresses.sort((a, b) => {
-        if (a.overdueCount !== b.overdueCount) {
-            return b.overdueCount - a.overdueCount;
-        }
-        return a.overallProgress - b.overallProgress;
-    });
 
     return memberProgresses;
 };

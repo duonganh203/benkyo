@@ -1,11 +1,11 @@
 import { Types } from 'mongoose';
 
-export interface VisitHistoryEntry {
+export type VisitHistoryEntry = {
     userId: Types.ObjectId;
     lastVisit: Date;
-}
+};
 
-export interface ClassDeckRef {
+export type ClassDeckRef = {
     deck: {
         _id: Types.ObjectId;
         name: string;
@@ -15,20 +15,20 @@ export interface ClassDeckRef {
     description?: string;
     startTime?: Date;
     endTime?: Date;
-}
+};
 
-export interface PopulatedUser {
+export type PopulatedUser = {
     _id: Types.ObjectId;
     name: string;
     email: string;
-}
+};
 
-export interface ClassProgressData {
+export type ClassProgressData = {
     correctCount: number;
     totalCount: number;
-}
+};
 
-export interface ClassDeckProgress extends ClassProgressData {
+export type ClassDeckProgress = ClassProgressData & {
     _id: string;
     name: string;
     cardCount: number;
@@ -38,9 +38,9 @@ export interface ClassDeckProgress extends ClassProgressData {
     endTime?: Date;
     totalCount: number;
     correctCount: number;
-}
+};
 
-export interface ClassUserStateData {
+export type ClassUserStateData = {
     _id: string;
     user: {
         _id: string;
@@ -50,9 +50,9 @@ export interface ClassUserStateData {
     points: number;
     studyStreak: number;
     completedCardIds: string[];
-}
+};
 
-export interface GetClassUserByIdResponse {
+export type GetClassUserByIdResponse = {
     _id: string;
     name: string;
     description: string;
@@ -75,9 +75,14 @@ export interface GetClassUserByIdResponse {
     visited: {
         history: string[];
     };
-}
+};
 
-export interface MongooseDeckRef {
+export type PopulatedDeck = {
+    _id: Types.ObjectId;
+    cardCount: number;
+};
+
+export type MongooseDeckRef = {
     deck:
         | Types.ObjectId
         | {
@@ -89,20 +94,20 @@ export interface MongooseDeckRef {
     description?: string | null;
     startTime?: Date;
     endTime?: Date;
-}
+};
 
-export interface MongooseUserRef {
+export type MongooseUserRef = {
     _id: Types.ObjectId;
     name: string;
     email: string;
-}
+};
 
-export interface MongooseOwnerRef {
+export type MongooseOwnerRef = {
     _id: Types.ObjectId;
     name: string;
-}
+};
 
-export interface MongooseUserClassState {
+export type MongooseUserClassState = {
     _id: Types.ObjectId;
     user: {
         _id: Types.ObjectId;
@@ -112,14 +117,14 @@ export interface MongooseUserClassState {
     points: number;
     studyStreak: number;
     completedCardIds: Types.ObjectId[];
-}
+};
 
-export interface MongooseVisitEntry {
+export type MongooseVisitEntry = {
     userId: Types.ObjectId;
     lastVisit: Date;
-}
+};
 
-export interface MongooseClass {
+export type MongooseClass = {
     _id: Types.ObjectId;
     name: string;
     description: string;
@@ -134,4 +139,4 @@ export interface MongooseClass {
     visited?: {
         history: MongooseVisitEntry[];
     };
-}
+};

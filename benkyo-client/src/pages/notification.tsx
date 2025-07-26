@@ -13,12 +13,12 @@ import { UnifiedNotification } from '@/types/class';
 import { Button } from '@/components/ui/button';
 
 const Notifications = () => {
-    const { data: allNotificationsData, isLoading, error, refetch } = useGetAllNotifications();
+    const { data: notificationsData, isLoading, error, refetch } = useGetAllNotifications();
+
     const { setNotifications } = useNotificationStore();
     const { mutateAsync: acceptInvite } = useAcceptInviteClass();
     const { mutateAsync: rejectInvite } = useRejectInviteClass();
 
-    const notificationsData = allNotificationsData?.data;
     const allNotifications = notificationsData?.all || [];
     const displayedNotifications = notificationsData?.invites || [];
     const overdueSchedules = notificationsData?.schedules?.overdue || [];
@@ -53,6 +53,7 @@ const Notifications = () => {
     };
 
     const renderNotification = (notification: UnifiedNotification) => {
+        console.log('Rendering notification:', notification);
         if (notification.notificationType === 'invite') {
             return (
                 <NotificationCard
@@ -70,6 +71,7 @@ const Notifications = () => {
                 />
             );
         }
+        console.log('No matching notification type:', (notification as any).notificationType);
         return null;
     };
 
@@ -189,14 +191,9 @@ const Notifications = () => {
                                 </Card>
                             ) : (
                                 <div className='space-y-4'>
-                                    {displayedNotifications.map((item) => (
-                                        <NotificationCard
-                                            key={item.id}
-                                            notification={item}
-                                            onAcceptInvite={handleAccept}
-                                            onRejectInvite={handleReject}
-                                        />
-                                    ))}
+                                    {allNotifications
+                                        .filter((notification) => notification.notificationType === 'invite')
+                                        .map((notification) => renderNotification(notification))}
                                 </div>
                             )}
                         </TabsContent>

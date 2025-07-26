@@ -68,7 +68,7 @@ export const acceptJoinClassApi = async (classId: string, userId: string) => {
     const response = await api.post(`/class/accept?classId=${classId}&userId=${userId}`);
     return response.data as ClassJoinResponseDto;
 };
-export const getClassManagemenById = async (classId: string) => {
+export const getClassManagementByIdApi = async (classId: string) => {
     const response = await api.get(`/class/${classId}/management`);
     return response.data as ClassManagementResponseDto;
 };
@@ -120,12 +120,12 @@ export const getClassUserByIdApi = async (classId: string) => {
 
 export const getClassDeckSessionHistoryApi = async (classId: string, deckId: string) => {
     const response = await api.get(`/class/${classId}/deck/${deckId}/session/history`);
-    return response.data.data;
+    return response.data;
 };
 
 export const getClassDeckSessionBestApi = async (classId: string, deckId: string) => {
     const response = await api.get(`/class/${classId}/deck/${deckId}/session/best`);
-    return response.data.data;
+    return response.data;
 };
 
 export const startClassDeckSessionApi = async (classId: string, deckId: string, forceNew?: boolean) => {
@@ -169,4 +169,24 @@ export const getUpcomingDeadlines = async () => {
 export const getAllNotifications = async () => {
     const response = await api.get('/class/notifications/all');
     return response.data;
+};
+
+export const getClassMemberProgressApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/member-progress`);
+    return response.data;
+};
+
+export const getClassDeckSessionLeaderboardApi = async (classId: string, deckId: string) => {
+    const response = await api.get(`/class/${classId}/deck/${deckId}/session/leaderboard`);
+    return response.data;
+};
+
+export const startClassStudySessionApi = async (classId: string, deckId: string, forceNew?: boolean) => {
+    const response = await api.post(`/class/${classId}/deck/${deckId}/study/start`, { forceNew });
+    return response.data;
+};
+
+export const cancelInviteApi = async (classId: string, userId: string) => {
+    const response = await api.delete(`/class/${classId}/invite/${userId}`);
+    return response.data as { message: string };
 };

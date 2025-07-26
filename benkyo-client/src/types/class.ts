@@ -125,9 +125,24 @@ export type ClassManagementResponseDto = {
     requiredApprovalToJoin: boolean;
     users: ClassUser[];
     joinRequests: ClassJoinRequest[];
-    visited: ClassVisited;
+    invitedUsers: {
+        user: ClassUser;
+        invitedAt: string;
+    }[];
+    visited: {
+        history: {
+            userId: {
+                _id: string;
+                name: string;
+                email: string;
+                avatar: string;
+            };
+            lastVisit: string;
+        }[];
+    };
     decks: ClassDeck[];
     userClassStates: ClassUserStatePopulated[];
+    overdueMembersCount: number;
     createdAt: Date;
     updatedAt: Date;
 };
@@ -220,7 +235,10 @@ export type GetClassUserByIdResponseDto = {
     completionRate: number;
     bannerUrl: string;
     visited: {
-        history: string[];
+        history: {
+            userId: string;
+            lastVisit: string;
+        }[];
     };
 };
 
@@ -359,4 +377,35 @@ export type AllNotificationsResponse = {
         totalCritical: number;
         totalAll: number;
     };
+};
+
+export type MemberDeckProgress = {
+    deckId: string;
+    deckName: string;
+    description: string;
+    startTime?: Date;
+    endTime?: Date;
+    progress: number;
+    totalCards: number;
+    completedCards: number;
+    isOverdue: boolean;
+    hoursOverdue?: number;
+    hoursUntilDeadline?: number;
+};
+
+export type MemberProgress = {
+    userId: string;
+    userName: string;
+    userEmail: string;
+    userAvatar: string;
+    overallProgress: number;
+    overdueCount: number;
+    upcomingCount: number;
+    deckProgresses: MemberDeckProgress[];
+};
+
+export type ClassMemberProgressResponse = {
+    success: boolean;
+    data: MemberProgress[];
+    message: string;
 };

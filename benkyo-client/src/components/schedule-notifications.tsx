@@ -147,7 +147,6 @@ const ScheduleNotifications = () => {
                             </div>
                         ))}
 
-                        {/* Action Buttons */}
                         <div className='pt-2 border-t border-orange-200'>
                             <p className='text-xs text-orange-700 text-center'>
                                 Complete your scheduled study sessions to stay on track!

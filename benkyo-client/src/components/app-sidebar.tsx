@@ -47,7 +47,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         return [...decks].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 5);
     }, [decks]);
 
-    const notificationCount = allNotificationsData?.data?.summary?.totalAll || 0;
+    const notificationCount = allNotificationsData?.summary?.totalAll || 0;
 
     const navData = useMemo(
         () => ({
