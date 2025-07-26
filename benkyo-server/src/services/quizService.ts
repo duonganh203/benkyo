@@ -113,12 +113,16 @@ export const createClassQuizService = async (
         description: quizData.description,
         createdBy: userId,
         createdAt: new Date(),
-        questions: quizData.questions
+        questions: quizData.questions.map((q) => ({
+            questionText: q.questionText,
+            choices: q.choices.map((c) => (typeof c === 'string' ? c : c.text)),
+            correctAnswer: q.correctAnswer
+        }))
     });
 
     await newQuiz.save();
 
-    return { id: newQuiz._id };
+    return newQuiz;
 };
 
 export const getClassQuizzesService = async (classId: string) => {
