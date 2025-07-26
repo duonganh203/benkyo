@@ -9,7 +9,8 @@ import {
     Revlog,
     StudySession,
     User,
-    UserDeckState
+    UserDeckState,
+    Class
 } from '~/schemas';
 import { createDeckValidation } from '~/validations/deckValidation';
 import { NotFoundException } from '~/exceptions/notFound';
@@ -42,10 +43,17 @@ export const getDeckService = async (userId: string, deckId: string) => {
     if (!deck) {
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
-    if (!deck.owner.equals(userId) && !deck.isPublic) {
-        throw new ForbiddenRequestsException('You do not have permission to view this deck', ErrorCode.FORBIDDEN);
+    if (deck.owner.equals(userId) || deck.isPublic) {
+        return deck;
     }
-    return deck;
+    const classWithDeck = await Class.findOne({
+        'decks.deck': deck._id,
+        users: userId
+    });
+    if (classWithDeck) {
+        return deck;
+    }
+    throw new ForbiddenRequestsException('You do not have permission to view this deck', ErrorCode.FORBIDDEN);
 };
 
 export const getAllDecksService = async (userId: string) => {

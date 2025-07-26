@@ -9,10 +9,10 @@ type PaginatedClassList = {
     hasMore: boolean;
 };
 
-const useGetMyClass = () => {
+const useGetMyClass = (search?: string) => {
     return useInfiniteQuery<PaginatedClassList, AxiosError<ApiError>>({
-        queryKey: ['myClasses'],
-        queryFn: ({ pageParam = 1 }) => getMyClassApi(pageParam as number),
+        queryKey: ['myClasses', search],
+        queryFn: ({ pageParam = 1 }) => getMyClassApi(pageParam as number, search),
         initialPageParam: 1,
         getNextPageParam: (lastPage: PaginatedClassList, allPages: PaginatedClassList[]) =>
             lastPage.hasMore ? allPages.length + 1 : undefined

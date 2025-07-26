@@ -5,19 +5,25 @@ import { acceptInviteClassApi, rejectInviteClassApi } from '@/api/classApi';
 let socket: WebSocket | null = null;
 
 export const connectWebSocket = (email: string) => {
-    const url = import.meta.env.VITE_WS_URL;
-    if (!url || !email) return;
+    const url = import.meta.env.VITE_WS_URL || 'ws://localhost:5000/ws';
+
+    if (!email) return;
     if (socket && socket.readyState !== WebSocket.CLOSED) return;
+
     socket = new WebSocket(url);
 
     socket.onopen = () => {
         socket?.send(JSON.stringify({ type: 'register', email }));
     };
 
-    socket.onmessage = createMessageHandler();
+    socket.onmessage = (event) => {
+        createMessageHandler()(event);
+    };
+
     socket.onclose = () => {
         socket = null;
     };
+
     socket.onerror = () => {
         socket = null;
     };

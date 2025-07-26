@@ -1,25 +1,40 @@
-import { Bell, Loader2 } from 'lucide-react';
+import { Bell, Loader2, Users, Clock, AlertTriangle, Calendar } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import useAcceptInviteClass from '@/hooks/queries/use-accept-invite-class';
-import useGetInviteClass from '@/hooks/queries/use-get-invite-class';
 import useRejectInviteClass from '@/hooks/queries/use-reject-invite-class';
+import useGetAllNotifications from '@/hooks/queries/use-get-all-notifications';
 import { NotificationCard } from '@/components/notification-card';
+import { ScheduleNotificationCard } from '@/components/schedule-notification-card';
 import { getToast } from '@/utils/getToast';
 import { useNotificationStore } from '@/hooks/stores/use-notification-store';
+import { UnifiedNotification } from '@/types/class';
+import { Button } from '@/components/ui/button';
 
 const Notifications = () => {
-    const { data: notificationList, isLoading, error, refetch } = useGetInviteClass();
+    const { data: notificationsData, isLoading, error, refetch } = useGetAllNotifications();
+
     const { setNotifications } = useNotificationStore();
     const { mutateAsync: acceptInvite } = useAcceptInviteClass();
     const { mutateAsync: rejectInvite } = useRejectInviteClass();
 
-    const displayedNotifications = notificationList ?? [];
+    const allNotifications = notificationsData?.all || [];
+    const displayedNotifications = notificationsData?.invites || [];
+    const overdueSchedules = notificationsData?.schedules?.overdue || [];
+    const upcomingDeadlines = notificationsData?.schedules?.upcoming || [];
+    const criticalUpcoming = notificationsData?.schedules?.criticalUpcoming || [];
+
+    const totalInvites = notificationsData?.summary?.totalInvites || 0;
+    const totalSchedule =
+        (notificationsData?.summary?.totalOverdue || 0) + (notificationsData?.schedules?.upcoming?.length || 0);
+    const totalNotifications = notificationsData?.summary?.totalAll || 0;
 
     const handleAccept = async (classId: string) => {
         try {
             await acceptInvite({ classId });
-            const { data: updatedList } = await refetch();
-            setNotifications(updatedList ?? []);
+            await refetch();
+            setNotifications(displayedNotifications);
             getToast('success', 'Successfully joined the class.');
         } catch {
             getToast('error', 'Failed to join the class.');
@@ -29,12 +44,35 @@ const Notifications = () => {
     const handleReject = async (classId: string) => {
         try {
             await rejectInvite({ classId });
-            const { data: updatedList } = await refetch();
-            setNotifications(updatedList ?? []);
+            await refetch();
+            setNotifications(displayedNotifications);
             getToast('success', 'Invitation rejected.');
         } catch {
             getToast('error', 'Failed to reject the invitation.');
         }
+    };
+
+    const renderNotification = (notification: UnifiedNotification) => {
+        console.log('Rendering notification:', notification);
+        if (notification.notificationType === 'invite') {
+            return (
+                <NotificationCard
+                    key={notification.id}
+                    notification={notification}
+                    onAcceptInvite={handleAccept}
+                    onRejectInvite={handleReject}
+                />
+            );
+        } else if (notification.notificationType === 'overdue' || notification.notificationType === 'upcoming') {
+            return (
+                <ScheduleNotificationCard
+                    key={`${notification.notificationType}-${notification.classId}-${notification.deckId}`}
+                    notification={notification}
+                />
+            );
+        }
+        console.log('No matching notification type:', (notification as any).notificationType);
+        return null;
     };
 
     if (error) {
@@ -43,12 +81,12 @@ const Notifications = () => {
                 <Card className='w-full max-w-md'>
                     <CardContent className='pt-6 text-center'>
                         <p className='text-destructive mb-4'>Failed to load notifications</p>
-                        <button
+                        <Button
                             onClick={() => window.location.reload()}
                             className='px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90'
                         >
                             Retry
-                        </button>
+                        </Button>
                     </CardContent>
                 </Card>
             </div>
@@ -65,13 +103,16 @@ const Notifications = () => {
                         </div>
                         <div>
                             <h1 className='text-2xl font-bold text-foreground'>Notifications</h1>
-                            <p className='text-muted-foreground'>Manage your class invitations</p>
+                            <p className='text-muted-foreground'>Manage your invitations and schedule alerts</p>
                         </div>
+                        {totalNotifications > 0 && (
+                            <Badge variant='destructive' className='ml-auto'>
+                                {totalNotifications}
+                            </Badge>
+                        )}
                     </div>
                     <div className='flex items-center gap-4 mt-4'>
-                        <span className='text-sm text-muted-foreground'>
-                            Total: {displayedNotifications.length} notifications
-                        </span>
+                        <span className='text-sm text-muted-foreground'>Total: {totalNotifications} notifications</span>
                     </div>
                 </div>
 
@@ -82,27 +123,146 @@ const Notifications = () => {
                             <p className='text-muted-foreground'>Loading notifications...</p>
                         </div>
                     </div>
-                ) : displayedNotifications.length === 0 ? (
-                    <Card>
-                        <CardContent className='pt-6'>
-                            <div className='text-center py-12'>
-                                <Bell className='w-16 h-16 mx-auto mb-4 text-muted-foreground' />
-                                <h3 className='text-lg font-medium mb-2 text-foreground'>No notifications</h3>
-                                <p className='text-muted-foreground'>You have no notifications</p>
-                            </div>
-                        </CardContent>
-                    </Card>
                 ) : (
-                    <div className='space-y-4'>
-                        {displayedNotifications.map((item) => (
-                            <NotificationCard
-                                key={item.id}
-                                notification={item}
-                                onAcceptInvite={handleAccept}
-                                onRejectInvite={handleReject}
-                            />
-                        ))}
-                    </div>
+                    <Tabs defaultValue='all' className='w-full'>
+                        <TabsList className='grid w-full grid-cols-3'>
+                            <TabsTrigger value='all' className='relative'>
+                                All
+                                {totalNotifications > 0 && (
+                                    <Badge variant='secondary' className='ml-1 text-xs'>
+                                        {totalNotifications}
+                                    </Badge>
+                                )}
+                            </TabsTrigger>
+                            <TabsTrigger value='invites' className='relative'>
+                                <Users className='w-4 h-4 mr-1' />
+                                Class Invites
+                                {totalInvites > 0 && (
+                                    <Badge variant='secondary' className='ml-1 text-xs'>
+                                        {totalInvites}
+                                    </Badge>
+                                )}
+                            </TabsTrigger>
+                            <TabsTrigger value='schedule' className='relative'>
+                                <Clock className='w-4 h-4 mr-1' />
+                                Schedule Alerts
+                                {totalSchedule > 0 && (
+                                    <Badge variant='destructive' className='ml-1 text-xs'>
+                                        {totalSchedule}
+                                    </Badge>
+                                )}
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value='all' className='space-y-4 mt-6'>
+                            {totalNotifications === 0 ? (
+                                <Card>
+                                    <CardContent className='pt-6'>
+                                        <div className='text-center py-12'>
+                                            <Bell className='w-16 h-16 mx-auto mb-4 text-muted-foreground' />
+                                            <h3 className='text-lg font-medium mb-2 text-foreground'>
+                                                No notifications
+                                            </h3>
+                                            <p className='text-muted-foreground'>You have no notifications</p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                <div className='space-y-4'>
+                                    {allNotifications.map((notification) => renderNotification(notification))}
+                                </div>
+                            )}
+                        </TabsContent>
+
+                        <TabsContent value='invites' className='space-y-4 mt-6'>
+                            {totalInvites === 0 ? (
+                                <Card>
+                                    <CardContent className='pt-6'>
+                                        <div className='text-center py-12'>
+                                            <Users className='w-16 h-16 mx-auto mb-4 text-muted-foreground' />
+                                            <h3 className='text-lg font-medium mb-2 text-foreground'>
+                                                No class invitations
+                                            </h3>
+                                            <p className='text-muted-foreground'>
+                                                You have no pending class invitations
+                                            </p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                <div className='space-y-4'>
+                                    {allNotifications
+                                        .filter((notification) => notification.notificationType === 'invite')
+                                        .map((notification) => renderNotification(notification))}
+                                </div>
+                            )}
+                        </TabsContent>
+
+                        <TabsContent value='schedule' className='space-y-4 mt-6'>
+                            {totalSchedule === 0 ? (
+                                <Card>
+                                    <CardContent className='pt-6'>
+                                        <div className='text-center py-12'>
+                                            <Clock className='w-16 h-16 mx-auto mb-4 text-muted-foreground' />
+                                            <h3 className='text-lg font-medium mb-2 text-foreground'>
+                                                No schedule alerts
+                                            </h3>
+                                            <p className='text-muted-foreground'>
+                                                All your scheduled study sessions are up to date!
+                                            </p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                <div className='space-y-4'>
+                                    {overdueSchedules.length > 0 && (
+                                        <div className='space-y-4'>
+                                            <div className='flex items-center gap-2 text-red-600'>
+                                                <AlertTriangle className='w-4 h-4' />
+                                                <h3 className='font-medium'>Overdue ({overdueSchedules.length})</h3>
+                                            </div>
+                                            {overdueSchedules.map((schedule) => (
+                                                <ScheduleNotificationCard
+                                                    key={`overdue-${schedule.classId}-${schedule.deckId}`}
+                                                    notification={schedule}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {criticalUpcoming.length > 0 && (
+                                        <div className='space-y-4'>
+                                            <div className='flex items-center gap-2 text-yellow-600'>
+                                                <Clock className='w-4 h-4' />
+                                                <h3 className='font-medium'>Due Soon ({criticalUpcoming.length})</h3>
+                                            </div>
+                                            {criticalUpcoming.map((deadline) => (
+                                                <ScheduleNotificationCard
+                                                    key={`upcoming-${deadline.classId}-${deadline.deckId}`}
+                                                    notification={deadline}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {upcomingDeadlines.length > 0 && (
+                                        <div className='space-y-4'>
+                                            <div className='flex items-center gap-2 text-blue-600'>
+                                                <Calendar className='w-4 h-4' />
+                                                <h3 className='font-medium'>This Week ({upcomingDeadlines.length})</h3>
+                                            </div>
+                                            {upcomingDeadlines.map((deadline) => (
+                                                <ScheduleNotificationCard
+                                                    key={`all-upcoming-${deadline.classId}-${deadline.deckId}`}
+                                                    notification={deadline}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </TabsContent>
+                    </Tabs>
                 )}
             </div>
         </div>

@@ -187,6 +187,7 @@ const CreateClass = () => {
                                                         type='button'
                                                         variant='outline'
                                                         size='sm'
+                                                        className='cursor-pointer'
                                                         onClick={() =>
                                                             document.getElementById('banner-upload')?.click()
                                                         }

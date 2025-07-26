@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, ArrowRight, UserPlus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS } from 'date-fns/locale';
@@ -72,14 +72,20 @@ const ClassCard = ({
                 </div>
                 <div className='mt-4'>
                     {variant === 'my-class' ? (
-                        <Button asChild className='w-full'>
-                            <Link to={`/class/${classItem._id}`}>
-                                Enter Class
-                                <ArrowRight className='h-4 w-4 ml-2' />
-                            </Link>
+                        <Button className='w-full cursor-pointer'>
+                            Enter Class
+                            <ArrowRight className='h-4 w-4 ml-2' />
                         </Button>
                     ) : (
-                        <Button variant='secondary' onClick={handleJoinClass} className='w-full'>
+                        <Button
+                            variant='secondary'
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleJoinClass();
+                            }}
+                            className='w-full cursor-pointer'
+                        >
                             Join
                             <UserPlus className='h-4 w-4 ml-2' />
                         </Button>
