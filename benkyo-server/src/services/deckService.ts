@@ -240,3 +240,34 @@ export const updateDeckFsrsParamsService = async (userId: string, deckId: string
 
     return updatedDeck?.fsrsParams;
 };
+
+export const getDeckStatsService = async () => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    const totalDecks = await Deck.countDocuments();
+
+    const pendingDecks = await Deck.countDocuments({
+        publicStatus: PublicStatus.PENDING
+    });
+
+    const createdThisMonth = await Deck.countDocuments({
+        createdAt: { $gte: startOfMonth }
+    });
+
+    const createdLastMonth = await Deck.countDocuments({
+        createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth }
+    });
+
+    const growthPercentage =
+        createdLastMonth === 0 ? 100 : Math.round(((createdThisMonth - createdLastMonth) / createdLastMonth) * 100);
+
+    return {
+        totalDecks,
+        pendingDecks,
+        createdThisMonth,
+        growthPercentage
+    };
+};
