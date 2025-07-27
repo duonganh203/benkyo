@@ -136,7 +136,9 @@ export const updateClassQuizApi = async (classId: string, quizId: string, data: 
 
 export const deleteClassQuizApi = async (classId: string, quizId: string) => {
     const response = await api.delete(`/class/${classId}/management/quiz/${quizId}`);
-  
+    return response.data as { message: string };
+};
+
 export const getClassUserByIdApi = async (classId: string) => {
     const response = await api.get(`/class/${classId}/user-detail`);
     return response.data as GetClassUserByIdResponseDto;
