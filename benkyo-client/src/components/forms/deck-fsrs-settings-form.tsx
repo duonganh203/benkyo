@@ -9,13 +9,14 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { RotateCcw, Save, Settings, Info } from 'lucide-react';
+import { RotateCcw, Save, Settings } from 'lucide-react';
 import { useUpdateDeckFsrsParams } from '@/hooks/queries/use-update-deck-fsrs-params';
 import { DeckDetails } from '@/types/deck';
 import { FSRSParamsSchema } from '@/schemas/deckSchema';
 import useMe from '@/hooks/queries/use-me';
 import { getToast } from '@/utils/getToast';
 import { useQueryClient } from '@tanstack/react-query';
+import { FSRSInfoButton } from '@/components/fsrs-info-button';
 
 type FSRSParams = z.infer<typeof FSRSParamsSchema>;
 
@@ -299,7 +300,7 @@ export const DeckFSRSSettingsForm = ({ deck }: DeckFSRSSettingsFormProps) => {
                                 <Badge variant='outline' className='text-xs'>
                                     Expert level
                                 </Badge>
-                                <Info className='h-4 w-4 text-muted-foreground' />
+                                <FSRSInfoButton variant='icon' className='h-6 w-6' />
                             </div>
 
                             <FormField
