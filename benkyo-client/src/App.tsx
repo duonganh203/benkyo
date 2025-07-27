@@ -32,6 +32,7 @@ import ClassListUser from './pages/classt-list-user';
 import ClassManagement from './pages/class-management';
 import Notifications from './pages/notification';
 import { InviteDialog } from './components/invite-dialog';
+import ClassDetailUser from './pages/class-detail-user';
 import TopLearners from './pages/top-study-streak';
 import ClassQuizManagement from './pages/class-quiz-management';
 
@@ -82,6 +83,7 @@ const App = () => {
                             <Route path='/class/:_id/management' element={<ClassManagement />} />
                             <Route path='/class/:_id/management/quizzes' element={<ClassQuizManagement />} />
                             <Route path='/notification' element={<Notifications />} />
+                            <Route path='/class/:classId' element={<ClassDetailUser />} />
                         </Route>
                     </Routes>
                     <ModalProvider />

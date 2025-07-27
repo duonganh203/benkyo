@@ -1,30 +1,33 @@
 import { Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import useGetMyClass from '@/hooks/queries/use-get-my-class';
 import { ClassListItemUserResponseDto } from '@/types/class';
 import useGetSuggestedClass from '@/hooks/queries/use-get-suggested-class';
 import ClassCard from '@/components/class-card';
+import { useState } from 'react';
 
 const ClassListUser = () => {
     const { user } = useAuthStore((s) => s);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const {
         data: myClassPages,
         fetchNextPage: fetchNextMyClass,
         hasNextPage: hasMoreMyClass,
         isLoading: isLoadingMyClass
-    } = useGetMyClass();
+    } = useGetMyClass(searchTerm);
 
     const {
         data: suggestedClassPages,
         fetchNextPage: fetchNextSuggested,
         hasNextPage: hasMoreSuggested,
         isLoading: isLoadingSuggested
-    } = useGetSuggestedClass();
+    } = useGetSuggestedClass(searchTerm);
 
     const myClasses = myClassPages?.pages.flatMap((p) => p.data) ?? [];
     const suggestedClasses = suggestedClassPages?.pages.flatMap((p) => p.data) ?? [];
@@ -47,7 +50,7 @@ const ClassListUser = () => {
                     {Array(3)
                         .fill(0)
                         .map((_, i) => (
-                            <Card key={i} className='overflow-hidden h-64 pl-4'>
+                            <Card key={i} className='overflow-hidden h-64'>
                                 <Skeleton className='h-full w-full' />
                             </Card>
                         ))}
@@ -57,9 +60,11 @@ const ClassListUser = () => {
             ) : (
                 <>
                     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-                        {items.map((c, i) => (
-                            <div key={c._id} className='pl-4'>
-                                <ClassCard classItem={c} index={i} variant={variant} />
+                        {items.map((classItem, i) => (
+                            <div key={classItem._id} className='pl-4'>
+                                <Link to={`/class/${classItem._id}`} className='cursor-pointer block'>
+                                    <ClassCard classItem={classItem} index={i} variant={variant} />
+                                </Link>
                             </div>
                         ))}
                     </div>
@@ -78,16 +83,29 @@ const ClassListUser = () => {
             <div className='container px-4 py-8'>
                 <div className='flex items-center justify-between mb-6'>
                     <h1 className='text-3xl font-bold text-foreground'>Classes</h1>
-                    {user?.isPro && (
-                        <Link
-                            to='/class/create'
-                            className='inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm rounded-md hover:bg-primary/90 transition'
-                        >
-                            <Plus className='w-4 h-4' />
-                            Create Class
-                        </Link>
-                    )}
+                    <div className='flex items-center gap-4'>
+                        <div className='relative'>
+                            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4' />
+                            <Input
+                                type='text'
+                                placeholder='Search classes...'
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className='pl-10 w-80'
+                            />
+                        </div>
+                        {user?.isPro && (
+                            <Link
+                                to='/class/create'
+                                className='inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm rounded-md hover:bg-primary/90 transition'
+                            >
+                                <Plus className='w-4 h-4' />
+                                Create Class
+                            </Link>
+                        )}
+                    </div>
                 </div>
+
                 {renderSection(
                     'Your Classes',
                     myClasses,
@@ -96,6 +114,7 @@ const ClassListUser = () => {
                     hasMoreMyClass ?? false,
                     'my-class'
                 )}
+
                 {renderSection(
                     'Suggested Classes',
                     suggestedClasses,

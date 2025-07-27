@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { UserX, Users, Calendar, Eye, Settings, Play, Plus } from 'lucide-react';
+import { UserX, Users, Calendar, Eye, Settings, Play, Plus, Mail } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +12,7 @@ import JoinRequestsSection from '@/components/join-request.section';
 
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import useDeleteclass from '@/hooks/queries/use-delete-class';
-import useGetClassManagemenById from '@/hooks/queries/use-get-class-management-id';
+import useGetClassManagementById from '@/hooks/queries/use-get-class-management-id';
 import useAcceptJoinClass from '@/hooks/queries/use-accept-join-request';
 import useRejectJoinClass from '@/hooks/queries/use-reject-join-request';
 import useInviteMemberToClassApi from '@/hooks/queries/use-invite-member-class';
@@ -29,6 +29,8 @@ import ConfirmDeleteUserModal from '@/components/modals/confirm-delete-user-moda
 import ConfirmDeleteClassModal from '@/components/modals/confirm-delete-class-modal';
 import ConfirmDeleteDeckModal from '@/components/modals/confirm-delete-deck-modal';
 import ClassDecksModal from '@/components/modals/class-decks-modal';
+import ClassMemberProgressModal from '@/components/modals/class-member-progress-modal';
+import InvitedUsersModal from '@/components/modals/invited-users-modal';
 
 const UserClassManagement = () => {
     const { _id = '' } = useParams();
@@ -46,11 +48,13 @@ const UserClassManagement = () => {
     const [showInviteDialog, setShowInviteDialog] = useState(false);
     const [showMembersDialog, setShowMembersDialog] = useState(false);
     const [showDecksDialog, setShowDecksDialog] = useState(false);
+    const [showMemberProgressDialog, setShowMemberProgressDialog] = useState(false);
+    const [showInvitedUsersDialog, setShowInvitedUsersDialog] = useState(false);
     const [removeUserId, setRemoveUserId] = useState<string | null>(null);
     const [removeDeckId, setRemoveDeckId] = useState<string | null>(null);
 
     const { user } = useAuthStore((store) => store);
-    const { data: classItem, isLoading, isError, refetch } = useGetClassManagemenById(classId);
+    const { data: classItem, isLoading, isError, refetch } = useGetClassManagementById(classId);
     const { mutateAsync: acceptRequest } = useAcceptJoinClass();
     const { mutateAsync: rejectRequest } = useRejectJoinClass();
     const { mutateAsync: inviteMember } = useInviteMemberToClassApi();
@@ -167,7 +171,7 @@ const UserClassManagement = () => {
 
     return (
         <div className='min-h-screen bg-background'>
-            <div className='container mx-auto px-4 py-8 max-w-6xl'>
+            <div className='container mx-auto px-4 py-8 max-w-7xl'>
                 <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8'>
                     <div className='w-full flex gap-3 justify-end'>
                         <Button onClick={() => navigate(`/class/${classId}/update`)} className='px-6'>
@@ -209,8 +213,10 @@ const UserClassManagement = () => {
                         <StatCard icon={Settings} label='Decks' value={classItem.decks?.length || 0} />
                     </div>
 
-                    <StatCard icon={Eye} label='Visits' value={classItem.visited?.count || 0} />
-                    <StatCard icon={Calendar} label='Tracked States' value={classItem.userClassStates?.length || 0} />
+                    <StatCard icon={Eye} label='Visits' value={classItem.visited?.history?.length || 0} />
+                    <div onClick={() => setShowMemberProgressDialog(true)} className='cursor-pointer'>
+                        <StatCard icon={Calendar} label='Overdue Members' value={classItem.overdueMembersCount || 0} />
+                    </div>
                 </div>
                 <div className='w-full flex flex-wrap items-center justify-center sm:justify-start gap-3 border-b pb-4 mb-6'>
                     <Button variant='outline' onClick={() => setShowInviteDialog(true)}>
@@ -221,6 +227,9 @@ const UserClassManagement = () => {
                     </Button>
                     <Button variant='outline' onClick={() => handleCreateQuiz()}>
                         <Play className='w-4 h-4 mr-2' /> Create Quiz
+                    </Button>
+                    <Button variant='outline' onClick={() => setShowInvitedUsersDialog(true)}>
+                        <Mail className='w-4 h-4 mr-2' /> Invited Users ({classItem?.invitedUsers?.length || 0})
                     </Button>
                 </div>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
@@ -285,6 +294,20 @@ const UserClassManagement = () => {
                         onClose={() => setShowDeleteDialog(false)}
                         onConfirm={handleDeleteConfirmClass}
                     />
+
+                    <ClassMemberProgressModal
+                        open={showMemberProgressDialog}
+                        onOpenChange={setShowMemberProgressDialog}
+                        classId={classId}
+                    />
+
+                    <InvitedUsersModal
+                        open={showInvitedUsersDialog}
+                        onOpenChange={setShowInvitedUsersDialog}
+                        invitedUsers={classItem?.invitedUsers || []}
+                        classId={classId}
+                        refetch={refetch}
+                    />
                 </div>
 
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
@@ -334,19 +357,34 @@ const UserClassManagement = () => {
                         <CardContent>
                             {classItem.visited?.history && classItem.visited.history.length > 0 ? (
                                 <div className='space-y-3'>
-                                    {classItem.visited.history.slice(0, 5).map((visit: any, i: number) => (
-                                        <div
-                                            key={i}
-                                            className='flex justify-between items-center p-3 bg-muted/50 rounded-lg'
-                                        >
-                                            <span className='font-medium'>{visit.userId?.email || 'Unknown User'}</span>
-                                            <span className='text-sm text-muted-foreground'>
-                                                {visit.lastVisit
-                                                    ? new Date(visit.lastVisit).toLocaleDateString()
-                                                    : 'N/A'}
-                                            </span>
-                                        </div>
-                                    ))}
+                                    {classItem.visited.history.slice(0, 5).map(
+                                        (
+                                            visit: {
+                                                userId: {
+                                                    _id: string;
+                                                    name: string;
+                                                    email: string;
+                                                    avatar: string;
+                                                };
+                                                lastVisit: string;
+                                            },
+                                            i: number
+                                        ) => (
+                                            <div
+                                                key={i}
+                                                className='flex justify-between items-center p-3 bg-muted/50 rounded-lg'
+                                            >
+                                                <span className='font-medium'>
+                                                    {visit.userId.email || 'Unknown User'}
+                                                </span>
+                                                <span className='text-sm text-muted-foreground'>
+                                                    {visit.lastVisit
+                                                        ? new Date(visit.lastVisit).toLocaleDateString()
+                                                        : 'N/A'}
+                                                </span>
+                                            </div>
+                                        )
+                                    )}
                                     {classItem.visited.history.length > 5 && (
                                         <div className='text-sm text-muted-foreground text-center pt-2'>
                                             And {classItem.visited.history.length - 5} more visits...

@@ -35,18 +35,19 @@ import { useCreateDeckModal } from '@/hooks/stores/use-create-deck-modal';
 import useGetUserDecks from '@/hooks/queries/use-get-user-decks';
 import { Skeleton } from './ui/skeleton';
 import { ScrollArea } from './ui/scroll-area';
-import { useNotificationStore } from '@/hooks/stores/use-notification-store';
+import useGetAllNotifications from '@/hooks/queries/use-get-all-notifications';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { user } = useAuthStore((store) => store);
     const { open } = useCreateDeckModal((store) => store);
     const { data: decks = [], isLoading } = useGetUserDecks();
+    const { data: allNotificationsData } = useGetAllNotifications();
 
     const latestDecks = useMemo(() => {
         return [...decks].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 5);
     }, [decks]);
 
-    const notificationCount = useNotificationStore((state) => state.notifications.length);
+    const notificationCount = allNotificationsData?.summary?.totalAll || 0;
 
     const navData = useMemo(
         () => ({
@@ -55,7 +56,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     title: 'Notifications',
                     url: '/notification',
                     icon: Bell,
-                    badge: notificationCount.toString()
+                    badge: notificationCount > 0 ? notificationCount.toString() : undefined
                 },
                 {
                     title: 'Home',
@@ -212,7 +213,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarContent>
 
             <SidebarFooter className='border-t border-sidebar-border bg-sidebar/50 backdrop-blur-sm'>
-                <NavUser user={user!} />
+                {user?.isPro ? (
+                    <div className='neon-border-animated' style={{ overflow: 'visible', borderRadius: '9999px' }}>
+                        <div className='neon-side left'></div>
+                        <div className='neon-side right'></div>
+                        <span className={`neon-badge-static neon-badge-${user.proType.toLowerCase()}`}>
+                            {user.proType}
+                        </span>
+                        <div className='neon-inner' style={{ borderRadius: '9999px' }}>
+                            <NavUser user={user!} />
+                        </div>
+                    </div>
+                ) : (
+                    <NavUser user={user!} />
+                )}
             </SidebarFooter>
 
             <SidebarRail />

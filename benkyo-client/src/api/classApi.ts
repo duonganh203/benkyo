@@ -6,6 +6,7 @@ import {
     ClassUserRequestDto,
     ClassUserResponseDto,
     DeckToAddClassResponseDto,
+    GetClassUserByIdResponseDto,
     InviteMemberResponseDto,
     RemoveUserClassResponseDto
 } from '@/types/class';
@@ -38,16 +39,16 @@ export const getClassListUserApi = async () => {
     return response.data as ClassUserResponseDto[];
 };
 
-export const getMyClassApi = async (page: number = 1) => {
-    const response = await api.get(`/class/my-class?page=${page}`);
+export const getMyClassApi = async (page: number = 1, search?: string) => {
+    const response = await api.get(`/class/my-class?page=${page}${search ? `&search=${search}` : ''}`);
     return response.data as {
         data: ClassListItemUserResponseDto[];
         hasMore: boolean;
     };
 };
 
-export const getSuggestedClassApi = async (page: number = 1) => {
-    const response = await api.get(`/class/suggested?page=${page}`);
+export const getSuggestedClassApi = async (page: number = 1, search?: string) => {
+    const response = await api.get(`/class/suggested?page=${page}${search ? `&search=${search}` : ''}`);
     return response.data as {
         data: ClassListItemUserResponseDto[];
         hasMore: boolean;
@@ -68,7 +69,7 @@ export const acceptJoinClassApi = async (classId: string, userId: string) => {
     const response = await api.post(`/class/accept?classId=${classId}&userId=${userId}`);
     return response.data as ClassJoinResponseDto;
 };
-export const getClassManagemenById = async (classId: string) => {
+export const getClassManagementByIdApi = async (classId: string) => {
     const response = await api.get(`/class/${classId}/management`);
     return response.data as ClassManagementResponseDto;
 };
@@ -135,5 +136,66 @@ export const updateClassQuizApi = async (classId: string, quizId: string, data: 
 
 export const deleteClassQuizApi = async (classId: string, quizId: string) => {
     const response = await api.delete(`/class/${classId}/management/quiz/${quizId}`);
+  
+export const getClassUserByIdApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/user-detail`);
+    return response.data as GetClassUserByIdResponseDto;
+};
+
+export const getClassDeckSessionHistoryApi = async (classId: string, deckId: string) => {
+    const response = await api.get(`/class/${classId}/deck/${deckId}/session/history`);
+    return response.data;
+};
+
+export const startClassDeckSessionApi = async (classId: string, deckId: string, forceNew?: boolean) => {
+    const response = await api.post(`/class/${classId}/deck/${deckId}/session/start`, { forceNew });
+    return response.data;
+};
+
+export const saveClassDeckAnswerApi = async (
+    classId: string,
+    deckId: string,
+    sessionId: string,
+    cardId: string,
+    correct: boolean
+) => {
+    const response = await api.post(`/class/${classId}/deck/${deckId}/session/answer`, {
+        sessionId,
+        cardId,
+        correct
+    });
+    return response.data;
+};
+
+export const endClassDeckSessionApi = async (classId: string, deckId: string, sessionId: string, duration: number) => {
+    const response = await api.post(`/class/${classId}/deck/${deckId}/session/end`, {
+        sessionId,
+        duration
+    });
+    return response.data;
+};
+
+export const getOverdueSchedules = async () => {
+    const response = await api.get('/class/schedules/overdue');
+    return response.data;
+};
+
+export const getUpcomingDeadlines = async () => {
+    const response = await api.get('/class/schedules/upcoming');
+    return response.data;
+};
+
+export const getAllNotifications = async () => {
+    const response = await api.get('/class/notifications/all');
+    return response.data;
+};
+
+export const getClassMemberProgressApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/member-progress`);
+    return response.data;
+};
+
+export const cancelInviteApi = async (classId: string, userId: string) => {
+    const response = await api.delete(`/class/${classId}/invite/${userId}`);
     return response.data as { message: string };
 };

@@ -17,7 +17,6 @@ export const classValidation = z.object({
 
     visited: z
         .object({
-            count: z.number().nonnegative().default(0),
             history: z
                 .array(
                     z.object({
