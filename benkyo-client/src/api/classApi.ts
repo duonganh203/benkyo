@@ -12,6 +12,7 @@ import {
 } from '@/types/class';
 import { api } from '.';
 import { ClassNotification } from '@/types/notification';
+import { CreateQuizAIRes, createQuizPayload, CreateQuizRes } from '@/types/quiz';
 
 export const createClassApi = async (data: ClassUserRequestDto) => {
     const response = await api.post('/class/create', data);
@@ -111,6 +112,31 @@ export const addDeckToClassApi = async (data: AddDeckToClassRequestDto) => {
 export const getDecksToAddToClassApi = async (classId: string) => {
     const response = await api.get(`/class/${classId}/decks-to-add`);
     return response.data as DeckToAddClassResponseDto[];
+};
+
+export const createClassQuizAIAPI = async ({ classId, title, description, questions }: createQuizPayload) => {
+    const response = await api.post(`/class/${classId}/management/quiz`, { title, description, questions });
+    return response.data as CreateQuizAIRes;
+};
+
+export const createClassQuizApi = async ({ classId, title, description, questions }: createQuizPayload) => {
+    const response = await api.post(`/class/${classId}/management/quiz`, { title, description, questions });
+    return response.data as CreateQuizRes;
+};
+
+export const getClassQuizApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/management/quiz`);
+    return response.data as CreateQuizRes[];
+};
+
+export const updateClassQuizApi = async (classId: string, quizId: string, data: createQuizPayload) => {
+    const response = await api.put(`/class/${classId}/management/quiz/${quizId}`, data);
+    return response.data as CreateQuizRes;
+};
+
+export const deleteClassQuizApi = async (classId: string, quizId: string) => {
+    const response = await api.delete(`/class/${classId}/management/quiz/${quizId}`);
+    return response.data as { message: string };
 };
 
 export const getClassUserByIdApi = async (classId: string) => {

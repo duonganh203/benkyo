@@ -34,6 +34,7 @@ import Notifications from './pages/notification';
 import { InviteDialog } from './components/invite-dialog';
 import ClassDetailUser from './pages/class-detail-user';
 import TopLearners from './pages/top-study-streak';
+import ClassQuizManagement from './pages/class-quiz-management';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -80,6 +81,7 @@ const App = () => {
                             <Route path='/class/:_id/update' element={<UpdateClass />} />
                             <Route path='/class/list' element={<ClassListUser />} />
                             <Route path='/class/:_id/management' element={<ClassManagement />} />
+                            <Route path='/class/:_id/management/quizzes' element={<ClassQuizManagement />} />
                             <Route path='/notification' element={<Notifications />} />
                             <Route path='/class/:classId' element={<ClassDetailUser />} />
                         </Route>

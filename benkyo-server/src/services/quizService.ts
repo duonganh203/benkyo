@@ -1,9 +1,10 @@
+import mongoose from 'mongoose';
 import z from 'zod';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { Quiz, QuizAttempt } from '~/schemas';
-import { createQuizValidation, saveQuizAttemptValidation } from '~/validations/quizValitation';
+import { Class, Quiz, QuizAttempt } from '~/schemas';
+import { createQuizValidation, saveQuizAttemptValidation, updateQuizValidation } from '~/validations/quizValitation';
 
 export const createQuizService = async (
     userId: string,
@@ -90,4 +91,91 @@ export const getAllQuizAttemptsService = async (userId: string) => {
     });
 
     return quizAllAttempt;
+};
+
+export const createClassQuizService = async (
+    userId: string,
+    classId: string,
+    quizData: z.infer<typeof createQuizValidation>
+) => {
+    const classDoc = await Class.findById(classId);
+    if (!classDoc) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!classDoc.owner.equals(userId)) {
+        throw new ForbiddenRequestsException('Only the class owner can create quizzes', ErrorCode.FORBIDDEN);
+    }
+
+    const newQuiz = new Quiz({
+        class: classId,
+        title: quizData.title,
+        description: quizData.description,
+        createdBy: userId,
+        createdAt: new Date(),
+        questions: quizData.questions,
+        deck: quizData.deckId,
+        type: quizData.type
+    });
+
+    console.log('Received quizData.type:', quizData.type);
+    await newQuiz.save();
+
+    return newQuiz;
+};
+
+export const getClassQuizzesService = async (classId: string) => {
+    const quizzes = await Quiz.find({ class: new mongoose.Types.ObjectId(classId) })
+        .populate('deck', 'name')
+        .populate('createdBy', 'name');
+    return quizzes;
+};
+
+export const updateQuizService = async (
+    userId: string,
+    quizId: string,
+    updatedData: z.infer<typeof createQuizValidation>
+) => {
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+        throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!quiz.createdBy.equals(userId)) {
+        throw new ForbiddenRequestsException('You do not have permission to update this quiz', ErrorCode.FORBIDDEN);
+    }
+
+    updateQuizValidation.parse(updatedData);
+
+    if (updatedData.title !== undefined) {
+        quiz.title = updatedData.title;
+    }
+
+    if (updatedData.description !== undefined) {
+        quiz.description = updatedData.description;
+    }
+
+    if (updatedData.questions !== undefined) {
+        quiz.set('questions', updatedData.questions);
+    }
+    await quiz.save();
+
+    return { id: quiz._id };
+};
+
+export const deleteQuizService = async (userId: string, quizId: string) => {
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+        throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!quiz.createdBy.equals(userId)) {
+        throw new ForbiddenRequestsException('You do not have permission to delete this quiz', ErrorCode.FORBIDDEN);
+    }
+
+    await Quiz.findByIdAndDelete(quizId);
+
+    await QuizAttempt.deleteMany({ quiz: quizId });
+
+    return { id: quizId };
 };

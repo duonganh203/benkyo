@@ -1,4 +1,7 @@
 export interface createQuizPayload {
+    title?: string;
+    description?: string;
+    classId?: string;
     deckId: string;
     questions: Question[];
 }
@@ -15,6 +18,8 @@ export interface QuizRes {
         _id: string;
         name: string;
     };
+    title?: string;
+    description?: string;
     createdBy: string;
     createdAt: string;
     questions: Question[];
@@ -72,5 +77,43 @@ export interface Response {
 }
 
 export interface CreateQuizRes {
-    id: string;
+    _id: string;
+    class: string;
+    createdAt: string;
+    createdBy: {
+        name: string;
+    };
+    questions: {
+        _id: string;
+        questionText: string;
+        choices: string[];
+        correctAnswer: number;
+        explanation?: string;
+    }[];
+    title?: string;
+    description?: string;
+    type?: 'manual' | 'ai';
+    deck?: string;
+}
+
+export interface CreateQuizAIRes {
+    quiz: {
+        _id: string;
+        class: string;
+        createdAt: string;
+        createdBy: {
+            name: string;
+        };
+        questions: {
+            _id: string;
+            questionText: string;
+            choices: string[];
+            correctAnswer: number;
+            explanation?: string;
+        }[];
+        title?: string;
+        description?: string;
+        type?: 'manual' | 'ai';
+        deck?: string;
+    };
 }

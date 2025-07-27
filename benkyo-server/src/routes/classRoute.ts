@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as classController from '~/controllers/classController';
 import authMiddleware from '~/middlewares/authMiddleware';
 import { errorHandler } from '~/errorHandler';
+import { createClassQuiz, deleteClassQuizzes, getClassQuizzes, updateClassQuizzes } from '~/controllers/quizController';
 
 const classRoutes: Router = Router();
 
@@ -40,5 +41,10 @@ classRoutes.post('/:classId/deck/:deckId/session/start', errorHandler(classContr
 classRoutes.post('/:classId/deck/:deckId/session/answer', errorHandler(classController.saveClassDeckAnswer));
 classRoutes.post('/:classId/deck/:deckId/session/end', errorHandler(classController.endClassDeckSession));
 classRoutes.get('/:classId/deck/:deckId/session/history', errorHandler(classController.getClassDeckSessionHistory));
+
+classRoutes.post('/:_id/management/quiz', [authMiddleware], errorHandler(createClassQuiz));
+classRoutes.get('/:_id/management/quiz', errorHandler(getClassQuizzes));
+classRoutes.put('/:_id/management/quiz/:quizId', [authMiddleware], errorHandler(updateClassQuizzes));
+classRoutes.delete('/:_id/management/quiz/:quizId', [authMiddleware], errorHandler(deleteClassQuizzes));
 
 export default classRoutes;
