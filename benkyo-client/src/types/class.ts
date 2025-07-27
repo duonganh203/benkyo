@@ -1,3 +1,5 @@
+import type { ClassNotification } from './notification';
+
 export type ClassUserRequestDto = {
     name: string;
     description: string;
@@ -123,9 +125,24 @@ export type ClassManagementResponseDto = {
     requiredApprovalToJoin: boolean;
     users: ClassUser[];
     joinRequests: ClassJoinRequest[];
-    visited: ClassVisited;
+    invitedUsers: {
+        user: ClassUser;
+        invitedAt: string;
+    }[];
+    visited: {
+        history: {
+            userId: {
+                _id: string;
+                name: string;
+                email: string;
+                avatar: string;
+            };
+            lastVisit: string;
+        }[];
+    };
     decks: ClassDeck[];
     userClassStates: ClassUserStatePopulated[];
+    overdueMembersCount: number;
     createdAt: Date;
     updatedAt: Date;
 };
@@ -179,4 +196,209 @@ export type DeckToAddClassResponseDto = {
     _id: string;
     name: string;
     description: string;
+};
+
+export interface DeckInClass {
+    _id: string;
+    name: string;
+    description?: string;
+    cardCount: number;
+    avgRating?: number;
+    startTime?: Date;
+    endTime?: Date;
+    correctCount?: number;
+    totalCount?: number;
+}
+
+export type TopLearner = {
+    id: string;
+    name: string;
+    avatar: string;
+    points: number;
+    streak: number;
+};
+
+export type GetClassUserByIdResponseDto = {
+    _id: string;
+    name: string;
+    description: string;
+    users: ClassUser[];
+    decks: DeckInClass[];
+    owner: {
+        _id: string;
+        name: string;
+    };
+    visibility: 'public' | 'private';
+    requiredApprovalToJoin: boolean;
+    createdAt: Date;
+    userClassStates: ClassUserStatePopulated[];
+    completionRate: number;
+    bannerUrl: string;
+    visited: {
+        history: {
+            userId: string;
+            lastVisit: string;
+        }[];
+    };
+};
+
+export type ClassStudySession = {
+    _id: string;
+    user: string;
+    class: string;
+    deck: string;
+    completedCardIds: string[];
+    correctCount: number;
+    totalCount: number;
+    startTime: Date;
+    endTime?: Date;
+    duration?: number;
+    createdAt: Date;
+    updatedAt: Date;
+};
+
+export type ClassStudySessionHistory = {
+    _id: string;
+    correctCount: number;
+    totalCount: number;
+    startTime: string;
+    endTime: string;
+    duration: number;
+};
+
+export type ClassStudyCard = {
+    _id: string;
+    front: string;
+    back: string;
+    tags?: string[];
+    media?: ClassCardMedia[];
+};
+
+export type ClassCardMedia = {
+    type: 'image' | 'audio' | 'video';
+    url: string;
+    filename?: string;
+};
+
+export type StartClassDeckSessionResponseDto = {
+    session: ClassStudySession;
+    cards: ClassStudyCard[];
+    resumed: boolean;
+    message?: string;
+};
+
+export type SaveClassDeckAnswerRequestDto = {
+    sessionId: string;
+    cardId: string;
+    correct: boolean;
+};
+
+export type SaveClassDeckAnswerResponseDto = ClassStudySession;
+
+export type EndClassDeckSessionRequestDto = {
+    sessionId: string;
+    duration: number;
+};
+
+export type EndClassDeckSessionResponseDto = ClassStudySession;
+
+export type OverdueSchedule = {
+    classId: string;
+    className: string;
+    deckId: string;
+    deckName: string;
+    description: string;
+    endTime: Date;
+    progress: number;
+    totalCards: number;
+    completedCards: number;
+    hoursOverdue: number;
+    isOverdue: boolean;
+};
+
+export type UpcomingDeadline = {
+    classId: string;
+    className: string;
+    deckId: string;
+    deckName: string;
+    description: string;
+    endTime: Date;
+    progress: number;
+    totalCards: number;
+    completedCards: number;
+    hoursUntilDeadline: number;
+    isOverdue: boolean;
+};
+
+export type ScheduleNotification = OverdueSchedule | UpcomingDeadline;
+
+export type NormalizedInviteNotification = ClassNotification & {
+    notificationType: 'invite';
+    sortTime: Date;
+    priority: number;
+};
+
+export type NormalizedOverdueNotification = OverdueSchedule & {
+    notificationType: 'overdue';
+    sortTime: Date;
+    priority: number;
+};
+
+export type NormalizedUpcomingNotification = UpcomingDeadline & {
+    notificationType: 'upcoming';
+    sortTime: Date;
+    priority: number;
+};
+
+export type UnifiedNotification =
+    | NormalizedInviteNotification
+    | NormalizedOverdueNotification
+    | NormalizedUpcomingNotification;
+
+export type AllNotificationsResponse = {
+    all: UnifiedNotification[];
+    invites: ClassNotification[];
+    schedules: {
+        overdue: OverdueSchedule[];
+        upcoming: UpcomingDeadline[];
+        criticalUpcoming: UpcomingDeadline[];
+    };
+    summary: {
+        totalInvites: number;
+        totalOverdue: number;
+        totalUpcoming: number;
+        totalCritical: number;
+        totalAll: number;
+    };
+};
+
+export type MemberDeckProgress = {
+    deckId: string;
+    deckName: string;
+    description: string;
+    startTime?: Date;
+    endTime?: Date;
+    progress: number;
+    totalCards: number;
+    completedCards: number;
+    isOverdue: boolean;
+    hoursOverdue?: number;
+    hoursUntilDeadline?: number;
+};
+
+export type MemberProgress = {
+    userId: string;
+    userName: string;
+    userEmail: string;
+    userAvatar: string;
+    overallProgress: number;
+    overdueCount: number;
+    upcomingCount: number;
+    deckProgresses: MemberDeckProgress[];
+};
+
+export type ClassMemberProgressResponse = {
+    success: boolean;
+    data: MemberProgress[];
+    message: string;
 };

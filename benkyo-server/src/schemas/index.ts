@@ -258,7 +258,6 @@ const ClassSchema = new Schema(
             }
         ],
         visited: {
-            count: { type: Number, default: 0 },
             history: [
                 {
                     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
@@ -290,9 +289,13 @@ const UserClassStateSchema = new Schema(
     {
         user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         class: { type: Schema.Types.ObjectId, ref: 'Class', required: true },
-        points: { type: Number, default: 0 },
-        studyStreak: { type: Number, default: 0 },
-        lastStudyDate: { type: Date }
+        deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: true },
+        completedCardIds: [{ type: Schema.Types.ObjectId, ref: 'Card' }],
+        correctCount: { type: Number, default: 0 },
+        totalCount: { type: Number, default: 0 },
+        startTime: { type: Date, default: Date.now },
+        endTime: { type: Date },
+        duration: { type: Number }
     },
     { timestamps: true }
 );
