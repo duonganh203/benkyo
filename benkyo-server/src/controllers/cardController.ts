@@ -5,6 +5,7 @@ import {
     deleteCardService,
     getCardByIdService,
     getCardsByIds,
+    getCardDetailsService,
     getDeckCardsService,
     updateCard
 } from '~/services/cardService';
@@ -66,4 +67,11 @@ export const deleteCard = async (req: Request, res: Response) => {
     const cardId = req.params.id;
     const result = await deleteCardService(userId, cardId);
     res.json(result);
+};
+
+export const getCardDetails = async (req: Request, res: Response) => {
+    const cardId = req.params.id;
+    const userId = req.user._id;
+    const cardDetails = await getCardDetailsService(userId, cardId);
+    res.json({ success: true, data: cardDetails });
 };

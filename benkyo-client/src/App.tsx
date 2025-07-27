@@ -17,6 +17,7 @@ import CreateCard from './pages/create-card';
 import StudyCard from './pages/study-card';
 import Library from './pages/library';
 import UpdateCard from './pages/update-card';
+import CardDetails from './pages/card-details';
 import Profile from './pages/profile';
 import ProgressPage from './pages/progress';
 import Quizzes from './pages/quizzes';
@@ -66,6 +67,7 @@ const App = () => {
                             <Route path='/deck/:id' element={<DeckDetail />} />
                             <Route path='/deck/:deckId/create-card' element={<CreateCard />} />
                             <Route path='/deck/:deckId/edit-card/:cardId' element={<UpdateCard />} />
+                            <Route path='/flashcards/:id/details' element={<CardDetails />} />
                             <Route path='/profile' element={<Profile />} />
                             <Route path='/my-decks' element={<Library />} />
                             <Route path='/study/:id' element={<StudyCard />} />
