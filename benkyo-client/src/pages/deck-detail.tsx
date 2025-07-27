@@ -495,7 +495,8 @@ const DeckDetail = () => {
                                         return (
                                             <Card
                                                 key={card._id}
-                                                className={`overflow-hidden hover:shadow-md transition-all animate-slide-up animation-delay-${delay}`}
+                                                className={`overflow-hidden hover:shadow-md transition-all animate-slide-up animation-delay-${delay} cursor-pointer`}
+                                                onClick={() => navigate(`/flashcards/${card._id}/details`)}
                                             >
                                                 <CardContent className='p-0'>
                                                     <div className='grid grid-cols-1 md:grid-cols-2'>
@@ -544,23 +545,29 @@ const DeckDetail = () => {
                                                             {currentUser && deckData.owner._id === currentUser._id && (
                                                                 <DropdownMenu>
                                                                     <DropdownMenuTrigger asChild>
-                                                                        <Button variant='ghost' size='sm'>
+                                                                        <Button
+                                                                            variant='ghost'
+                                                                            size='sm'
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                        >
                                                                             <MoreHorizontal className='h-4 w-4' />
                                                                         </Button>
                                                                     </DropdownMenuTrigger>
                                                                     <DropdownMenuContent align='end'>
                                                                         <DropdownMenuItem
-                                                                            onClick={() =>
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
                                                                                 navigate(
                                                                                     `/deck/${id}/edit-card/${card._id}`
-                                                                                )
-                                                                            }
+                                                                                );
+                                                                            }}
                                                                         >
                                                                             <Edit className='mr-2 h-4 w-4' />
                                                                             <span>Edit</span>
                                                                         </DropdownMenuItem>
                                                                         <DropdownMenuItem
-                                                                            onClick={() => {
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
                                                                                 handleDelete(card._id);
                                                                             }}
                                                                         >
@@ -568,7 +575,8 @@ const DeckDetail = () => {
                                                                             <span>Delete</span>
                                                                         </DropdownMenuItem>
                                                                         <DropdownMenuItem
-                                                                            onClick={() => {
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
                                                                                 getToast(
                                                                                     'success',
                                                                                     'Card progress has been reset'
