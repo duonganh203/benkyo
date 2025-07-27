@@ -47,12 +47,10 @@ const ClassQuizManagement = () => {
     const { data: fetchedQuizzes } = useGetAllClassQuiz(classId || '');
 
     useEffect(() => {
-        console.log('useEffect triggered. fetchedQuizzes:', fetchedQuizzes);
-
         if (fetchedQuizzes && Array.isArray(fetchedQuizzes)) {
             const transformed = fetchedQuizzes.map(
                 (quiz): Quiz => ({
-                    id: quiz._id,
+                    id: quiz._id ?? '',
                     title: quiz.title ?? 'Untitled Quiz',
                     description: quiz.description ?? '',
                     classId: quiz.class ?? '',
