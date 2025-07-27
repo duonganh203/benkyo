@@ -1,0 +1,26 @@
+# Workflow: ClassResumeSession Explanation
+
+## Current tasks from user prompt
+- Giải thích ClassResumeSession và đường đi khi click vào flashcard để kiểm tra có resume hay không
+
+## Plan (simple)
+- Phân tích luồng hoạt động của ClassResumeSession
+- Giải thích cách hệ thống kiểm tra và xử lý session chưa hoàn thành
+- Mô tả đường đi từ click flashcard đến hiển thị modal resume
+
+## Steps
+1. Phân tích cấu trúc ClassResumeSessionModal
+2. Tìm hiểu luồng xử lý trong class-detail-user.tsx
+3. Phân tích service startClassDeckSessionService
+4. Giải thích cách hệ thống kiểm tra session chưa hoàn thành
+5. Mô tả đường đi hoàn chỉnh từ click đến hiển thị modal
+
+## Things done
+- Đã tìm thấy các file liên quan đến ClassResumeSession
+- Đã xác định được cấu trúc modal và service
+- Đã phân tích chi tiết luồng hoạt động từ click deck đến hiển thị modal
+- Đã giải thích logic kiểm tra session chưa hoàn thành
+- Đã mô tả đường đi hoàn chỉnh cho người dùng
+
+## Things aren't done yet
+- Hoàn thành 

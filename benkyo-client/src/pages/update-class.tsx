@@ -74,7 +74,7 @@ const UpdateClass = () => {
         try {
             const response = await updateClassMutation({ _id, data: values });
             getToast('success', response.message);
-            navigate(`/class/${response._id}/manage`);
+            navigate(`/class/${response._id}/management`);
         } catch {
             getToast('error', 'Failed to update class');
         } finally {
