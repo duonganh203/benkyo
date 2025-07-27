@@ -77,7 +77,8 @@ export interface Response {
 }
 
 export interface CreateQuizRes {
-    _id: string;
+    _id?: string;
+    id?: string;
     class: string;
     createdAt: string;
     createdBy: {
