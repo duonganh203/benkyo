@@ -11,8 +11,7 @@ import {
     getRequestPulbicDeck,
     reviewPublicServiceDeck,
     sendReqPublicDeck,
-    updateDeckFsrsParams,
-    getDeckStats
+    updateDeckFsrsParams
 } from '~/controllers/deckController';
 import { errorHandler } from '~/errorHandler';
 import adminAuthMiddleware from '~/middlewares/adminAuthMiddleware';
@@ -22,7 +21,6 @@ const deckRoutes: Router = Router();
 
 deckRoutes.post('/', [authMiddleware], errorHandler(createDeck));
 deckRoutes.get('/public-requests', [adminAuthMiddleware], errorHandler(getAllRequestPublicDecks));
-deckRoutes.get('/deckStats', [adminAuthMiddleware], errorHandler(getDeckStats));
 deckRoutes.get('/public-requests/:id', [adminAuthMiddleware], errorHandler(getRequestPulbicDeck));
 deckRoutes.patch('/public-requests/:id', [adminAuthMiddleware], errorHandler(reviewPublicServiceDeck));
 deckRoutes.get('/my-decks', [authMiddleware], errorHandler(getAllDecks));
@@ -33,4 +31,5 @@ deckRoutes.get('/:id/cards', [authMiddleware], errorHandler(getCards));
 deckRoutes.delete('/:id', [authMiddleware], errorHandler(deleteDeck));
 deckRoutes.patch('/:id/request-public', [authMiddleware], errorHandler(sendReqPublicDeck));
 deckRoutes.patch('/:id/fsrs', [authMiddleware], errorHandler(updateDeckFsrsParams));
+
 export default deckRoutes;

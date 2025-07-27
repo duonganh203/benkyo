@@ -11,8 +11,7 @@ import {
     getRequestPulbicDeckService,
     reviewPublicDeckService,
     duplicateDeckService,
-    updateDeckFsrsParamsService,
-    getDeckStatsService
+    updateDeckFsrsParamsService
 } from '~/services/deckService';
 import { createDeckValidation, updateDeckFsrsParamsValidation } from '~/validations/deckValidation';
 
@@ -99,8 +98,4 @@ export const updateDeckFsrsParams = async (req: Request, res: Response) => {
 
     const result = await updateDeckFsrsParamsService(userId, id, validatedParams);
     return res.json({ message: 'FSRS parameters updated successfully', data: result });
-};
-export const getDeckStats = async (req: Request, res: Response) => {
-    const stats = await getDeckStatsService();
-    res.json(stats);
 };
