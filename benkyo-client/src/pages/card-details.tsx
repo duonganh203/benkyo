@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { formatDistanceToNow, format } from 'date-fns';
 import {
@@ -15,8 +15,21 @@ import {
     CheckCircle,
     XCircle,
     Minus,
-    Book
+    Book,
+    LineChart
 } from 'lucide-react';
+import {
+    LineChart as RechartsLineChart,
+    Line,
+    BarChart as RechartsBarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer
+} from 'recharts';
 import useGetCardDetails from '@/hooks/queries/use-get-card-details';
 import { State, Rating } from '@/types/card';
 import { Button } from '@/components/ui/button';
@@ -68,6 +81,82 @@ const CardDetails = () => {
         if (seconds < 60) return `${seconds}s`;
         if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
         return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+    };
+
+    // Prepare data for charts
+    const chartData = useMemo(() => {
+        if (!cardDetails) return { lineChartData: [], barChartData: [] };
+
+        // Line chart data - showing trends over time
+        const lineChartData = cardDetails.revlogs.map((log, index) => ({
+            review: index + 1,
+            date: format(new Date(log.review), 'MMM dd'),
+            fullDate: log.review,
+            stability: Math.round(log.stability * 10) / 10,
+            interval: log.scheduled_days,
+            difficulty: Math.round(log.difficulty * 100) / 100
+        }));
+
+        // Bar chart data - rating distribution
+        const barChartData = [
+            {
+                name: 'Again',
+                count: cardDetails.metrics.ratingCounts.again,
+                fill: '#ef4444'
+            },
+            {
+                name: 'Hard',
+                count: cardDetails.metrics.ratingCounts.hard,
+                fill: '#f97316'
+            },
+            {
+                name: 'Good',
+                count: cardDetails.metrics.ratingCounts.good,
+                fill: '#22c55e'
+            },
+            {
+                name: 'Easy',
+                count: cardDetails.metrics.ratingCounts.easy,
+                fill: '#3b82f6'
+            }
+        ];
+
+        return { lineChartData, barChartData };
+    }, [cardDetails]);
+
+    // Custom tooltip for line chart
+    const LineChartTooltip = ({ active, payload, label }: any) => {
+        if (active && payload && payload.length) {
+            const data = payload[0].payload;
+            return (
+                <div className='bg-background border border-border rounded-lg p-3 shadow-lg'>
+                    <p className='font-medium'>{`Review #${label}`}</p>
+                    <p className='text-sm text-muted-foreground mb-2'>{format(new Date(data.fullDate), 'PPP')}</p>
+                    {payload.map((entry: any, index: number) => (
+                        <p key={index} style={{ color: entry.color }} className='text-sm'>
+                            {entry.name}: {entry.value}
+                            {entry.dataKey === 'interval' ? ' days' : ''}
+                        </p>
+                    ))}
+                </div>
+            );
+        }
+        return null;
+    };
+
+    // Custom tooltip for bar chart
+    const BarChartTooltip = ({ active, payload, label }: any) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className='bg-background border border-border rounded-lg p-3 shadow-lg'>
+                    <p className='font-medium'>{label}</p>
+                    <p style={{ color: payload[0].color }} className='text-sm'>
+                        Reviews: {payload[0].value}
+                    </p>
+                </div>
+            );
+        }
+        return null;
     };
 
     if (isLoading) {
@@ -176,10 +265,11 @@ const CardDetails = () => {
             )}
 
             {/* Main Content Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
+            <Tabs defaultValue='overview' value={activeTab} onValueChange={setActiveTab} className='w-full'>
                 <TabsList className='mb-6'>
                     <TabsTrigger value='overview'>Overview</TabsTrigger>
                     <TabsTrigger value='history'>Review History</TabsTrigger>
+                    <TabsTrigger value='analytics'>Analytics</TabsTrigger>
                     <TabsTrigger value='stats'>Statistics</TabsTrigger>
                 </TabsList>
 
@@ -349,6 +439,147 @@ const CardDetails = () => {
                             )}
                         </CardContent>
                     </Card>
+                </TabsContent>
+
+                <TabsContent value='analytics' className='animate-fade-in'>
+                    <div className='space-y-6'>
+                        {/* Learning Progress Line Chart */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className='flex items-center gap-2'>
+                                    <LineChart className='h-5 w-5' />
+                                    Learning Progress Over Time
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {chartData.lineChartData.length === 0 ? (
+                                    <div className='text-center py-8'>
+                                        <TrendingUp className='h-12 w-12 mx-auto text-muted-foreground mb-2' />
+                                        <h3 className='text-lg font-medium'>No Review Data</h3>
+                                        <p className='text-muted-foreground'>
+                                            Charts will appear after you've reviewed this card.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className='h-80'>
+                                        <ResponsiveContainer width='100%' height='100%'>
+                                            <RechartsLineChart data={chartData.lineChartData}>
+                                                <CartesianGrid strokeDasharray='3 3' className='opacity-30' />
+                                                <XAxis
+                                                    dataKey='date'
+                                                    tick={{ fontSize: 12 }}
+                                                    className='text-muted-foreground'
+                                                />
+                                                <YAxis tick={{ fontSize: 12 }} className='text-muted-foreground' />
+                                                <Tooltip content={<LineChartTooltip />} />
+                                                <Legend />
+                                                <Line
+                                                    type='monotone'
+                                                    dataKey='stability'
+                                                    stroke='#3b82f6'
+                                                    strokeWidth={2}
+                                                    name='Stability'
+                                                    dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+                                                    activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2 }}
+                                                />
+                                                <Line
+                                                    type='monotone'
+                                                    dataKey='interval'
+                                                    stroke='#22c55e'
+                                                    strokeWidth={2}
+                                                    name='Interval (days)'
+                                                    dot={{ fill: '#22c55e', strokeWidth: 2, r: 4 }}
+                                                    activeDot={{ r: 6, stroke: '#22c55e', strokeWidth: 2 }}
+                                                />
+                                            </RechartsLineChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Rating Distribution Bar Chart */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className='flex items-center gap-2'>
+                                    <BarChart3 className='h-5 w-5' />
+                                    Rating Distribution
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {cardDetails?.metrics.totalReviews === 0 ? (
+                                    <div className='text-center py-8'>
+                                        <BarChart3 className='h-12 w-12 mx-auto text-muted-foreground mb-2' />
+                                        <h3 className='text-lg font-medium'>No Rating Data</h3>
+                                        <p className='text-muted-foreground'>
+                                            Rating distribution will appear after you've reviewed this card.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className='h-64'>
+                                        <ResponsiveContainer width='100%' height='100%'>
+                                            <RechartsBarChart data={chartData.barChartData}>
+                                                <CartesianGrid strokeDasharray='3 3' className='opacity-30' />
+                                                <XAxis
+                                                    dataKey='name'
+                                                    tick={{ fontSize: 12 }}
+                                                    className='text-muted-foreground'
+                                                />
+                                                <YAxis tick={{ fontSize: 12 }} className='text-muted-foreground' />
+                                                <Tooltip content={<BarChartTooltip />} />
+                                                <Bar dataKey='count' radius={[4, 4, 0, 0]} className='cursor-pointer' />
+                                            </RechartsBarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Difficulty Progression */}
+                        {chartData.lineChartData.length > 0 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className='flex items-center gap-2'>
+                                        <Target className='h-5 w-5' />
+                                        Difficulty Progression
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className='h-64'>
+                                        <ResponsiveContainer width='100%' height='100%'>
+                                            <RechartsLineChart data={chartData.lineChartData}>
+                                                <CartesianGrid strokeDasharray='3 3' className='opacity-30' />
+                                                <XAxis
+                                                    dataKey='date'
+                                                    tick={{ fontSize: 12 }}
+                                                    className='text-muted-foreground'
+                                                />
+                                                <YAxis tick={{ fontSize: 12 }} className='text-muted-foreground' />
+                                                <Tooltip content={<LineChartTooltip />} />
+                                                <Legend />
+                                                <Line
+                                                    type='monotone'
+                                                    dataKey='difficulty'
+                                                    stroke='#f97316'
+                                                    strokeWidth={3}
+                                                    name='Difficulty'
+                                                    dot={{ fill: '#f97316', strokeWidth: 2, r: 5 }}
+                                                    activeDot={{ r: 7, stroke: '#f97316', strokeWidth: 2 }}
+                                                />
+                                            </RechartsLineChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div className='mt-4 p-4 bg-muted/30 rounded-lg'>
+                                        <p className='text-sm text-muted-foreground'>
+                                            <strong>Difficulty</strong> represents how hard this card is to remember.
+                                            Lower values indicate the card is easier to recall, while higher values
+                                            suggest more challenging content.
+                                        </p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
                 </TabsContent>
 
                 <TabsContent value='stats' className='space-y-6'>
