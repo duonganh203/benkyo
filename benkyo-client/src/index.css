@@ -601,88 +601,153 @@ body {
 }
 
 .neon-border-animated {
-  position: relative;
-  border-radius: 9999px;
-  z-index: 1;
-  overflow: hidden;
+    position: relative;
+    border-radius: 9999px;
+    z-index: 1;
+    overflow: hidden;
 }
 .neon-border-animated .neon-inner {
-  border-radius: 9999px;
-  background: #181c24;
-  position: relative;
-  z-index: 2;
-  padding: 0.2rem;
-  border: none;
+    border-radius: 9999px;
+    background: #181c24;
+    position: relative;
+    z-index: 2;
+    padding: 0.2rem;
+    border: none;
 }
 .neon-border-animated::before,
 .neon-border-animated::after,
 .neon-border-animated .neon-side {
-  content: '';
-  position: absolute;
-  z-index: 3;
-  pointer-events: none;
-  border-radius: 9999px;
+    content: '';
+    position: absolute;
+    z-index: 3;
+    pointer-events: none;
+    border-radius: 9999px;
 }
 .neon-border-animated::before {
-  left: 0; top: 0; right: 0; height: 6px;
-  background: linear-gradient(90deg, #38bdf8, #facc15, #f43f5e, #38bdf8);
-  background-size: 200% 100%;
-  filter: blur(1.5px) brightness(1.2);
-  animation: neon-move 3s linear infinite;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #38bdf8, #facc15, #f43f5e, #38bdf8);
+    background-size: 200% 100%;
+    filter: blur(1.5px) brightness(1.2);
+    animation: neon-move 3s linear infinite;
 }
 .neon-border-animated::after {
-  left: 0; bottom: 0; right: 0; height: 6px;
-  background: linear-gradient(90deg, #38bdf8, #facc15, #f43f5e, #38bdf8);
-  background-size: 200% 100%;
-  filter: blur(1.5px) brightness(1.2);
-  animation: neon-move 3s linear infinite reverse;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #38bdf8, #facc15, #f43f5e, #38bdf8);
+    background-size: 200% 100%;
+    filter: blur(1.5px) brightness(1.2);
+    animation: neon-move 3s linear infinite reverse;
 }
 .neon-border-animated .neon-side.left {
-  left: 0; top: 0; bottom: 0; width: 6px;
-  background: linear-gradient(180deg, #38bdf8, #facc15, #f43f5e, #38bdf8);
-  background-size: 100% 200%;
-  filter: blur(1.5px) brightness(1.2);
-  animation: neon-move-vert 3s linear infinite;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, #38bdf8, #facc15, #f43f5e, #38bdf8);
+    background-size: 100% 200%;
+    filter: blur(1.5px) brightness(1.2);
+    animation: neon-move-vert 3s linear infinite;
 }
 .neon-border-animated .neon-side.right {
-  right: 0; top: 0; bottom: 0; width: 6px;
-  background: linear-gradient(180deg, #38bdf8, #facc15, #f43f5e, #38bdf8);
-  background-size: 100% 200%;
-  filter: blur(1.5px) brightness(1.2);
-  animation: neon-move-vert 3s linear infinite reverse;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, #38bdf8, #facc15, #f43f5e, #38bdf8);
+    background-size: 100% 200%;
+    filter: blur(1.5px) brightness(1.2);
+    animation: neon-move-vert 3s linear infinite reverse;
 }
 @keyframes neon-move {
-  100% { background-position: 200% 0; }
+    100% {
+        background-position: 200% 0;
+    }
 }
 @keyframes neon-move-vert {
-  100% { background-position: 0 200%; }
+    100% {
+        background-position: 0 200%;
+    }
 }
 
 .neon-badge-static.neon-badge-premium {
-  color: #f43f5e;
-  border-color: #f43f5e;
-  text-shadow: 0 0 8px #f43f5e, 0 0 16px #f43f5e;
+    color: #f43f5e;
+    border-color: #f43f5e;
+    text-shadow:
+        0 0 8px #f43f5e,
+        0 0 16px #f43f5e;
 }
 .neon-badge-static.neon-badge-pro {
-  color: #facc15;
-  border-color: #facc15;
-  text-shadow: 0 0 8px #facc15, 0 0 16px #facc15;
+    color: #facc15;
+    border-color: #facc15;
+    text-shadow:
+        0 0 8px #facc15,
+        0 0 16px #facc15;
 }
 .neon-badge-static.neon-badge-basic {
-  color: #38bdf8;
-  border-color: #38bdf8;
-  text-shadow: 0 0 8px #38bdf8, 0 0 16px #38bdf8;
+    color: #38bdf8;
+    border-color: #38bdf8;
+    text-shadow:
+        0 0 8px #38bdf8,
+        0 0 16px #38bdf8;
 }
 .neon-badge-static {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translate(-50%, -60%);
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-weight: bold;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
-  background: rgba(24,28,36,0.7);
-  z-index: 10;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    background: rgba(24, 28, 36, 0.7);
+    z-index: 10;
+}
+
+/* Subscription-based text gradient animations */
+@keyframes gradient-pro {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 300% 50%;
+    }
+}
+
+@keyframes gradient-premium {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 400% 50%;
+    }
+}
+
+.text-gradient-pro {
+    background: linear-gradient(90deg, #fff5cc, #ffd700, #e6b800, #c9974b, #e6b800, #ffd700, #fff5cc);
+    background-size: 300% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: gradient-pro 16s ease-in-out infinite;
+}
+
+.text-gradient-premium {
+    background: linear-gradient(90deg, #ff3b3b, #ff8c00, #ffcc00, #00b140, #007bff, #6a0dad, #ff3b3b);
+    background-size: 600% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: gradient-premium 25s ease-in-out infinite;
+}
+
+.text-basic {
+    color: inherit;
 }

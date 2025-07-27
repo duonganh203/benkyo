@@ -17,9 +17,25 @@ import { User } from '@/types/auth';
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import { Link } from 'react-router-dom';
 
+// Helper function to determine text styling class based on subscription level
+const getSubscriptionTextClass = (user: User): string => {
+    if (!user.isPro) {
+        return 'text-basic';
+    }
+
+    // Check if user has premium subscription
+    if (user.proType?.toLowerCase().includes('premium')) {
+        return 'text-gradient-premium';
+    }
+
+    // Pro subscription (including other pro types)
+    return 'text-gradient-pro';
+};
+
 export function NavUser({ user }: { user: User }) {
     const { isMobile } = useSidebar();
     const { logout } = useAuthStore((store) => store);
+    const textClass = getSubscriptionTextClass(user);
 
     return (
         <SidebarMenu>
@@ -36,10 +52,12 @@ export function NavUser({ user }: { user: User }) {
                             </Avatar>
                             <div className='grid flex-1 text-left text-sm leading-tight'>
                                 <div className='flex items-center gap-2'>
-                                    <span className='truncate font-semibold w-[15ch]'>{user.username}</span>
+                                    <span className={`truncate font-semibold w-[15ch] ${textClass}`}>
+                                        {user.username}
+                                    </span>
                                 </div>
 
-                                <span className='truncate text-xs'>{user.email}</span>
+                                <span className={`truncate text-xs ${textClass}`}>{user.email}</span>
                             </div>
                             <ChevronsUpDown className='ml-auto size-4' />
                         </SidebarMenuButton>
@@ -57,8 +75,10 @@ export function NavUser({ user }: { user: User }) {
                                     <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
                                 </Avatar>
                                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                                    <span className='truncate font-semibold w-[20ch]'>{user.username}</span>
-                                    <span className='truncate text-xs'>{user.email}</span>
+                                    <span className={`truncate font-semibold w-[20ch] ${textClass}`}>
+                                        {user.username}
+                                    </span>
+                                    <span className={`truncate text-xs ${textClass}`}>{user.email}</span>
                                 </div>
                             </div>
                         </DropdownMenuLabel>

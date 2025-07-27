@@ -213,20 +213,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarContent>
 
             <SidebarFooter className='border-t border-sidebar-border bg-sidebar/50 backdrop-blur-sm'>
-                {user?.isPro ? (
-                    <div className='neon-border-animated' style={{ overflow: 'visible', borderRadius: '9999px' }}>
-                        <div className='neon-side left'></div>
-                        <div className='neon-side right'></div>
-                        <span className={`neon-badge-static neon-badge-${user.proType.toLowerCase()}`}>
-                            {user.proType}
-                        </span>
-                        <div className='neon-inner' style={{ borderRadius: '9999px' }}>
-                            <NavUser user={user!} />
-                        </div>
+                <div className='relative'>
+                    <div className={`pro-border pro-border-premium rounded-md`}>
+                        <NavUser user={user!} />
                     </div>
-                ) : (
-                    <NavUser user={user!} />
-                )}
+                </div>
             </SidebarFooter>
 
             <SidebarRail />
