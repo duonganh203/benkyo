@@ -115,6 +115,26 @@ export const classUpdateService = async (classId: string, userId: Types.ObjectId
     }
 };
 
+export const getClassUpdateByIdService = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    if (!existingClass.owner.equals(userId))
+        throw new ForbiddenRequestsException('You do not have permission to update this class', ErrorCode.FORBIDDEN);
+
+    return {
+        name: existingClass.name,
+        description: existingClass.description,
+        bannerUrl: existingClass.bannerUrl,
+        visibility: existingClass.visibility,
+        requiredApprovalToJoin: existingClass.requiredApprovalToJoin,
+        owner: existingClass.owner.toString()
+    };
+};
+
 export const deleteClassService = async (classId: string, userId: Types.ObjectId) => {
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
@@ -125,21 +145,6 @@ export const deleteClassService = async (classId: string, userId: Types.ObjectId
     await Class.findByIdAndDelete(classId);
 
     return { message: 'Delete class successfully' };
-};
-
-export const getClassUpdateByIdService = async (classId: string, userId: Types.ObjectId) => {
-    const existingClass = await Class.findById(classId);
-    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
-    if (!existingClass.owner.equals(userId))
-        throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
-
-    return {
-        name: existingClass.name,
-        description: existingClass.description,
-        visibility: existingClass.visibility,
-        requiredApprovalToJoin: existingClass.requiredApprovalToJoin,
-        bannerUrl: existingClass.bannerUrl
-    };
 };
 
 export const getClassListUserService = async () => {
