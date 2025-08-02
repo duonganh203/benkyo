@@ -24,7 +24,7 @@ const checkProAccountMiddleware = async (req: Request, res: Response, next: Next
             ...req.user,
             isPro: user.isPro,
             proExpiresAt: user.proExpiryDate,
-            proType: user.proType || PackageType.BASIC
+            proType: user.proType
         };
 
         next();
