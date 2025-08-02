@@ -140,34 +140,25 @@ export const getClassUpdateByIdService = async (classId: string, userId: Types.O
     };
 };
 
-export const getClassListUserService = async () => {
-    const existingClasses = await Class.find().select('name description requiredApprovalToJoin bannerUrl');
-    if (!existingClasses) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
-    return existingClasses;
-};
-
 export const getMyClassListService = async (userId: Types.ObjectId, page: number, limit: number, search?: string) => {
     const skip = (page - 1) * limit;
-
     const searchQuery = search ? { name: { $regex: search, $options: 'i' } } : {};
+    const totalCount = await Class.countDocuments({
+        $or: [{ users: userId }, { owner: userId }],
+        ...searchQuery
+    });
 
     const classes = await Class.find({
         $or: [{ users: userId }, { owner: userId }],
         ...searchQuery
     })
         .populate('decks.deck')
-        .select('_id name description requiredApprovalToJoin decks bannerUrl createdAt')
+        .select('_id name description requiredApprovalToJoin bannerUrl createdAt decks')
         .skip(skip)
         .limit(limit);
 
-    const totalCount = await Class.countDocuments({
-        $or: [{ users: userId }, { owner: userId }],
-        ...searchQuery
-    });
-
     const result = await Promise.all(
         classes.map(async (classItem) => {
-            const classDeckIds = classItem.decks.map((d) => d.deck?._id?.toString()).filter(Boolean);
             const scheduledDeckIds = classItem.decks
                 .filter((d) => d.startTime && d.endTime)
                 .map((d) => d.deck?._id?.toString())
@@ -195,7 +186,6 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
                 description: classItem.description,
                 requiredApprovalToJoin: classItem.requiredApprovalToJoin,
                 bannerUrl: classItem.bannerUrl,
-                decks: classItem.decks,
                 createdAt: classItem.createdAt,
                 progress
             };
