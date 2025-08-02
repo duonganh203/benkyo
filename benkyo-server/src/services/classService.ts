@@ -98,21 +98,17 @@ export const classUpdateService = async (classId: string, userId: Types.ObjectId
     if (!existingClass.owner.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to update this class', ErrorCode.FORBIDDEN);
 
-    try {
-        const updatedClass = await existingClass.save();
+    const updatedClass = await existingClass.save();
 
-        return {
-            _id: updatedClass._id.toString(),
-            name: updatedClass.name,
-            description: updatedClass.description,
-            bannerUrl: updatedClass.bannerUrl,
-            visibility: updatedClass.visibility,
-            requiredApprovalToJoin: updatedClass.requiredApprovalToJoin,
-            owner: updatedClass.owner.toString()
-        };
-    } catch (error) {
-        throw new InternalException('Unexpected error while updating class', ErrorCode.INTERNAL_SERVER_ERROR, error);
-    }
+    return {
+        _id: updatedClass._id.toString(),
+        name: updatedClass.name,
+        description: updatedClass.description,
+        bannerUrl: updatedClass.bannerUrl,
+        visibility: updatedClass.visibility,
+        requiredApprovalToJoin: updatedClass.requiredApprovalToJoin,
+        owner: updatedClass.owner.toString()
+    };
 };
 
 export const getClassUpdateByIdService = async (classId: string, userId: Types.ObjectId) => {
