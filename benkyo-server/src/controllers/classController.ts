@@ -22,18 +22,13 @@ export const createClass = async (req: Request, res: Response) => {
 };
 
 export const updateClass = async (req: Request, res: Response) => {
-    try {
-        const classId = req.params._id;
-        const classData = classValidation.parse(req.body);
-        const userId = req.user._id;
+    const userId = req.user._id;
+    const classId = req.params.classId;
+    const classRequest = classValidation.parse(req.body);
 
-        const updatedClass = await classService.updateClassService(classId, userId, classData);
+    const updatedClass = await classService.updateClassService(classId, userId, classRequest);
 
-        res.status(200).json(updatedClass);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to update class', error: errMsg });
-    }
+    res.json(updatedClass);
 };
 
 export const deleteClass = async (req: Request, res: Response) => {
