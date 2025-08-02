@@ -42,7 +42,7 @@ export const classDelete = async (req: Request, res: Response) => {
 
     const result = await classService.classDeleteService(classId, userId);
 
-    res.status(200).json(result);
+    res.json(result);
 };
 
 export const getClassUpdateById = async (req: Request, res: Response) => {
