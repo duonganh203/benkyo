@@ -200,8 +200,8 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
 
 export const getSuggestedListService = async (userId: Types.ObjectId, page: number, limit: number, search?: string) => {
     const skip = (page - 1) * limit;
-
     const searchQuery = search ? { name: { $regex: search, $options: 'i' } } : {};
+
     const baseQuery = {
         users: { $ne: userId },
         owner: { $ne: userId },
@@ -211,7 +211,7 @@ export const getSuggestedListService = async (userId: Types.ObjectId, page: numb
 
     const [suggestedClasses, totalCount] = await Promise.all([
         Class.find(baseQuery)
-            .select('_id name description requiredApprovalToJoin bannerUrl createdAt owner')
+            .select('_id name description requiredApprovalToJoin bannerUrl createdAt')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit),
@@ -225,8 +225,7 @@ export const getSuggestedListService = async (userId: Types.ObjectId, page: numb
         description: classItem.description,
         requiredApprovalToJoin: classItem.requiredApprovalToJoin,
         bannerUrl: classItem.bannerUrl,
-        createdAt: classItem.createdAt,
-        owner: classItem.owner.toString()
+        createdAt: classItem.createdAt
     }));
 
     return {
