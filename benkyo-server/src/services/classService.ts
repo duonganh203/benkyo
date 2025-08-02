@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { Class, Deck, PublicStatus, User, UserClassState, UserDeckState, Card } from '~/schemas';
+import { Class, Deck, PublicStatus, User, UserClassState, UserDeckState, Card, Quiz } from '~/schemas';
 import { sendToUser } from '~/utils/socketServer';
 import { ClassStateType } from '~/validations/classValidation';
 import {
@@ -21,6 +21,7 @@ import {
     PopulatedDeck
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
+import { InternalException } from '~/exceptions/internalException';
 
 interface NormalizedNotification {
     notificationType: 'invite' | 'overdue' | 'upcoming';
@@ -113,14 +114,23 @@ export const updateClassService = async (classId: string, userId: Types.ObjectId
     };
 };
 
-export const deleteClassService = async (classId: string, userId: Types.ObjectId) => {
+export const classDeleteService = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
     if (!existingClass.owner.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to delete this class', ErrorCode.FORBIDDEN);
 
-    await UserClassState.deleteMany({ class: classId });
-    await Class.findByIdAndDelete(classId);
+    try {
+        await UserClassState.deleteMany({ class: classId });
+        await Quiz.deleteMany({ class: classId });
+        await Class.findByIdAndDelete(classId);
+    } catch (error) {
+        throw new InternalException('Unexpected error while delete class', ErrorCode.INTERNAL_SERVER_ERROR, error);
+    }
 
     return { message: 'Delete class successfully' };
 };
