@@ -64,31 +64,15 @@ export const getClassUpdateById = async (req: Request, res: Response) => {
     }
 };
 
-export const getClassListUser = async (req: Request, res: Response) => {
-    try {
-        const classData = await classService.getClassListUserService();
-
-        res.status(200).json(classData);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to get class list', error: errMsg });
-    }
-};
-
 export const getMyClassList = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user._id;
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 5;
-        const search = req.query.search as string;
+    const userId = req.user._id;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const search = req.query.search as string;
 
-        const classData = await classService.getMyClassListService(userId, page, limit, search);
+    const classData = await classService.getMyClassListService(userId, page, limit, search);
 
-        res.status(200).json(classData);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to get class list', error: errMsg });
-    }
+    res.json(classData);
 };
 
 export const getClassManagementById = async (req: Request, res: Response) => {
