@@ -21,6 +21,7 @@ import {
     PopulatedDeck
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
+import { InternalException } from '~/exceptions/internalException';
 
 interface NormalizedNotification {
     notificationType: 'invite' | 'overdue' | 'upcoming';
@@ -87,29 +88,50 @@ export const createClassService = async (userId: string, data: ClassStateType) =
     };
 };
 
-export const updateClassService = async (classId: string, userId: Types.ObjectId, data: Partial<ClassStateType>) => {
+export const classUpdateService = async (classId: string, userId: Types.ObjectId, data: ClassStateType) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
     if (!existingClass.owner.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to update this class', ErrorCode.FORBIDDEN);
 
-    existingClass.name = data.name ?? existingClass.name;
-    existingClass.description = data.description ?? existingClass.description;
-    existingClass.bannerUrl = data.bannerUrl ?? existingClass.bannerUrl;
-    existingClass.visibility = data.visibility ?? existingClass.visibility;
-    existingClass.requiredApprovalToJoin = data.requiredApprovalToJoin ?? existingClass.requiredApprovalToJoin;
+    try {
+        const updatedClass = await existingClass.save();
 
-    const updatedClass = await existingClass.save();
+        return {
+            _id: updatedClass._id.toString(),
+            name: updatedClass.name,
+            description: updatedClass.description,
+            bannerUrl: updatedClass.bannerUrl,
+            visibility: updatedClass.visibility,
+            requiredApprovalToJoin: updatedClass.requiredApprovalToJoin,
+            owner: updatedClass.owner.toString()
+        };
+    } catch (error) {
+        throw new InternalException('Unexpected error while updating class', ErrorCode.INTERNAL_SERVER_ERROR, error);
+    }
+};
+
+export const getClassUpdateByIdService = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    if (!existingClass.owner.equals(userId))
+        throw new ForbiddenRequestsException('You do not have permission to update this class', ErrorCode.FORBIDDEN);
 
     return {
-        _id: updatedClass._id.toString(),
-        name: updatedClass.name,
-        description: updatedClass.description,
-        owner: updatedClass.owner.toString(),
-        bannerUrl: updatedClass.bannerUrl,
-        visibility: updatedClass.visibility,
-        requiredApprovalToJoin: updatedClass.requiredApprovalToJoin,
-        message: 'Update class successfully'
+        name: existingClass.name,
+        description: existingClass.description,
+        bannerUrl: existingClass.bannerUrl,
+        visibility: existingClass.visibility,
+        requiredApprovalToJoin: existingClass.requiredApprovalToJoin,
+        owner: existingClass.owner.toString()
     };
 };
 
@@ -123,21 +145,6 @@ export const deleteClassService = async (classId: string, userId: Types.ObjectId
     await Class.findByIdAndDelete(classId);
 
     return { message: 'Delete class successfully' };
-};
-
-export const getClassUpdateByIdService = async (classId: string, userId: Types.ObjectId) => {
-    const existingClass = await Class.findById(classId);
-    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
-    if (!existingClass.owner.equals(userId))
-        throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
-
-    return {
-        name: existingClass.name,
-        description: existingClass.description,
-        visibility: existingClass.visibility,
-        requiredApprovalToJoin: existingClass.requiredApprovalToJoin,
-        bannerUrl: existingClass.bannerUrl
-    };
 };
 
 export const getClassListUserService = async () => {
