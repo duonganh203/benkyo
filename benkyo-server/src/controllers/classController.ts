@@ -2,23 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import { classValidation } from '~/validations/classValidation';
 import * as classService from '../services/classService';
 
-export const createClass = async (req: Request, res: Response) => {
-    try {
-        const classData = classValidation.parse(req.body);
-        const userId = req.user._id;
+export const classCreate = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const classRequest = classValidation.parse(req.body);
 
-        const safeClassData = {
-            ...classData,
-            description: classData.description ?? ''
-        };
+    const newClass = await classService.classCreateService(userId, classRequest);
 
-        const newClass = await classService.createClassService(userId, safeClassData);
-
-        res.status(201).json(newClass);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to create class', error: errMsg });
-    }
+    res.json(newClass);
 };
 
 export const updateClass = async (req: Request, res: Response) => {

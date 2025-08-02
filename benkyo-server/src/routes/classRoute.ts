@@ -24,7 +24,7 @@ classRoutes.post('/accept-invite', errorHandler(classController.acceptInviteClas
 classRoutes.post('/reject-invite', errorHandler(classController.rejectInviteClass));
 classRoutes.post('/accept', errorHandler(classController.acceptJoinRequest));
 classRoutes.post('/reject', errorHandler(classController.rejectJoinRequest));
-classRoutes.post('/create', errorHandler(classController.createClass));
+classRoutes.post('/create', errorHandler(classController.classCreate));
 classRoutes.post('/invite', errorHandler(classController.inviteMemberToClass));
 classRoutes.post('/add-deck', errorHandler(classController.addDeckToClass));
 classRoutes.post('/:_id/request', errorHandler(classController.requestJoinClass));
