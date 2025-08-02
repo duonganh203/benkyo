@@ -124,13 +124,9 @@ export const classDeleteService = async (classId: string, userId: Types.ObjectId
     if (!existingClass.owner.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to delete this class', ErrorCode.FORBIDDEN);
 
-    try {
-        await UserClassState.deleteMany({ class: classId });
-        await Quiz.deleteMany({ class: classId });
-        await Class.findByIdAndDelete(classId);
-    } catch (error) {
-        throw new InternalException('Unexpected error while delete class', ErrorCode.INTERNAL_SERVER_ERROR, error);
-    }
+    await UserClassState.deleteMany({ class: classId });
+    await Quiz.deleteMany({ class: classId });
+    await Class.findByIdAndDelete(classId);
 
     return { message: 'Delete class successfully' };
 };
