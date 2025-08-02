@@ -36,18 +36,13 @@ export const updateClass = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteClass = async (req: Request, res: Response) => {
-    try {
-        const classId = req.params._id;
-        const userId = req.user._id;
+export const classDelete = async (req: Request, res: Response) => {
+    const classId = req.params.classId;
+    const userId = req.user._id;
 
-        const result = await classService.deleteClassService(classId, userId);
+    const result = await classService.classDeleteService(classId, userId);
 
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to delete class', error: errMsg });
-    }
+    res.status(200).json(result);
 };
 
 export const getClassUpdateById = async (req: Request, res: Response) => {
