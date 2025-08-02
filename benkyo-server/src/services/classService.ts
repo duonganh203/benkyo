@@ -21,6 +21,7 @@ import {
     PopulatedDeck
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
+import { InternalException } from '~/exceptions/internalException';
 
 interface NormalizedNotification {
     notificationType: 'invite' | 'overdue' | 'upcoming';
@@ -69,22 +70,25 @@ type UnifiedNotification =
     | NormalizedOverdueNotification
     | NormalizedUpcomingNotification;
 
-export const createClassService = async (userId: string, data: ClassStateType) => {
+export const classCreateService = async (userId: string, data: ClassStateType) => {
     const user = await User.findById(userId);
     if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
 
     const newClass = new Class({ ...data, owner: userId });
-    const savedClass = await newClass.save();
-
-    return {
-        _id: savedClass._id.toString(),
-        name: savedClass.name,
-        description: savedClass.description,
-        owner: savedClass.owner.toString(),
-        bannerUrl: savedClass.bannerUrl,
-        requiredApprovalToJoin: savedClass.requiredApprovalToJoin,
-        message: 'Create class successfully'
-    };
+    try {
+        const savedClass = await newClass.save();
+        return {
+            _id: savedClass._id.toString(),
+            name: savedClass.name,
+            description: savedClass.description,
+            visibility: savedClass.visibility,
+            bannerUrl: savedClass.bannerUrl,
+            requiredApprovalToJoin: savedClass.requiredApprovalToJoin,
+            owner: savedClass.owner.toString()
+        };
+    } catch (error) {
+        throw new InternalException('Unexpected error while saving class', ErrorCode.INTERNAL_SERVER_ERROR, error);
+    }
 };
 
 export const updateClassService = async (classId: string, userId: Types.ObjectId, data: Partial<ClassStateType>) => {
