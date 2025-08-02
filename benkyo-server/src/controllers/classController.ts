@@ -21,12 +21,12 @@ export const createClass = async (req: Request, res: Response) => {
     }
 };
 
-export const updateClass = async (req: Request, res: Response) => {
+export const classUpdate = async (req: Request, res: Response) => {
     const userId = req.user._id;
     const classId = req.params.classId;
     const classRequest = classValidation.parse(req.body);
 
-    const updatedClass = await classService.updateClassService(classId, userId, classRequest);
+    const updatedClass = await classService.classUpdateService(classId, userId, classRequest);
 
     res.json(updatedClass);
 };

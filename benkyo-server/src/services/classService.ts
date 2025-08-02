@@ -88,7 +88,7 @@ export const createClassService = async (userId: string, data: ClassStateType) =
     };
 };
 
-export const updateClassService = async (classId: string, userId: Types.ObjectId, data: ClassStateType) => {
+export const classUpdateService = async (classId: string, userId: Types.ObjectId, data: ClassStateType) => {
     const user = await User.findById(userId);
     if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
 
