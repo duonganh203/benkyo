@@ -11,8 +11,7 @@ export const checkProStatus = async (req: Request, res: Response, next: NextFunc
 
     const user = await User.findById(userId);
 
-    if (!user)
-        throw new NotFoundException('Account does not exist. Please register and try again.', ErrorCode.NOT_FOUND);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
 
     if (user.isPro && user.proExpiryDate && user.proExpiryDate < new Date()) {
         user.isPro = false;
