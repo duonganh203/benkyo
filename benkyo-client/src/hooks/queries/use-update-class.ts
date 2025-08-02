@@ -5,13 +5,13 @@ import { ClassUserRequestDto, ClassUserResponseDto } from '@/types/class';
 import { updateClassApi } from '@/api/classApi';
 
 type ClassUserRequestUpdateDto = {
-    _id: string;
-    data: ClassUserRequestDto;
+    classId: string;
+    requestClass: ClassUserRequestDto;
 };
 
 const useUpdateClass = () => {
     return useMutation<ClassUserResponseDto, AxiosError<ApiError>, ClassUserRequestUpdateDto>({
-        mutationFn: ({ _id, data }) => updateClassApi(_id, data)
+        mutationFn: ({ classId, requestClass }) => updateClassApi(classId, requestClass)
     });
 };
 
