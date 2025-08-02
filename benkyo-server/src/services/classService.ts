@@ -75,20 +75,17 @@ export const classCreateService = async (userId: string, data: ClassStateType) =
     if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
 
     const newClass = new Class({ ...data, owner: userId });
-    try {
-        const savedClass = await newClass.save();
-        return {
-            _id: savedClass._id.toString(),
-            name: savedClass.name,
-            description: savedClass.description,
-            visibility: savedClass.visibility,
-            bannerUrl: savedClass.bannerUrl,
-            requiredApprovalToJoin: savedClass.requiredApprovalToJoin,
-            owner: savedClass.owner.toString()
-        };
-    } catch (error) {
-        throw new InternalException('Unexpected error while saving class', ErrorCode.INTERNAL_SERVER_ERROR, error);
-    }
+    const savedClass = await newClass.save();
+
+    return {
+        _id: savedClass._id.toString(),
+        name: savedClass.name,
+        description: savedClass.description,
+        visibility: savedClass.visibility,
+        bannerUrl: savedClass.bannerUrl,
+        requiredApprovalToJoin: savedClass.requiredApprovalToJoin,
+        owner: savedClass.owner.toString()
+    };
 };
 
 export const updateClassService = async (classId: string, userId: Types.ObjectId, data: Partial<ClassStateType>) => {
