@@ -149,6 +149,9 @@ export const getClassUpdateByIdService = async (classId: string, userId: Types.O
 };
 
 export const getMyClassListService = async (userId: Types.ObjectId, page: number, limit: number, search?: string) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const skip = (page - 1) * limit;
     const searchQuery = search ? { name: { $regex: search, $options: 'i' } } : {};
     const totalCount = await Class.countDocuments({
