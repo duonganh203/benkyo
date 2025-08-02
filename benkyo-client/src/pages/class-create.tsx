@@ -1,7 +1,12 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { z } from 'zod';
+
+import useAuthStore from '@/hooks/stores/use-auth-store';
+import useClassCreate from '@/hooks/queries/use-class-create';
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -9,13 +14,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+
 import { getToast } from '@/utils/getToast';
 import uploadToCloudinary from '@/utils/uploadToCloudinary';
+
 import { classSchema } from '@/schemas/classSchema';
-import { z } from 'zod';
-import useAuthStore from '@/hooks/stores/use-auth-store';
 import { ClassUserRequestDto } from '@/types/class';
-import useClassCreate from '@/hooks/queries/use-class-create';
 
 const ClassCreate = () => {
     const navigate = useNavigate();
