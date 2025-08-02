@@ -73,7 +73,6 @@ const UpdateClass = () => {
         setIsSubmitting(true);
         try {
             const response = await updateClassMutation({ _id, data: values });
-            getToast('success', response.message);
             navigate(`/class/${response._id}/manage`);
         } catch {
             getToast('error', 'Failed to update class');

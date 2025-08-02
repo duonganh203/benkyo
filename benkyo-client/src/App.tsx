@@ -27,7 +27,7 @@ import AIChat from './pages/ai-chat';
 import Payment from './pages/payment';
 import Packages from './pages/package';
 import Community from './pages/community';
-import CreateClass from './pages/create-class';
+import CreateClass from './pages/class-create';
 import UpdateClass from './pages/update-class';
 import ClassListUser from './pages/classt-list-user';
 import ClassManagement from './pages/class-management';

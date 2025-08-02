@@ -17,7 +17,6 @@ export type ClassUserResponseDto = {
     bannerUrl: string;
     visibility: 'public' | 'private';
     requiredApprovalToJoin: boolean;
-    message?: string;
 };
 
 export type ClassListItemUserResponseDto = {

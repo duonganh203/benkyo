@@ -1,7 +1,12 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { z } from 'zod';
+
+import useAuthStore from '@/hooks/stores/use-auth-store';
+import useClassCreate from '@/hooks/queries/use-class-create';
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -9,24 +14,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+
 import { getToast } from '@/utils/getToast';
-import useCreateClass from '@/hooks/queries/use-create-class';
 import uploadToCloudinary from '@/utils/uploadToCloudinary';
+
 import { classSchema } from '@/schemas/classSchema';
-import { z } from 'zod';
-import useAuthStore from '@/hooks/stores/use-auth-store';
 import { ClassUserRequestDto } from '@/types/class';
 
-const CreateClass = () => {
+const ClassCreate = () => {
     const navigate = useNavigate();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [previewBanner, setPreviewBanner] = useState<string>();
-    const [isUploadingBanner, setIsUploadingBanner] = useState(false);
 
     const { user } = useAuthStore((store) => store);
-    if (!user || !user?.isPro) {
-        navigate('/');
-        getToast('warning', 'You need to upgrade to Pro to access this feature');
+    if (!user) {
+        navigate('/login');
+        getToast('error', 'You must be logged in to continue.');
+    } else if (!user.isPro) {
+        navigate('/class/list');
+        getToast('error', 'This feature is available for Pro users only.');
     }
 
     const form = useForm<z.infer<typeof classSchema>>({
@@ -40,25 +44,11 @@ const CreateClass = () => {
         }
     });
 
-    const { mutateAsync: createClassMutation } = useCreateClass();
-
-    const onSubmit = async (values: ClassUserRequestDto) => {
-        setIsSubmitting(true);
-        try {
-            const response = await createClassMutation(values);
-            getToast('success', response.message);
-            navigate(`/class/${response._id}/management`);
-        } catch {
-            getToast('error', 'Failed to create class');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
+    const [previewBanner, setPreviewBanner] = useState<string>();
+    const [isUploadingBanner, setIsUploadingBanner] = useState(false);
     const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
         setIsUploadingBanner(true);
         try {
             const imageUrl = await uploadToCloudinary(file);
@@ -73,30 +63,34 @@ const CreateClass = () => {
         }
     };
 
+    const { mutateAsync: createClassMutation, isPending: isSubmitting } = useClassCreate();
+    const onSubmit = async (values: ClassUserRequestDto) => {
+        createClassMutation(values, {
+            onSuccess: (data) => {
+                getToast('success', `Create class ${data.name} successfully`);
+                navigate(`/class/${data._id}/management`);
+            },
+            onError: (error) => {
+                getToast('error', `${error.message}`);
+                console.log(error);
+            }
+        });
+    };
+
     return (
         <div className='flex justify-center items-start min-h-screen px-4 py-10 bg-background'>
-            <div className='w-full max-w-2xl'>
-                <div className='text-center mb-8'>
-                    <h1 className='text-4xl font-bold text-foreground'>Create New Class</h1>
-                    <p className='text-muted-foreground'>Set up your class with custom settings and invite students</p>
-                </div>
-
+            <div className='w-full max-w-2xl min-h-[600px] px-4 py-6'>
                 <Card className='shadow-xl border border-border rounded-2xl'>
                     <CardHeader>
-                        <CardTitle className='text-2xl text-center'>Class Information</CardTitle>
+                        <CardTitle className='text-2xl text-center'>Create New Class</CardTitle>
                         <CardDescription className='text-center text-muted-foreground'>
-                            Fill in the details below to create your new class
+                            Set up your class with custom settings and invite students
                         </CardDescription>
                     </CardHeader>
 
                     <CardContent>
                         <Form {...form}>
-                            <form
-                                onSubmit={form.handleSubmit(onSubmit, (errors) => {
-                                    console.log('Validation errors:', errors);
-                                })}
-                                className='space-y-6'
-                            >
+                            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
                                 <FormField
                                     control={form.control}
                                     name='name'
@@ -253,4 +247,4 @@ const CreateClass = () => {
     );
 };
 
-export default CreateClass;
+export default ClassCreate;
