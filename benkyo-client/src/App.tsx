@@ -29,6 +29,7 @@ import Packages from './pages/package';
 import Community from './pages/community';
 import CreateClass from './pages/create-class';
 import UpdateClass from './pages/update-class';
+
 import ClassManagement from './pages/class-management';
 import Notifications from './pages/notification';
 import { InviteDialog } from './components/invite-dialog';
@@ -36,6 +37,7 @@ import ClassDetailUser from './pages/class-detail-user';
 import TopLearners from './pages/top-study-streak';
 import ClassQuizManagement from './pages/class-quiz-management';
 import ClassList from './pages/class-list';
+import ClassUpdate from './pages/class-update';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -80,8 +82,8 @@ const App = () => {
                             <Route path='/top-learners' element={<TopLearners />} />
                             <Route path='/community' element={<Community />} />
                             <Route path='/class/create' element={<CreateClass />} />
-                            <Route path='/class/:_id/update' element={<UpdateClass />} />
-                            <Route path='/class/list' element={<ClassList />} />
+                            <Route path='/class/:classId/update' element={<ClassUpdate />} />
+                            <Route path='/class/list' element={<ClassListUser />} />
                             <Route path='/class/:_id/management' element={<ClassManagement />} />
                             <Route path='/class/:_id/management/quizzes' element={<ClassQuizManagement />} />
                             <Route path='/notification' element={<Notifications />} />

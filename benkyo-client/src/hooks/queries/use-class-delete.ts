@@ -3,10 +3,10 @@ import { ApiError } from '@/types/api';
 import { useMutation } from '@tanstack/react-query';
 import { deleteClassApi } from '@/api/classApi';
 
-const useDeleteClass = () => {
+const useClassDelete = () => {
     return useMutation<{ message: string }, AxiosError<ApiError>, string>({
-        mutationFn: (_id) => deleteClassApi(_id)
+        mutationFn: (classId) => deleteClassApi(classId)
     });
 };
 
-export default useDeleteClass;
+export default useClassDelete;
