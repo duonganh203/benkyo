@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { Class, Deck, PublicStatus, User, UserClassState, UserDeckState, Card } from '~/schemas';
+import { Class, Deck, PublicStatus, User, UserClassState, UserDeckState, Card, Quiz } from '~/schemas';
 import { sendToUser } from '~/utils/socketServer';
 import { ClassStateType } from '~/validations/classValidation';
 import {
@@ -21,6 +21,7 @@ import {
     PopulatedDeck
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
+import { InternalException } from '~/exceptions/internalException';
 
 interface NormalizedNotification {
     notificationType: 'invite' | 'overdue' | 'upcoming';
@@ -69,7 +70,7 @@ type UnifiedNotification =
     | NormalizedOverdueNotification
     | NormalizedUpcomingNotification;
 
-export const createClassService = async (userId: string, data: ClassStateType) => {
+export const classCreateService = async (userId: string, data: ClassStateType) => {
     const user = await User.findById(userId);
     if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
 
@@ -80,10 +81,10 @@ export const createClassService = async (userId: string, data: ClassStateType) =
         _id: savedClass._id.toString(),
         name: savedClass.name,
         description: savedClass.description,
-        owner: savedClass.owner.toString(),
+        visibility: savedClass.visibility,
         bannerUrl: savedClass.bannerUrl,
         requiredApprovalToJoin: savedClass.requiredApprovalToJoin,
-        message: 'Create class successfully'
+        owner: savedClass.owner.toString()
     };
 };
 
@@ -113,13 +114,18 @@ export const updateClassService = async (classId: string, userId: Types.ObjectId
     };
 };
 
-export const deleteClassService = async (classId: string, userId: Types.ObjectId) => {
+export const classDeleteService = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
     if (!existingClass.owner.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to delete this class', ErrorCode.FORBIDDEN);
 
     await UserClassState.deleteMany({ class: classId });
+    await Quiz.deleteMany({ class: classId });
     await Class.findByIdAndDelete(classId);
 
     return { message: 'Delete class successfully' };
@@ -140,34 +146,25 @@ export const getClassUpdateByIdService = async (classId: string, userId: Types.O
     };
 };
 
-export const getClassListUserService = async () => {
-    const existingClasses = await Class.find().select('name description requiredApprovalToJoin bannerUrl');
-    if (!existingClasses) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
-    return existingClasses;
-};
-
 export const getMyClassListService = async (userId: Types.ObjectId, page: number, limit: number, search?: string) => {
     const skip = (page - 1) * limit;
-
     const searchQuery = search ? { name: { $regex: search, $options: 'i' } } : {};
+    const totalCount = await Class.countDocuments({
+        $or: [{ users: userId }, { owner: userId }],
+        ...searchQuery
+    });
 
     const classes = await Class.find({
         $or: [{ users: userId }, { owner: userId }],
         ...searchQuery
     })
         .populate('decks.deck')
-        .select('_id name description requiredApprovalToJoin decks bannerUrl createdAt')
+        .select('_id name description requiredApprovalToJoin bannerUrl createdAt decks')
         .skip(skip)
         .limit(limit);
 
-    const totalCount = await Class.countDocuments({
-        $or: [{ users: userId }, { owner: userId }],
-        ...searchQuery
-    });
-
     const result = await Promise.all(
         classes.map(async (classItem) => {
-            const classDeckIds = classItem.decks.map((d) => d.deck?._id?.toString()).filter(Boolean);
             const scheduledDeckIds = classItem.decks
                 .filter((d) => d.startTime && d.endTime)
                 .map((d) => d.deck?._id?.toString())
@@ -195,7 +192,6 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
                 description: classItem.description,
                 requiredApprovalToJoin: classItem.requiredApprovalToJoin,
                 bannerUrl: classItem.bannerUrl,
-                decks: classItem.decks,
                 createdAt: classItem.createdAt,
                 progress
             };
@@ -210,8 +206,8 @@ export const getMyClassListService = async (userId: Types.ObjectId, page: number
 
 export const getSuggestedListService = async (userId: Types.ObjectId, page: number, limit: number, search?: string) => {
     const skip = (page - 1) * limit;
-
     const searchQuery = search ? { name: { $regex: search, $options: 'i' } } : {};
+
     const baseQuery = {
         users: { $ne: userId },
         owner: { $ne: userId },
@@ -221,7 +217,7 @@ export const getSuggestedListService = async (userId: Types.ObjectId, page: numb
 
     const [suggestedClasses, totalCount] = await Promise.all([
         Class.find(baseQuery)
-            .select('_id name description requiredApprovalToJoin bannerUrl createdAt owner')
+            .select('_id name description requiredApprovalToJoin bannerUrl createdAt')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit),
@@ -235,8 +231,7 @@ export const getSuggestedListService = async (userId: Types.ObjectId, page: numb
         description: classItem.description,
         requiredApprovalToJoin: classItem.requiredApprovalToJoin,
         bannerUrl: classItem.bannerUrl,
-        createdAt: classItem.createdAt,
-        owner: classItem.owner.toString()
+        createdAt: classItem.createdAt
     }));
 
     return {
