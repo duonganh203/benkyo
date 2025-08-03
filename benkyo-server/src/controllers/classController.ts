@@ -2,23 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import { classValidation } from '~/validations/classValidation';
 import * as classService from '../services/classService';
 
-export const createClass = async (req: Request, res: Response) => {
-    try {
-        const classData = classValidation.parse(req.body);
-        const userId = req.user._id;
+export const classCreate = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const classRequest = classValidation.parse(req.body);
 
-        const safeClassData = {
-            ...classData,
-            description: classData.description ?? ''
-        };
+    const newClass = await classService.classCreateService(userId, classRequest);
 
-        const newClass = await classService.createClassService(userId, safeClassData);
-
-        res.status(201).json(newClass);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to create class', error: errMsg });
-    }
+    res.json(newClass);
 };
 
 export const updateClass = async (req: Request, res: Response) => {
@@ -36,18 +26,13 @@ export const updateClass = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteClass = async (req: Request, res: Response) => {
-    try {
-        const classId = req.params._id;
-        const userId = req.user._id;
+export const classDelete = async (req: Request, res: Response) => {
+    const classId = req.params.classId;
+    const userId = req.user._id;
 
-        const result = await classService.deleteClassService(classId, userId);
+    const result = await classService.classDeleteService(classId, userId);
 
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to delete class', error: errMsg });
-    }
+    res.json(result);
 };
 
 export const getClassUpdateById = async (req: Request, res: Response) => {
@@ -89,19 +74,14 @@ export const getClassManagementById = async (req: Request, res: Response) => {
 };
 
 export const getSuggestedClassList = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user._id;
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 5;
-        const search = req.query.search as string;
+    const userId = req.user._id;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const search = req.query.search as string;
 
-        const classData = await classService.getSuggestedListService(userId, page, limit, search);
+    const classData = await classService.getSuggestedListService(userId, page, limit, search);
 
-        res.status(200).json(classData);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to get class list', error: errMsg });
-    }
+    res.json(classData);
 };
 
 export const requestJoinClass = async (req: Request, res: Response) => {
