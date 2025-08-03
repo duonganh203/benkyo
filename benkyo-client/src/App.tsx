@@ -28,7 +28,6 @@ import Payment from './pages/payment';
 import Packages from './pages/package';
 import Community from './pages/community';
 import CreateClass from './pages/create-class';
-import UpdateClass from './pages/update-class';
 
 import ClassManagement from './pages/class-management';
 import Notifications from './pages/notification';
@@ -82,8 +81,9 @@ const App = () => {
                             <Route path='/top-learners' element={<TopLearners />} />
                             <Route path='/community' element={<Community />} />
                             <Route path='/class/create' element={<CreateClass />} />
+                            <Route path='/class/update' element={<ClassUpdate />} />
                             <Route path='/class/:classId/update' element={<ClassUpdate />} />
-                            <Route path='/class/list' element={<ClassListUser />} />
+                            <Route path='/class/list' element={<ClassList />} />
                             <Route path='/class/:_id/management' element={<ClassManagement />} />
                             <Route path='/class/:_id/management/quizzes' element={<ClassQuizManagement />} />
                             <Route path='/notification' element={<Notifications />} />
