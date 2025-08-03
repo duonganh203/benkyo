@@ -27,7 +27,7 @@ classRoutes.post('/reject', errorHandler(classController.rejectJoinRequest));
 classRoutes.post('/create', errorHandler(classController.classCreate));
 classRoutes.post('/invite', errorHandler(classController.inviteMemberToClass));
 classRoutes.post('/add-deck', errorHandler(classController.addDeckToClass));
-classRoutes.post('/:_id/request', errorHandler(classController.requestJoinClass));
+classRoutes.post('/:classId/request', errorHandler(classController.classRequestJoin));
 
 classRoutes.put('/:_id/update', errorHandler(classController.updateClass));
 
