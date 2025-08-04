@@ -261,14 +261,12 @@ const ClassSchema = new Schema(
                 invitedAt: { type: Date, default: Date.now }
             }
         ],
-        visited: {
-            history: [
-                {
-                    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-                    lastVisit: { type: Date, default: Date.now }
-                }
-            ]
-        },
+        visited: [
+            {
+                userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                lastVisit: { type: Date, default: Date.now }
+            }
+        ],
         joinRequests: [
             {
                 user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
