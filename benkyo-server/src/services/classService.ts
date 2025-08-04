@@ -18,10 +18,12 @@ import {
     MongooseUserClassState,
     MongooseClass,
     MongooseOwnerRef,
-    PopulatedDeck
+    PopulatedDeck,
+    ClassVisited
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { InternalException } from '~/exceptions/internalException';
+import { toISODate } from '~/utils/handleDate';
 
 interface NormalizedNotification {
     notificationType: 'invite' | 'overdue' | 'upcoming';
@@ -267,23 +269,22 @@ export const requestJoinClasssService = async (classId: string, userId: Types.Ob
     return { message: 'Join request sent successfully' };
 };
 
-const updateVisitedHistory = async (classId: string, userId: Types.ObjectId) => {
+const updateClassVisitedHistory = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
-    if (!existingClass) return;
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
-    const todayStr = new Date().toISOString().split('T')[0];
-    const visitHistory = existingClass.visited?.history || [];
+    const todayStr = toISODate(Date.now());
 
-    const alreadyVisitedToday = visitHistory.some((visit: any) => {
-        const visitDate = new Date(visit.lastVisit).toISOString().split('T')[0];
-        return visit.userId.toString() === userId.toString() && visitDate === todayStr;
+    const alreadyVisitedToday = existingClass.visited.some((visit: ClassVisited) => {
+        const visitDate = toISODate(visit.lastVisit);
+        return visit.userId.equals(userId) && visitDate === todayStr;
     });
 
     if (!alreadyVisitedToday) {
-        await Class.updateOne(
-            { _id: classId },
-            { $push: { 'visited.history': { userId: userId, lastVisit: new Date() } } }
-        );
+        await Class.updateOne({ _id: classId }, { $push: { visited: { userId, lastVisit: new Date() } } });
     }
 };
 
@@ -309,7 +310,7 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
             }
         })
         .populate({
-            path: 'visited.history.userId',
+            path: 'visited.userId',
             select: '_id name email avatar'
         })
         .populate({
@@ -326,8 +327,6 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
 
     if (!existingClass.owner._id.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
-
-    updateVisitedHistory(classId, userId).catch(console.error);
 
     const currentDate = new Date();
     let overdueMembersCount = 0;
@@ -376,7 +375,7 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
             })) || [],
         visited: {
             ...existingClass.visited,
-            history: (existingClass.visited?.history || [])
+            history: (existingClass.visited || [])
                 .sort((a: any, b: any) => new Date(b.lastVisit).getTime() - new Date(a.lastVisit).getTime())
                 .filter(
                     (visit: any, index: number, arr: any[]) =>
@@ -660,7 +659,7 @@ export const getClassUserByIdService = async (classId: string, userId: string): 
 
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
-    await updateVisitedHistory(classId, new Types.ObjectId(userId));
+    await updateClassVisitedHistory(classId, new Types.ObjectId(userId));
 
     const deckRefs = existingClass.decks || [];
     const deckIds = deckRefs.map((d: any) => d.deck?._id).filter(Boolean);
@@ -743,7 +742,7 @@ export const getClassUserByIdService = async (classId: string, userId: string): 
         userClassStates: sortedTopUserStates,
         completionRate,
         visited: {
-            history: (existingClass.visited?.history || []).map((h: any) => h.userId?.toString() || '')
+            history: (existingClass.visited || []).map((h: any) => h.userId?.toString() || '')
         },
         bannerUrl: existingClass.bannerUrl
     };
