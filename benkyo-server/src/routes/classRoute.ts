@@ -9,7 +9,7 @@ const classRoutes: Router = Router();
 classRoutes.use(authMiddleware);
 
 classRoutes.get('/:_id/member-progress', errorHandler(classController.getClassMemberProgress));
-classRoutes.get('/:_id/update-by-id', errorHandler(classController.getClassUpdateById));
+classRoutes.get('/:classId/update-by-id', errorHandler(classController.getClassUpdateById));
 classRoutes.get('/:_id/management', errorHandler(classController.getClassManagementById));
 classRoutes.get('/:_id/decks-to-add', errorHandler(classController.getDecksToAddToClass));
 classRoutes.get('/:_id/user-detail', errorHandler(classController.getClassUserById));
@@ -29,7 +29,7 @@ classRoutes.post('/invite', errorHandler(classController.inviteMemberToClass));
 classRoutes.post('/add-deck', errorHandler(classController.addDeckToClass));
 classRoutes.post('/:_id/request', errorHandler(classController.requestJoinClass));
 
-classRoutes.put('/:_id/update', errorHandler(classController.updateClass));
+classRoutes.put('/:classId/update', errorHandler(classController.classUpdate));
 
 classRoutes.delete('/:classId/delete', errorHandler(classController.classDelete));
 classRoutes.delete('/remove-user', errorHandler(classController.removeUserFromClass));
