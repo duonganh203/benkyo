@@ -17,6 +17,8 @@ import {
     ClassType
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
+import { toISODate } from '~/utils/handleDate';
+
 
 export const classCreateService = async (userId: string, data: ClassStateType) => {
     const user = await User.findById(userId);
@@ -36,17 +38,15 @@ export const classCreateService = async (userId: string, data: ClassStateType) =
     };
 };
 
-export const updateClassService = async (classId: string, userId: Types.ObjectId, data: Partial<ClassStateType>) => {
+export const classUpdateService = async (classId: string, userId: Types.ObjectId, data: ClassStateType) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
     if (!existingClass.owner.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to update this class', ErrorCode.FORBIDDEN);
-
-    existingClass.name = data.name ?? existingClass.name;
-    existingClass.description = data.description ?? existingClass.description;
-    existingClass.bannerUrl = data.bannerUrl ?? existingClass.bannerUrl;
-    existingClass.visibility = data.visibility ?? existingClass.visibility;
-    existingClass.requiredApprovalToJoin = data.requiredApprovalToJoin ?? existingClass.requiredApprovalToJoin;
 
     const updatedClass = await existingClass.save();
 
@@ -54,11 +54,10 @@ export const updateClassService = async (classId: string, userId: Types.ObjectId
         _id: updatedClass._id.toString(),
         name: updatedClass.name,
         description: updatedClass.description,
-        owner: updatedClass.owner.toString(),
         bannerUrl: updatedClass.bannerUrl,
         visibility: updatedClass.visibility,
         requiredApprovalToJoin: updatedClass.requiredApprovalToJoin,
-        message: 'Update class successfully'
+        owner: updatedClass.owner.toString()
     };
 };
 
@@ -80,21 +79,29 @@ export const classDeleteService = async (classId: string, userId: Types.ObjectId
 };
 
 export const getClassUpdateByIdService = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
     if (!existingClass.owner.equals(userId))
-        throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
+        throw new ForbiddenRequestsException('You do not have permission to update this class', ErrorCode.FORBIDDEN);
 
     return {
         name: existingClass.name,
         description: existingClass.description,
+        bannerUrl: existingClass.bannerUrl,
         visibility: existingClass.visibility,
         requiredApprovalToJoin: existingClass.requiredApprovalToJoin,
-        bannerUrl: existingClass.bannerUrl
+        owner: existingClass.owner.toString()
     };
 };
 
 export const getMyClassListService = async (userId: Types.ObjectId, page: number, limit: number, search?: string) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const skip = (page - 1) * limit;
     const searchQuery = search ? { name: { $regex: search, $options: 'i' } } : {};
     const totalCount = await Class.countDocuments({
@@ -215,9 +222,12 @@ export const requestJoinClasssService = async (classId: string, userId: Types.Ob
     return { message: 'Join request sent successfully' };
 };
 
-const updateVisitedHistory = async (classId: string, userId: Types.ObjectId) => {
+const updateClassVisitedHistory = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
-    if (!existingClass) return;
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
     const todayStr = new Date().toISOString().split('T')[0];
     const visitHistory = existingClass.visited || [];
@@ -488,7 +498,7 @@ export const getClassUserByIdService = async (classId: string, userId: string) =
 
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
-    await updateVisitedHistory(classId, new Types.ObjectId(userId));
+    await updateClassVisitedHistory(classId, new Types.ObjectId(userId));
 
     const deckRefs = existingClass.decks || [];
     const deckIds = deckRefs.map((d) => d.deck._id);
