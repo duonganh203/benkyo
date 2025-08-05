@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { classValidation } from '~/validations/classValidation';
 import * as classService from '../services/classService';
 
@@ -72,346 +72,223 @@ export const getSuggestedClassList = async (req: Request, res: Response) => {
 };
 
 export const requestJoinClass = async (req: Request, res: Response) => {
-    try {
-        const { _id } = req.params;
-        const userId = req.user._id;
-        const result = await classService.requestJoinClasssService(_id, userId);
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed request join class', error: errMsg });
-    }
+    const { _id } = req.params;
+    const userId = req.user._id;
+
+    const result = await classService.requestJoinClasssService(_id, userId);
+
+    res.json(result);
 };
 
 export const acceptJoinRequest = async (req: Request, res: Response) => {
-    try {
-        const classId = req.query.classId as string;
-        const requestUserId = req.query.userId as string;
-        const ownerId = req.user._id;
+    const classId = req.query.classId as string;
+    const requestUserId = req.query.userId as string;
+    const ownerId = req.user._id;
 
-        const result = await classService.acceptJoinRequestService(classId, requestUserId, ownerId);
+    const result = await classService.acceptJoinRequestService(classId, requestUserId, ownerId);
 
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to accept join request', error: errMsg });
-    }
+    res.json(result);
 };
 
 export const rejectJoinRequest = async (req: Request, res: Response) => {
-    try {
-        const classId = req.query.classId as string;
-        const requestUserId = req.query.userId as string;
-        const ownerId = req.user._id;
-        const result = await classService.rejectJoinRequestService(classId, requestUserId, ownerId);
+    const classId = req.query.classId as string;
+    const requestUserId = req.query.userId as string;
+    const ownerId = req.user._id;
 
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to reject join request', error: errMsg });
-    }
+    const result = await classService.rejectJoinRequestService(classId, requestUserId, ownerId);
+
+    res.json(result);
 };
 
 export const inviteMemberToClass = async (req: Request, res: Response) => {
-    try {
-        const classId = req.query.classId as string;
-        const targetUserEmail = req.query.email as string;
-        const ownerId = req.user._id;
+    const classId = req.query.classId as string;
+    const targetUserEmail = req.query.email as string;
+    const ownerId = req.user._id;
 
-        const result = await classService.inviteMemberToClassService(classId, ownerId, targetUserEmail);
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to invite member', error: errMsg });
-    }
+    const result = await classService.inviteMemberToClassService(classId, ownerId, targetUserEmail);
+
+    res.json(result);
 };
 
 export const acceptInviteClass = async (req: Request, res: Response) => {
-    try {
-        const classId = req.query.classId as string;
-        const userId = req.user._id;
-        if (!classId) {
-            return res.status(400).json({ message: 'Missing classId or userId' });
-        }
+    const classId = req.query.classId as string;
+    const userId = req.user._id;
 
-        const result = await classService.acceptInviteClassService(classId, userId);
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to accept class invitation', error: errMsg });
-    }
+    const result = await classService.acceptInviteClassService(classId, userId);
+
+    res.json(result);
 };
 
 export const rejectInviteClass = async (req: Request, res: Response) => {
-    try {
-        const classId = req.query.classId as string;
-        const userId = req.user._id;
+    const classId = req.query.classId as string;
+    const userId = req.user._id;
 
-        if (!classId) {
-            return res.status(400).json({ message: 'Missing classId or userId' });
-        }
+    const result = await classService.rejectInviteClassService(classId, userId);
 
-        const result = await classService.rejectInviteClassService(classId, userId);
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to reject class invitation', error: errMsg });
-    }
+    res.json(result);
 };
 
 export const getInviteClass = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user._id;
-        const result = await classService.getInviteClassService(userId);
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to get invite class list', error: errMsg });
-    }
+    const userId = req.user._id;
+    const result = await classService.getInviteClassService(userId);
+
+    res.json(result);
 };
 
 export const removeUserFromClass = async (req: Request, res: Response) => {
-    try {
-        const classId = req.query.classId as string;
-        const userId = req.query.userId as string;
-        const ownerId = req.user._id;
+    const classId = req.query.classId as string;
+    const userId = req.query.userId as string;
+    const ownerId = req.user._id;
 
-        if (!classId || !userId) {
-            return res.status(400).json({ message: 'Missing classId or userId' });
-        }
+    const result = await classService.removeUserFromClassService(classId, userId, ownerId);
 
-        const result = await classService.removeUserFromClassService(classId, userId, ownerId);
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to remove user from class', error: errMsg });
-    }
+    res.json(result);
 };
 
 export const removeDeckFromClass = async (req: Request, res: Response) => {
-    try {
-        const classId = req.query.classId as string;
-        const deckId = req.query.deckId as string;
-        const ownerId = req.user._id;
+    const classId = req.query.classId as string;
+    const deckId = req.query.deckId as string;
+    const ownerId = req.user._id;
 
-        if (!classId || !deckId) {
-            return res.status(400).json({ message: 'Missing classId or deckId' });
-        }
+    const result = await classService.removeDeckFromClassService(classId, deckId, ownerId);
 
-        const result = await classService.removeDeckFromClassService(classId, deckId, ownerId);
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to remove deck from class', error: errMsg });
-    }
+    res.json(result);
 };
 
 export const addDeckToClass = async (req: Request, res: Response) => {
-    try {
-        const ownerId = req.user._id;
-        const { classId, deckId, description, startTime, endTime } = req.body;
+    const ownerId = req.user._id;
+    const { classId, deckId, description, startTime, endTime } = req.body;
 
-        if (!classId || !deckId) {
-            return res.status(400).json({ message: 'Missing classId or deckId' });
-        }
+    const result = await classService.addDeckToClassService({
+        classId,
+        deckId,
+        description,
+        startTime,
+        endTime,
+        ownerId
+    });
 
-        const result = await classService.addDeckToClassService({
-            classId,
-            deckId,
-            description,
-            startTime,
-            endTime,
-            ownerId
-        });
-
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to add deck to class', error: errMsg });
-    }
+    res.json(result);
 };
 
 export const getDecksToAddToClass = async (req: Request, res: Response) => {
-    try {
-        const { _id } = req.params;
-        const decks = await classService.getDecksToAddToClassService(_id);
-        res.status(200).json(decks);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to get deck to add class', error: errMsg });
-    }
+    const { _id } = req.params;
+
+    const decks = await classService.getDecksToAddToClassService(_id);
+
+    res.json(decks);
 };
 
 export const getClassUserById = async (req: Request, res: Response) => {
-    try {
-        const { _id } = req.params;
-        const userId = req.user._id;
-        const classItem = await classService.getClassUserByIdService(_id, userId);
-        res.status(200).json(classItem);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to get class user by id', error: errMsg });
-    }
+    const { _id } = req.params;
+    const userId = req.user._id;
+    const classItem = await classService.getClassUserByIdService(_id, userId);
+    res.json(classItem);
 };
 
 export const startClassDeckSession = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user._id;
-        const { classId, deckId } = req.params;
-        const { forceNew } = req.body || {};
+    const userId = req.user._id;
+    const { classId, deckId } = req.params;
+    const { forceNew } = req.body || {};
 
-        const result = await classService.startClassDeckSessionService(userId, classId, deckId, forceNew);
+    const result = await classService.startClassDeckSessionService(userId, classId, deckId, forceNew);
 
-        return res.status(201).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(500).json({ message: 'Failed to start class deck session', error: errMsg });
-    }
+    return res.json(result);
 };
 
 export const saveClassDeckAnswer = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user._id;
-        const { classId, deckId } = req.params;
-        const { sessionId, cardId, correct } = req.body;
+    const userId = req.user._id;
+    const { classId, deckId } = req.params;
+    const { sessionId, cardId, correct } = req.body;
 
-        const result = await classService.saveClassDeckAnswerService(
-            userId,
-            classId,
-            deckId,
-            sessionId,
-            cardId,
-            correct
-        );
+    const result = await classService.saveClassDeckAnswerService(userId, classId, deckId, sessionId, cardId, correct);
 
-        return res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(500).json({ message: 'Failed to save class deck answer', error: errMsg });
-    }
+    return res.json(result);
 };
 
 export const endClassDeckSession = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user._id;
-        const { classId, deckId } = req.params;
-        const { sessionId, duration } = req.body;
+    const userId = req.user._id;
+    const { classId, deckId } = req.params;
+    const { sessionId, duration } = req.body;
 
-        const result = await classService.endClassDeckSessionService(userId, classId, deckId, sessionId, duration);
+    const result = await classService.endClassDeckSessionService(userId, classId, deckId, sessionId, duration);
 
-        return res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(500).json({ message: 'Failed to end class deck session', error: errMsg });
-    }
+    return res.json(result);
 };
 
 export const getClassDeckSessionHistory = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user._id;
-        const { classId, deckId } = req.params;
+    const userId = req.user._id;
+    const { classId, deckId } = req.params;
 
-        const result = await classService.getClassDeckSessionHistoryService(userId, classId, deckId);
+    const result = await classService.getClassDeckSessionHistoryService(userId, classId, deckId);
 
-        return res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(500).json({ message: 'Failed to get class deck session history', error: errMsg });
-    }
+    return res.json(result);
 };
 
-export const getOverdueSchedules = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const userId = req.user._id;
-        const overdueSchedules = await classService.getOverdueSchedulesService(userId);
+export const getOverdueSchedules = async (req: Request, res: Response) => {
+    const userId = req.user._id;
 
-        res.status(200).json(overdueSchedules);
-    } catch (error) {
-        next(error);
-    }
+    const overdueSchedules = await classService.getOverdueSchedulesService(userId);
+
+    res.json(overdueSchedules);
 };
 
-export const getUpcomingDeadlines = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const userId = req.user._id;
-        const upcomingDeadlines = await classService.getUpcomingDeadlinesService(userId);
-        res.status(200).json(upcomingDeadlines);
-    } catch (error) {
-        next(error);
-    }
+export const getUpcomingDeadlines = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+
+    const upcomingDeadlines = await classService.getUpcomingDeadlinesService(userId);
+
+    res.json(upcomingDeadlines);
 };
 
-export const getAllNotifications = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const userId = req.user._id;
-        const notifications = await classService.getAllNotificationsService(userId);
-        res.status(200).json(notifications);
-    } catch (error) {
-        next(error);
-    }
+export const getAllNotifications = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+
+    const notifications = await classService.getAllNotificationsService(userId);
+
+    res.json(notifications);
 };
 
 export const cancelInvite = async (req: Request, res: Response) => {
-    try {
-        const { classId, userId } = req.params;
-        const ownerId = req.user._id;
+    const { classId, userId } = req.params;
+    const ownerId = req.user._id;
 
-        if (!classId || !userId) {
-            return res.status(400).json({ message: 'Missing classId or userId' });
-        }
+    const result = await classService.cancelInviteService(classId, userId, ownerId);
 
-        const result = await classService.cancelInviteService(classId, userId, ownerId);
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to cancel invite', error: errMsg });
-    }
+    res.json(result);
 };
 
-export const getClassMemberProgress = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const classId = req.params._id;
-        const userId = req.user._id;
+export const getClassMemberProgress = async (req: Request, res: Response) => {
+    const classId = req.params._id;
+    const userId = req.user._id;
 
-        const progress = await classService.getClassMemberProgressService(classId, userId);
+    const progress = await classService.getClassMemberProgressService(classId, userId);
 
-        res.status(200).json(progress);
-    } catch (error) {
-        next(error);
-    }
+    res.json(progress);
 };
 
-export const getClassMemberLearningStatus = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const classId = req.params._id;
-        const userId = req.user._id;
+export const getClassMemberLearningStatus = async (req: Request, res: Response) => {
+    const classId = req.params._id;
+    const userId = req.user._id;
 
-        const memberStatus = await classService.getClassMemberLearningStatusService(classId, userId);
+    const memberStatus = await classService.getClassMemberLearningStatusService(classId, userId);
 
-        res.status(200).json({ success: true, data: memberStatus });
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to get member learning status', error: errMsg });
-    }
+    res.json(memberStatus);
 };
 
-export const getClassMonthlyAccessStats = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const classId = req.params._id;
-        const userId = req.user._id;
+export const getClassMonthlyAccessStats = async (req: Request, res: Response) => {
+    const classId = req.params._id;
+    const userId = req.user._id;
 
-        const monthlyStats = await classService.getClassMonthlyAccessStatsService(classId, userId);
+    const monthlyStats = await classService.getClassMonthlyAccessStatsService(classId, userId);
 
-        res.status(200).json({ success: true, data: monthlyStats });
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to get monthly access statistics', error: errMsg });
-    }
+    res.json(monthlyStats);
 };
 
 export const getClassManagement = async (req: Request, res: Response) => {
     const classId = req.params._id;
     const userId = req.user._id;
+
     const classData = await classService.getClassManagementService(classId, userId);
 
     res.json(classData);
@@ -420,34 +297,44 @@ export const getClassManagement = async (req: Request, res: Response) => {
 export const getClassMembers = async (req: Request, res: Response) => {
     const classId = req.params._id;
     const userId = req.user._id;
+
     const members = await classService.getClassMembersService(classId, userId);
+
     res.json(members);
 };
 
 export const getClassDecks = async (req: Request, res: Response) => {
     const classId = req.params._id;
     const userId = req.user._id;
+
     const decks = await classService.getClassDecksService(classId, userId);
+
     res.json(decks);
 };
 
 export const getClassInvited = async (req: Request, res: Response) => {
     const classId = req.params._id;
     const userId = req.user._id;
+
     const invited = await classService.getClassInvitedService(classId, userId);
+
     res.json(invited);
 };
 
 export const getClassRequestJoin = async (req: Request, res: Response) => {
     const classId = req.params._id;
     const userId = req.user._id;
+
     const requests = await classService.getClassRequestJoinService(classId, userId);
+
     res.json(requests);
 };
 
 export const getClassVisited = async (req: Request, res: Response) => {
     const classId = req.params._id;
     const userId = req.user._id;
+
     const visited = await classService.getClassVisitedService(classId, userId);
+
     res.json(visited);
 };
