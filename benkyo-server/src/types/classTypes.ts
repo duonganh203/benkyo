@@ -238,3 +238,8 @@ export type MonthlyAccessStatsType = {
     members: number;
     uniqueVisitors: number;
 };
+
+export type ClassVisited = {
+    userId: Types.ObjectId;
+    lastVisit: Date;
+};
