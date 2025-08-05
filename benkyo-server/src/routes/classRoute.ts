@@ -9,10 +9,20 @@ const classRoutes: Router = Router();
 classRoutes.use(authMiddleware);
 
 classRoutes.get('/:_id/member-progress', errorHandler(classController.getClassMemberProgress));
+classRoutes.get('/:_id/member-learning-status', errorHandler(classController.getClassMemberLearningStatus));
 classRoutes.get('/:_id/update-by-id', errorHandler(classController.getClassUpdateById));
-classRoutes.get('/:_id/management', errorHandler(classController.getClassManagementById));
+classRoutes.get('/:_id/management', errorHandler(classController.getClassManagement));
 classRoutes.get('/:_id/decks-to-add', errorHandler(classController.getDecksToAddToClass));
 classRoutes.get('/:_id/user-detail', errorHandler(classController.getClassUserById));
+
+// New routes for separate endpoints
+classRoutes.get('/:_id/members', errorHandler(classController.getClassMembers));
+classRoutes.get('/:_id/decks', errorHandler(classController.getClassDecks));
+classRoutes.get('/:_id/invited', errorHandler(classController.getClassInvited));
+classRoutes.get('/:_id/request-join', errorHandler(classController.getClassRequestJoin));
+classRoutes.get('/:_id/visited', errorHandler(classController.getClassVisited));
+classRoutes.get('/:_id/monthly-access-stats', errorHandler(classController.getClassMonthlyAccessStats));
+
 classRoutes.get('/my-class', errorHandler(classController.getMyClassList));
 classRoutes.get('/suggested', errorHandler(classController.getSuggestedClassList));
 classRoutes.get('/notifications/all', errorHandler(classController.getAllNotifications));

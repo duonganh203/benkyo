@@ -60,19 +60,6 @@ export const getMyClassList = async (req: Request, res: Response) => {
     res.json(classData);
 };
 
-export const getClassManagementById = async (req: Request, res: Response) => {
-    try {
-        const classId = req.params._id;
-        const userId = req.user._id;
-        const classData = await classService.getClassManagementByIdService(classId, userId);
-
-        res.status(200).json(classData);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed to get class', error: errMsg });
-    }
-};
-
 export const getSuggestedClassList = async (req: Request, res: Response) => {
     const userId = req.user._id;
     const page = parseInt(req.query.page as string) || 1;
@@ -392,4 +379,75 @@ export const getClassMemberProgress = async (req: Request, res: Response, next: 
     } catch (error) {
         next(error);
     }
+};
+
+export const getClassMemberLearningStatus = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const classId = req.params._id;
+        const userId = req.user._id;
+
+        const memberStatus = await classService.getClassMemberLearningStatusService(classId, userId);
+
+        res.status(200).json({ success: true, data: memberStatus });
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        return res.status(400).json({ message: 'Failed to get member learning status', error: errMsg });
+    }
+};
+
+export const getClassMonthlyAccessStats = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const classId = req.params._id;
+        const userId = req.user._id;
+
+        const monthlyStats = await classService.getClassMonthlyAccessStatsService(classId, userId);
+
+        res.status(200).json({ success: true, data: monthlyStats });
+    } catch (error) {
+        const errMsg = error instanceof Error ? error.message : String(error);
+        return res.status(400).json({ message: 'Failed to get monthly access statistics', error: errMsg });
+    }
+};
+
+export const getClassManagement = async (req: Request, res: Response) => {
+    const classId = req.params._id;
+    const userId = req.user._id;
+    const classData = await classService.getClassManagementService(classId, userId);
+
+    res.json(classData);
+};
+
+export const getClassMembers = async (req: Request, res: Response) => {
+    const classId = req.params._id;
+    const userId = req.user._id;
+    const members = await classService.getClassMembersService(classId, userId);
+    res.json(members);
+};
+
+export const getClassDecks = async (req: Request, res: Response) => {
+    const classId = req.params._id;
+    const userId = req.user._id;
+    const decks = await classService.getClassDecksService(classId, userId);
+    res.json(decks);
+};
+
+export const getClassInvited = async (req: Request, res: Response) => {
+    const classId = req.params._id;
+    const userId = req.user._id;
+    const invited = await classService.getClassInvitedService(classId, userId);
+    res.json(invited);
+};
+
+export const getClassRequestJoin = async (req: Request, res: Response) => {
+    const classId = req.params._id;
+    const userId = req.user._id;
+    const requests = await classService.getClassRequestJoinService(classId, userId);
+    res.json(requests);
+};
+
+export const getClassVisited = async (req: Request, res: Response) => {
+    const classId = req.params._id;
+    const userId = req.user._id;
+    const visited = await classService.getClassVisitedService(classId, userId);
+    res.json(visited);
 };

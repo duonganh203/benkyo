@@ -1,46 +1,125 @@
 import { Types } from 'mongoose';
 
-export type VisitHistoryEntry = {
+export type ClassUserMongoType = {
+    _id: Types.ObjectId;
+    name: string;
+    email: string;
+    avatar: string;
+};
+
+export type ClassOwnerType = {
+    _id: Types.ObjectId;
+    name: string;
+};
+
+export type ClassDeckType = {
+    _id: Types.ObjectId;
+    name: string;
+    description: string;
+    cardCount: number;
+    avgRating: number;
+};
+
+export type ClassDeckRefType = {
+    deck: ClassDeckType;
+    description: string;
+    startTime: Date;
+    endTime: Date;
+};
+
+export type ClassUserClassStateType = {
+    _id: string;
+    user: ClassUserMongoType;
+    deck: Types.ObjectId | ClassDeckType;
+    points: number;
+    studyStreak: number;
+    completedCardIds: Types.ObjectId[];
+    updatedAt: Date;
+};
+
+export type ClassJoinRequestType = {
+    user: Types.ObjectId;
+    requestDate: Date;
+    createdAt: Date;
+    note: string;
+};
+
+export type ClassInvitedUserType = {
+    user: Types.ObjectId;
+    invitedAt: Date;
+    invitedBy: Types.ObjectId;
+};
+
+export type ClassVisitType = {
     userId: Types.ObjectId;
     lastVisit: Date;
 };
 
-export type ClassDeckRef = {
-    deck: {
-        _id: Types.ObjectId;
-        name: string;
-        cardCount: number;
-        avgRating?: number;
-    };
-    description?: string;
-    startTime?: Date;
-    endTime?: Date;
-};
-
-export type PopulatedUser = {
-    _id: Types.ObjectId;
+export type ClassType = {
+    _id: string;
     name: string;
-    email: string;
+    description: string;
+    bannerUrl: string;
+    owner: ClassOwnerType;
+    visibility: 'public' | 'private';
+    requiredApprovalToJoin: boolean;
+    users: ClassUserMongoType[];
+    decks: ClassDeckRefType[];
+    userClassStates: ClassUserClassStateType[];
+    joinRequests: ClassJoinRequestType[];
+    invitedUsers: ClassInvitedUserType[];
+    visited: ClassVisitType[];
+    createdAt: Date;
+    updatedAt: Date;
 };
 
-export type ClassProgressData = {
-    correctCount: number;
-    totalCount: number;
+export type ClassAddDeckType = {
+    classId: string;
+    deckId: string;
+    description: string;
+    startTime: Date;
+    endTime: Date;
+    ownerId: string;
 };
 
-export type ClassDeckProgress = ClassProgressData & {
+export type ClassUserType = {
+    _id: string;
+    name: string;
+    description: string;
+    users: {
+        _id: string;
+        name: string;
+        email: string;
+    }[];
+    decks: ClassDeckProgressType[];
+    owner: {
+        _id: string;
+        name: string;
+    };
+    visibility: 'public' | 'private';
+    requiredApprovalToJoin: boolean;
+    createdAt: Date;
+    userClassStates: ClassUserStateDataType[];
+    completionRate: number;
+    bannerUrl: string;
+    visited: {
+        history: string[];
+    };
+};
+
+export type ClassDeckProgressType = {
     _id: string;
     name: string;
     cardCount: number;
     avgRating: number;
     description: string;
-    startTime?: Date;
-    endTime?: Date;
-    totalCount: number;
+    startTime: Date;
+    endTime: Date;
     correctCount: number;
+    totalCount: number;
 };
 
-export type ClassUserStateData = {
+export type ClassUserStateDataType = {
     _id: string;
     user: {
         _id: string;
@@ -52,91 +131,110 @@ export type ClassUserStateData = {
     completedCardIds: string[];
 };
 
-export type GetClassUserByIdResponse = {
-    _id: string;
-    name: string;
+export type InviteNotificationType = {
+    notificationType: 'invite';
+    sortTime: Date;
+    priority: number;
+    id: string;
+    classId: string;
+    className: string;
     description: string;
-    users: Array<{
-        _id: string;
-        name: string;
-        email: string;
-    }>;
-    decks: ClassDeckProgress[];
-    owner: {
-        _id: string;
-        name: string;
-    };
-    visibility: 'public' | 'private';
-    requiredApprovalToJoin: boolean;
+    type: string;
     createdAt: Date;
-    userClassStates: ClassUserStateData[];
-    completionRate: number;
-    bannerUrl: string;
-    visited: {
-        history: string[];
-    };
+    message: string;
 };
 
-export type PopulatedDeck = {
-    _id: Types.ObjectId;
-    cardCount: number;
+export type OverdueNotificationType = {
+    notificationType: 'overdue';
+    sortTime: Date;
+    priority: number;
+    classId: string;
+    className: string;
+    deckId: string;
+    deckName: string;
+    description: string;
+    endTime: Date;
+    progress: number;
+    totalCards: number;
+    completedCards: number;
+    hoursOverdue: number;
+    isOverdue: boolean;
 };
 
-export type MongooseDeckRef = {
-    deck:
-        | Types.ObjectId
-        | {
-              _id: Types.ObjectId;
-              name: string;
-              cardCount: number;
-              avgRating?: number;
-          };
-    description?: string | null;
-    startTime?: Date;
-    endTime?: Date;
+export type UpcomingNotificationType = {
+    notificationType: 'upcoming';
+    sortTime: Date;
+    priority: number;
+    classId: string;
+    className: string;
+    deckId: string;
+    deckName: string;
+    description: string;
+    endTime: Date;
+    progress: number;
+    totalCards: number;
+    completedCards: number;
+    hoursUntilDeadline: number;
+    isOverdue: boolean;
 };
 
-export type MongooseUserRef = {
-    _id: Types.ObjectId;
-    name: string;
-    email: string;
+export type OverdueScheduleType = OverdueNotificationType;
+
+export type MemberProgressType = {
+    userId: string;
+    userName: string;
+    userEmail: string;
+    userAvatar: string;
+    overallProgress: number;
+    overdueCount: number;
+    upcomingCount: number;
+    deckProgresses: {
+        deckId: string;
+        deckName: string;
+        description: string;
+        startTime: Date;
+        endTime: Date;
+        progress: number;
+        totalCards: number;
+        completedCards: number;
+        isOverdue: boolean;
+        hoursOverdue: number;
+        hoursUntilDeadline: number;
+    }[];
 };
 
-export type MongooseOwnerRef = {
-    _id: Types.ObjectId;
-    name: string;
-};
-
-export type MongooseUserClassState = {
-    _id: Types.ObjectId;
-    user: {
-        _id: Types.ObjectId;
-        name: string;
-        email: string;
-    };
-    points: number;
+export type MemberLearningStatusType = {
+    userId: string;
+    userName: string;
+    userEmail: string;
+    userAvatar: string;
+    totalDecks: number;
+    completedDecks: number;
+    inProgressDecks: number;
+    notStartedDecks: number;
+    overallProgress: number;
+    lastStudyDate: Date;
     studyStreak: number;
-    completedCardIds: Types.ObjectId[];
+    deckStatuses: {
+        deckId: string;
+        deckName: string;
+        description: string;
+        status: 'completed' | 'in_progress' | 'not_started';
+        progress: number;
+        totalCards: number;
+        completedCards: number;
+        lastStudyDate: Date;
+        startTime: Date;
+        endTime: Date;
+        isOverdue: boolean;
+        hoursOverdue: number;
+        hoursUntilDeadline: number;
+    }[];
 };
 
-export type MongooseVisitEntry = {
-    userId: Types.ObjectId;
-    lastVisit: Date;
-};
-
-export type MongooseClass = {
-    _id: Types.ObjectId;
-    name: string;
-    description: string;
-    owner: Types.ObjectId | MongooseOwnerRef;
-    users: Types.ObjectId[] | MongooseUserRef[];
-    decks: MongooseDeckRef[];
-    bannerUrl: string;
-    requiredApprovalToJoin: boolean;
-    userClassStates: MongooseUserClassState[];
-    createdAt: Date;
-    visibility: 'public' | 'private';
-    visited?: {
-        history: MongooseVisitEntry[];
-    };
+export type MonthlyAccessStatsType = {
+    month: string;
+    visits: number;
+    members: number;
+    uniqueVisitors: number;
 };
