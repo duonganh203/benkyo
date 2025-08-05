@@ -15,7 +15,6 @@ classRoutes.get('/:_id/management', errorHandler(classController.getClassManagem
 classRoutes.get('/:_id/decks-to-add', errorHandler(classController.getDecksToAddToClass));
 classRoutes.get('/:_id/user-detail', errorHandler(classController.getClassUserById));
 
-// New routes for separate endpoints
 classRoutes.get('/:_id/members', errorHandler(classController.getClassMembers));
 classRoutes.get('/:_id/decks', errorHandler(classController.getClassDecks));
 classRoutes.get('/:_id/invited', errorHandler(classController.getClassInvited));
@@ -44,7 +43,7 @@ classRoutes.put('/:classId/update', errorHandler(classController.classUpdate));
 classRoutes.delete('/:classId/delete', errorHandler(classController.classDelete));
 classRoutes.delete('/remove-user', errorHandler(classController.removeUserFromClass));
 classRoutes.delete('/remove-deck', errorHandler(classController.removeDeckFromClass));
-classRoutes.delete('/:classId/invite/:userId', errorHandler(classController.cancelInvite));
+classRoutes.delete('/cancel-invite', errorHandler(classController.cancelInvite));
 
 classRoutes.post('/:classId/deck/:deckId/session/start', errorHandler(classController.startClassDeckSession));
 classRoutes.post('/:classId/deck/:deckId/session/answer', errorHandler(classController.saveClassDeckAnswer));

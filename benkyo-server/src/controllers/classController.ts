@@ -240,7 +240,8 @@ export const getAllNotifications = async (req: Request, res: Response) => {
 };
 
 export const cancelInvite = async (req: Request, res: Response) => {
-    const { classId, userId } = req.params;
+    const classId = req.query.classId as string;
+    const userId = req.query.userId as string;
     const ownerId = req.user._id;
 
     const result = await classService.cancelInviteService(classId, userId, ownerId);

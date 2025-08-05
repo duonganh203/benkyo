@@ -780,6 +780,7 @@ export const getAllNotificationsService = async (userId: Types.ObjectId) => {
 
 export const cancelInviteService = async (classId: string, userId: string, ownerId: Types.ObjectId) => {
     const existingClass = await Class.findById(classId);
+
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
     if (!existingClass.owner.equals(ownerId)) {
@@ -1343,7 +1344,7 @@ export const getClassMembersService = async (classId: string, userId: Types.Obje
 
     const classData = await Class.findById(classId).populate({
         path: 'users',
-        select: '_id email username avatar'
+        select: '_id email name avatar'
     });
 
     if (!classData) {
@@ -1373,7 +1374,7 @@ export const getClassInvitedService = async (classId: string, userId: Types.Obje
 
     const classData = await Class.findById(classId).populate({
         path: 'invitedUsers.user',
-        select: '_id email username avatar'
+        select: '_id email name avatar'
     });
 
     if (!classData) {
@@ -1388,7 +1389,7 @@ export const getClassRequestJoinService = async (classId: string, userId: Types.
 
     const classData = await Class.findById(classId).populate({
         path: 'joinRequests.user',
-        select: '_id email username avatar'
+        select: '_id email name avatar'
     });
 
     if (!classData) {
@@ -1403,7 +1404,7 @@ export const getClassVisitedService = async (classId: string, userId: Types.Obje
 
     const classData = await Class.findById(classId).populate({
         path: 'visited.userId',
-        select: '_id email username avatar'
+        select: '_id email name avatar'
     });
 
     if (!classData) {
