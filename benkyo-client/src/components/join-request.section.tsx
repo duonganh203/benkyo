@@ -27,13 +27,11 @@ const JoinRequestsSection = ({ onAccept, onReject }: JoinRequestsSectionProps) =
     if (!user) {
         navigate('/login');
         getToast('error', 'You must be logged in to continue.');
-        return null;
     }
 
     if (isError) {
         getToast('error', `${error?.message}`);
         console.log(error);
-        return null;
     }
 
     if (isLoading) {

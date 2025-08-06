@@ -34,9 +34,6 @@ export const ClassInvited = () => {
             return;
         }
 
-        console.log('Cancelling invite for userId:', userId);
-        console.log('ClassId:', classData._id);
-
         cancelInvite(
             { classId: classData._id, userId },
             {
