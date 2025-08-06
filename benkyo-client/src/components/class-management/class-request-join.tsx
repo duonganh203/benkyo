@@ -144,7 +144,7 @@ export const ClassRequestJoin = ({ onMemberChange }: ClassRequestJoinProps) => {
                     fetchJoinRequests(classData._id);
                     onMemberChange?.();
                 },
-                onError: (error: any) => {
+                onError: (error) => {
                     getToast('error', error.message);
                     console.log(error);
                 }
@@ -161,7 +161,7 @@ export const ClassRequestJoin = ({ onMemberChange }: ClassRequestJoinProps) => {
                     fetchJoinRequests(classData._id);
                     onMemberChange?.();
                 },
-                onError: (error: any) => {
+                onError: (error) => {
                     getToast('error', error.message);
                     console.log(error);
                 }

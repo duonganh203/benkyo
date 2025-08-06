@@ -40,7 +40,7 @@ const ClassJoin = () => {
                     setMessage(response.message);
                     getToast('error', response.message);
                 }
-            } catch (error: any) {
+            } catch (error) {
                 setResult('error');
                 setMessage(error?.response?.data?.message || 'Failed to join class');
                 getToast('error', error?.response?.data?.message || 'Failed to join class');

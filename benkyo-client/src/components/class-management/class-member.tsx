@@ -51,13 +51,13 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
                         refetch();
                         onMemberChange?.();
                     },
-                    onError: (error: any) => {
+                    onError: (error) => {
                         getToast('error', error.message);
                         console.log(error);
                     }
                 }
             );
-        } catch (error: any) {
+        } catch (error) {
             getToast('error', 'Failed to send invitation');
             console.log(error);
         } finally {
@@ -90,7 +90,7 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
                     setShowConfirmModal(false);
                     setUserToRemove(null);
                 },
-                onError: (error: any) => {
+                onError: (error) => {
                     getToast('error', error.message);
                     console.log(error);
                 }

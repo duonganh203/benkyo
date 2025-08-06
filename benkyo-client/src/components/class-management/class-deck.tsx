@@ -77,12 +77,12 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
                     refetch();
                     onDeckChange?.();
                 },
-                onError: (error: any) => {
+                onError: (error) => {
                     getToast('error', error.message);
                     console.log(error);
                 }
             });
-        } catch (error: any) {
+        } catch (error) {
             getToast('error', 'Failed to add deck');
             console.log(error);
         } finally {
@@ -115,7 +115,7 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
                     setShowConfirmModal(false);
                     setDeckToRemove(null);
                 },
-                onError: (error: any) => {
+                onError: (error) => {
                     getToast('error', error.message);
                     console.log(error);
                 }

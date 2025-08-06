@@ -44,7 +44,7 @@ export const ClassInvited = () => {
                     getToast('success', 'Invitation cancelled successfully');
                     refetch();
                 },
-                onError: (error: any) => {
+                onError: (error) => {
                     getToast('error', error.message);
                     console.log(error);
                 }
