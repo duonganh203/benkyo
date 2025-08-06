@@ -61,12 +61,12 @@ export const getSuggestedClassList = async (req: Request, res: Response) => {
     res.json(classData);
 };
 
-export const requestJoinClass = async (req: Request, res: Response) => {
-    const { _id } = req.params;
+export const classRequestJoin = async (req: Request, res: Response) => {
+    const { classId } = req.params;
     const userId = req.user._id;
-
-    const result = await classService.requestJoinClasssService(_id, userId);
-
+  
+    const result = await classService.classRequestJoinsService(classId, userId);
+  
     res.json(result);
 };
 

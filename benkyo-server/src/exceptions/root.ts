@@ -21,5 +21,6 @@ export enum ErrorCode {
     UNAUTHORIZED = 3001,
     NOT_FOUND = 4001,
     INTERNAL_SERVER_ERROR = 5001,
-    FORBIDDEN = 6001
+    FORBIDDEN = 6001,
+    CONFLICT = 7001
 }
