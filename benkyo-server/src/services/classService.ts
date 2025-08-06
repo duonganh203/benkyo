@@ -1433,6 +1433,7 @@ export const getClassManagementService = async (classId: string, userId: Types.O
     return {
         _id: existingClass._id,
         name: existingClass.name,
+        bannerUrl: existingClass.bannerUrl,
         description: existingClass.description,
         visibility: existingClass.visibility,
         owner: existingClass.owner,
