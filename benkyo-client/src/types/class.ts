@@ -414,3 +414,100 @@ export type ClassMemberProgressResponse = {
     data: MemberProgress[];
     message: string;
 };
+
+// New types for API responses - direct return without data wrapper
+export type ClassUsersResponse = ClassUser[];
+
+export type ClassJoinRequestsResponse = {
+    user: ClassUser | null;
+    createdAt: Date;
+}[];
+
+export type ClassUserStatesResponse = {
+    _id: string;
+    class: string;
+    user: ClassUser;
+    deck: string;
+    completedCardIds: string[];
+    progress: number;
+    createdAt: Date;
+    updatedAt: Date;
+}[];
+
+export type ClassInvitedUsersResponse = {
+    user: ClassUser | null;
+    invitedAt: Date;
+    invitedBy: string;
+}[];
+
+export type MemberLearningStatus = {
+    deckId: string;
+    deckName: string;
+    description?: string;
+    status: 'completed' | 'in_progress' | 'not_started';
+    progress: number;
+    totalCards: number;
+    completedCards: number;
+    lastStudyDate: Date;
+    startTime: Date;
+    endTime: Date;
+    isOverdue: boolean;
+    hoursOverdue: number;
+    hoursUntilDeadline: number;
+};
+
+export type MemberLearningStatusResponse = {
+    userId: string;
+    userName: string;
+    userEmail: string;
+    userAvatar: string;
+    totalDecks: number;
+    completedDecks: number;
+    inProgressDecks: number;
+    notStartedDecks: number;
+    overallProgress: number;
+    lastStudyDate: Date;
+    studyStreak: number;
+    deckStatuses: MemberLearningStatus[];
+}[];
+
+export type MonthlyAccessStats = {
+    month: string;
+    visits: number;
+    members: number;
+    uniqueVisitors: number;
+};
+
+export type ClassMonthlyAccessStatsResponse = MonthlyAccessStats[];
+
+export type ClassMembersResponse = ClassUser[];
+
+export type ClassDecksResponse = {
+    _id: string;
+    deck: {
+        _id: string;
+        name: string;
+        description?: string;
+    };
+    description?: string;
+    startTime?: Date;
+    endTime?: Date;
+}[];
+
+export type ClassInvitedResponse = {
+    _id: string;
+    user: ClassUser;
+    invitedAt: Date;
+}[];
+
+export type ClassRequestJoinResponse = {
+    _id: string;
+    user: ClassUser;
+    requestDate: Date;
+}[];
+
+export type ClassVisitedResponse = {
+    _id: string;
+    userId: ClassUser;
+    lastVisit: string;
+}[];

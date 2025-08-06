@@ -27,8 +27,8 @@ export const useClassVisitedStore = create<ClassVisitedStore>((set) => ({
         try {
             const response = await getClassVisitedApi(classId);
             set({ visitedHistory: response || [], isLoading: false });
-        } catch (error) {
-            set({ error: 'Failed to fetch visited history', isLoading: false });
+        } catch {
+            set({ error: 'Failed to fetch visited users', isLoading: false });
         }
     },
     clearVisitedHistory: () => {

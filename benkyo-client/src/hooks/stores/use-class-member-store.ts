@@ -25,7 +25,7 @@ export const useClassMemberStore = create<ClassMemberStore>((set) => ({
         try {
             const response = await getClassMemberApi(classId);
             set({ members: response || [], isLoading: false });
-        } catch (error) {
+        } catch {
             set({ error: 'Failed to fetch members', isLoading: false });
         }
     },

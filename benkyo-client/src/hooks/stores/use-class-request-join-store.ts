@@ -28,7 +28,7 @@ export const useClassRequestJoinStore = create<ClassRequestJoinStore>((set) => (
         try {
             const response = await getClassRequestJoinApi(classId);
             set({ joinRequests: response || [], isLoading: false });
-        } catch (error) {
+        } catch {
             set({ error: 'Failed to fetch join requests', isLoading: false });
         }
     },

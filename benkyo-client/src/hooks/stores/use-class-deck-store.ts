@@ -1,18 +1,9 @@
 import { create } from 'zustand';
 import { getClassDeckApi } from '@/api/classApi';
-
-interface ClassDeck {
-    deck: {
-        _id: string;
-        name: string;
-        description?: string;
-    };
-    startTime?: string;
-    endTime?: string;
-}
+import { ClassDecksResponse } from '@/types/class';
 
 interface ClassDeckStore {
-    decks: ClassDeck[];
+    decks: ClassDecksResponse;
     isLoading: boolean;
     error: string | null;
     fetchDecks: (classId: string) => Promise<void>;
@@ -28,7 +19,7 @@ export const useClassDeckStore = create<ClassDeckStore>((set) => ({
         try {
             const response = await getClassDeckApi(classId);
             set({ decks: response || [], isLoading: false });
-        } catch (error) {
+        } catch {
             set({ error: 'Failed to fetch decks', isLoading: false });
         }
     },
