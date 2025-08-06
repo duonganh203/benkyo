@@ -1,71 +1,44 @@
 import { Card } from '@/components/ui/card';
-import { Users, Eye, Calendar, AlertTriangle } from 'lucide-react';
+import { Users, Eye, Calendar, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
-import { useGetClassMonthlyAccessStats } from '@/hooks/queries/use-get-class-monthly-access-stats';
-import useAuthStore from '@/hooks/stores/use-auth-store';
-import useClassManagementStore from '@/hooks/stores/use-class-management-store';
-import { useNavigate } from 'react-router-dom';
-import { getToast } from '@/utils/getToast';
 
-const StatsGrid = () => {
-    const { user } = useAuthStore();
-    const navigate = useNavigate();
-    const { classData } = useClassManagementStore();
+interface StatsGridProps {
+    totalLearnersCount: number;
+    createdAt: Date;
+    completionRate: number;
+    visited: number;
+}
 
-    if (!classData) {
-        return (
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6'>
-                <div className='text-center py-8 text-muted-foreground'>No class data available</div>
-            </div>
-        );
-    }
-
-    const { data: monthlyStats, isError, error } = useGetClassMonthlyAccessStats(classData._id);
-
-    if (!user) {
-        navigate('/login');
-        getToast('error', 'You must be logged in to continue.');
-        return null;
-    }
-
-    if (isError) {
-        getToast('error', `${error?.message}`);
-        console.log(error);
-        return null;
-    }
-
-    const todayVisits =
-        monthlyStats?.find((stat) => format(new Date(stat.month), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd'))
-            ?.visits || 0;
+const StatsGrid = ({ totalLearnersCount, createdAt, visited, completionRate }: StatsGridProps) => {
     const stats = [
         {
             icon: Users,
             label: 'Total Learners',
-            value: classData.users?.length || 0,
+            value: totalLearnersCount,
             delay: '0s'
         },
         {
             icon: Eye,
             label: 'Visits Today',
-            value: todayVisits,
+            value: visited,
             delay: '0.1s'
         },
         {
             icon: Calendar,
             label: 'Founded Date',
-            value: format(new Date(classData.createdAt), 'dd/MM/yyyy'),
+            value: format(new Date(createdAt), 'dd/MM/yyyy'),
             delay: '0.2s'
         },
         {
-            icon: AlertTriangle,
-            label: 'Users Late/Overdue',
-            value: classData.overdueMemberCount || 0,
-            delay: '0.4s'
+            icon: Trophy,
+            label: 'Completion Rate',
+            value: `${completionRate}%`,
+            delay: '0.3s'
         }
     ];
 
     return (
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
             {stats.map((stat, index) => {
                 const Icon = stat.icon;
 

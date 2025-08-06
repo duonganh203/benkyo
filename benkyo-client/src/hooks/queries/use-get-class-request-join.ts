@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { classApi } from '@/api/classApi';
+import { getClassRequestJoinApi } from '@/api/classApi';
 
 export const useGetClassRequestJoin = (classId: string) => {
     return useQuery({
         queryKey: ['class-request-join', classId],
-        queryFn: () => classApi.getClassRequestJoin(classId),
+        queryFn: () => getClassRequestJoinApi(classId),
         enabled: !!classId,
         retry: false
     });

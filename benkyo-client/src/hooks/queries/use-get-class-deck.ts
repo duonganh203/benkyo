@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { classApi } from '@/api/classApi';
+import { getClassDeckApi } from '@/api/classApi';
 
 export const useGetClassDeck = (classId: string) => {
     return useQuery({
         queryKey: ['class-deck', classId],
-        queryFn: () => classApi.getClassDeck(classId),
+        queryFn: () => getClassDeckApi(classId),
         enabled: !!classId,
         retry: false
     });

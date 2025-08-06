@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { classApi } from '@/api/classApi';
+import { getClassRequestJoinApi } from '@/api/classApi';
 
 interface JoinRequest {
     user: {
@@ -26,7 +26,7 @@ export const useClassRequestJoinStore = create<ClassRequestJoinStore>((set) => (
     fetchJoinRequests: async (classId: string) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await classApi.getClassRequestJoin(classId);
+            const response = await getClassRequestJoinApi(classId);
             set({ joinRequests: response || [], isLoading: false });
         } catch (error) {
             set({ error: 'Failed to fetch join requests', isLoading: false });

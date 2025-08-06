@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { classApi } from '@/api/classApi';
+import { getClassInvitedApi } from '@/api/classApi';
 
 export const useGetClassInvited = (classId: string) => {
     return useQuery({
         queryKey: ['class-invited', classId],
-        queryFn: () => classApi.getClassInvited(classId),
+        queryFn: () => getClassInvitedApi(classId),
         enabled: !!classId,
         retry: false
     });

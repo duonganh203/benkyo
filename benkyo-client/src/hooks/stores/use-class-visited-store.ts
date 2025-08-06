@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { classApi } from '@/api/classApi';
+import { getClassVisitedApi } from '@/api/classApi';
 
 interface VisitHistory {
     userId: {
@@ -25,7 +25,7 @@ export const useClassVisitedStore = create<ClassVisitedStore>((set) => ({
     fetchVisitedHistory: async (classId: string) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await classApi.getClassVisited(classId);
+            const response = await getClassVisitedApi(classId);
             set({ visitedHistory: response || [], isLoading: false });
         } catch (error) {
             set({ error: 'Failed to fetch visited history', isLoading: false });
