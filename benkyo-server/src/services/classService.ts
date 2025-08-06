@@ -2,75 +2,23 @@ import { Types } from 'mongoose';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { Class, Deck, PublicStatus, User, UserClassState, UserDeckState, Card, Quiz } from '~/schemas';
+import { Deck, PublicStatus, User, UserClassState, Card, Quiz, Class } from '~/schemas';
 import { sendToUser } from '~/utils/socketServer';
 import { ClassStateType } from '~/validations/classValidation';
 import {
-    VisitHistoryEntry,
-    ClassDeckRef,
-    PopulatedUser,
-    ClassProgressData,
-    ClassDeckProgress,
-    GetClassUserByIdResponse,
-    MongooseDeckRef,
-    MongooseUserRef,
-    MongooseVisitEntry,
-    MongooseUserClassState,
-    MongooseClass,
-    MongooseOwnerRef,
-    PopulatedDeck,
-    ClassVisited
+    InviteNotificationType,
+    OverdueNotificationType,
+    UpcomingNotificationType,
+    OverdueScheduleType,
+    MemberProgressType,
+    MemberLearningStatusType,
+    MonthlyAccessStatsType,
+    ClassAddDeckType,
+    ClassType
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ConflictException } from '~/exceptions/conflictException';
 import { toISODate } from '~/utils/handleDate';
-
-interface NormalizedNotification {
-    notificationType: 'invite' | 'overdue' | 'upcoming';
-    sortTime: Date;
-    priority: number;
-}
-
-interface NormalizedInviteNotification extends NormalizedNotification {
-    id: string;
-    classId: string;
-    className: string;
-    description: string;
-    type: string;
-    createdAt: Date;
-    message: string;
-    notificationType: 'invite';
-}
-
-interface NormalizedScheduleNotification extends NormalizedNotification {
-    classId: string;
-    className: string;
-    deckId: string;
-    deckName: string;
-    description: string;
-    endTime: Date;
-    progress: number;
-    totalCards: number;
-    completedCards: number;
-    notificationType: 'overdue' | 'upcoming';
-}
-
-interface NormalizedOverdueNotification extends NormalizedScheduleNotification {
-    hoursOverdue: number;
-    isOverdue: boolean;
-    notificationType: 'overdue';
-}
-
-interface NormalizedUpcomingNotification extends NormalizedScheduleNotification {
-    hoursUntilDeadline: number;
-    isOverdue: boolean;
-    notificationType: 'upcoming';
-}
-
-type UnifiedNotification =
-    | NormalizedInviteNotification
-    | NormalizedOverdueNotification
-    | NormalizedUpcomingNotification;
 
 export const classCreateService = async (userId: string, data: ClassStateType) => {
     const user = await User.findById(userId);
@@ -285,120 +233,17 @@ const updateClassVisitedHistory = async (classId: string, userId: Types.ObjectId
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
-    const todayStr = toISODate(Date.now());
+    const todayStr = new Date().toISOString().split('T')[0];
+    const visitHistory = existingClass.visited || [];
 
-    const alreadyVisitedToday = existingClass.visited.some((visit: ClassVisited) => {
-        const visitDate = toISODate(visit.lastVisit);
-        return visit.userId.equals(userId) && visitDate === todayStr;
+    const alreadyVisitedToday = visitHistory.some((visit) => {
+        const visitDate = new Date(visit.lastVisit).toISOString().split('T')[0];
+        return visit.userId.toString() === userId.toString() && visitDate === todayStr;
     });
 
     if (!alreadyVisitedToday) {
-        await Class.updateOne({ _id: classId }, { $push: { visited: { userId, lastVisit: new Date() } } });
+        await Class.updateOne({ _id: classId }, { $push: { visited: { userId: userId, lastVisit: new Date() } } });
     }
-};
-
-export const getClassManagementByIdService = async (classId: string, userId: Types.ObjectId) => {
-    const existingClass = await Class.findById(classId)
-        .populate({
-            path: 'users',
-            select: '_id name email avatar'
-        })
-        .populate({
-            path: 'owner',
-            select: '_id name email avatar'
-        })
-        .populate({
-            path: 'joinRequests.user',
-            select: '_id name email avatar'
-        })
-        .populate({
-            path: 'userClassStates',
-            populate: {
-                path: 'user',
-                select: '_id name email avatar'
-            }
-        })
-        .populate({
-            path: 'visited.userId',
-            select: '_id name email avatar'
-        })
-        .populate({
-            path: 'invitedUsers.user',
-            select: '_id name email avatar'
-        })
-        .populate({
-            path: 'decks.deck',
-            select: '_id name description cardCount'
-        })
-        .lean();
-
-    if (!existingClass) throw new Error('Class not found');
-
-    if (!existingClass.owner._id.equals(userId))
-        throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
-
-    const currentDate = new Date();
-    let overdueMembersCount = 0;
-
-    if (existingClass.decks && existingClass.users) {
-        for (const member of existingClass.users) {
-            let hasOverdue = false;
-
-            for (const deckItem of existingClass.decks) {
-                if (deckItem.endTime && new Date(deckItem.endTime) < currentDate) {
-                    const deckData = deckItem.deck;
-                    if (typeof deckData === 'object' && deckData !== null && 'cardCount' in deckData) {
-                        const populatedDeck = deckData as PopulatedDeck;
-                        const userState = await UserClassState.findOne({
-                            user: member._id,
-                            class: classId,
-                            deck: populatedDeck._id
-                        });
-
-                        const totalCards = populatedDeck.cardCount;
-                        const completedCards = userState?.completedCardIds?.length || 0;
-                        const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
-
-                        if (progress < 100) {
-                            hasOverdue = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (hasOverdue) {
-                overdueMembersCount++;
-            }
-        }
-    }
-
-    const formattedClass = {
-        ...existingClass,
-        decks:
-            existingClass.decks?.map((deckItem: any) => ({
-                deck: deckItem.deck,
-                description: deckItem.description,
-                startTime: deckItem.startTime,
-                endTime: deckItem.endTime
-            })) || [],
-        visited: {
-            ...existingClass.visited,
-            history: (existingClass.visited || [])
-                .sort((a: any, b: any) => new Date(b.lastVisit).getTime() - new Date(a.lastVisit).getTime())
-                .filter(
-                    (visit: any, index: number, arr: any[]) =>
-                        arr.findIndex((v: any) => v.userId.toString() === visit.userId.toString()) === index
-                )
-                .map((visit: any) => ({
-                    userId: visit.userId,
-                    lastVisit: visit.lastVisit
-                }))
-        },
-        overdueMembersCount
-    };
-
-    return formattedClass;
 };
 
 export const acceptJoinRequestService = async (classId: string, requestUserId: string, ownerId: string) => {
@@ -590,14 +435,7 @@ export const addDeckToClassService = async ({
     startTime,
     endTime,
     ownerId
-}: {
-    classId: string;
-    deckId: string;
-    description?: string;
-    startTime?: Date;
-    endTime?: Date;
-    ownerId: string;
-}) => {
+}: ClassAddDeckType) => {
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
@@ -647,31 +485,27 @@ export const getDecksToAddToClassService = async (classId: string) => {
     return decks;
 };
 
-export const getClassUserByIdService = async (classId: string, userId: string): Promise<GetClassUserByIdResponse> => {
+export const getClassUserByIdService = async (classId: string, userId: string) => {
     const existingClass = await Class.findById(classId)
         .select(
             'name description owner users decks bannerUrl requiredApprovalToJoin userClassStates createdAt status visibility visited'
         )
         .populate('owner', '_id name')
         .populate('users', 'name email')
-        .populate({
-            path: 'decks.deck',
-            select: 'name cardCount avgRating'
-        })
+        .populate({ path: 'decks.deck', select: 'name cardCount avgRating' })
         .populate({
             path: 'userClassStates',
-            populate: {
-                path: 'user',
-                select: '_id name email avatar'
-            }
-        });
+            populate: { path: 'user', select: '_id name email avatar' }
+        })
+        .lean<ClassType>()
+        .exec();
 
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
     await updateClassVisitedHistory(classId, new Types.ObjectId(userId));
 
     const deckRefs = existingClass.decks || [];
-    const deckIds = deckRefs.map((d: any) => d.deck?._id).filter(Boolean);
+    const deckIds = deckRefs.map((d) => d.deck._id);
 
     const allSessions = await UserClassState.find({
         user: userId,
@@ -693,20 +527,19 @@ export const getClassUserByIdService = async (classId: string, userId: string): 
         }
     }
 
-    const decks = deckRefs.map((d: any) => {
-        const deckData = d.deck;
-        const progress = progressMap.get(deckData?._id.toString()) || {
+    const decks = deckRefs.map((d) => {
+        const progress = progressMap.get(d.deck._id.toString()) || {
             correctCount: 0,
             totalCount: 0
         };
 
-        const actualTotalCount = progress.totalCount > 0 ? progress.totalCount : deckData?.cardCount || 0;
+        const actualTotalCount = progress.totalCount > 0 ? progress.totalCount : d.deck.cardCount;
 
         return {
-            _id: deckData?._id.toString() || '',
-            name: deckData?.name || '',
-            cardCount: deckData?.cardCount || 0,
-            avgRating: deckData?.avgRating || 0,
+            _id: d.deck._id.toString(),
+            name: d.deck.name,
+            cardCount: d.deck.cardCount,
+            avgRating: d.deck.avgRating || 0,
             description: d.description || '',
             startTime: d.startTime,
             endTime: d.endTime,
@@ -715,43 +548,53 @@ export const getClassUserByIdService = async (classId: string, userId: string): 
         };
     });
 
-    const scheduledDecks = decks.filter((deck: any) => deck.startTime && deck.endTime);
+    const scheduledDecks = decks.filter((deck) => deck.startTime && deck.endTime);
     let completionRate = 0;
 
     if (scheduledDecks.length > 0) {
-        const totalProgress = scheduledDecks.reduce((sum: any, deck: any) => {
+        const totalProgress = scheduledDecks.reduce((sum, deck) => {
             const deckProgress = deck.totalCount > 0 ? (deck.correctCount / deck.totalCount) * 100 : 0;
             return sum + deckProgress;
         }, 0);
         completionRate = Math.round(totalProgress / scheduledDecks.length);
     }
 
-    const sortedTopUserStates = (existingClass.userClassStates as any[])
-        .filter((ucs: any) => ucs.user._id.toString() !== existingClass.owner._id.toString())
-        .sort((a: any, b: any) => b.points - a.points)
+    const sortedTopUserStates = existingClass.userClassStates
+        .filter((ucs) => ucs.user._id.toString() !== existingClass.owner._id.toString())
+        .sort((a, b) => b.points - a.points)
         .slice(0, 5);
 
     return {
         _id: existingClass._id.toString(),
         name: existingClass.name,
         description: existingClass.description,
-        users: existingClass.users.map((u: any) => ({
+        users: existingClass.users.map((u) => ({
             _id: u._id.toString(),
             name: u.name,
             email: u.email
         })),
         decks,
         owner: {
-            _id: existingClass.owner._id ? existingClass.owner._id.toString() : existingClass.owner.toString(),
-            name: (existingClass.owner as any).name || ''
+            _id: existingClass.owner._id.toString(),
+            name: existingClass.owner.name
         },
         visibility: existingClass.visibility,
         requiredApprovalToJoin: existingClass.requiredApprovalToJoin,
         createdAt: existingClass.createdAt,
-        userClassStates: sortedTopUserStates,
+        userClassStates: sortedTopUserStates.map((state) => ({
+            _id: state._id.toString(),
+            user: {
+                _id: state.user._id.toString(),
+                name: state.user.name,
+                avatar: state.user.avatar || ''
+            },
+            points: state.points,
+            studyStreak: state.studyStreak,
+            completedCardIds: state.completedCardIds.map((id) => id.toString())
+        })),
         completionRate,
         visited: {
-            history: (existingClass.visited || []).map((h: any) => h.userId?.toString() || '')
+            history: (existingClass.visited ?? []).map((v) => v.userId.toString())
         },
         bannerUrl: existingClass.bannerUrl
     };
@@ -770,34 +613,19 @@ export const getOverdueSchedulesService = async (userId: Types.ObjectId) => {
             select: 'name cardCount'
         })
         .select('_id name decks')
-        .lean();
+        .lean<ClassType[]>();
 
-    interface OverdueSchedule {
-        classId: string;
-        className: string;
-        deckId: string;
-        deckName: string;
-        description: string;
-        endTime: Date;
-        progress: number;
-        totalCards: number;
-        completedCards: number;
-        hoursOverdue: number;
-        isOverdue: boolean;
-    }
-
-    const overdueSchedules: OverdueSchedule[] = [];
+    const overdueSchedules: OverdueScheduleType[] = [];
 
     for (const classItem of userClasses) {
         if (!classItem.decks) continue;
 
         const scheduledDecks = classItem.decks.filter(
-            (d: any) =>
-                d.startTime && d.endTime && new Date(d.endTime) < currentDate && new Date(d.endTime) >= oneDayAgo
+            (d) => d.startTime && d.endTime && new Date(d.endTime) < currentDate && new Date(d.endTime) >= oneDayAgo
         );
 
         for (const deckRef of scheduledDecks) {
-            const deck = deckRef.deck as any;
+            const deck = deckRef.deck;
             if (!deck || !deckRef.endTime) continue;
 
             const userState = await UserClassState.findOne({
@@ -816,11 +644,14 @@ export const getOverdueSchedulesService = async (userId: Types.ObjectId) => {
                 );
 
                 overdueSchedules.push({
+                    notificationType: 'overdue',
+                    sortTime: new Date(deckRef.endTime),
+                    priority: 1,
                     classId: classItem._id.toString(),
                     className: classItem.name,
                     deckId: deck._id.toString(),
                     deckName: deck.name,
-                    description: deckRef.description || '',
+                    description: deckRef.description,
                     endTime: deckRef.endTime,
                     progress,
                     totalCards,
@@ -831,7 +662,6 @@ export const getOverdueSchedulesService = async (userId: Types.ObjectId) => {
             }
         }
     }
-
     return overdueSchedules;
 };
 
@@ -850,32 +680,21 @@ export const getUpcomingDeadlinesService = async (userId: Types.ObjectId) => {
         .select('_id name decks')
         .lean();
 
-    interface UpcomingDeadline {
-        classId: string;
-        className: string;
-        deckId: string;
-        deckName: string;
-        description: string;
-        endTime: Date;
-        progress: number;
-        totalCards: number;
-        completedCards: number;
-        hoursUntilDeadline: number;
-        isOverdue: boolean;
-    }
-
-    const upcomingDeadlines: UpcomingDeadline[] = [];
+    const upcomingDeadlines: UpcomingNotificationType[] = [];
 
     for (const classItem of userClasses) {
-        if (!classItem.decks) continue;
+        const decks = Array.isArray(classItem.decks) ? classItem.decks : [];
 
-        const scheduledDecks = classItem.decks.filter(
-            (d: any) => d.startTime && d.endTime && new Date(d.endTime) > currentDate && new Date(d.endTime) <= nextWeek
-        );
+        for (const deckRef of decks) {
+            const endTimeRaw = deckRef.endTime;
+            const startTimeRaw = deckRef.startTime;
 
-        for (const deckRef of scheduledDecks) {
-            const deck = deckRef.deck as any;
-            if (!deck?._id || !deckRef.endTime) continue;
+            if (!endTimeRaw || !startTimeRaw) continue;
+
+            const endTime = new Date(endTimeRaw);
+            if (endTime <= currentDate || endTime > nextWeek) continue;
+
+            const deck = deckRef.deck as { _id: Types.ObjectId; name?: string; cardCount?: number };
 
             const userState = await UserClassState.findOne({
                 user: userId,
@@ -883,20 +702,22 @@ export const getUpcomingDeadlinesService = async (userId: Types.ObjectId) => {
                 deck: deck._id
             });
 
-            const totalCards = deck.cardCount || 0;
-            const completedCards = userState?.completedCardIds?.length || 0;
+            const totalCards = deck.cardCount ?? 0;
+            const completedCards = userState?.completedCardIds?.length ?? 0;
             const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
 
-            const endTime = new Date(deckRef.endTime);
             const hoursUntilDeadline = Math.floor((endTime.getTime() - currentDate.getTime()) / (1000 * 60 * 60));
 
             upcomingDeadlines.push({
+                notificationType: 'upcoming',
+                sortTime: endTime,
+                priority: 1,
                 classId: classItem._id.toString(),
                 className: classItem.name,
                 deckId: deck._id.toString(),
-                deckName: deck.name || 'Unknown Deck',
-                description: deckRef.description || '',
-                endTime: deckRef.endTime,
+                deckName: deck.name ?? 'Untitled Deck',
+                description: deckRef.description ?? '',
+                endTime,
                 progress,
                 totalCards,
                 completedCards,
@@ -916,23 +737,23 @@ export const getAllNotificationsService = async (userId: Types.ObjectId) => {
         getUpcomingDeadlinesService(userId)
     ]);
 
-    const normalizedInvites: NormalizedInviteNotification[] = inviteNotifications.map((invite) => ({
+    const normalizedInvites: InviteNotificationType[] = inviteNotifications.map((invite) => ({
         ...invite,
-        notificationType: 'invite' as const,
+        notificationType: 'invite',
         sortTime: new Date(invite.createdAt || new Date()),
         priority: 2
     }));
 
-    const normalizedOverdue: NormalizedOverdueNotification[] = overdueSchedules.map((schedule) => ({
+    const normalizedOverdue: OverdueNotificationType[] = overdueSchedules.map((schedule) => ({
         ...schedule,
-        notificationType: 'overdue' as const,
+        notificationType: 'overdue',
         sortTime: new Date(schedule.endTime),
         priority: 1
     }));
 
-    const normalizedUpcoming: NormalizedUpcomingNotification[] = upcomingDeadlines.map((deadline) => ({
+    const normalizedUpcoming: UpcomingNotificationType[] = upcomingDeadlines.map((deadline) => ({
         ...deadline,
-        notificationType: 'upcoming' as const,
+        notificationType: 'upcoming',
         sortTime: new Date(deadline.endTime),
         priority: deadline.hoursUntilDeadline <= 24 ? 3 : 4
     }));
@@ -964,6 +785,7 @@ export const getAllNotificationsService = async (userId: Types.ObjectId) => {
 
 export const cancelInviteService = async (classId: string, userId: string, ownerId: Types.ObjectId) => {
     const existingClass = await Class.findById(classId);
+
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
     if (!existingClass.owner.equals(ownerId)) {
@@ -981,85 +803,60 @@ export const cancelInviteService = async (classId: string, userId: string, owner
     return { message: 'Invite cancelled successfully' };
 };
 
-interface MemberProgress {
-    userId: string;
-    userName: string;
-    userEmail: string;
-    userAvatar: string;
-    overallProgress: number;
-    overdueCount: number;
-    upcomingCount: number;
-    deckProgresses: Array<{
-        deckId: string;
-        deckName: string;
-        description: string;
-        startTime?: Date;
-        endTime?: Date;
-        progress: number;
-        totalCards: number;
-        completedCards: number;
-        isOverdue: boolean;
-        hoursOverdue?: number;
-        hoursUntilDeadline?: number;
-    }>;
-}
-
 export const getClassMemberProgressService = async (classId: string, requesterId: Types.ObjectId) => {
     const existingClass = await Class.findById(classId)
-        .populate({
-            path: 'users',
-            select: '_id name email avatar'
-        })
-        .populate({
-            path: 'decks.deck',
-            select: '_id name description cardCount'
-        })
-        .lean();
+        .populate({ path: 'users', select: '_id name email avatar' })
+        .populate({ path: 'decks.deck', select: '_id name description cardCount' })
+        .lean<ClassType>();
 
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
-    const memberProgresses: MemberProgress[] = [];
+    const memberProgresses: MemberProgressType[] = [];
 
-    for (const member of existingClass.users as any[]) {
+    for (const member of existingClass.users) {
         const userClassStates = await UserClassState.find({
             user: member._id,
             class: classId
         }).populate('deck', '_id name description cardCount');
 
-        const deckProgresses = existingClass.decks.map((classDeck: any) => {
-            const userClassState = userClassStates.find((ucs: any) => ucs.deck._id.equals(classDeck.deck._id));
-            const totalCards = classDeck.deck.cardCount || 0;
-            const completedCards = userClassState?.completedCardIds?.length || 0;
+        const deckProgresses = existingClass.decks.map((classDeck) => {
+            const userClassState = userClassStates.find(
+                (ucs) => ucs.deck && '_id' in ucs.deck && ucs.deck._id.equals(classDeck.deck._id)
+            );
+
+            const totalCards = classDeck.deck.cardCount ?? 0;
+            const completedCards = userClassState?.completedCardIds?.length ?? 0;
             const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
-            const endTime = classDeck.endTime;
-            const isOverdue = endTime ? new Date() > endTime : false;
-            const hoursOverdue =
-                endTime && isOverdue ? Math.floor((new Date().getTime() - endTime.getTime()) / (1000 * 60 * 60)) : 0;
-            const hoursUntilDeadline =
-                endTime && !isOverdue ? Math.floor((endTime.getTime() - new Date().getTime()) / (1000 * 60 * 60)) : 0;
+            const now = new Date();
+
+            const isOverdue = now > classDeck.endTime;
+            const hoursOverdue = isOverdue
+                ? Math.floor((now.getTime() - classDeck.endTime.getTime()) / (1000 * 60 * 60))
+                : 0;
+            const hoursUntilDeadline = !isOverdue
+                ? Math.floor((classDeck.endTime.getTime() - now.getTime()) / (1000 * 60 * 60))
+                : 0;
 
             return {
                 deckId: classDeck.deck._id.toString(),
                 deckName: classDeck.deck.name,
-                description: classDeck.description || '',
-                startTime: classDeck.startTime ? new Date(classDeck.startTime) : undefined,
-                endTime: classDeck.endTime ? new Date(classDeck.endTime) : undefined,
+                description: classDeck.description ?? '',
+                startTime: classDeck.startTime,
+                endTime: classDeck.endTime,
                 progress,
                 totalCards,
                 completedCards,
                 isOverdue,
-                hoursOverdue: isOverdue ? hoursOverdue : undefined,
-                hoursUntilDeadline: !isOverdue ? hoursUntilDeadline : undefined
+                hoursOverdue,
+                hoursUntilDeadline
             };
         });
 
         const overdueCount = deckProgresses.filter((dp) => dp.isOverdue).length;
-        const upcomingCount = deckProgresses.filter(
-            (dp) => !dp.isOverdue && dp.hoursUntilDeadline !== undefined && dp.hoursUntilDeadline <= 24
-        ).length;
+        const upcomingCount = deckProgresses.filter((dp) => !dp.isOverdue && dp.hoursUntilDeadline <= 24).length;
         const overallProgress =
             deckProgresses.length > 0
-                ? deckProgresses.reduce((sum, dp) => sum + dp.progress, 0) / deckProgresses.length
+                ? Math.round(deckProgresses.reduce((sum, dp) => sum + dp.progress, 0) / deckProgresses.length)
                 : 0;
 
         memberProgresses.push({
@@ -1067,7 +864,7 @@ export const getClassMemberProgressService = async (classId: string, requesterId
             userName: member.name,
             userEmail: member.email,
             userAvatar: member.avatar,
-            overallProgress: Math.round(overallProgress),
+            overallProgress,
             overdueCount,
             upcomingCount,
             deckProgresses
@@ -1262,4 +1059,397 @@ export const getClassDeckSessionHistoryService = async (userId: string, classId:
     }).sort({ startTime: -1 });
 
     return sessions;
+};
+export const getOverdueMemberCountService = async (classId: string, userId: Types.ObjectId) => {
+    const existingClass = await Class.findById(classId).select('owner users decks').lean();
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    if (existingClass.owner.toString() !== userId.toString())
+        throw new ForbiddenRequestsException('You do not have permission to manage this class', ErrorCode.FORBIDDEN);
+
+    const now = new Date();
+    const overdueDeckIds = (existingClass.decks ?? [])
+        .filter((d) => d.endTime && new Date(d.endTime) < now)
+        .map((d) => d.deck.toString());
+    const userIds = (existingClass.users ?? []).map((u: Types.ObjectId) => u);
+    if (overdueDeckIds.length === 0 || userIds.length === 0) return 0;
+
+    const states = await UserClassState.find({
+        class: classId,
+        user: { $in: userIds },
+        deck: { $in: overdueDeckIds }
+    })
+        .select('user deck correctCount totalCount updatedAt')
+        .lean();
+
+    const latest = new Map<string, Map<string, { correct: number; total: number; updatedAt: number }>>();
+    for (const s of states) {
+        const uid = s.user.toString();
+        const did = s.deck.toString();
+        if (!latest.has(uid)) latest.set(uid, new Map());
+        const cur = latest.get(uid)!.get(did);
+        const ts = new Date(s.updatedAt || s._id.getTimestamp?.() || Date.now()).getTime();
+        if (!cur || ts > cur.updatedAt)
+            latest.get(uid)!.set(did, { correct: s.correctCount || 0, total: s.totalCount || 0, updatedAt: ts });
+    }
+
+    let count = 0;
+    for (const u of userIds) {
+        const uid = u.toString();
+        const perDeck = latest.get(uid) || new Map();
+        const isOverdue = overdueDeckIds.some((did) => {
+            const st = perDeck.get(did);
+            if (!st) return true;
+            return (st.correct || 0) !== (st.total || 0);
+        });
+        if (isOverdue) count++;
+    }
+
+    return count;
+};
+
+const assertOwner = async (classId: string, userId: Types.ObjectId) => {
+    const doc = await Class.findById(classId).select('_id owner').lean();
+    if (!doc) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    if (!doc.owner || doc.owner.toString() !== userId.toString())
+        throw new ForbiddenRequestsException('You do not have permission to manage this class', ErrorCode.FORBIDDEN);
+    return doc;
+};
+
+export const getClassUsersService = async (classId: string, userId: Types.ObjectId) => {
+    await assertOwner(classId, userId);
+    const c = await Class.findById(classId).select('users').lean();
+    if (!c) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    const ids = (c.users ?? []).map((u: Types.ObjectId) => u);
+    if (ids.length === 0) return [];
+    const users = await User.find({ _id: { $in: ids } })
+        .select('_id name email avatar')
+        .lean();
+    const order = new Map(ids.map((id, i) => [id.toString(), i]));
+    return users.sort((a, b) => order.get(a._id.toString())! - order.get(b._id.toString())!);
+};
+
+export const getClassJoinRequestsService = async (classId: string, userId: Types.ObjectId) => {
+    await assertOwner(classId, userId);
+
+    const c = await Class.findById(classId).select('joinRequests').lean();
+    if (!c) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    const rows = (c.joinRequests ?? []).map((x) => ({
+        userId: x.user.toString(),
+        requestDate: x.requestDate
+    }));
+
+    if (rows.length === 0) return [];
+
+    const users = await User.find({ _id: { $in: rows.map((r) => r.userId) } })
+        .select('_id name email avatar')
+        .lean();
+
+    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
+
+    return rows.map((r) => ({
+        user: userMap.get(r.userId) ?? null,
+        createdAt: r.requestDate
+    }));
+};
+
+export const getClassUserStatesService = async (classId: string, userId: Types.ObjectId) => {
+    await assertOwner(classId, userId);
+    const states = await UserClassState.find({ class: classId })
+        .select('_id class user deck completedCardIds progress createdAt updatedAt')
+        .lean();
+    if (states.length === 0) return [];
+    const userIds = Array.from(new Set(states.map((s) => s.user.toString()))).map((id) => new Types.ObjectId(id));
+    const users = await User.find({ _id: { $in: userIds } })
+        .select('_id name email avatar')
+        .lean();
+    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
+    return states.map((s) => ({ ...s, user: userMap.get(s.user.toString()) }));
+};
+
+export const getClassInvitedUsersService = async (classId: string, userId: Types.ObjectId) => {
+    await assertOwner(classId, userId);
+    const c = await Class.findById(classId).select('invitedUsers').lean();
+    if (!c) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    const rows = (c.invitedUsers ?? []).map((x) => ({
+        userId: x.user,
+        invitedAt: x.invitedAt,
+        invitedBy: x.user
+    }));
+    if (rows.length === 0) return [];
+    const ids = rows.map((r) => r.userId);
+    const users = await User.find({ _id: { $in: ids } })
+        .select('_id name email avatar')
+        .lean();
+    const map = new Map(users.map((u) => [u._id.toString(), u]));
+    return rows.map((r) => ({ user: map.get(r.userId.toString()), invitedAt: r.invitedAt, invitedBy: r.invitedBy }));
+};
+
+export const getClassMemberLearningStatusService = async (classId: string, requesterId: Types.ObjectId) => {
+    const existingClass = await Class.findById(classId)
+        .populate({
+            path: 'users',
+            select: '_id name email avatar'
+        })
+        .populate({
+            path: 'decks.deck',
+            select: '_id name description cardCount'
+        })
+        .lean<ClassType>();
+
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    const memberStatuses: MemberLearningStatusType[] = [];
+
+    for (const member of existingClass.users) {
+        const userClassStates = await UserClassState.find({
+            user: member._id,
+            class: classId
+        }).populate('deck', '_id name description cardCount');
+
+        const deckStatuses = existingClass.decks.map((classDeck) => {
+            const ucs = userClassStates.find((ucs) => ucs.deck.toString() === classDeck.deck.toString());
+
+            const totalCards = classDeck.deck.cardCount ?? 0;
+            const completedCards = ucs?.completedCardIds?.length || 0;
+            const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
+
+            let status: 'completed' | 'in_progress' | 'not_started';
+            if (progress === 100) status = 'completed';
+            else if (completedCards > 0) status = 'in_progress';
+            else status = 'not_started';
+
+            const endTime = classDeck.endTime ? new Date(classDeck.endTime) : new Date(0);
+            const startTime = classDeck.startTime ? new Date(classDeck.startTime) : new Date(0);
+            const isOverdue = endTime ? new Date() > endTime : false;
+            const hoursOverdue = isOverdue ? Math.floor((Date.now() - endTime.getTime()) / (1000 * 60 * 60)) : 0;
+            const hoursUntilDeadline = !isOverdue ? Math.floor((endTime.getTime() - Date.now()) / (1000 * 60 * 60)) : 0;
+
+            return {
+                deckId: classDeck.deck._id.toString(),
+                deckName: classDeck.deck.name,
+                description: classDeck.description,
+                status,
+                progress,
+                totalCards,
+                completedCards,
+                lastStudyDate: ucs?.updatedAt ?? new Date(0),
+                startTime,
+                endTime,
+                isOverdue,
+                hoursOverdue,
+                hoursUntilDeadline
+            };
+        });
+
+        const completedDecks = deckStatuses.filter((ds) => ds.status === 'completed').length;
+        const inProgressDecks = deckStatuses.filter((ds) => ds.status === 'in_progress').length;
+        const notStartedDecks = deckStatuses.filter((ds) => ds.status === 'not_started').length;
+        const totalDecks = deckStatuses.length;
+        const overallProgress = totalDecks > 0 ? Math.round((completedDecks / totalDecks) * 100) : 0;
+
+        const updatedAtTimes = userClassStates.map((ucs) => ucs.updatedAt?.getTime()).filter(Boolean);
+        const lastStudyDate = updatedAtTimes.length > 0 ? new Date(Math.max(...updatedAtTimes)) : new Date(0);
+
+        const studyStreak = userClassStates.length;
+
+        memberStatuses.push({
+            userId: member._id.toString(),
+            userName: member.name,
+            userEmail: member.email,
+            userAvatar: member.avatar,
+            totalDecks,
+            completedDecks,
+            inProgressDecks,
+            notStartedDecks,
+            overallProgress,
+            lastStudyDate,
+            studyStreak,
+            deckStatuses
+        });
+    }
+
+    return memberStatuses;
+};
+
+export const getClassMonthlyAccessStatsService = async (classId: string, requesterId: Types.ObjectId) => {
+    await assertOwner(classId, requesterId);
+
+    const existingClass = await Class.findById(classId)
+        .populate({
+            path: 'visited.userId',
+            select: '_id email username avatar'
+        })
+        .populate({
+            path: 'users',
+            select: '_id name email avatar'
+        })
+        .lean<ClassType>();
+
+    if (!existingClass) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    const currentDate = new Date();
+    const monthlyStats: MonthlyAccessStatsType[] = [];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    for (let i = 11; i >= 0; i--) {
+        const targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+        const monthName = monthNames[targetDate.getMonth()];
+
+        const visitsInMonth =
+            existingClass.visited?.filter((visit) => {
+                const visitDate = new Date(visit.lastVisit);
+                return (
+                    visitDate.getMonth() === targetDate.getMonth() &&
+                    visitDate.getFullYear() === targetDate.getFullYear()
+                );
+            }).length || 0;
+
+        const uniqueMembersByMonth = new Set();
+
+        existingClass.visited?.forEach((visit) => {
+            const visitDate = new Date(visit.lastVisit);
+            const visitMonth = new Date(visitDate.getFullYear(), visitDate.getMonth(), 1);
+            const targetMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+
+            if (visitMonth <= targetMonth) {
+                uniqueMembersByMonth.add(visit.userId._id.toString());
+            }
+        });
+
+        const cumulativeMembersInMonth = uniqueMembersByMonth.size;
+
+        const uniqueVisitorsInMonth = new Set(
+            existingClass.visited
+                ?.filter((visit) => {
+                    const visitDate = new Date(visit.lastVisit);
+                    return (
+                        visitDate.getMonth() === targetDate.getMonth() &&
+                        visitDate.getFullYear() === targetDate.getFullYear()
+                    );
+                })
+                .map((visit) => visit.userId._id.toString())
+        ).size;
+
+        monthlyStats.push({
+            month: monthName,
+            visits: visitsInMonth,
+            members: cumulativeMembersInMonth,
+            uniqueVisitors: uniqueVisitorsInMonth
+        });
+    }
+
+    return monthlyStats;
+};
+
+export const getClassMembersService = async (classId: string, userId: Types.ObjectId) => {
+    await assertOwner(classId, userId);
+
+    const classData = await Class.findById(classId).populate({
+        path: 'users',
+        select: '_id email name avatar'
+    });
+
+    if (!classData) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    return classData.users || [];
+};
+
+export const getClassDecksService = async (classId: string, userId: Types.ObjectId) => {
+    await assertOwner(classId, userId);
+
+    const classData = await Class.findById(classId).populate({
+        path: 'decks.deck',
+        select: '_id name description'
+    });
+
+    if (!classData) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    return classData.decks || [];
+};
+
+export const getClassInvitedService = async (classId: string, userId: Types.ObjectId) => {
+    await assertOwner(classId, userId);
+
+    const classData = await Class.findById(classId).populate({
+        path: 'invitedUsers.user',
+        select: '_id email name avatar'
+    });
+
+    if (!classData) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    return classData.invitedUsers || [];
+};
+
+export const getClassRequestJoinService = async (classId: string, userId: Types.ObjectId) => {
+    await assertOwner(classId, userId);
+
+    const classData = await Class.findById(classId).populate({
+        path: 'joinRequests.user',
+        select: '_id email name avatar'
+    });
+
+    if (!classData) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    return classData.joinRequests || [];
+};
+
+export const getClassVisitedService = async (classId: string, userId: Types.ObjectId) => {
+    await assertOwner(classId, userId);
+
+    const classData = await Class.findById(classId).populate({
+        path: 'visited.userId',
+        select: '_id email name avatar'
+    });
+
+    if (!classData) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    return classData.visited || [];
+};
+
+export const getClassManagementService = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
+    const existingClass = await Class.findById(classId).populate('owner', '_id name');
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    if (existingClass.owner._id.toString() !== userId.toString())
+        throw new ForbiddenRequestsException('You do not have permission to manage this class', ErrorCode.FORBIDDEN);
+
+    const overdueMemberCount = await getOverdueMemberCountService(classId, userId);
+
+    const visitedHistory = (existingClass.visited ?? [])
+        .slice()
+        .sort((a, b) => new Date(b.lastVisit).getTime() - new Date(a.lastVisit).getTime())
+        .map((v) => ({ userId: v.userId, lastVisit: v.lastVisit }));
+
+    return {
+        _id: existingClass._id,
+        name: existingClass.name,
+        bannerUrl: existingClass.bannerUrl,
+        description: existingClass.description,
+        visibility: existingClass.visibility,
+        owner: existingClass.owner,
+        users: existingClass.users,
+        decks: existingClass.decks,
+        visited: visitedHistory,
+        joinRequests: existingClass.joinRequests,
+        invitedUsers: existingClass.invitedUsers,
+        requiredApprovalToJoin: existingClass.requiredApprovalToJoin,
+        createdAt: existingClass.createdAt,
+        updatedAt: existingClass.updatedAt,
+        overdueMemberCount
+    };
 };
