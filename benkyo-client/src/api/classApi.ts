@@ -198,6 +198,73 @@ export const getClassMemberProgressApi = async (classId: string) => {
 };
 
 export const cancelInviteApi = async (classId: string, userId: string) => {
-    const response = await api.delete(`/class/${classId}/invite/${userId}`);
+    const response = await api.delete(`/class/cancel-invite?classId=${classId}&userId=${userId}`);
     return response.data as { message: string };
+};
+
+export const getClassMemberApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/members`);
+    return response.data as any;
+};
+
+export const getClassDeckApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/decks`);
+    return response.data as any;
+};
+
+export const getClassInvitedApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/invited`);
+    return response.data as any;
+};
+
+export const getClassRequestJoinApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/request-join`);
+    return response.data as any;
+};
+
+export const getClassVisitedApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/visited`);
+    return response.data as any;
+};
+
+export const classApi = {
+    createClass: createClassApi,
+    updateClass: updateClassApi,
+    deleteClass: deleteClassApi,
+    getClassUpdateById: getClassUpdateByIdApi,
+    getClassListUser: getClassListUserApi,
+    getMyClass: getMyClassApi,
+    getSuggestedClass: getSuggestedClassApi,
+    requestJoinClass: requestJoinClassApi,
+    rejectJoinClass: rejectJoinClassApi,
+    acceptJoinClass: acceptJoinClassApi,
+    getClassManagementById: getClassManagementByIdApi,
+    inviteMemberToClass: inviteMemberToClassApi,
+    acceptInviteClass: acceptInviteClassApi,
+    rejectInviteClass: rejectInviteClassApi,
+    getInviteClass: getInviteClassApi,
+    removeUserFromClass: removeUserFromClassApi,
+    removeDeckFromClass: removeDeckFromClassApi,
+    addDeckToClass: addDeckToClassApi,
+    getDecksToAddToClass: getDecksToAddToClassApi,
+    createClassQuizAI: createClassQuizAIAPI,
+    createClassQuiz: createClassQuizApi,
+    getClassQuiz: getClassQuizApi,
+    updateClassQuiz: updateClassQuizApi,
+    deleteClassQuiz: deleteClassQuizApi,
+    getClassUserById: getClassUserByIdApi,
+    getClassDeckSessionHistory: getClassDeckSessionHistoryApi,
+    startClassDeckSession: startClassDeckSessionApi,
+    saveClassDeckAnswer: saveClassDeckAnswerApi,
+    endClassDeckSession: endClassDeckSessionApi,
+    getOverdueSchedules,
+    getUpcomingDeadlines,
+    getAllNotifications,
+    getClassMemberProgress: getClassMemberProgressApi,
+    cancelInvite: cancelInviteApi,
+    getClassMember: getClassMemberApi,
+    getClassDeck: getClassDeckApi,
+    getClassInvited: getClassInvitedApi,
+    getClassRequestJoin: getClassRequestJoinApi,
+    getClassVisited: getClassVisitedApi
 };

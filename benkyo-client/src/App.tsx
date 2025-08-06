@@ -36,6 +36,7 @@ import ClassDetailUser from './pages/class-detail-user';
 import TopLearners from './pages/top-study-streak';
 import ClassQuizManagement from './pages/class-quiz-management';
 import ClassUpdate from './pages/class-update';
+import ClassJoin from './pages/class-join';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -82,10 +83,11 @@ const App = () => {
                             <Route path='/class/create' element={<CreateClass />} />
                             <Route path='/class/:classId/update' element={<ClassUpdate />} />
                             <Route path='/class/list' element={<ClassListUser />} />
-                            <Route path='/class/:_id/management' element={<ClassManagement />} />
+                            <Route path='/class/:classId/management' element={<ClassManagement />} />
                             <Route path='/class/:_id/management/quizzes' element={<ClassQuizManagement />} />
                             <Route path='/notification' element={<Notifications />} />
                             <Route path='/class/:classId' element={<ClassDetailUser />} />
+                            <Route path='/class/:classId/request' element={<ClassJoin />} />
                         </Route>
                     </Routes>
                     <ModalProvider />

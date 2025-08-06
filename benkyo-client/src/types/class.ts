@@ -115,36 +115,48 @@ export type ClassUserStatePopulated = Omit<ClassUserState, 'user'> & {
     user: ClassUser;
 };
 
+export type ClassDeckItem = {
+    _id: string;
+    deck: string;
+    description: string;
+    startTime: string;
+    endTime: string;
+};
+
+export type ClassVisitItem = {
+    lastVisit: string;
+};
+
+export type ClassJoinRequestItem = {
+    user: string;
+    requestDate: string;
+};
+
+export type ClassInvitedUserItem = {
+    user: string;
+    invitedAt: string;
+};
+export type ClassOwnerItem = {
+    _id: string;
+    email: string;
+};
+
 export type ClassManagementResponseDto = {
     _id: string;
     name: string;
     description: string;
-    bannerUrl: string;
-    owner: ClassUser;
     visibility: 'public' | 'private';
+    owner: ClassOwnerItem;
+    users: string[];
+    decks: ClassDeckItem[];
+    visited: ClassVisitItem[];
+    joinRequests: ClassJoinRequestItem[];
+    invitedUsers: ClassInvitedUserItem[];
     requiredApprovalToJoin: boolean;
-    users: ClassUser[];
-    joinRequests: ClassJoinRequest[];
-    invitedUsers: {
-        user: ClassUser;
-        invitedAt: string;
-    }[];
-    visited: {
-        history: {
-            userId: {
-                _id: string;
-                name: string;
-                email: string;
-                avatar: string;
-            };
-            lastVisit: string;
-        }[];
-    };
-    decks: ClassDeck[];
-    userClassStates: ClassUserStatePopulated[];
-    overdueMembersCount: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
+    overdueMemberCount: number;
+    bannerUrl?: string;
 };
 
 export type InviteMemberResponseDto = {
