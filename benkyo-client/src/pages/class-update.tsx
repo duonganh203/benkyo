@@ -1,49 +1,49 @@
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+
+import useAuthStore from '@/hooks/stores/use-auth-store';
+import useGetClassUpdateById from '@/hooks/queries/use-get-class-update-by-id';
+import useUpdateClass from '@/hooks/queries/use-update-class';
+
 import { getToast } from '@/utils/getToast';
 import uploadToCloudinary from '@/utils/uploadToCloudinary';
 import { classSchema } from '@/schemas/classSchema';
-import useAuthStore from '@/hooks/stores/use-auth-store';
-import { z } from 'zod';
-import useGetClassUpdateById from '@/hooks/queries/use-get-class-update-id';
-import useUpdateClass from '@/hooks/queries/use-update-class';
 import { ClassUserRequestDto } from '@/types/class';
 
-const UpdateClass = () => {
-    const { _id } = useParams<{ _id: string }>();
+const ClassUpdate = () => {
     const navigate = useNavigate();
 
-    if (!_id) {
+    const { classId } = useParams<{ classId: string }>();
+    const { user } = useAuthStore((store) => store);
+
+    if (!classId) {
         getToast('error', 'Class ID is not exist. Please try again later');
         navigate('/class/list');
         return;
     }
+    const { data: classData, isLoading, isError: isClassError, error: classError } = useGetClassUpdateById(classId);
 
-    const { data, isLoading } = useGetClassUpdateById(_id);
+    if (!user) {
+        navigate('/login');
+        getToast('error', 'You must be logged in to continue.');
+    } else if (isClassError) {
+        navigate('/class/list');
+        getToast('error', `${classError.message}`);
+        console.log(classError);
+    }
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [previewBanner, setPreviewBanner] = useState<string>();
-    const [isUploadingBanner, setIsUploadingBanner] = useState(false);
-
-    const { user } = useAuthStore((store) => store);
-
-    useEffect(() => {
-        if (!user || !user?.isPro) {
-            navigate('/');
-            getToast('warning', 'You need to upgrade to Pro to access this feature');
-        }
-    }, [user, navigate]);
-
-    const { mutateAsync: updateClassMutation } = useUpdateClass();
+    const { mutateAsync: updateClassMutation, isPending: isSubmitting } = useUpdateClass();
 
     const form = useForm<z.infer<typeof classSchema>>({
         resolver: zodResolver(classSchema),
@@ -57,31 +57,36 @@ const UpdateClass = () => {
     });
 
     useEffect(() => {
-        if (data) {
+        if (classData) {
             form.reset({
-                name: data.name,
-                description: data.description || '',
-                visibility: data.visibility,
-                requiredApprovalToJoin: data.requiredApprovalToJoin,
-                bannerUrl: data.bannerUrl
+                name: classData.name,
+                description: classData.description,
+                visibility: classData.visibility,
+                requiredApprovalToJoin: classData.requiredApprovalToJoin,
+                bannerUrl: classData.bannerUrl
             });
-            setPreviewBanner(data.bannerUrl);
+            setPreviewBanner(classData.bannerUrl);
         }
-    }, [data]);
+    }, [classData]);
 
     const onSubmit = async (values: ClassUserRequestDto) => {
-        setIsSubmitting(true);
-        try {
-            const response = await updateClassMutation({ _id, data: values });
-            getToast('success', response.message);
-            navigate(`/class/${response._id}/management`);
-        } catch {
-            getToast('error', 'Failed to update class');
-        } finally {
-            setIsSubmitting(false);
-        }
+        updateClassMutation(
+            { classId, requestClass: values },
+            {
+                onSuccess: (data) => {
+                    getToast('success', `Create class ${data.name} successfully`);
+                    navigate(`/class/${data._id}/management`);
+                },
+                onError: (error) => {
+                    getToast('error', `${error.message}`);
+                    console.log(error);
+                }
+            }
+        );
     };
 
+    const [previewBanner, setPreviewBanner] = useState<string>();
+    const [isUploadingBanner, setIsUploadingBanner] = useState(false);
     const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -104,16 +109,12 @@ const UpdateClass = () => {
     return (
         <div className='flex justify-center items-start min-h-screen px-4 py-10 bg-background'>
             <div className='w-full max-w-2xl'>
-                <div className='text-center mb-8'>
-                    <h1 className='text-4xl font-bold text-foreground'>Update Class</h1>
-                    <p className='text-muted-foreground'>Edit your class information and settings</p>
-                </div>
                 <div>
                     <Card className='shadow-xl border border-border rounded-2xl'>
                         <CardHeader>
-                            <CardTitle className='text-2xl text-center'>Class Information</CardTitle>
+                            <CardTitle className='text-2xl text-center'>Update Class</CardTitle>
                             <CardDescription className='text-center text-muted-foreground'>
-                                Modify your class details below
+                                Edit your class information and settings
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -124,7 +125,9 @@ const UpdateClass = () => {
                                         name='name'
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Class Name</FormLabel>
+                                                <FormLabel>
+                                                    Class Name<span className='text-red-500'>*</span>
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Input placeholder='Enter class name' {...field} />
                                                 </FormControl>
@@ -154,10 +157,16 @@ const UpdateClass = () => {
                                         name='visibility'
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Visibility</FormLabel>
+                                                <FormLabel>
+                                                    Visibility<span className='text-red-500'>*</span>
+                                                </FormLabel>
                                                 <FormControl>
                                                     <div className='space-y-2'>
-                                                        <Select value={field.value} onValueChange={field.onChange}>
+                                                        <Select
+                                                            key={field.value}
+                                                            value={field.value}
+                                                            onValueChange={field.onChange}
+                                                        >
                                                             <SelectTrigger>
                                                                 <SelectValue placeholder='Select visibility' />
                                                             </SelectTrigger>
@@ -182,6 +191,7 @@ const UpdateClass = () => {
                                             </FormItem>
                                         )}
                                     />
+
                                     <FormField
                                         control={form.control}
                                         name='bannerUrl'
@@ -274,4 +284,4 @@ const UpdateClass = () => {
     );
 };
 
-export default UpdateClass;
+export default ClassUpdate;

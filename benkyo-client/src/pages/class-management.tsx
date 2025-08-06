@@ -11,7 +11,6 @@ import StatCard from '@/components/stat-card';
 import JoinRequestsSection from '@/components/join-request.section';
 
 import useAuthStore from '@/hooks/stores/use-auth-store';
-import useDeleteclass from '@/hooks/queries/use-delete-class';
 import useGetClassManagementById from '@/hooks/queries/use-get-class-management-id';
 import useAcceptJoinClass from '@/hooks/queries/use-accept-join-request';
 import useRejectJoinClass from '@/hooks/queries/use-reject-join-request';
@@ -23,7 +22,6 @@ import useGetDeckToAddClass from '@/hooks/queries/use-get-decks-to-class';
 import AddDeckDialog from '@/components/add-deck-dialog';
 import useRemoveDeckFromClass from '@/hooks/queries/use-remove-deck-from-class';
 import ClassMembersModal from '@/components/modals/class-members-modal';
-import CreateQuizModal from '@/components/modals/create-quiz.modal';
 import InviteMemberModal from '@/components/modals/invite-member-modal';
 import CreateScheduleModal from '@/components/modals/create-schedule-modal';
 import ConfirmDeleteUserModal from '@/components/modals/confirm-delete-user-modal';
@@ -32,16 +30,20 @@ import ConfirmDeleteDeckModal from '@/components/modals/confirm-delete-deck-moda
 import ClassDecksModal from '@/components/modals/class-decks-modal';
 import ClassMemberProgressModal from '@/components/modals/class-member-progress-modal';
 import InvitedUsersModal from '@/components/modals/invited-users-modal';
+import useClassDelete from '@/hooks/queries/use-class-delete';
 
 const UserClassManagement = () => {
     const { _id = '' } = useParams();
     const classId = _id;
     const navigate = useNavigate();
 
+    const handleCreateQuiz = () => {
+        navigate(`/class/${classId}/management/quizzes`);
+    };
+
     const [inviteEmail, setInviteEmail] = useState('');
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showAddDeckDialog, setShowAddDeckDialog] = useState(false);
-    const [showCreateQuizDialog, setShowCreateQuizDialog] = useState(false);
     const [showCreateScheduleDialog, setShowCreateScheduleDialog] = useState(false);
     const [showInviteDialog, setShowInviteDialog] = useState(false);
     const [showMembersDialog, setShowMembersDialog] = useState(false);
@@ -56,7 +58,6 @@ const UserClassManagement = () => {
     const { mutateAsync: acceptRequest } = useAcceptJoinClass();
     const { mutateAsync: rejectRequest } = useRejectJoinClass();
     const { mutateAsync: inviteMember } = useInviteMemberToClassApi();
-    const { mutateAsync: deleteClass } = useDeleteclass();
     const { mutateAsync: removeUserFromClass } = useRemoveUserFromClass();
     const { mutateAsync: removeDeckFromClass } = useRemoveDeckFromClass();
     const { data: availableDecks = [], refetch: getNewDeck } = useGetDeckToAddClass(classId);
@@ -135,15 +136,18 @@ const UserClassManagement = () => {
         }
     };
 
+    const { mutateAsync: classDeleteMutation } = useClassDelete();
     const handleDeleteConfirmClass = async () => {
-        if (!classId) return;
-        try {
-            await deleteClass(classId);
-            getToast('success', 'Class deleted successfully!');
-            navigate('/class/list');
-        } catch (error) {
-            getToast('error', 'Failed to delete class.');
-        }
+        classDeleteMutation(classId, {
+            onSuccess: (data) => {
+                getToast('success', data.message);
+                navigate(`/class/list`);
+            },
+            onError: (error) => {
+                getToast('error', `${error.message}`);
+                console.log(error);
+            }
+        });
     };
 
     useEffect(() => {
@@ -223,7 +227,7 @@ const UserClassManagement = () => {
                     <Button variant='outline' onClick={() => setShowAddDeckDialog(true)}>
                         <Plus className='w-4 h-4 mr-2' /> Add Deck
                     </Button>
-                    <Button variant='outline' onClick={() => setShowCreateQuizDialog(true)}>
+                    <Button variant='outline' onClick={() => handleCreateQuiz()}>
                         <Play className='w-4 h-4 mr-2' /> Create Quiz
                     </Button>
                     <Button variant='outline' onClick={() => setShowInvitedUsersDialog(true)}>
@@ -241,8 +245,6 @@ const UserClassManagement = () => {
                             await getNewDeck();
                         }}
                     />
-
-                    <CreateQuizModal open={showCreateQuizDialog} onOpenChange={setShowCreateQuizDialog} />
 
                     <InviteMemberModal
                         open={showInviteDialog}

@@ -1,5 +1,6 @@
 import { api } from '.';
 import { BatchImportCard, CardFormData, CreateCardRes, updateCardRes } from '@/types/card';
+import { CardDetailsResponse } from '@/types/card';
 
 export const createCard = async (data: CardFormData) => {
     const res = await api.post('cards', data);
@@ -25,3 +26,6 @@ export const deleteCard = async (id: string) => {
     const res = await api.delete(`cards/${id}`);
     return res.data;
 };
+
+export const getCardDetails = (cardId: string): Promise<CardDetailsResponse> =>
+    api.get(`/cards/${cardId}/details`).then((res) => res.data.data);

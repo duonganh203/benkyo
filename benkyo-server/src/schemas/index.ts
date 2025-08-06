@@ -145,7 +145,11 @@ const UserDeckStateSchema = new Schema({
     }
 });
 const QuizSchema = new Schema({
-    deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: true },
+    deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: false },
+    title: { type: String, required: false },
+    description: { type: String, required: false },
+    type: { type: String, enum: ['manual', 'ai'], default: 'manual', required: false },
+    class: { type: Schema.Types.ObjectId, ref: 'Class', required: false },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     createdAt: { type: Date, default: Date.now },
     questions: [
@@ -257,14 +261,12 @@ const ClassSchema = new Schema(
                 invitedAt: { type: Date, default: Date.now }
             }
         ],
-        visited: {
-            history: [
-                {
-                    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-                    lastVisit: { type: Date, default: Date.now }
-                }
-            ]
-        },
+        visited: [
+            {
+                userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                lastVisit: { type: Date, default: Date.now }
+            }
+        ],
         joinRequests: [
             {
                 user: { type: Schema.Types.ObjectId, ref: 'User', required: true },

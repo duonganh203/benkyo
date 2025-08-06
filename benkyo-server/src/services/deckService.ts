@@ -20,7 +20,21 @@ import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 
 export const createDeckService = async (userId: string, deckData: z.infer<typeof createDeckValidation>) => {
     const { name, description } = deckData;
-    const deck = await Deck.create({ name, description, owner: userId });
+
+    // Get user's FSRS params to copy to new deck
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Create deck with user's FSRS params as default
+    const deck = await Deck.create({
+        name,
+        description,
+        owner: userId,
+        fsrsParams: user.fsrsParams
+    });
+
     await User.findByIdAndUpdate(userId, { $push: { decks: deck._id } });
     const userDeckState = new UserDeckState({
         user: userId,
@@ -69,13 +83,20 @@ export const duplicateDeckService = async (userId: string, deckId: string) => {
         throw new BadRequestsException('You cannot duplicate your own deck', ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
+    // Get user's FSRS params for the duplicated deck
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+    }
+
     const newDeck = new Deck({
         name: deck.name,
         description: deck.description,
         owner: userId,
         cardCount: deck.cardCount,
         isPublic: false,
-        publicStatus: PublicStatus.PRIVATE
+        publicStatus: PublicStatus.PRIVATE,
+        fsrsParams: user.fsrsParams
     });
     await newDeck.save();
 
@@ -239,4 +260,35 @@ export const updateDeckFsrsParamsService = async (userId: string, deckId: string
     const updatedDeck = await Deck.findByIdAndUpdate(deckId, { $set: { fsrsParams } }, { new: true });
 
     return updatedDeck?.fsrsParams;
+};
+
+export const getDeckStatsService = async () => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    const totalDecks = await Deck.countDocuments();
+
+    const pendingDecks = await Deck.countDocuments({
+        publicStatus: PublicStatus.PENDING
+    });
+
+    const createdThisMonth = await Deck.countDocuments({
+        createdAt: { $gte: startOfMonth }
+    });
+
+    const createdLastMonth = await Deck.countDocuments({
+        createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth }
+    });
+
+    const growthPercentage =
+        createdLastMonth === 0 ? 100 : Math.round(((createdThisMonth - createdLastMonth) / createdLastMonth) * 100);
+
+    return {
+        totalDecks,
+        pendingDecks,
+        createdThisMonth,
+        growthPercentage
+    };
 };
