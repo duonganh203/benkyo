@@ -47,47 +47,40 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
         }
 
         setIsAdding(true);
-        try {
-            const deckData: any = {
-                classId: classData._id,
-                deckId: selectedDeckId
-            };
+        const deckData: any = {
+            classId: classData._id,
+            deckId: selectedDeckId
+        };
 
-            if (addMode === 'scheduled') {
-                if (!description.trim()) {
-                    getToast('error', 'Please enter a description for scheduled learning');
-                    return;
-                }
-                if (!startTime || !endTime) {
-                    getToast('error', 'Please set start and end times for scheduled learning');
-                    return;
-                }
-                deckData.description = description.trim();
-                deckData.startTime = new Date(startTime);
-                deckData.endTime = new Date(endTime);
+        if (addMode === 'scheduled') {
+            if (!description.trim()) {
+                getToast('error', 'Please enter a description for scheduled learning');
+                return;
             }
-
-            await addDeck(deckData, {
-                onSuccess: () => {
-                    getToast('success', 'Deck added successfully');
-                    setSelectedDeckId('');
-                    setDescription('');
-                    setStartTime('');
-                    setEndTime('');
-                    refetch();
-                    onDeckChange?.();
-                },
-                onError: (error) => {
-                    getToast('error', error.message);
-                    console.log(error);
-                }
-            });
-        } catch (error) {
-            getToast('error', 'Failed to add deck');
-            console.log(error);
-        } finally {
-            setIsAdding(false);
+            if (!startTime || !endTime) {
+                getToast('error', 'Please set start and end times for scheduled learning');
+                return;
+            }
+            deckData.description = description.trim();
+            deckData.startTime = new Date(startTime);
+            deckData.endTime = new Date(endTime);
         }
+
+        await addDeck(deckData, {
+            onSuccess: () => {
+                getToast('success', 'Deck added successfully');
+                setSelectedDeckId('');
+                setDescription('');
+                setStartTime('');
+                setEndTime('');
+                refetch();
+                onDeckChange?.();
+            },
+            onError: (error) => {
+                getToast('error', error.message);
+                console.log(error);
+            }
+        });
     };
 
     const handleRemoveDeck = async (deckId: string) => {

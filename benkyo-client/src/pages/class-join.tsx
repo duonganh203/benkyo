@@ -13,7 +13,7 @@ const ClassJoin = () => {
     const [result, setResult] = useState<'success' | 'error' | null>(null);
     const [message, setMessage] = useState('');
 
-    const { mutateAsync: requestJoin } = useRequestJoinClass();
+    const { mutateAsync: requestJoinMutation } = useRequestJoinClass();
 
     useEffect(() => {
         const handleJoinClass = async () => {
@@ -24,33 +24,22 @@ const ClassJoin = () => {
                 return;
             }
 
-            try {
-                const response = await requestJoin({ classId });
-
-                if (response.message === 'Joined class successfully') {
-                    setResult('success');
-                    setMessage('Successfully joined the class!');
-                    getToast('success', response.message);
-                } else if (response.message === 'Join request sent successfully') {
-                    setResult('success');
-                    setMessage('Join request sent successfully!');
-                    getToast('success', response.message);
-                } else {
-                    setResult('error');
-                    setMessage(response.message);
-                    getToast('error', response.message);
+            requestJoinMutation(
+                { classId },
+                {
+                    onSuccess: () => {
+                        getToast('success', `Request Join Class Successfully`);
+                    },
+                    onError: (error) => {
+                        getToast('error', `${error.message}`);
+                        console.log(error);
+                    }
                 }
-            } catch (error) {
-                setResult('error');
-                setMessage(error?.response?.data?.message || 'Failed to join class');
-                getToast('error', error?.response?.data?.message || 'Failed to join class');
-            } finally {
-                setIsProcessing(false);
-            }
+            );
         };
 
         handleJoinClass();
-    }, [classId, requestJoin]);
+    }, [classId]);
 
     const handleGoToClassList = () => {
         navigate('/class/list');

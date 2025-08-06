@@ -41,28 +41,21 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
         }
 
         setIsInviting(true);
-        try {
-            await inviteMember(
-                { classId: classData._id, inviteEmail: inviteEmail.trim() },
-                {
-                    onSuccess: () => {
-                        getToast('success', 'Invitation sent successfully');
-                        setInviteEmail('');
-                        refetch();
-                        onMemberChange?.();
-                    },
-                    onError: (error) => {
-                        getToast('error', error.message);
-                        console.log(error);
-                    }
+        await inviteMember(
+            { classId: classData._id, inviteEmail: inviteEmail.trim() },
+            {
+                onSuccess: () => {
+                    getToast('success', 'Invitation sent successfully');
+                    setInviteEmail('');
+                    refetch();
+                    onMemberChange?.();
+                },
+                onError: (error) => {
+                    getToast('error', error.message);
+                    console.log(error);
                 }
-            );
-        } catch (error) {
-            getToast('error', 'Failed to send invitation');
-            console.log(error);
-        } finally {
-            setIsInviting(false);
-        }
+            }
+        );
     };
 
     const handleRemoveMember = async (userId: string) => {
