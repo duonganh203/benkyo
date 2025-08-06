@@ -75,16 +75,12 @@ export const getSuggestedClassList = async (req: Request, res: Response) => {
     res.json(classData);
 };
 
-export const requestJoinClass = async (req: Request, res: Response) => {
-    try {
-        const { _id } = req.params;
-        const userId = req.user._id;
-        const result = await classService.requestJoinClasssService(_id, userId);
-        res.status(200).json(result);
-    } catch (error) {
-        const errMsg = error instanceof Error ? error.message : String(error);
-        return res.status(400).json({ message: 'Failed request join class', error: errMsg });
-    }
+export const classRequestJoin = async (req: Request, res: Response) => {
+    const { classId } = req.params;
+    const userId = req.user._id;
+    const result = await classService.classRequestJoinsService(classId, userId);
+
+    res.json(result);
 };
 
 export const acceptJoinRequest = async (req: Request, res: Response) => {

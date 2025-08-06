@@ -22,7 +22,7 @@ import {
     ClassVisited
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
-import { InternalException } from '~/exceptions/internalException';
+import { ConflictException } from '~/exceptions/conflictException';
 import { toISODate } from '~/utils/handleDate';
 
 interface NormalizedNotification {
@@ -247,12 +247,15 @@ export const getSuggestedListService = async (userId: Types.ObjectId, page: numb
     };
 };
 
-export const requestJoinClasssService = async (classId: string, userId: Types.ObjectId) => {
+export const classRequestJoinsService = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
     const alreadyMember = existingClass.users.some((user) => user.equals(userId));
-    if (alreadyMember) return { message: 'Already a member of this class' };
+    if (alreadyMember) throw new ConflictException('Already a member of this class', ErrorCode.CONFLICT);
 
     if (!existingClass.requiredApprovalToJoin) {
         existingClass.users.push(new Types.ObjectId(userId));
@@ -261,7 +264,8 @@ export const requestJoinClasssService = async (classId: string, userId: Types.Ob
     }
 
     const alreadyRequested = existingClass.joinRequests.some((req) => req.user.equals(userId));
-    if (alreadyRequested) return { message: 'You have already requested to join this class' };
+    if (alreadyRequested)
+        throw new ConflictException('You have already requested to join this class', ErrorCode.CONFLICT);
 
     const joinRequest = {
         user: new Types.ObjectId(userId),
