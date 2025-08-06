@@ -1,13 +1,12 @@
-import { UserCheck, UserX, Shield } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
-import { Button } from './ui/button';
-import { ClassJoinRequestItem } from '@/types/class';
-import { useGetClassRequestJoin } from '@/hooks/queries/use-get-class-request-join';
+import { useNavigate } from 'react-router-dom';
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import useClassManagementStore from '@/hooks/stores/use-class-management-store';
-import { useNavigate } from 'react-router-dom';
+import useGetClassRequestJoin from '@/hooks/queries/use-get-class-request-join';
 import { getToast } from '@/utils/getToast';
+import { UserCheck, UserX, Shield } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import { Button } from './ui/button';
 
 type JoinRequestsSectionProps = {
     onAccept: (requestId: string) => void;
@@ -67,22 +66,23 @@ const JoinRequestsSection = ({ onAccept, onReject }: JoinRequestsSectionProps) =
             </CardHeader>
             <CardContent>
                 <div className='space-y-4'>
-                    {joinRequests.map((request: ClassJoinRequestItem, index: number) => (
+                    {joinRequests.map((request, index: number) => (
                         <div
-                            key={index}
+                            key={request._id || index}
                             className='flex items-center justify-between p-4 bg-muted/30 rounded-lg border'
                         >
                             <div className='flex items-center gap-4 flex-1'>
                                 <Avatar className='w-10 h-10'>
+                                    <AvatarImage src={request.user?.avatar} alt={request.user?.name} />
                                     <AvatarFallback className='text-sm'>
-                                        {request.user ? request.user.charAt(0).toUpperCase() : 'U'}
+                                        {request.user?.name ? request.user.name.charAt(0).toUpperCase() : 'U'}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className='flex-1 min-w-0'>
                                     <div className='font-medium text-foreground truncate'>
-                                        {request.user || 'Unknown User'}
+                                        {request.user?.name || 'Unknown User'}
                                     </div>
-                                    <div className='text-sm text-muted-foreground truncate'>{request.user}</div>
+                                    <div className='text-sm text-muted-foreground truncate'>{request.user?.email}</div>
                                     <div className='text-xs text-muted-foreground mt-1'>
                                         Requested: {new Date(request.requestDate).toLocaleString()}
                                     </div>
@@ -92,7 +92,7 @@ const JoinRequestsSection = ({ onAccept, onReject }: JoinRequestsSectionProps) =
                                 <Button
                                     size='sm'
                                     className='bg-green-600 hover:bg-green-700 text-white'
-                                    onClick={() => onAccept(request.user)}
+                                    onClick={() => onAccept(request.user?._id || '')}
                                 >
                                     <UserCheck className='w-4 h-4 mr-1' />
                                     Approve
@@ -101,7 +101,7 @@ const JoinRequestsSection = ({ onAccept, onReject }: JoinRequestsSectionProps) =
                                     size='sm'
                                     variant='outline'
                                     className='border-red-300 text-red-600 hover:bg-red-50'
-                                    onClick={() => onReject(request.user)}
+                                    onClick={() => onReject(request.user?._id || '')}
                                 >
                                     <UserX className='w-4 h-4 mr-1' />
                                     Decline

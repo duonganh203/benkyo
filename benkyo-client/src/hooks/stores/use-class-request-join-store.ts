@@ -1,18 +1,9 @@
 import { create } from 'zustand';
 import { getClassRequestJoinApi } from '@/api/classApi';
-
-interface JoinRequest {
-    user: {
-        _id: string;
-        avatar: string;
-        email: string;
-        name: string;
-    };
-    requestDate: string;
-}
+import { ClassRequestJoinResponse } from '@/types/class';
 
 interface ClassRequestJoinStore {
-    joinRequests: JoinRequest[];
+    joinRequests: ClassRequestJoinResponse;
     isLoading: boolean;
     error: string | null;
     fetchJoinRequests: (classId: string) => Promise<void>;

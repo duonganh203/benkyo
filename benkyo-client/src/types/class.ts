@@ -128,12 +128,14 @@ export type ClassVisitItem = {
 };
 
 export type ClassJoinRequestItem = {
-    user: string;
+    _id: string;
+    user: ClassUser;
     requestDate: string;
 };
 
 export type ClassInvitedUserItem = {
-    user: string;
+    _id: string;
+    user: ClassUser;
     invitedAt: string;
 };
 export type ClassOwnerItem = {
@@ -503,7 +505,7 @@ export type ClassInvitedResponse = {
 export type ClassRequestJoinResponse = {
     _id: string;
     user: ClassUser;
-    requestDate: Date;
+    requestDate: string;
 }[];
 
 export type ClassVisitedResponse = {
