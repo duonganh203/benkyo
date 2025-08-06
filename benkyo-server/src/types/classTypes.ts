@@ -140,3 +140,8 @@ export type MongooseClass = {
         history: MongooseVisitEntry[];
     };
 };
+
+export type ClassVisited = {
+    userId: Types.ObjectId;
+    lastVisit: Date;
+};

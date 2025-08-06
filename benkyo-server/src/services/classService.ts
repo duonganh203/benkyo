@@ -18,10 +18,12 @@ import {
     MongooseUserClassState,
     MongooseClass,
     MongooseOwnerRef,
-    PopulatedDeck
+    PopulatedDeck,
+    ClassVisited
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
-import { InternalException } from '~/exceptions/internalException';
+import { ConflictException } from '~/exceptions/conflictException';
+import { toISODate } from '~/utils/handleDate';
 
 interface NormalizedNotification {
     notificationType: 'invite' | 'overdue' | 'upcoming';
@@ -88,17 +90,15 @@ export const classCreateService = async (userId: string, data: ClassStateType) =
     };
 };
 
-export const updateClassService = async (classId: string, userId: Types.ObjectId, data: Partial<ClassStateType>) => {
+export const classUpdateService = async (classId: string, userId: Types.ObjectId, data: ClassStateType) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
     if (!existingClass.owner.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to update this class', ErrorCode.FORBIDDEN);
-
-    existingClass.name = data.name ?? existingClass.name;
-    existingClass.description = data.description ?? existingClass.description;
-    existingClass.bannerUrl = data.bannerUrl ?? existingClass.bannerUrl;
-    existingClass.visibility = data.visibility ?? existingClass.visibility;
-    existingClass.requiredApprovalToJoin = data.requiredApprovalToJoin ?? existingClass.requiredApprovalToJoin;
 
     const updatedClass = await existingClass.save();
 
@@ -106,11 +106,10 @@ export const updateClassService = async (classId: string, userId: Types.ObjectId
         _id: updatedClass._id.toString(),
         name: updatedClass.name,
         description: updatedClass.description,
-        owner: updatedClass.owner.toString(),
         bannerUrl: updatedClass.bannerUrl,
         visibility: updatedClass.visibility,
         requiredApprovalToJoin: updatedClass.requiredApprovalToJoin,
-        message: 'Update class successfully'
+        owner: updatedClass.owner.toString()
     };
 };
 
@@ -132,21 +131,29 @@ export const classDeleteService = async (classId: string, userId: Types.ObjectId
 };
 
 export const getClassUpdateByIdService = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
     if (!existingClass.owner.equals(userId))
-        throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
+        throw new ForbiddenRequestsException('You do not have permission to update this class', ErrorCode.FORBIDDEN);
 
     return {
         name: existingClass.name,
         description: existingClass.description,
+        bannerUrl: existingClass.bannerUrl,
         visibility: existingClass.visibility,
         requiredApprovalToJoin: existingClass.requiredApprovalToJoin,
-        bannerUrl: existingClass.bannerUrl
+        owner: existingClass.owner.toString()
     };
 };
 
 export const getMyClassListService = async (userId: Types.ObjectId, page: number, limit: number, search?: string) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const skip = (page - 1) * limit;
     const searchQuery = search ? { name: { $regex: search, $options: 'i' } } : {};
     const totalCount = await Class.countDocuments({
@@ -240,12 +247,15 @@ export const getSuggestedListService = async (userId: Types.ObjectId, page: numb
     };
 };
 
-export const requestJoinClasssService = async (classId: string, userId: Types.ObjectId) => {
+export const classRequestJoinsService = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
     const alreadyMember = existingClass.users.some((user) => user.equals(userId));
-    if (alreadyMember) return { message: 'Already a member of this class' };
+    if (alreadyMember) throw new ConflictException('Already a member of this class', ErrorCode.CONFLICT);
 
     if (!existingClass.requiredApprovalToJoin) {
         existingClass.users.push(new Types.ObjectId(userId));
@@ -254,7 +264,8 @@ export const requestJoinClasssService = async (classId: string, userId: Types.Ob
     }
 
     const alreadyRequested = existingClass.joinRequests.some((req) => req.user.equals(userId));
-    if (alreadyRequested) return { message: 'You have already requested to join this class' };
+    if (alreadyRequested)
+        throw new ConflictException('You have already requested to join this class', ErrorCode.CONFLICT);
 
     const joinRequest = {
         user: new Types.ObjectId(userId),
@@ -267,23 +278,22 @@ export const requestJoinClasssService = async (classId: string, userId: Types.Ob
     return { message: 'Join request sent successfully' };
 };
 
-const updateVisitedHistory = async (classId: string, userId: Types.ObjectId) => {
+const updateClassVisitedHistory = async (classId: string, userId: Types.ObjectId) => {
+    const user = await User.findById(userId);
+    if (!user) throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+
     const existingClass = await Class.findById(classId);
-    if (!existingClass) return;
+    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
-    const todayStr = new Date().toISOString().split('T')[0];
-    const visitHistory = existingClass.visited?.history || [];
+    const todayStr = toISODate(Date.now());
 
-    const alreadyVisitedToday = visitHistory.some((visit: any) => {
-        const visitDate = new Date(visit.lastVisit).toISOString().split('T')[0];
-        return visit.userId.toString() === userId.toString() && visitDate === todayStr;
+    const alreadyVisitedToday = existingClass.visited.some((visit: ClassVisited) => {
+        const visitDate = toISODate(visit.lastVisit);
+        return visit.userId.equals(userId) && visitDate === todayStr;
     });
 
     if (!alreadyVisitedToday) {
-        await Class.updateOne(
-            { _id: classId },
-            { $push: { 'visited.history': { userId: userId, lastVisit: new Date() } } }
-        );
+        await Class.updateOne({ _id: classId }, { $push: { visited: { userId, lastVisit: new Date() } } });
     }
 };
 
@@ -309,7 +319,7 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
             }
         })
         .populate({
-            path: 'visited.history.userId',
+            path: 'visited.userId',
             select: '_id name email avatar'
         })
         .populate({
@@ -326,8 +336,6 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
 
     if (!existingClass.owner._id.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to view this class', ErrorCode.FORBIDDEN);
-
-    updateVisitedHistory(classId, userId).catch(console.error);
 
     const currentDate = new Date();
     let overdueMembersCount = 0;
@@ -376,7 +384,7 @@ export const getClassManagementByIdService = async (classId: string, userId: Typ
             })) || [],
         visited: {
             ...existingClass.visited,
-            history: (existingClass.visited?.history || [])
+            history: (existingClass.visited || [])
                 .sort((a: any, b: any) => new Date(b.lastVisit).getTime() - new Date(a.lastVisit).getTime())
                 .filter(
                     (visit: any, index: number, arr: any[]) =>
@@ -660,7 +668,7 @@ export const getClassUserByIdService = async (classId: string, userId: string): 
 
     if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
 
-    await updateVisitedHistory(classId, new Types.ObjectId(userId));
+    await updateClassVisitedHistory(classId, new Types.ObjectId(userId));
 
     const deckRefs = existingClass.decks || [];
     const deckIds = deckRefs.map((d: any) => d.deck?._id).filter(Boolean);
@@ -743,7 +751,7 @@ export const getClassUserByIdService = async (classId: string, userId: string): 
         userClassStates: sortedTopUserStates,
         completionRate,
         visited: {
-            history: (existingClass.visited?.history || []).map((h: any) => h.userId?.toString() || '')
+            history: (existingClass.visited || []).map((h: any) => h.userId?.toString() || '')
         },
         bannerUrl: existingClass.bannerUrl
     };

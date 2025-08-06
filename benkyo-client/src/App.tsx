@@ -28,7 +28,7 @@ import Payment from './pages/payment';
 import Packages from './pages/package';
 import Community from './pages/community';
 import CreateClass from './pages/create-class';
-
+import ClassListUser from './pages/classt-list-user';
 import ClassManagement from './pages/class-management';
 import Notifications from './pages/notification';
 import { InviteDialog } from './components/invite-dialog';
@@ -37,6 +37,7 @@ import TopLearners from './pages/top-study-streak';
 import ClassQuizManagement from './pages/class-quiz-management';
 import ClassList from './pages/class-list';
 import ClassUpdate from './pages/class-update';
+import ClassCreate from './pages/class-create';
 
 const queryClient = new QueryClient({
     defaultOptions: {
