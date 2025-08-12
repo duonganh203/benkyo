@@ -53,7 +53,6 @@ const Notifications = () => {
     };
 
     const renderNotification = (notification: UnifiedNotification) => {
-        console.log('Rendering notification:', notification);
         if (notification.notificationType === 'invite') {
             return (
                 <NotificationCard

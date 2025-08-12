@@ -109,7 +109,7 @@ const ClassStudyDialog: React.FC<ClassStudyDialogProps> = ({
             });
 
             queryClient.invalidateQueries({ queryKey: ['classClassUserId', classId] });
-        } catch (error) {
+        } catch {
             getToast('error', 'Failed to save answer');
         }
 
@@ -136,7 +136,7 @@ const ClassStudyDialog: React.FC<ClassStudyDialogProps> = ({
                 queryClient.invalidateQueries({ queryKey: ['class', classId] });
 
                 refetchHistory();
-            } catch (error) {
+            } catch {
                 getToast('error', 'Failed to end session');
             }
         }
