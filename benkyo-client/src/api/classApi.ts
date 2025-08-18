@@ -8,7 +8,12 @@ import {
     DeckToAddClassResponseDto,
     GetClassUserByIdResponseDto,
     InviteMemberResponseDto,
-    RemoveUserClassResponseDto
+    RemoveUserClassResponseDto,
+    ClassMembersResponse,
+    ClassDecksResponse,
+    ClassInvitedResponse,
+    ClassRequestJoinResponse,
+    ClassVisitedResponse
 } from '@/types/class';
 import { api } from '.';
 import { ClassNotification } from '@/types/notification';
@@ -198,6 +203,31 @@ export const getClassMemberProgressApi = async (classId: string) => {
 };
 
 export const cancelInviteApi = async (classId: string, userId: string) => {
-    const response = await api.delete(`/class/${classId}/invite/${userId}`);
+    const response = await api.delete(`/class/cancel-invite?classId=${classId}&userId=${userId}`);
     return response.data as { message: string };
+};
+
+export const getClassMemberApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/members`);
+    return response.data as ClassMembersResponse;
+};
+
+export const getClassDeckApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/decks`);
+    return response.data as ClassDecksResponse;
+};
+
+export const getClassInvitedApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/invited`);
+    return response.data as ClassInvitedResponse;
+};
+
+export const getClassRequestJoinApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/request-join`);
+    return response.data as ClassRequestJoinResponse;
+};
+
+export const getClassVisitedApi = async (classId: string) => {
+    const response = await api.get(`/class/${classId}/visited`);
+    return response.data as ClassVisitedResponse;
 };

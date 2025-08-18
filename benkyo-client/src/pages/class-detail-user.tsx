@@ -148,7 +148,7 @@ function ClassDetailUser() {
                 setShowResumeDialog(false);
                 setPendingDeck(null);
                 setPendingSessionData(null);
-            } catch (error) {
+            } catch {
                 getToast('error', 'Failed to start new session');
             }
         }
