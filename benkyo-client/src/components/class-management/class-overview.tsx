@@ -6,6 +6,7 @@ import StatCard from '@/components/stat-card';
 import { useGetClassMonthlyAccessStats } from '@/hooks/queries/use-get-class-monthly-access-stats';
 import { Globe, Lock, QrCode } from 'lucide-react';
 import QRCodeClass from '@/components/qr-code-class';
+import type { ClassManagementResponseDto } from '@/types/class';
 
 const MonthlyAccessChart = ({ classId }: { classId: string }) => {
     const { data: monthlyStats, isLoading, error } = useGetClassMonthlyAccessStats(classId);
@@ -93,7 +94,7 @@ const MonthlyAccessChart = ({ classId }: { classId: string }) => {
 };
 
 interface ClassOverviewProps {
-    classItem: any;
+    classItem: ClassManagementResponseDto;
     classId: string;
 }
 
@@ -133,17 +134,17 @@ export const ClassOverview = ({ classItem, classId }: ClassOverviewProps) => (
                             <div className='flex items-center gap-2'>
                                 <span className='font-medium text-white'>Created:</span>
                                 <span className='text-white/90'>
-                                    {new Date(classItem.createdAt).toLocaleDateString()}
+                                    {classItem.createdAt ? new Date(classItem.createdAt).toLocaleDateString() : '-'}
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div className='flex items-center gap-2'>
                         <Badge
-                            variant={classItem.visibility === 'PUBLIC' ? 'default' : 'secondary'}
+                            variant={classItem.visibility === 'public' ? 'default' : 'secondary'}
                             className='text-sm px-3 py-1 bg-white/20 text-white border-white/30'
                         >
-                            {classItem.visibility === 'PUBLIC' ? (
+                            {classItem.visibility === 'public' ? (
                                 <Globe className='w-4 h-4 mr-1' />
                             ) : (
                                 <Lock className='w-4 h-4 mr-1' />
@@ -170,19 +171,19 @@ export const ClassOverview = ({ classItem, classId }: ClassOverviewProps) => (
             />
             <StatCard
                 title='Join Requests'
-                value={classItem.joinRequests?.length || 0}
+                value={Array.isArray(classItem.joinRequests) ? classItem.joinRequests.length : 0}
                 icon='user-plus'
                 description='Pending join requests'
             />
             <StatCard
                 title='Invited Users'
-                value={classItem.invitedUsers?.length || 0}
+                value={Array.isArray(classItem.invitedUsers) ? classItem.invitedUsers.length : 0}
                 icon='mail'
                 description='Users invited to class'
             />
             <StatCard
                 title='Recent Visits'
-                value={classItem.visited?.length || 0}
+                value={Array.isArray(classItem.visited) ? classItem.visited.length : 0}
                 icon='eye'
                 description='Recent class visits'
             />
@@ -212,7 +213,7 @@ export const ClassOverview = ({ classItem, classId }: ClassOverviewProps) => (
                     </div>
                     <div className='flex items-center'>
                         <span className='text-muted-foreground w-32 flex-shrink-0'>Visibility:</span>
-                        <Badge variant={classItem.visibility === 'PUBLIC' ? 'default' : 'secondary'}>
+                        <Badge variant={classItem.visibility === 'public' ? 'default' : 'secondary'}>
                             {classItem.visibility}
                         </Badge>
                     </div>
@@ -224,7 +225,9 @@ export const ClassOverview = ({ classItem, classId }: ClassOverviewProps) => (
                     </div>
                     <div className='flex items-center'>
                         <span className='text-muted-foreground w-32 flex-shrink-0'>Created:</span>
-                        <span className='font-medium'>{new Date(classItem.createdAt).toLocaleDateString()}</span>
+                        <span className='font-medium'>
+                            {classItem.createdAt ? new Date(classItem.createdAt).toLocaleDateString() : '-'}
+                        </span>
                     </div>
                 </CardContent>
             </Card>

@@ -68,29 +68,14 @@ export const ClassSetting = () => {
                 const bannerUrl = await uploadToCloudinary(file);
                 form.setValue('bannerUrl', bannerUrl);
                 getToast('success', 'Banner uploaded successfully');
-            } catch (error) {
+            } catch {
                 getToast('error', 'Failed to upload image');
-                console.log(error);
             }
         }
     };
 
     const onSubmit = async (values: ClassUpdateForm) => {
-        updateClass(
-            {
-                classId: classData._id,
-                requestClass: values
-            },
-            {
-                onSuccess: () => {
-                    getToast('success', 'Class updated successfully');
-                },
-                onError: (error) => {
-                    getToast('error', error.message);
-                    console.log(error);
-                }
-            }
-        );
+        await updateClass({ classId: classData._id, requestClass: values });
     };
 
     const handleDelete = () => {
@@ -98,17 +83,8 @@ export const ClassSetting = () => {
     };
 
     const confirmDelete = async () => {
-        deleteClass(classData._id, {
-            onSuccess: () => {
-                getToast('success', 'Class deleted successfully');
-                navigate('/class/list');
-                setShowDeleteModal(false);
-            },
-            onError: (error) => {
-                getToast('error', error.message);
-                console.log(error);
-            }
-        });
+        await deleteClass(classData._id);
+        setShowDeleteModal(false);
     };
 
     return (

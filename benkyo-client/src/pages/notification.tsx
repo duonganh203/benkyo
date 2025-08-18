@@ -70,7 +70,6 @@ const Notifications = () => {
                 />
             );
         }
-        console.log('No matching notification type:', (notification as any).notificationType);
         return null;
     };
 

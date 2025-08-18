@@ -18,7 +18,6 @@ import {
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ConflictException } from '~/exceptions/conflictException';
-import { toISODate } from '~/utils/handleDate';
 
 export const classCreateService = async (userId: string, data: ClassStateType) => {
     const user = await User.findById(userId);
@@ -47,6 +46,12 @@ export const classUpdateService = async (classId: string, userId: Types.ObjectId
 
     if (!existingClass.owner.equals(userId))
         throw new ForbiddenRequestsException('You do not have permission to update this class', ErrorCode.FORBIDDEN);
+
+    existingClass.name = data.name ?? existingClass.name;
+    existingClass.description = data.description ?? existingClass.description;
+    existingClass.bannerUrl = data.bannerUrl ?? existingClass.bannerUrl;
+    existingClass.visibility = data.visibility ?? existingClass.visibility;
+    existingClass.requiredApprovalToJoin = data.requiredApprovalToJoin ?? existingClass.requiredApprovalToJoin;
 
     const updatedClass = await existingClass.save();
 
@@ -804,6 +809,7 @@ export const cancelInviteService = async (classId: string, userId: string, owner
 };
 
 export const getClassMemberProgressService = async (classId: string, requesterId: Types.ObjectId) => {
+    void requesterId;
     const existingClass = await Class.findById(classId)
         .populate({ path: 'users', select: '_id name email avatar' })
         .populate({ path: 'decks.deck', select: '_id name description cardCount' })
@@ -1186,6 +1192,7 @@ export const getClassInvitedUsersService = async (classId: string, userId: Types
 };
 
 export const getClassMemberLearningStatusService = async (classId: string, requesterId: Types.ObjectId) => {
+    void requesterId;
     const existingClass = await Class.findById(classId)
         .populate({
             path: 'users',

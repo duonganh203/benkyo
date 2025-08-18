@@ -8,14 +8,14 @@ import useClassRequestJoinStore from '@/hooks/stores/use-class-request-join-stor
 import useClassManagementStore from '@/hooks/stores/use-class-management-store';
 import useAcceptJoinClass from '@/hooks/queries/use-accept-join-request';
 import useRejectJoinClass from '@/hooks/queries/use-reject-join-request';
-import { getToast } from '@/utils/getToast';
+import type { ClassRequestJoinResponse } from '@/types/class';
 
 const RequestItem = ({
     request,
     onAccept,
     onReject
 }: {
-    request: any;
+    request: ClassRequestJoinResponse[number];
     onAccept: (userId: string) => void;
     onReject: (userId: string) => void;
 }) => (
@@ -35,13 +35,7 @@ const RequestItem = ({
                         <Clock className='w-3 h-3 mr-1' />
                         Requested {new Date(request.requestDate).toLocaleDateString()}
                     </Badge>
-                    {request.status === 'PENDING' && (
-                        <Badge variant='secondary' className='text-xs'>
-                            Pending
-                        </Badge>
-                    )}
                 </div>
-                {request.message && <div className='mt-2 text-sm text-muted-foreground'>"{request.message}"</div>}
             </div>
         </div>
         <div className='flex gap-2'>
@@ -136,37 +130,19 @@ export const ClassRequestJoin = ({ onMemberChange }: ClassRequestJoinProps) => {
     }
 
     const handleAcceptRequest = async (userId: string) => {
-        acceptRequest(
-            { classId: classData._id, userId },
-            {
-                onSuccess: () => {
-                    getToast('success', 'Join request accepted successfully');
-                    fetchJoinRequests(classData._id);
-                    onMemberChange?.();
-                },
-                onError: (error) => {
-                    getToast('error', error.message);
-                    console.log(error);
-                }
-            }
-        );
+        // rely on hook's onError/onSuccess
+        acceptRequest({ classId: classData._id, userId }).then(() => {
+            fetchJoinRequests(classData._id);
+            onMemberChange?.();
+        });
     };
 
     const handleRejectRequest = async (userId: string) => {
-        rejectRequest(
-            { classId: classData._id, userId },
-            {
-                onSuccess: () => {
-                    getToast('success', 'Join request rejected successfully');
-                    fetchJoinRequests(classData._id);
-                    onMemberChange?.();
-                },
-                onError: (error) => {
-                    getToast('error', error.message);
-                    console.log(error);
-                }
-            }
-        );
+        // rely on hook's onError/onSuccess
+        rejectRequest({ classId: classData._id, userId }).then(() => {
+            fetchJoinRequests(classData._id);
+            onMemberChange?.();
+        });
     };
 
     if (isLoading) {
@@ -190,7 +166,7 @@ export const ClassRequestJoin = ({ onMemberChange }: ClassRequestJoinProps) => {
                     <EmptyRequestsState />
                 ) : (
                     <div className='space-y-4'>
-                        {joinRequests.map((request: any) => (
+                        {joinRequests.map((request) => (
                             <RequestItem
                                 key={request._id}
                                 request={request}

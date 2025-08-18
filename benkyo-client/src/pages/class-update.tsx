@@ -70,19 +70,7 @@ const ClassUpdate = () => {
     }, [classData]);
 
     const onSubmit = async (values: ClassUserRequestDto) => {
-        updateClassMutation(
-            { classId, requestClass: values },
-            {
-                onSuccess: (data) => {
-                    getToast('success', `Create class ${data.name} successfully`);
-                    navigate(`/class/${data._id}/management`);
-                },
-                onError: (error) => {
-                    getToast('error', `${error.message}`);
-                    console.log(error);
-                }
-            }
-        );
+        await updateClassMutation({ classId, requestClass: values });
     };
 
     const [previewBanner, setPreviewBanner] = useState<string>();

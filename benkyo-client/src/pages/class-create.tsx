@@ -56,7 +56,7 @@ const ClassCreate = () => {
                 setPreviewBanner(imageUrl);
                 form.setValue('bannerUrl', imageUrl, { shouldValidate: true });
             }
-        } catch (err) {
+        } catch {
             getToast('error', 'Failed to upload image');
         } finally {
             setIsUploadingBanner(false);
@@ -65,16 +65,7 @@ const ClassCreate = () => {
 
     const { mutateAsync: createClassMutation, isPending: isSubmitting } = useClassCreate();
     const onSubmit = async (values: ClassUserRequestDto) => {
-        createClassMutation(values, {
-            onSuccess: (data) => {
-                getToast('success', `Create class ${data.name} successfully`);
-                navigate(`/class/${data._id}/management`);
-            },
-            onError: (error) => {
-                getToast('error', `${error.message}`);
-                console.log(error);
-            }
-        });
+        await createClassMutation(values);
     };
 
     return (

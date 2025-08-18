@@ -33,20 +33,7 @@ export const ClassInvited = () => {
             getToast('error', 'Class data not available');
             return;
         }
-
-        cancelInvite(
-            { classId: classData._id, userId },
-            {
-                onSuccess: () => {
-                    getToast('success', 'Invitation cancelled successfully');
-                    refetch();
-                },
-                onError: (error) => {
-                    getToast('error', error.message);
-                    console.log(error);
-                }
-            }
-        );
+        cancelInvite({ classId: classData._id, userId }).then(() => refetch());
     };
 
     if (isLoading) {
@@ -97,7 +84,7 @@ export const ClassInvited = () => {
                     </div>
                 ) : (
                     <div className='space-y-4'>
-                        {invitedUsers.map((invitedUser: any) => (
+                        {invitedUsers.map((invitedUser) => (
                             <div
                                 key={invitedUser._id}
                                 className='flex items-center justify-between p-4 bg-muted/30 rounded-lg border'
@@ -135,7 +122,7 @@ export const ClassInvited = () => {
                                         size='sm'
                                         variant='outline'
                                         className='border-red-300 text-red-600 hover:bg-red-50'
-                                        onClick={() => handleCancelInvite(invitedUser.user?._id || invitedUser.userId)}
+                                        onClick={() => handleCancelInvite(invitedUser.user?._id || invitedUser._id)}
                                     >
                                         <UserX className='w-4 h-4 mr-1' />
                                         Cancel Invite

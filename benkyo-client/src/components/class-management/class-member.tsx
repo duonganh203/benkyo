@@ -12,6 +12,7 @@ import useInviteMemberClass from '@/hooks/queries/use-invite-member-class';
 import useRemoveUserClass from '@/hooks/queries/use-remove-user-class';
 import useGetClassMember from '@/hooks/queries/use-get-class-member';
 import { getToast } from '@/utils/getToast';
+import type { ClassMembersResponse } from '@/types/class';
 
 interface ClassMemberProps {
     onMemberChange?: () => void;
@@ -24,7 +25,7 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [userToRemove, setUserToRemove] = useState<string | null>(null);
 
-    const { data: members, isLoading, error, refetch } = useGetClassMember(classData?._id || '');
+    const { data: members, isLoading, error, refetch: refetchMembers } = useGetClassMember(classData?._id || '');
 
     const { mutateAsync: inviteMember } = useInviteMemberClass();
     const { mutateAsync: removeUser } = useRemoveUserClass();
@@ -41,21 +42,11 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
         }
 
         setIsInviting(true);
-        await inviteMember(
-            { classId: classData._id, inviteEmail: inviteEmail.trim() },
-            {
-                onSuccess: () => {
-                    getToast('success', 'Invitation sent successfully');
-                    setInviteEmail('');
-                    refetch();
-                    onMemberChange?.();
-                },
-                onError: (error) => {
-                    getToast('error', error.message);
-                    console.log(error);
-                }
-            }
-        );
+        await inviteMember({ classId: classData._id, inviteEmail: inviteEmail.trim() });
+        setInviteEmail('');
+        refetchMembers();
+        onMemberChange?.();
+        setIsInviting(false);
     };
 
     const handleRemoveMember = async (userId: string) => {
@@ -72,23 +63,11 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
         if (!classData?._id || !userToRemove) {
             return;
         }
-
-        removeUser(
-            { classId: classData._id, userId: userToRemove },
-            {
-                onSuccess: () => {
-                    getToast('success', 'Member removed successfully');
-                    refetch();
-                    onMemberChange?.();
-                    setShowConfirmModal(false);
-                    setUserToRemove(null);
-                },
-                onError: (error) => {
-                    getToast('error', error.message);
-                    console.log(error);
-                }
-            }
-        );
+        await removeUser({ classId: classData._id, userId: userToRemove });
+        refetchMembers();
+        onMemberChange?.();
+        setShowConfirmModal(false);
+        setUserToRemove(null);
     };
 
     if (!classData) {
@@ -152,7 +131,7 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
                         </div>
                     ) : (
                         <div className='space-y-4'>
-                            {members.map((member: any) => (
+                            {members.map((member: ClassMembersResponse[number]) => (
                                 <div
                                     key={member._id}
                                     className='flex items-center justify-between p-4 bg-muted/30 rounded-lg border'
@@ -170,26 +149,14 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
                                             </div>
                                             <div className='text-sm text-muted-foreground truncate'>{member.email}</div>
                                             <div className='flex items-center gap-2 mt-1'>
-                                                {member.role === 'OWNER' && (
-                                                    <Badge variant='default' className='text-xs'>
-                                                        Owner
-                                                    </Badge>
-                                                )}
-                                                {member.role === 'MEMBER' && (
-                                                    <Badge variant='secondary' className='text-xs'>
-                                                        Member
-                                                    </Badge>
-                                                )}
-                                                {member.joinedAt && (
-                                                    <Badge variant='outline' className='text-xs'>
-                                                        <Clock className='w-3 h-3 mr-1' />
-                                                        Joined {new Date(member.joinedAt).toLocaleDateString()}
-                                                    </Badge>
-                                                )}
+                                                <Badge variant='outline' className='text-xs'>
+                                                    <Clock className='w-3 h-3 mr-1' />
+                                                    Member
+                                                </Badge>
                                             </div>
                                         </div>
                                     </div>
-                                    {member.role !== 'OWNER' && (
+                                    {classData?.owner?._id !== member._id && (
                                         <Button
                                             size='sm'
                                             variant='outline'

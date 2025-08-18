@@ -489,6 +489,7 @@ export type ClassDecksResponse = {
         _id: string;
         name: string;
         description?: string;
+        cardCount?: number;
     };
     description?: string;
     startTime?: Date;

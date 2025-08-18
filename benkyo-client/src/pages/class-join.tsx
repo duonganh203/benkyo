@@ -2,40 +2,25 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
-import { getToast } from '@/utils/getToast';
+import { Loader2 } from 'lucide-react';
 import useRequestJoinClass from '@/hooks/queries/use-request-join-class';
 
 const ClassJoin = () => {
     const { classId } = useParams();
     const navigate = useNavigate();
     const [isProcessing, setIsProcessing] = useState(true);
-    const [result, setResult] = useState<'success' | 'error' | null>(null);
-    const [message, setMessage] = useState('');
 
     const { mutateAsync: requestJoinMutation } = useRequestJoinClass();
 
     useEffect(() => {
         const handleJoinClass = async () => {
             if (!classId) {
-                setResult('error');
-                setMessage('Invalid class ID');
                 setIsProcessing(false);
                 return;
             }
 
-            requestJoinMutation(
-                { classId },
-                {
-                    onSuccess: () => {
-                        getToast('success', `Request Join Class Successfully`);
-                    },
-                    onError: (error) => {
-                        getToast('error', `${error.message}`);
-                        console.log(error);
-                    }
-                }
-            );
+            await requestJoinMutation({ classId });
+            setIsProcessing(false);
         };
 
         handleJoinClass();
@@ -61,13 +46,12 @@ const ClassJoin = () => {
                             <Loader2 className='w-12 h-12 mx-auto animate-spin text-primary' />
                             <p className='text-muted-foreground'>Processing your join request...</p>
                         </div>
-                    ) : result === 'success' ? (
+                    ) : (
                         <div className='text-center space-y-4'>
-                            <CheckCircle className='w-12 h-12 mx-auto text-green-500' />
                             <div className='space-y-2'>
-                                <p className='text-lg font-medium text-green-600'>{message}</p>
+                                <p className='text-lg font-medium'>Request processed</p>
                                 <p className='text-sm text-muted-foreground'>
-                                    You can now access the class and start learning!
+                                    If you weren't redirected, you can go to the class or back to the class list.
                                 </p>
                             </div>
                             <div className='flex gap-3 pt-4'>
@@ -78,17 +62,6 @@ const ClassJoin = () => {
                                     Class List
                                 </Button>
                             </div>
-                        </div>
-                    ) : (
-                        <div className='text-center space-y-4'>
-                            <XCircle className='w-12 h-12 mx-auto text-red-500' />
-                            <div className='space-y-2'>
-                                <p className='text-lg font-medium text-red-600'>Join Failed</p>
-                                <p className='text-sm text-muted-foreground'>{message}</p>
-                            </div>
-                            <Button onClick={handleGoToClassList} className='w-full'>
-                                Back to Class List
-                            </Button>
                         </div>
                     )}
                 </CardContent>

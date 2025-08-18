@@ -13,6 +13,7 @@ import useRemoveDeckFromClass from '@/hooks/queries/use-remove-deck-from-class';
 import useGetClassDeck from '@/hooks/queries/use-get-class-deck';
 import useGetDeckToAddClass from '@/hooks/queries/use-get-decks-to-class';
 import { getToast } from '@/utils/getToast';
+import type { ClassDecksResponse, DeckToAddClassResponseDto, AddDeckToClassRequestDto } from '@/types/class';
 
 interface ClassDeckProps {
     onDeckChange?: () => void;
@@ -47,7 +48,7 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
         }
 
         setIsAdding(true);
-        const deckData: any = {
+        const deckData: AddDeckToClassRequestDto = {
             classId: classData._id,
             deckId: selectedDeckId
         };
@@ -66,21 +67,16 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
             deckData.endTime = new Date(endTime);
         }
 
-        await addDeck(deckData, {
-            onSuccess: () => {
-                getToast('success', 'Deck added successfully');
+        addDeck(deckData)
+            .then(() => {
                 setSelectedDeckId('');
                 setDescription('');
                 setStartTime('');
                 setEndTime('');
                 refetch();
                 onDeckChange?.();
-            },
-            onError: (error) => {
-                getToast('error', error.message);
-                console.log(error);
-            }
-        });
+            })
+            .finally(() => setIsAdding(false));
     };
 
     const handleRemoveDeck = async (deckId: string) => {
@@ -98,22 +94,12 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
             return;
         }
 
-        removeDeck(
-            { classId: classData._id, deckId: deckToRemove },
-            {
-                onSuccess: () => {
-                    getToast('success', 'Deck removed successfully');
-                    refetch();
-                    onDeckChange?.();
-                    setShowConfirmModal(false);
-                    setDeckToRemove(null);
-                },
-                onError: (error) => {
-                    getToast('error', error.message);
-                    console.log(error);
-                }
-            }
-        );
+        removeDeck({ classId: classData._id, deckId: deckToRemove }).then(() => {
+            refetch();
+            onDeckChange?.();
+            setShowConfirmModal(false);
+            setDeckToRemove(null);
+        });
     };
 
     if (!classData) {
@@ -151,7 +137,7 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
                                         <SelectValue placeholder='Select a deck to add' />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {availableDecks?.map((deck: any) => (
+                                        {availableDecks?.map((deck: DeckToAddClassResponseDto) => (
                                             <SelectItem key={deck._id} value={deck._id}>
                                                 {deck.name}
                                             </SelectItem>
@@ -229,7 +215,7 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
                         </div>
                     ) : (
                         <div className='space-y-4'>
-                            {decks.map((deck: any) => (
+                            {decks.map((deck: ClassDecksResponse[number]) => (
                                 <div
                                     key={deck._id}
                                     className='flex items-center justify-between p-4 bg-muted/30 rounded-lg border'
@@ -247,7 +233,7 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
                                             </div>
                                             <div className='flex items-center gap-2 mt-1'>
                                                 <Badge variant='outline' className='text-xs'>
-                                                    {deck.deck?.cardCount || 0} cards
+                                                    {deck.deck?.cardCount ?? 0} cards
                                                 </Badge>
                                                 {deck.startTime && deck.endTime && (
                                                     <>

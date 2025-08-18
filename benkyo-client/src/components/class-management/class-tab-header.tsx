@@ -1,6 +1,7 @@
 import { Users, Settings, Eye, Calendar, Mail, Shield, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import type { ClassManagementResponseDto } from '@/types/class';
 
 export const enum Tab {
     Home = 'HOME',
@@ -14,7 +15,7 @@ export const enum Tab {
 }
 
 interface ClassTabHeaderProps {
-    classItem: any;
+    classItem: Partial<ClassManagementResponseDto> | null;
     currentTab: Tab;
     setTab: (tab: Tab) => void;
 }
@@ -47,7 +48,7 @@ export const ClassTabHeader = ({ classItem, currentTab, setTab }: ClassTabHeader
                     }`}
                 >
                     <Users className='w-4 h-4 mr-2' />
-                    Members ({classItem.users?.length || 0})
+                    Members ({classItem?.users?.length || 0})
                 </Button>
                 <Button
                     variant={currentTab === Tab.Deck ? 'default' : 'outline'}
@@ -60,7 +61,7 @@ export const ClassTabHeader = ({ classItem, currentTab, setTab }: ClassTabHeader
                     }`}
                 >
                     <Calendar className='w-4 h-4 mr-2' />
-                    Decks ({classItem.decks?.length || 0})
+                    Decks ({classItem?.decks?.length || 0})
                 </Button>
                 <Button
                     variant={currentTab === Tab.Invited ? 'default' : 'outline'}
@@ -73,7 +74,7 @@ export const ClassTabHeader = ({ classItem, currentTab, setTab }: ClassTabHeader
                     }`}
                 >
                     <Mail className='w-4 h-4 mr-2' />
-                    Invited ({classItem.invitedUsers?.length || 0})
+                    Invited ({classItem?.invitedUsers?.length || 0})
                 </Button>
                 <Button
                     variant={currentTab === Tab.RequestJoin ? 'default' : 'outline'}
@@ -86,7 +87,7 @@ export const ClassTabHeader = ({ classItem, currentTab, setTab }: ClassTabHeader
                     }`}
                 >
                     <Shield className='w-4 h-4 mr-2' />
-                    Join Requests ({classItem.joinRequests?.length || 0})
+                    Join Requests ({classItem?.joinRequests?.length || 0})
                 </Button>
                 <Button
                     variant={currentTab === Tab.LearningStatus ? 'default' : 'outline'}
