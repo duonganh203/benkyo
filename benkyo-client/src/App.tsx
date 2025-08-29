@@ -81,7 +81,7 @@ const App = () => {
                             <Route path='/top-learners' element={<TopLearners />} />
                             <Route path='/community' element={<Community />} />
                             <Route path='/class/update' element={<ClassUpdate />} />
-                            <Route path='/class/update' element={<ClassCreate />} />
+                            <Route path='/class/create' element={<ClassCreate />} />
                             <Route path='/class/:classId/update' element={<ClassUpdate />} />
                             <Route path='/class/list' element={<ClassList />} />
                             <Route path='/class/:classId/management' element={<ClassManagement />} />
