@@ -2,8 +2,8 @@ import 'dotenv/config';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
-import { loginService, refreshTokenService, registerService } from '~/services/authService';
-import { loginValidation, registerValidation } from '~/validations/authValidation';
+import { loginService, refreshTokenService, registerService, changePasswordService } from '~/services/authService';
+import { loginValidation, registerValidation, changePasswordValidation } from '~/validations/authValidation';
 import { generateRefreshToken, generateToken } from '~/utils/generateJwt';
 
 export const register = async (req: Request, res: Response) => {
@@ -79,4 +79,10 @@ export const facebookCallback = (req: Request, res: Response) => {
             );
         }
     )(req, res);
+};
+export const changePassword = async (req: Request, res: Response) => {
+    const userId = (req.user as any)._id;
+    const data = req.body;
+    const result = await changePasswordService(userId, data);
+    res.status(StatusCodes.OK).json(result);
 };

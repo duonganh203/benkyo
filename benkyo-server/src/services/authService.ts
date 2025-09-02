@@ -3,7 +3,7 @@ import { compare, hash } from 'bcrypt';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ErrorCode } from '~/exceptions/root';
 import { User } from '~/schemas';
-import { loginValidation, registerValidation } from '~/validations/authValidation';
+import { loginValidation, registerValidation, changePasswordValidation } from '~/validations/authValidation';
 import { generateRefreshToken, generateToken } from '~/utils/generateJwt';
 import * as jwt from 'jsonwebtoken';
 import { UnauthorizedException } from '~/exceptions/unauthorized';
@@ -48,4 +48,29 @@ export const refreshTokenService = async (refreshToken: string) => {
     const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!);
     const newToken = generateToken((payload as any).id);
     return newToken;
+};
+
+export const changePasswordService = async (userId: string, data: z.infer<typeof changePasswordValidation>) => {
+    const { oldPassword, newPassword, confirmPassword } = data;
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new UnauthorizedException('User not found!', ErrorCode.UNAUTHORIZED);
+    }
+    const isMatch = await compare(oldPassword, user.password);
+    if (!isMatch) {
+        throw new BadRequestsException('Old password is not correct!', ErrorCode.INVALID_CREDENTIALS);
+    }
+    if (newPassword !== confirmPassword) {
+        throw new BadRequestsException(
+            'New password and confirm password do not match!',
+            ErrorCode.INVALID_CREDENTIALS
+        );
+    }
+    const hashedPassword = await hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return {
+        message: 'Password changed successfully'
+    };
 };
