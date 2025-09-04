@@ -43,8 +43,3 @@ export interface ResetPasswordPayload {
     otp: string;
     newPassword: string;
 }
-export interface VerifyOtpPayload {
-    email: string;
-    otp: string;
-    confirmPassword?: string;
-}
