@@ -7,7 +7,8 @@ import {
     loginValidation,
     registerValidation,
     forgotPasswordValidation,
-    resetPasswordValidation
+    resetPasswordValidation,
+    changePasswordValidation
 } from '~/validations/authValidation';
 import { generateRefreshToken, generateToken } from '~/utils/generateJwt';
 import * as jwt from 'jsonwebtoken';
@@ -86,4 +87,28 @@ export const resetPasswordService = async (email: string, newPassword: string) =
     await user.save();
 
     return { message: 'Password reset successfully!' };
+};
+export const changePasswordService = async (userId: string, data: z.infer<typeof changePasswordValidation>) => {
+    const { oldPassword, newPassword, confirmPassword } = data;
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new UnauthorizedException('User not found!', ErrorCode.UNAUTHORIZED);
+    }
+    const isMatch = await compare(oldPassword, user.password);
+    if (!isMatch) {
+        throw new BadRequestsException('Old password is not correct!', ErrorCode.INVALID_CREDENTIALS);
+    }
+    if (newPassword !== confirmPassword) {
+        throw new BadRequestsException(
+            'New password and confirm password do not match!',
+            ErrorCode.INVALID_CREDENTIALS
+        );
+    }
+    const hashedPassword = await hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return {
+        message: 'Password changed successfully'
+    };
 };

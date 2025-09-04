@@ -8,13 +8,15 @@ import {
     registerService,
     forgotPasswordService,
     resetPasswordService,
-    verifyOtpService
+    verifyOtpService,
+    changePasswordService
 } from '~/services/authService';
 import {
     loginValidation,
     registerValidation,
     forgotPasswordValidation,
-    resetPasswordValidation
+    resetPasswordValidation,
+    changePasswordValidation
 } from '~/validations/authValidation';
 import { generateRefreshToken, generateToken } from '~/utils/generateJwt';
 
@@ -92,6 +94,7 @@ export const facebookCallback = (req: Request, res: Response) => {
         }
     )(req, res);
 };
+
 export const forgotPassword = async (req: Request, res: Response) => {
     const { email } = forgotPasswordValidation.parse(req.body);
     const result = await forgotPasswordService(email);
@@ -108,4 +111,11 @@ export const resetPassword = async (req: Request, res: Response) => {
     const { email, newPassword } = resetPasswordValidation.parse(req.body);
     const result = await resetPasswordService(email, newPassword);
     res.json(result);
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+    const userId = (req.user as any)._id;
+    const data = req.body;
+    const result = await changePasswordService(userId, data);
+    res.status(StatusCodes.OK).json(result);
 };
