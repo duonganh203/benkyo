@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -13,7 +13,7 @@ interface OtpModalProps {
     onVerifySuccess: () => void;
 }
 
-export function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
+export function OtpModal({ isOpen, onClose, email, onVerifySuccess }: OtpModalProps) {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState('');
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -30,10 +30,17 @@ export function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
         if (isOpen) {
             inputRefs.current[0]?.focus();
         } else {
-            // 👉 Khi modal đóng thì clear OTP
             resetOtpInputs();
         }
     }, [isOpen]);
+
+    // Định nghĩa callback ref có kiểu rõ ràng, không trả về giá trị
+    const setInputRef = useCallback(
+        (index: number) => (el: HTMLInputElement | null) => {
+            inputRefs.current[index] = el;
+        },
+        []
+    );
 
     const handleInputChange = (index: number, value: string) => {
         if (value.length > 1) return;
@@ -65,13 +72,14 @@ export function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
                 onSuccess: () => {
                     toast.success('OTP verified successfully!');
                     onClose();
+                    onVerifySuccess();
                     navigate('/resetPassword', { state: { email, otp: otpCode } });
                 },
                 onError: (error: any) => {
                     const message = error.response?.data?.message || 'Invalid OTP code';
                     setError(message);
                     toast.error(message);
-                    resetOtpInputs(); // 👉 reset khi nhập sai
+                    resetOtpInputs();
                 }
             }
         );
@@ -95,7 +103,7 @@ export function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
                         {otp.map((digit, index) => (
                             <Input
                                 key={index}
-                                ref={(el) => (inputRefs.current[index] = el)}
+                                ref={setInputRef(index)}
                                 type='text'
                                 inputMode='numeric'
                                 maxLength={1}
