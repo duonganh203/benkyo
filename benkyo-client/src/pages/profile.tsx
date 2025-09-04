@@ -120,8 +120,7 @@ export default function Profile() {
     const onPasswordSubmit = async (data: PasswordFormValues) => {
         const payload: ChangePasswordPayload = {
             oldPassword: data.currentPassword,
-            newPassword: data.newPassword,
-            confirmPassword: data.confirmPassword
+            newPassword: data.newPassword
         };
 
         changePassword(payload, {
@@ -129,12 +128,11 @@ export default function Profile() {
                 getToast('success', 'Password changed successfully!');
                 passwordForm.reset();
             },
-            onError: (error) => {
+            onError: (error: any) => {
                 getToast('error', error.message || 'Failed to change password');
             }
         });
     };
-
     const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
