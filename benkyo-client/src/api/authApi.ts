@@ -33,7 +33,7 @@ export const resetPassword = async (payload: ResetPasswordPayload) => {
     return data;
 };
 
-export const verifyOtp = async (payload: { email: string; otp: string }) => {
+export const verifyOtp = async (payload: VerifyOtpPayload) => {
     const { data } = await api.post('auth/verifyOtp', payload);
     return data;
 };
