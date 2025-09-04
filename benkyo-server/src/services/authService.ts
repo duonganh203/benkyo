@@ -3,10 +3,17 @@ import { compare, hash } from 'bcrypt';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ErrorCode } from '~/exceptions/root';
 import { User } from '~/schemas';
-import { loginValidation, registerValidation } from '~/validations/authValidation';
+import {
+    loginValidation,
+    registerValidation,
+    forgotPasswordValidation,
+    resetPasswordValidation
+} from '~/validations/authValidation';
 import { generateRefreshToken, generateToken } from '~/utils/generateJwt';
 import * as jwt from 'jsonwebtoken';
 import { UnauthorizedException } from '~/exceptions/unauthorized';
+import { sendOTPEmail } from '~/utils//mailService';
+import { generateOTP, verifyOTP } from './otpService';
 
 export const registerService = async (userData: z.infer<typeof registerValidation>) => {
     const { name, email, password } = userData;
@@ -48,4 +55,35 @@ export const refreshTokenService = async (refreshToken: string) => {
     const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!);
     const newToken = generateToken((payload as any).id);
     return newToken;
+};
+
+export const forgotPasswordService = async (email: string) => {
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) throw new Error('User not found!');
+
+    const otp = await generateOTP(user.email);
+    await sendOTPEmail(user.email, otp);
+
+    return { message: 'OTP has been sent to your email!' };
+};
+
+export const verifyOtpService = async (email: string, otp: string) => {
+    await verifyOTP(email, otp);
+    return { message: 'OTP verified successfully!' };
+};
+
+export const resetPasswordService = async (email: string, newPassword: string) => {
+    if (!email || !newPassword) {
+        return { success: false, message: 'Missing required fields' };
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+        throw new BadRequestsException('User not found', ErrorCode.NOT_FOUND);
+    }
+
+    user.password = await hash(newPassword, 10);
+    await user.save();
+
+    return { message: 'Password reset successfully!' };
 };

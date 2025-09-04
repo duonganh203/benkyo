@@ -2,8 +2,20 @@ import 'dotenv/config';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
-import { loginService, refreshTokenService, registerService } from '~/services/authService';
-import { loginValidation, registerValidation } from '~/validations/authValidation';
+import {
+    loginService,
+    refreshTokenService,
+    registerService,
+    forgotPasswordService,
+    resetPasswordService,
+    verifyOtpService
+} from '~/services/authService';
+import {
+    loginValidation,
+    registerValidation,
+    forgotPasswordValidation,
+    resetPasswordValidation
+} from '~/validations/authValidation';
 import { generateRefreshToken, generateToken } from '~/utils/generateJwt';
 
 export const register = async (req: Request, res: Response) => {
@@ -79,4 +91,21 @@ export const facebookCallback = (req: Request, res: Response) => {
             );
         }
     )(req, res);
+};
+export const forgotPassword = async (req: Request, res: Response) => {
+    const { email } = forgotPasswordValidation.parse(req.body);
+    const result = await forgotPasswordService(email);
+    res.status(StatusCodes.OK).json(result);
+};
+
+export const verifyOtp = async (req: Request, res: Response) => {
+    const { email, otp } = req.body;
+    const result = await verifyOtpService(email, otp);
+    res.status(StatusCodes.OK).json(result);
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+    const { email, newPassword } = resetPasswordValidation.parse(req.body);
+    const result = await resetPasswordService(email, newPassword);
+    res.json(result);
 };

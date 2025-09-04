@@ -7,7 +7,10 @@ import {
     login,
     me,
     refreshToken,
-    register
+    register,
+    forgotPassword,
+    resetPassword,
+    verifyOtp
 } from '~/controllers/authController';
 import { errorHandler } from '~/errorHandler';
 import authMiddleware from '~/middlewares/authMiddleware';
@@ -22,4 +25,7 @@ authRoutes.get('/google', errorHandler(googleLogin));
 authRoutes.get('/google/callback', errorHandler(googleCallback));
 authRoutes.get('/facebook', errorHandler(facebookLogin));
 authRoutes.get('/facebook/callback', errorHandler(facebookCallback));
+authRoutes.post('/forgotPassword', errorHandler(forgotPassword));
+authRoutes.post('/resetPassword', errorHandler(resetPassword));
+authRoutes.post('/verifyOtp', errorHandler(verifyOtp));
 export default authRoutes;
