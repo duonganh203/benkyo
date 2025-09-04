@@ -10,6 +10,7 @@ interface OtpModalProps {
     isOpen: boolean;
     onClose: () => void;
     email: string;
+    onVerifySuccess: () => void;
 }
 
 export function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
