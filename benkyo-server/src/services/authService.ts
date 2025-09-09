@@ -104,6 +104,14 @@ export const changePasswordService = async (userId: string, data: z.infer<typeof
             ErrorCode.INVALID_CREDENTIALS
         );
     }
+    const isSameAsOld = await compare(newPassword, user.password);
+    if (isSameAsOld) {
+        throw new BadRequestsException(
+            'New password cannot be the same as the old password!',
+            ErrorCode.INVALID_CREDENTIALS
+        );
+    }
+
     const hashedPassword = await hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
