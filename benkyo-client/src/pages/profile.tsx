@@ -120,7 +120,8 @@ export default function Profile() {
     const onPasswordSubmit = async (data: PasswordFormValues) => {
         const payload: ChangePasswordPayload = {
             oldPassword: data.currentPassword,
-            newPassword: data.newPassword
+            newPassword: data.newPassword,
+            confirmPassword: data.confirmPassword
         };
 
         changePassword(payload, {

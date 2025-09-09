@@ -33,6 +33,7 @@ export interface RegisterPayload extends LoginPayload {
 export interface ChangePasswordPayload {
     oldPassword: string;
     newPassword: string;
+    confirmPassword: string;
 }
 export interface ForgotPasswordPayload {
     email: string;
