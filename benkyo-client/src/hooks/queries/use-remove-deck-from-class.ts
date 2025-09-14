@@ -13,6 +13,7 @@ const useRemoveDeckFromClass = () => {
             getToast('success', data.message || 'Deck removed from class');
             queryClient.invalidateQueries({ queryKey: ['classDecks', variables.classId] });
             queryClient.invalidateQueries({ queryKey: ['class', variables.classId] });
+            queryClient.invalidateQueries({ queryKey: ['deckClass', variables.classId] });
         },
         onError: (error) => {
             getToast('error', error?.message || 'Failed to remove deck');
