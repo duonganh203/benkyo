@@ -7,7 +7,13 @@ export const classValidation = z.object({
         .optional(),
     name: z.string().min(1, 'Class name is required'),
     description: z.string().min(1, 'Description is required'),
-    bannerUrl: z.string().url({ message: 'Invalid image URL' }).min(1, 'Banner is required'),
+    bannerUrl: z.preprocess(
+        (val) => {
+            if (typeof val === 'string' && val.trim() === '') return undefined;
+            return val;
+        },
+        z.string().url({ message: 'Invalid image URL' }).optional()
+    ),
     owner: z
         .string()
         .regex(/^[a-f\d]{24}$/i, 'Invalid owner ID')
