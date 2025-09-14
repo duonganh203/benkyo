@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
@@ -1371,7 +1370,7 @@ export const getClassDecksService = async (classId: string, userId: Types.Object
 
     const classData = await Class.findById(classId).populate({
         path: 'decks.deck',
-        select: '_id name description'
+        select: '_id name description cardCount'
     });
 
     if (!classData) {
