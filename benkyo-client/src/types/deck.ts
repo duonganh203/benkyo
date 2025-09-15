@@ -30,6 +30,7 @@ export interface DeckInterface {
     createdAt: string;
     owner: Owner;
     isPublic: boolean;
+    publicStatus?: number;
 }
 
 interface Owner {
