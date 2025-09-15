@@ -39,9 +39,15 @@ const ClassGrid = ({ title, items, loading, onLoadMore, hasMore, variant }: Clas
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
                     {items.map((classItem, i) => (
                         <div key={classItem._id} className='pl-4'>
-                            <Link to={`/class/${classItem._id}`} className='cursor-pointer block'>
-                                <ClassCard classItem={classItem} index={i} variant={variant} />
-                            </Link>
+                            {variant === 'my-class' ? (
+                                <Link to={`/class/${classItem._id}`} className='cursor-pointer block'>
+                                    <ClassCard classItem={classItem} index={i} variant={variant} />
+                                </Link>
+                            ) : (
+                                <div>
+                                    <ClassCard classItem={classItem} index={i} variant={variant} />
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

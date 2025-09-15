@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, School, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import useGetMyClass from '@/hooks/queries/use-get-my-class';
@@ -64,13 +65,15 @@ const ClassList = () => {
                             />
                         </div>
                         {user?.isPro && (
-                            <Link
-                                to='/class/create'
-                                className='inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm rounded-md hover:bg-primary/90 transition'
-                            >
-                                <Plus className='w-4 h-4' />
-                                Create Class
-                            </Link>
+                            <Button asChild>
+                                <Link
+                                    to='/class/create'
+                                    className='inline-flex items-center gap-2 px-4 py-2 text-sm rounded-md'
+                                >
+                                    <Plus className='w-4 h-4' />
+                                    Create Class
+                                </Link>
+                            </Button>
                         )}
                     </div>
                 </div>
