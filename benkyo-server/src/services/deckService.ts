@@ -200,6 +200,10 @@ export const getAllRequestedPublicDecksService = async () => {
     return decks;
 };
 
+export const getUserPublicDecksService = async (userId: string) => {
+    return await Deck.find({ owner: userId, publicStatus: { $in: [1, 2, 3] } }).populate('owner', 'name avatar');
+};
+
 export const getRequestPulbicDeckService = async (deckId: string) => {
     const deck = await Deck.findById(deckId).populate('owner').populate('reviewedBy').lean();
 

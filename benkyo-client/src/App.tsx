@@ -37,6 +37,7 @@ import ClassUpdate from './pages/class-update';
 import ClassJoin from './pages/class-join';
 import ClassCreate from './pages/class-create';
 import ClassList from './pages/class-list';
+import Requests from './pages/requests';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -71,6 +72,7 @@ const App = () => {
                             <Route path='/flashcards/:id/details' element={<CardDetails />} />
                             <Route path='/profile' element={<Profile />} />
                             <Route path='/my-decks' element={<Library />} />
+                            <Route path='/my-decks/requests' element={<Requests />} />
                             <Route path='/study/:id' element={<StudyCard />} />
                             <Route path='do-quiz/:quizId' element={<Quiz />} />
                             <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />

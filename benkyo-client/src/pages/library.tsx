@@ -8,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import Deck from '@/components/deck';
+import { useNavigate } from 'react-router-dom';
 
 const Library = () => {
     const [search, setSearch] = useState('');
@@ -18,6 +19,8 @@ const Library = () => {
             deck.name.toLowerCase().includes(search.toLowerCase()) ||
             deck.description?.toLowerCase().includes(search.toLowerCase())
     );
+
+    const navigate = useNavigate();
 
     return (
         <div className='max-w-7xl mx-auto py-8 px-4'>
@@ -37,6 +40,10 @@ const Library = () => {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
+                    <Button onClick={() => navigate('requests')}>
+                        <Book className='h-4 w-4 mr-2' />
+                        Requests
+                    </Button>
                     <Button onClick={open}>
                         <Plus className='h-4 w-4 mr-2' />
                         Create Deck
