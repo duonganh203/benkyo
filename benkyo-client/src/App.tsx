@@ -37,6 +37,7 @@ import ClassUpdate from './pages/class-update';
 import ClassJoin from './pages/class-join';
 import ClassCreate from './pages/class-create';
 import ClassList from './pages/class-list';
+
 import Requests from './pages/requests';
 
 const queryClient = new QueryClient({
