@@ -100,7 +100,15 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                             render={({ field }) => (
                                 <FormItem className='flex flex-col'>
                                     <div className='grid gap-2'>
-                                        <FormLabel>Password</FormLabel>
+                                        <div className='flex items-center justify-between'>
+                                            <FormLabel>Password</FormLabel>
+                                            <Link
+                                                to='/forgotPassword'
+                                                className='text-sm text-muted-foreground underline underline-offset-4 hover:text-primary'
+                                            >
+                                                Forgot password?
+                                            </Link>
+                                        </div>
                                         <FormControl>
                                             <Input
                                                 id='password'
