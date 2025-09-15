@@ -37,6 +37,8 @@ import ClassUpdate from './pages/class-update';
 import ClassJoin from './pages/class-join';
 import ClassCreate from './pages/class-create';
 import ClassList from './pages/class-list';
+import { ForgotPasswordForm } from './components/forms/forgot-password-form';
+import { ResetPasswordForm } from './components/forms/reset-password-form';
 
 import Requests from './pages/requests';
 
@@ -61,6 +63,8 @@ const App = () => {
                             <Route path='/login' element={<LoginForm />} />
                             <Route path='/register' element={<RegisterForm />} />
                             <Route path='/passport' element={<LoginPassport />} />
+                            <Route path='/forgotPassword' element={<ForgotPasswordForm />} />
+                            <Route path='/resetPassword' element={<ResetPasswordForm />} />
                         </Route>
                         <Route element={<GlobalLayout />}>
                             <Route path='/' element={<Marketing />} />
