@@ -3,7 +3,7 @@ import type { ClassNotification } from './notification';
 export type ClassUserRequestDto = {
     name: string;
     description: string;
-    bannerUrl: string;
+    bannerUrl?: string;
     visibility: 'public' | 'private';
     requiredApprovalToJoin: boolean;
     message?: string;
@@ -14,7 +14,7 @@ export type ClassUserResponseDto = {
     name: string;
     description: string;
     owner: string;
-    bannerUrl: string;
+    bannerUrl?: string;
     visibility: 'public' | 'private';
     requiredApprovalToJoin: boolean;
 };
@@ -24,7 +24,7 @@ export type ClassListItemUserResponseDto = {
     name: string;
     description: string;
     owner: string;
-    bannerUrl: string;
+    bannerUrl?: string;
     progress: number;
     requiredApprovalToJoin: boolean;
     createdAt: Date;
@@ -246,7 +246,7 @@ export type GetClassUserByIdResponseDto = {
     createdAt: Date;
     userClassStates: ClassUserStatePopulated[];
     completionRate: number;
-    bannerUrl: string;
+    bannerUrl?: string;
     visited: {
         history: {
             userId: string;

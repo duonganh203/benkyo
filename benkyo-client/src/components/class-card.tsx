@@ -40,7 +40,9 @@ const ClassCard = ({
         >
             <div
                 className='relative h-32 bg-cover bg-center'
-                style={{ backgroundImage: `url(${classItem.bannerUrl})` }}
+                style={{
+                    backgroundImage: `url(${classItem.bannerUrl || '/default-class-banner.svg'})`
+                }}
             >
                 <div className='absolute bottom-0 left-0 right-0 px-4 py-2 bg-gradient-to-t from-black/60 to-transparent'>
                     <h3 className='text-white text-base font-bold truncate'>{classItem.name}</h3>

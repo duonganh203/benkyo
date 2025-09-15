@@ -104,7 +104,7 @@ export const ClassOverview = ({ classItem, classId }: ClassOverviewProps) => (
             <div
                 className='absolute inset-0 bg-cover bg-center'
                 style={{
-                    backgroundImage: classItem.bannerUrl ? `url(${classItem.bannerUrl})` : 'none',
+                    backgroundImage: `url(${classItem.bannerUrl || '/default-class-banner.svg'})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center'
                 }}

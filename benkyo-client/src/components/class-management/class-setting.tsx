@@ -20,7 +20,7 @@ import ConfirmDeleteClassModal from '@/components/modals/confirm-delete-class-mo
 import { useState } from 'react';
 
 type ClassUpdateForm = Omit<ClassUserRequestDto, 'bannerUrl'> & {
-    bannerUrl: string;
+    bannerUrl?: string;
 };
 
 export const ClassSetting = () => {

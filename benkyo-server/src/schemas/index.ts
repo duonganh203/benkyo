@@ -251,7 +251,7 @@ const ClassSchema = new Schema(
     {
         name: { type: String, required: true },
         description: { type: String, required: true },
-        bannerUrl: { type: String, required: true },
+        bannerUrl: { type: String, required: false },
         owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         visibility: { type: String, enum: ['public', 'private'], default: 'private' },
         requiredApprovalToJoin: { type: Boolean, default: false },

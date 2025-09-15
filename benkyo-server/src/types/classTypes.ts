@@ -59,7 +59,7 @@ export type ClassType = {
     _id: string;
     name: string;
     description: string;
-    bannerUrl: string;
+    bannerUrl?: string;
     owner: ClassOwnerType;
     visibility: 'public' | 'private';
     requiredApprovalToJoin: boolean;
@@ -101,7 +101,7 @@ export type ClassUserType = {
     createdAt: Date;
     userClassStates: ClassUserStateDataType[];
     completionRate: number;
-    bannerUrl: string;
+    bannerUrl?: string;
     visited: {
         history: string[];
     };
