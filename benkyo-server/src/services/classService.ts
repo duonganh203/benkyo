@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
@@ -18,6 +17,7 @@ import {
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ConflictException } from '~/exceptions/conflictException';
+import { Types } from 'mongoose';
 
 export const classCreateService = async (userId: string, data: ClassStateType) => {
     const user = await User.findById(userId);
@@ -1371,7 +1371,7 @@ export const getClassDecksService = async (classId: string, userId: Types.Object
 
     const classData = await Class.findById(classId).populate({
         path: 'decks.deck',
-        select: '_id name description'
+        select: '_id name description cardCount'
     });
 
     if (!classData) {
