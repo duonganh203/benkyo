@@ -17,6 +17,7 @@ import {
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ConflictException } from '~/exceptions/conflictException';
+import { Types } from 'mongoose';
 
 export const classCreateService = async (userId: string, data: ClassStateType) => {
     const user = await User.findById(userId);
