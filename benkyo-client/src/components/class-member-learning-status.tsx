@@ -8,6 +8,35 @@ import useClassManagementStore from '@/hooks/stores/use-class-management-store';
 import { useNavigate } from 'react-router-dom';
 import { getToast } from '@/utils/getToast';
 
+type Status = 'completed' | 'in_progress' | 'not_started';
+
+interface DeckStatus {
+    deckId: string;
+    deckName: string;
+    status: Status;
+    progress: number;
+    completedCards: number;
+    totalCards: number;
+    lastStudyDate?: string | null;
+    endTime?: string | null;
+    isOverdue?: boolean;
+    hoursUntilDeadline?: number;
+}
+
+interface MemberStatus {
+    userId: string;
+    userName: string;
+    userEmail?: string;
+    userAvatar?: string | null;
+    overallProgress: number;
+    completedDecks: number;
+    inProgressDecks: number;
+    notStartedDecks: number;
+    studyStreak: number;
+    deckStatuses: DeckStatus[];
+    lastStudyDate?: string | null;
+}
+
 const getStatusColor = (status: 'completed' | 'in_progress' | 'not_started') => {
     switch (status) {
         case 'completed':
@@ -28,6 +57,13 @@ const getStatusIcon = (status: 'completed' | 'in_progress' | 'not_started') => {
         case 'not_started':
             return <BookOpen className='w-4 h-4' />;
     }
+};
+
+const formatStudyDate = (dateString?: string | null) => {
+    if (!dateString) return 'Not studied';
+    const t = new Date(dateString).getTime();
+    if (Number.isNaN(t) || t === 0) return 'Not studied';
+    return new Date(dateString).toLocaleDateString();
 };
 
 export const ClassMemberLearningStatus = () => {
@@ -51,7 +87,17 @@ export const ClassMemberLearningStatus = () => {
         );
     }
 
-    const { data: memberStatuses, isLoading, isError, error } = useGetClassMemberLearningStatus(classData._id);
+    const {
+        data: memberStatuses,
+        isLoading,
+        isError,
+        error
+    } = useGetClassMemberLearningStatus(classData._id) as {
+        data?: MemberStatus[];
+        isLoading: boolean;
+        isError: boolean;
+        error?: Error | null;
+    };
 
     if (!user) {
         navigate('/login');
@@ -110,7 +156,7 @@ export const ClassMemberLearningStatus = () => {
             </CardHeader>
             <CardContent>
                 <div className='space-y-6'>
-                    {memberStatuses.map((member) => (
+                    {memberStatuses!.map((member: MemberStatus) => (
                         <div key={member.userId} className='border rounded-lg p-4'>
                             <div className='flex items-center gap-3 mb-4'>
                                 <div className='w-10 h-10 rounded-full overflow-hidden'>
@@ -159,7 +205,7 @@ export const ClassMemberLearningStatus = () => {
 
                             <div className='space-y-3'>
                                 <h4 className='font-medium text-sm text-muted-foreground'>Deck Progress</h4>
-                                {member.deckStatuses.map((deck) => (
+                                {member.deckStatuses.map((deck: DeckStatus) => (
                                     <div key={deck.deckId} className='border rounded-lg p-3'>
                                         <div className='flex items-center justify-between mb-2'>
                                             <div className='flex items-center gap-2'>
@@ -187,10 +233,7 @@ export const ClassMemberLearningStatus = () => {
                                         <div className='flex items-center justify-between text-xs text-muted-foreground'>
                                             <div className='flex items-center gap-4'>
                                                 {deck.lastStudyDate && (
-                                                    <span>
-                                                        Last studied:{' '}
-                                                        {new Date(deck.lastStudyDate).toLocaleDateString()}
-                                                    </span>
+                                                    <span>Last studied: {formatStudyDate(deck.lastStudyDate)}</span>
                                                 )}
                                                 {deck.endTime && (
                                                     <span>Due: {new Date(deck.endTime).toLocaleDateString()}</span>
@@ -220,7 +263,7 @@ export const ClassMemberLearningStatus = () => {
                                 <div className='mt-4 pt-4 border-t'>
                                     <div className='flex items-center gap-2 text-sm text-muted-foreground'>
                                         <TrendingUp className='w-4 h-4' />
-                                        <span>Last studied: {new Date(member.lastStudyDate).toLocaleDateString()}</span>
+                                        <span>Last studied: {formatStudyDate(member.lastStudyDate)}</span>
                                     </div>
                                 </div>
                             )}
