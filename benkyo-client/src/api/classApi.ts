@@ -231,3 +231,8 @@ export const getClassVisitedApi = async (classId: string) => {
     const response = await api.get(`/class/${classId}/visited`);
     return response.data as ClassVisitedResponse;
 };
+
+export const leaveClassApi = async (classId: string) => {
+    const response = await api.post(`/class/${classId}/leave`);
+    return response.data as { message: string };
+};
