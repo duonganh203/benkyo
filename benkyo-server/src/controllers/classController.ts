@@ -329,3 +329,12 @@ export const getClassVisited = async (req: Request, res: Response) => {
 
     res.json(visited);
 };
+
+export const leaveClass = async (req: Request, res: Response) => {
+    const classId = req.params.classId;
+    const userId = req.user._id;
+
+    const result = await classService.leaveClassService(classId, userId);
+
+    res.json(result);
+};

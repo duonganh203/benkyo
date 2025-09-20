@@ -1460,3 +1460,28 @@ export const getClassManagementService = async (classId: string, userId: Types.O
         overdueMemberCount
     };
 };
+
+export const leaveClassService = async (classId: string, userId: Types.ObjectId) => {
+    const cls = await Class.findById(classId).select('owner users');
+    if (!cls) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    if (cls.owner.equals(userId))
+        throw new ForbiddenRequestsException('Owner cannot leave their own class', ErrorCode.FORBIDDEN);
+    if (!(cls.users ?? []).some((u) => u.equals(userId))) {
+        throw new NotFoundException('You are not a member of this class', ErrorCode.NOT_FOUND);
+    }
+
+    await Class.updateOne(
+        { _id: classId },
+        {
+            $pull: {
+                users: userId,
+                joinRequests: { user: userId },
+                invitedUsers: { user: userId }
+            }
+        }
+    );
+
+    await UserClassState.deleteMany({ class: classId, user: userId });
+
+    return { message: 'Left class successfully' };
+};

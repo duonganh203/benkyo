@@ -14,8 +14,9 @@ import StatsGrid from '@/components/stats-grid';
 import ClassStudyDialog from '@/components/modals/ClassStudyDialog';
 import ClassResumeSessionModal from '@/components/modals/ClassResumeSessionModal';
 import useStartClassDeckSession from '@/hooks/queries/use-start-class-deck-session';
-import { getToast } from '@/utils/getToast';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
+import useLeaveClass from '@/hooks/queries/use-leave-class';
+import ConfirmLeaveClassModal from '@/components/modals/confirm-leave-class-modal';
 
 function ClassDetailUser() {
     const { user } = useAuthStore();
@@ -29,9 +30,12 @@ function ClassDetailUser() {
     const [showResumeDialog, setShowResumeDialog] = useState(false);
     const [pendingDeck, setPendingDeck] = useState<DeckInClass | null>(null);
     const [pendingSessionData, setPendingSessionData] = useState<ClassStudySession | null>(null);
+    const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+    const [leaving, setLeaving] = useState(false);
 
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
     const { mutateAsync: startSession } = useStartClassDeckSession();
+    const { mutateAsync: leaveCLass } = useLeaveClass();
 
     if (!classId) {
         return (
@@ -57,7 +61,7 @@ function ClassDetailUser() {
         );
     }
 
-    const isOwner = user?._id === classData.owner._id;
+    const role = user?._id === classData.owner._id ? 'owner' : 'member';
     const totalLearnersCount = classData.users?.length || 0;
 
     const allDecksRaw = classData.decks || [];
@@ -135,22 +139,18 @@ function ClassDetailUser() {
 
     const handleStartNewSession = async () => {
         if (pendingDeck) {
-            try {
-                const res2 = await startSession({
-                    classId: classId!,
-                    deckId: pendingDeck._id,
-                    forceNew: true
-                });
-                setClassSession(res2.session);
-                setSessionCards(res2.cards || []);
-                setIsResumedSession(false);
-                setStudyingDeck(pendingDeck);
-                setShowResumeDialog(false);
-                setPendingDeck(null);
-                setPendingSessionData(null);
-            } catch {
-                getToast('error', 'Failed to start new session');
-            }
+            const res2 = await startSession({
+                classId: classId!,
+                deckId: pendingDeck._id,
+                forceNew: true
+            });
+            setClassSession(res2.session);
+            setSessionCards(res2.cards || []);
+            setIsResumedSession(false);
+            setStudyingDeck(pendingDeck);
+            setShowResumeDialog(false);
+            setPendingDeck(null);
+            setPendingSessionData(null);
         }
     };
 
@@ -159,6 +159,14 @@ function ClassDetailUser() {
         setPendingDeck(null);
         setPendingSessionData(null);
         setLoadingSession(false);
+    };
+
+    const confirmLeaveClass = async () => {
+        if (!classId) return;
+        setLeaving(true);
+        await leaveCLass({ classId });
+        setLeaving(false);
+        setShowLeaveConfirm(false);
     };
 
     return (
@@ -184,14 +192,24 @@ function ClassDetailUser() {
 
                 <div className='mb-4 flex justify-between items-center'>
                     <h2 className='text-2xl font-bold'>Class Status</h2>
-                    {isOwner && (
+                    {role === 'owner' ? (
                         <Link to={`/class/${classData._id}/management`}>
                             <Button variant='default' size='default' className='flex items-center gap-2'>
                                 <Settings2 className='h-4 w-4' />
                                 Manage Class
                             </Button>
                         </Link>
-                    )}
+                    ) : role === 'member' ? (
+                        <Button
+                            variant='destructive'
+                            size='default'
+                            className='flex items-center gap-2'
+                            onClick={() => setShowLeaveConfirm(true)}
+                            disabled={leaving}
+                        >
+                            {leaving ? 'Processing...' : 'Leave Class'}
+                        </Button>
+                    ) : null}
                 </div>
 
                 <div className='mb-8'>
@@ -279,6 +297,14 @@ function ClassDetailUser() {
                 onContinue={handleContinueSession}
                 onStartNew={handleStartNewSession}
                 pendingSessionData={pendingSessionData}
+            />
+
+            <ConfirmLeaveClassModal
+                open={showLeaveConfirm}
+                onClose={() => setShowLeaveConfirm(false)}
+                onConfirm={confirmLeaveClass}
+                isSubmitting={leaving}
+                classTitle={classData.name}
             />
         </div>
     );

@@ -39,7 +39,7 @@ classRoutes.post('/add-deck', errorHandler(classController.addDeckToClass));
 classRoutes.post('/:classId/request', errorHandler(classController.classRequestJoin));
 
 classRoutes.put('/:classId/update', errorHandler(classController.classUpdate));
-
+classRoutes.post('/:classId/leave', errorHandler(classController.leaveClass));
 classRoutes.delete('/:classId/delete', errorHandler(classController.classDelete));
 classRoutes.delete('/remove-user', errorHandler(classController.removeUserFromClass));
 classRoutes.delete('/remove-deck', errorHandler(classController.removeDeckFromClass));
