@@ -72,6 +72,23 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
         getToast('info', 'QR Code regenerated. Scan within 30 minutes to complete payment');
     };
 
+    const handleCopyQRImage = async () => {
+        try {
+            if (!qrCode) return;
+            const res = await fetch(qrCode, { mode: 'cors' });
+            const blob = await res.blob();
+            await navigator.clipboard.write([new (window as any).ClipboardItem({ [blob.type]: blob })]);
+            getToast('success', 'QR image copied successfully');
+        } catch {
+            try {
+                await navigator.clipboard.writeText(qrCode);
+                getToast('success', 'QR link copied to clipboard');
+            } catch {
+                getToast('error', 'Failed to copy QR. Please try again');
+            }
+        }
+    };
+
     const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
     const seconds = String(timeLeft % 60).padStart(2, '0');
 
@@ -93,7 +110,15 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
                             <Skeleton className='w-[180px] h-[180px] rounded-md' />
                         ) : !isExpired && qrCode ? (
                             <div className='qr-container relative'>
-                                <img src={qrCode} alt='Payment QR Code' width={250} height={250} />
+                                <img
+                                    src={qrCode}
+                                    alt='Payment QR Code'
+                                    width={250}
+                                    height={250}
+                                    onClick={handleCopyQRImage}
+                                    className='cursor-pointer'
+                                    title='Click to copy QR image'
+                                />
                                 <div className='corner-border top-left'></div>
                                 <div className='corner-border top-right'></div>
                                 <div className='corner-border bottom-left'></div>
@@ -108,6 +133,12 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
                 </div>
 
                 <span className='text-xl font-mono font-bold'>{`${minutes}:${seconds}`}</span>
+
+                {!isLoading && !isExpired && qrCode && (
+                    <Button onClick={handleCopyQRImage} className='mt-2' size='sm' variant='outline'>
+                        Copy QR
+                    </Button>
+                )}
 
                 {isExpired && (
                     <Button onClick={handleGenerateQRCode} className='mt-2' size='sm' variant='outline'>
