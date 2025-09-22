@@ -1,30 +1,37 @@
-const otpStore = new Map<string, string>();
+const otpStore = new Map<
+  string,
+  { otp: string; mode: 'register' | 'forgotPassword'; tempUser?: any }
+>();
 
-export const generateOTP = async (email: string) => {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+export const generateOTP = async (
+  email: string,
+  mode: 'register' | 'forgotPassword',
+  tempUser?: any
+) => {
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    otpStore.set(email, otp);
+  otpStore.set(email, { otp, mode, tempUser });
 
-    setTimeout(
-        () => {
-            otpStore.delete(email);
-        },
-        5 * 60 * 1000
-    );
+  setTimeout(() => {
+    otpStore.delete(email);
+  }, 5 * 60 * 1000);
 
-    return otp;
+  return otp;
 };
 
 export const verifyOTP = async (email: string, otp: string) => {
-    const storedOtp = otpStore.get(email);
+  const data = otpStore.get(email);
 
-    if (!storedOtp) {
-        throw new Error('OTP not found or expired');
-    }
+  if (!data) {
+    throw new Error('OTP not found or expired');
+  }
 
-    if (storedOtp !== otp) {
-        throw new Error('Invalid OTP');
-    }
+  if (data.otp !== otp) {
+    throw new Error('Invalid OTP');
+  }
 
-    otpStore.delete(email);
+  const { mode, tempUser } = data;
+  otpStore.delete(email);
+
+  return { mode, tempUser };
 };
