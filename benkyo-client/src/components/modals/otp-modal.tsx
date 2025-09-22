@@ -6,11 +6,11 @@ import { useVerifyOtp } from '@/hooks/queries/use-forget-password';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 interface OtpModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  email: string;
-  onVerifySuccess: () => void;
-  mode?: 'register' | 'forgetPassword'; 
+    isOpen: boolean;
+    onClose: () => void;
+    email: string;
+    onVerifySuccess: () => void;
+    mode?: 'register' | 'forgetPassword';
 }
 
 export function OtpModal({ isOpen, onClose, email, onVerifySuccess, mode = 'forgetPassword' }: OtpModalProps) {
@@ -99,9 +99,7 @@ export function OtpModal({ isOpen, onClose, email, onVerifySuccess, mode = 'forg
             <DialogContent className='sm:max-w-md'>
                 <DialogHeader>
                     <DialogTitle>Enter verification code</DialogTitle>
-                    <DialogDescription>
-                        We&apos;ve sent a 6-digit verification code to {email}
-                    </DialogDescription>
+                    <DialogDescription>We&apos;ve sent a 6-digit verification code to {email}</DialogDescription>
                 </DialogHeader>
 
                 <div className='flex flex-col gap-4'>
