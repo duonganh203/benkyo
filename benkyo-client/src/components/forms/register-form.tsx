@@ -20,16 +20,16 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
     const { mutate: register, isPending } = useRegister();
     const [error, setError] = useState<AxiosError<ApiError>>();
     const [isOtpOpen, setIsOtpOpen] = useState(false);
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState('');
     const navigate = useNavigate();
 
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: ""
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: ''
         }
     });
 
@@ -44,10 +44,10 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
             onSuccess: () => {
                 setEmail(data.email);
                 setIsOtpOpen(true);
-                getToast("success", "OTP has been sent to your email!");
+                getToast('success', 'OTP has been sent to your email!');
             },
             onError: (error) => {
-                getToast("error", error.message || "Something went wrong!!!");
+                getToast('error', error.message || 'Something went wrong!!!');
                 setError(error);
             }
         });
@@ -146,9 +146,9 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
                                 </FormItem>
                             )}
                         />
-                         <Button type="submit" className="w-full" disabled={isPending}>
-                        Create Account
-                    </Button>
+                        <Button type='submit' className='w-full' disabled={isPending}>
+                            Create Account
+                        </Button>
                         <div className='relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border'>
                             <span className='relative z-10 bg-background px-2 text-muted-foreground'>Or</span>
                         </div>
@@ -179,10 +179,10 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
                 onClose={() => setIsOtpOpen(false)}
                 email={email}
                 onVerifySuccess={() => {
-                    getToast("success", "Account created successfully!");
-                    navigate("/login");
+                    getToast('success', 'Account created successfully!');
+                    navigate('/login');
                 }}
-                mode="register"
+                mode='register'
             />
         </div>
     );
