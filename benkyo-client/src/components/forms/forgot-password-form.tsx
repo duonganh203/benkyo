@@ -112,6 +112,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                 onClose={() => setShowOtpModal(false)}
                 email={submittedEmail}
                 onVerifySuccess={handleOtpVerifySuccess}
+                mode='forgetPassword'
             />
         </>
     );

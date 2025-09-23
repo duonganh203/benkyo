@@ -66,7 +66,7 @@ export function OtpModal({ isOpen, onClose, email, onVerifySuccess, mode = 'forg
         }
 
         verifyOtp(
-            { otp: otpCode, email },
+            { otp: otpCode, email, mode },
             {
                 onSuccess: () => {
                     toast.success('OTP verified successfully!');
