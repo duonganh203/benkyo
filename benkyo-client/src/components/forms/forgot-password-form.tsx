@@ -96,7 +96,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                             </Button>
                             <div className='text-center'>
                                 <Link
-                                    to='/'
+                                    to='/login'
                                     className='text-sm text-muted-foreground underline underline-offset-4 hover:text-primary'
                                 >
                                     Back to login
@@ -112,6 +112,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                 onClose={() => setShowOtpModal(false)}
                 email={submittedEmail}
                 onVerifySuccess={handleOtpVerifySuccess}
+                mode='forgetPassword'
             />
         </>
     );

@@ -5,15 +5,15 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useVerifyOtp } from '@/hooks/queries/use-forget-password';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-
 interface OtpModalProps {
     isOpen: boolean;
     onClose: () => void;
     email: string;
     onVerifySuccess: () => void;
+    mode?: 'register' | 'forgetPassword';
 }
 
-export function OtpModal({ isOpen, onClose, email, onVerifySuccess }: OtpModalProps) {
+export function OtpModal({ isOpen, onClose, email, onVerifySuccess, mode = 'forgetPassword' }: OtpModalProps) {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState('');
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -34,7 +34,6 @@ export function OtpModal({ isOpen, onClose, email, onVerifySuccess }: OtpModalPr
         }
     }, [isOpen]);
 
-    // Định nghĩa callback ref có kiểu rõ ràng, không trả về giá trị
     const setInputRef = useCallback(
         (index: number) => (el: HTMLInputElement | null) => {
             inputRefs.current[index] = el;
@@ -67,13 +66,18 @@ export function OtpModal({ isOpen, onClose, email, onVerifySuccess }: OtpModalPr
         }
 
         verifyOtp(
-            { otp: otpCode, email },
+            { otp: otpCode, email, mode },
             {
                 onSuccess: () => {
                     toast.success('OTP verified successfully!');
                     onClose();
                     onVerifySuccess();
-                    navigate('/resetPassword', { state: { email, otp: otpCode } });
+
+                    if (mode === 'forgetPassword') {
+                        navigate('/resetPassword', { state: { email, otp: otpCode } });
+                    } else if (mode === 'register') {
+                        navigate('/login');
+                    }
                 },
                 onError: (error: any) => {
                     const message = error.response?.data?.message || 'Invalid OTP code';
