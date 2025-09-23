@@ -50,7 +50,7 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentPropsW
             {
                 onSuccess: () => {
                     setIsSuccess(true);
-                    setTimeout(() => navigate('/'), 1500);
+                    navigate('/login');
                 },
                 onError: (error: any) => {
                     alert(error?.response?.data?.message || 'Failed to reset password.');
