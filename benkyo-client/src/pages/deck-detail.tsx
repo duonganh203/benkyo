@@ -41,7 +41,9 @@ import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-p
 import useMe from '@/hooks/queries/use-me';
 import FlashcardViewer from '@/components/flashcard-viewer';
 import { DeckFSRSSettingsForm } from '@/components/forms/deck-fsrs-settings-form';
-
+import { UpdateDeckModal } from '@/components/modals/update-deck-modal';
+import { useUpdateDeckModal } from '@/hooks/stores/use-update-deck-modal';
+import { DeckInterface, DeckDetails } from '@/types/deck';
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -53,6 +55,7 @@ const DeckDetail = () => {
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const { open } = useGenerateQuizModal((store) => store);
+    const updateDeckModal = useUpdateDeckModal();
 
     const publicStatus = [
         {
@@ -214,6 +217,20 @@ const DeckDetail = () => {
             }
         );
     };
+    const handleOpenUpdateModal = (deckData: DeckDetails) => {
+        const deckToUpdate: DeckInterface = {
+            _id: deckData._id,
+            name: deckData.name,
+            description: deckData.description || '',
+            cardCount: deckData.fsrsParams?.card_limit || 0,
+            updatedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            isPublic: deckData.publicStatus === 1,
+            owner: deckData.owner
+        };
+
+        updateDeckModal.open(deckToUpdate);
+    };
     const handleDuplicateDeck = async () => {
         try {
             await duplicateDeck({ deckId: id! });
@@ -315,7 +332,12 @@ const DeckDetail = () => {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align='end'>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleOpenUpdateModal(deckData);
+                                            }}
+                                        >
                                             <Edit className='mr-2 h-4 w-4' />
                                             <span>Edit Deck</span>
                                         </DropdownMenuItem>
@@ -698,6 +720,7 @@ const DeckDetail = () => {
                             </TabsContent>
                         )}
                     </Tabs>
+                    <UpdateDeckModal />
                 </div>
             )}
         </>
