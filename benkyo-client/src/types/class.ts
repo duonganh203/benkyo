@@ -351,6 +351,12 @@ export type NormalizedInviteNotification = ClassNotification & {
     priority: number;
 };
 
+export type NormalizedJoinRequestNotification = ClassNotification & {
+    notificationType: 'join_request';
+    sortTime: Date;
+    priority: number;
+};
+
 export type NormalizedOverdueNotification = OverdueSchedule & {
     notificationType: 'overdue';
     sortTime: Date;
@@ -365,6 +371,7 @@ export type NormalizedUpcomingNotification = UpcomingDeadline & {
 
 export type UnifiedNotification =
     | NormalizedInviteNotification
+    | NormalizedJoinRequestNotification
     | NormalizedOverdueNotification
     | NormalizedUpcomingNotification;
 
@@ -378,6 +385,7 @@ export type AllNotificationsResponse = {
     };
     summary: {
         totalInvites: number;
+        totalJoinRequests: number;
         totalOverdue: number;
         totalUpcoming: number;
         totalCritical: number;
@@ -416,7 +424,6 @@ export type ClassMemberProgressResponse = {
     message: string;
 };
 
-// New types for API responses - direct return without data wrapper
 export type ClassUsersResponse = ClassUser[];
 
 export type ClassJoinRequestsResponse = {
