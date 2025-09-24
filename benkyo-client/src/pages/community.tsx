@@ -4,19 +4,22 @@ import { DeckInterface } from '@/types/deck';
 import useGetPublicDecks from '@/hooks/queries/use-get-public-deck';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import Deck from '@/components/deck';
-
+const ITEMS_PER_PAGE = 16;
 const Community = () => {
     const [search, setSearch] = useState('');
     const { data: decks = [], isLoading } = useGetPublicDecks();
-
+    const [page, setPage] = useState(1);
     const filteredDecks = decks.filter(
         (deck: DeckInterface) =>
             deck.name.toLowerCase().includes(search.toLowerCase()) ||
             deck.description?.toLowerCase().includes(search.toLowerCase())
         // deck.owner?.email?.toLowerCase().includes(search.toLowerCase())
     );
+    const totalPages = Math.ceil(filteredDecks.length / ITEMS_PER_PAGE);
+    const paginatedDecks = filteredDecks.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
     return (
         <div className='max-w-7xl mx-auto py-8 px-4'>
             <div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8'>
@@ -57,11 +60,30 @@ const Community = () => {
                     </p>
                 </div>
             ) : (
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-                    {filteredDecks.map((deck: DeckInterface) => (
-                        <Deck key={deck._id} deck={deck} />
-                    ))}
-                </div>
+                <>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+                        {paginatedDecks.map((deck: DeckInterface) => (
+                            <Deck key={deck._id} deck={deck} />
+                        ))}
+                    </div>
+                    {totalPages > 1 && (
+                        <div className='flex justify-center items-center gap-2 mt-6'>
+                            <Button variant='outline' disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+                                Prev
+                            </Button>
+                            <span className='text-sm'>
+                                Page {page} of {totalPages}
+                            </span>
+                            <Button
+                                variant='outline'
+                                disabled={page === totalPages}
+                                onClick={() => setPage((p) => p + 1)}
+                            >
+                                Next
+                            </Button>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );
