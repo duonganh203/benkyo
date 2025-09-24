@@ -12,7 +12,7 @@ import {
     UserDeckState,
     Class
 } from '~/schemas';
-import { createDeckValidation } from '~/validations/deckValidation';
+import { createDeckValidation, updateDeckValidation } from '~/validations/deckValidation';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { BadRequestsException } from '~/exceptions/badRequests';
@@ -291,4 +291,28 @@ export const getDeckStatsService = async () => {
         createdThisMonth,
         growthPercentage
     };
+};
+export const updateDeckService = async (
+    userId: string,
+    deckId: string,
+    deckData: z.infer<typeof updateDeckValidation>
+) => {
+    const { name, description } = deckData;
+
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!deck.owner.equals(userId)) {
+        throw new ForbiddenRequestsException('You are not allowed to update this deck', ErrorCode.FORBIDDEN);
+    }
+
+    deck.name = name ?? deck.name;
+    deck.description = description ?? deck.description;
+
+    await deck.save();
+
+    const { _id: id } = deck.toObject();
+    return { id, name: deck.name, description: deck.description };
 };
