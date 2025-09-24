@@ -144,6 +144,23 @@ export type InviteNotificationType = {
     message: string;
 };
 
+export type JoinRequestNotificationType = {
+    notificationType: 'join_request';
+    sortTime: Date;
+    priority: number;
+    id: string;
+    classId: string;
+    className: string;
+    description: string;
+    type: 'join_request';
+    createdAt: Date;
+    message: string;
+    requestUserId: string;
+    requestUserName: string;
+    requestUserEmail: string;
+    requestUserAvatar?: string;
+};
+
 export type OverdueNotificationType = {
     notificationType: 'overdue';
     sortTime: Date;
