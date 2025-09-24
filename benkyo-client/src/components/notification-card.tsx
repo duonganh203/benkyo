@@ -5,16 +5,18 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { UnifiedNotification } from '@/types/class';
 
+type MembershipNotification = Extract<UnifiedNotification, { notificationType: 'invite' | 'join_request' }>;
+
 interface NotificationCardProps {
-    notification: UnifiedNotification;
+    notification: MembershipNotification;
     onAcceptInvite?: (classId: string, requestUserId?: string) => void;
     onRejectInvite?: (classId: string, requestUserId?: string) => void;
 }
 
 export const NotificationCard = ({ notification, onAcceptInvite, onRejectInvite }: NotificationCardProps) => {
-    const isMembership = notification.notificationType === 'invite' || notification.notificationType === 'join_request';
+    const isMembership = true;
 
-    const time = 'sortTime' in notification ? notification.sortTime : new Date(notification.createdAt);
+    const time = notification.sortTime ?? new Date();
     const timeAgo = formatDistanceToNow(new Date(time), {
         addSuffix: true,
         locale: vi
