@@ -44,6 +44,9 @@ import { DeckFSRSSettingsForm } from '@/components/forms/deck-fsrs-settings-form
 import { UpdateDeckModal } from '@/components/modals/update-deck-modal';
 import { useUpdateDeckModal } from '@/hooks/stores/use-update-deck-modal';
 import { DeckInterface, DeckDetails } from '@/types/deck';
+import ConfirmDeleteCardModal from '@/components/modals/confirm-delete-card-modals';
+import { useDeleteCardModal } from '@/hooks/stores/use-delete-card-modal';
+
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -56,7 +59,7 @@ const DeckDetail = () => {
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const { open } = useGenerateQuizModal((store) => store);
     const updateDeckModal = useUpdateDeckModal();
-
+    const deleteCardModal = useDeleteCardModal();
     const publicStatus = [
         {
             label: 'Private',
@@ -325,7 +328,7 @@ const DeckDetail = () => {
                                 </>
                             )}
                             {currentUser && deckData.owner._id === currentUser._id && (
-                                <DropdownMenu>
+                                <DropdownMenu modal={false}>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant='outline' size='icon'>
                                             <MoreHorizontal className='h-5 w-5' />
@@ -565,7 +568,7 @@ const DeckDetail = () => {
                                                                 <span>{status.dueText}</span>
                                                             </div>
                                                             {currentUser && deckData.owner._id === currentUser._id && (
-                                                                <DropdownMenu>
+                                                                <DropdownMenu modal={false}>
                                                                     <DropdownMenuTrigger asChild>
                                                                         <Button
                                                                             variant='ghost'
@@ -590,7 +593,7 @@ const DeckDetail = () => {
                                                                         <DropdownMenuItem
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
-                                                                                handleDelete(card._id);
+                                                                                deleteCardModal.open(card._id);
                                                                             }}
                                                                         >
                                                                             <Trash2 className='mr-2 h-4 w-4' />
@@ -723,6 +726,7 @@ const DeckDetail = () => {
                     <UpdateDeckModal />
                 </div>
             )}
+            <ConfirmDeleteCardModal onConfirm={handleDelete} />
         </>
     );
 };

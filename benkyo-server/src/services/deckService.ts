@@ -307,12 +307,8 @@ export const updateDeckService = async (
     if (!deck.owner.equals(userId)) {
         throw new ForbiddenRequestsException('You are not allowed to update this deck', ErrorCode.FORBIDDEN);
     }
-
     deck.name = name ?? deck.name;
     deck.description = description ?? deck.description;
-
     await deck.save();
-
-    const { _id: id } = deck.toObject();
-    return { id, name: deck.name, description: deck.description };
+    return deck.toObject();
 };

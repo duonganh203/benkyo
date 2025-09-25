@@ -5,7 +5,7 @@ import { useUpdateDeckModal } from '@/hooks/stores/use-update-deck-modal';
 export const UpdateDeckModal = () => {
     const { isOpen, close, deck } = useUpdateDeckModal();
 
-    if (!deck) return null;
+    if (!isOpen || !deck) return null;
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && close()}>
