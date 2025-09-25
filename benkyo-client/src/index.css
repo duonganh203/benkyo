@@ -562,7 +562,7 @@ body {
     animation: scanAnimation 4s linear infinite;
     opacity: 0.9;
     z-index: 10;
-    pointer-events: none;
+    pointer-events: auto;
 }
 
 @keyframes scanAnimation {

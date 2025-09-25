@@ -12,9 +12,14 @@ import {
     reviewPublicDeckService,
     duplicateDeckService,
     updateDeckFsrsParamsService,
-    getDeckStatsService
+    getDeckStatsService,
+    updateDeckService
 } from '~/services/deckService';
-import { createDeckValidation, updateDeckFsrsParamsValidation } from '~/validations/deckValidation';
+import {
+    createDeckValidation,
+    updateDeckFsrsParamsValidation,
+    updateDeckValidation
+} from '~/validations/deckValidation';
 
 export const createDeck = async (req: Request, res: Response) => {
     const deckData = req.body;
@@ -103,4 +108,12 @@ export const updateDeckFsrsParams = async (req: Request, res: Response) => {
 export const getDeckStats = async (req: Request, res: Response) => {
     const stats = await getDeckStatsService();
     res.json(stats);
+};
+
+export const updateDeck = async (req: Request, res: Response) => {
+    const { deckId } = req.params;
+    const deckData = req.body;
+    updateDeckValidation.parse(deckData);
+    const updatedDeck = await updateDeckService(req.user.id, deckId, deckData);
+    res.json(updatedDeck);
 };

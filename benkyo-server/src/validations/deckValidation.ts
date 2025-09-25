@@ -14,3 +14,7 @@ export const updateDeckFsrsParamsValidation = z.object({
     card_limit: z.number().min(1).max(1000).optional(),
     lapses: z.number().min(1).max(100).optional()
 });
+export const updateDeckValidation = z.object({
+    name: z.string().min(1, 'Deck name is required').optional(),
+    description: z.string().optional()
+});
