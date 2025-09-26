@@ -223,6 +223,7 @@ const DeckDetail = () => {
             getToast('error', `${error}`);
         }
     };
+    const [liked, setLiked] = useState(false);
 
     const toggleLikeMutation = useToggleLikeDeck(id!);
 
