@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     ChevronLeft,
@@ -41,7 +41,8 @@ import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-p
 import useMe from '@/hooks/queries/use-me';
 import FlashcardViewer from '@/components/flashcard-viewer';
 import { DeckFSRSSettingsForm } from '@/components/forms/deck-fsrs-settings-form';
-
+import LikeDeck from '@/components/ui/Rating-deck';
+import useToggleLikeDeck from '@/hooks/queries/use-toggle-like-deck';
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -222,6 +223,41 @@ const DeckDetail = () => {
             getToast('error', `${error}`);
         }
     };
+
+    const [liked, setLiked] = useState(false);
+    const [totalLikes, setTotalLikes] = useState(0);
+
+    // hook mutation
+    const toggleLikeMutation = useToggleLikeDeck(id!);
+
+    useEffect(() => {
+        if (deckData && currentUser) {
+            setTotalLikes(deckData.likeCount || 0);
+            // kiểm tra xem currentUser đã like chưa
+            const hasLiked = deckData.likes?.some((userId: string) => userId === currentUser._id);
+            setLiked(hasLiked);
+        }
+    }, [deckData, currentUser]);
+
+    const handleLike = () => {
+        toggleLikeMutation.mutate(undefined, {
+            onSuccess: (res) => {
+                setLiked(res.liked);
+                setTotalLikes(res.likeCount);
+
+                // update cache React Query
+                queryClient.setQueryData(['deck', id], (oldData: any) => ({
+                    ...oldData,
+                    likes: res.liked
+                        ? [...(oldData.likes || []), currentUser._id]
+                        : (oldData.likes || []).filter((id: string) => id !== currentUser._id),
+                    likeCount: res.likeCount
+                }));
+            },
+            onError: (err) => console.error(err)
+        });
+    };
+
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
@@ -265,6 +301,13 @@ const DeckDetail = () => {
                             <div>
                                 <h1 className='text-2xl font-bold'>{deckData.name}</h1>
                                 <p className='text-muted-foreground'>{deckData.description || 'No description'}</p>
+                                <LikeDeck
+                                    deckData={deckData}
+                                    currentUser={currentUser}
+                                    liked={liked}
+                                    totalLikes={totalLikes}
+                                    onLike={handleLike}
+                                />
                             </div>
                             <Badge
                                 variant='outline'

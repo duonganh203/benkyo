@@ -17,6 +17,7 @@ import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
+import { Types } from 'mongoose';
 
 export const createDeckService = async (userId: string, deckData: z.infer<typeof createDeckValidation>) => {
     const { name, description } = deckData;
@@ -290,5 +291,26 @@ export const getDeckStatsService = async () => {
         pendingDecks,
         createdThisMonth,
         growthPercentage
+    };
+};
+
+export const toggleLikeDeckService = async (userId: string, deckId: string) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+    const userObjectId = new Types.ObjectId(userId);
+    const hasLiked = deck.likes.some((id: Types.ObjectId) => id.equals(userObjectId));
+    if (hasLiked) {
+        deck.likes = deck.likes.filter((id: Types.ObjectId) => !id.equals(userObjectId));
+    } else {
+        deck.likes.push(userObjectId);
+    }
+    deck.likeCount = deck.likes.length;
+    await deck.save();
+    return {
+        message: hasLiked ? 'Unliked deck successfully' : 'Liked deck successfully',
+        likeCount: deck.likeCount,
+        liked: !hasLiked
     };
 };
