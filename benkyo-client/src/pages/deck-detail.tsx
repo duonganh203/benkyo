@@ -224,7 +224,6 @@ const DeckDetail = () => {
         }
     };
     const [liked, setLiked] = useState(false);
-    const [totalLikes, setTotalLikes] = useState(0);
 
     const toggleLikeMutation = useToggleLikeDeck(id!);
 
@@ -232,7 +231,6 @@ const DeckDetail = () => {
         try {
             const res = await toggleLikeMutation.mutateAsync();
             setLiked(res.liked);
-            setTotalLikes(res.likeCount);
         } catch (err) {
             console.error('Failed to update like:', err);
         }
