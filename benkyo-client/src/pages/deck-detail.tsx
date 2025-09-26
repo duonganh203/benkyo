@@ -227,7 +227,6 @@ const DeckDetail = () => {
     const [liked, setLiked] = useState(false);
     const [totalLikes, setTotalLikes] = useState(0);
 
-    // hook mutation
     const toggleLikeMutation = useToggleLikeDeck(id!);
 
     useEffect(() => {
@@ -235,7 +234,7 @@ const DeckDetail = () => {
 
         setTotalLikes(deckData.likeCount || 0);
 
-        setLiked(deckData.liked);
+        setLiked(deckData.liked ?? false);
     }, [deckData, currentUser]);
 
     const handleLike = () => {
@@ -243,19 +242,18 @@ const DeckDetail = () => {
 
         toggleLikeMutation.mutate(undefined, {
             onSuccess: (res) => {
-                setLiked(res.liked);
+                setLiked(res.liked ?? false);
                 setTotalLikes(res.likeCount);
 
                 queryClient.setQueryData(['deck', id], (oldData: any) => ({
                     ...oldData,
-                    liked: res.liked,
+                    liked: res.liked ?? false,
                     likeCount: res.likeCount
                 }));
             },
             onError: (err) => console.error(err)
         });
     };
-
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
