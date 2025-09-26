@@ -224,22 +224,20 @@ const DeckDetail = () => {
         }
     };
 
-    //   const [liked, setLiked] = useState<boolean>(false);
-    // const [totalLikes, setTotalLikes] = useState<number>(0);
     const [liked, setLiked] = useState<boolean>(deckData?.liked ?? false);
     const [totalLikes, setTotalLikes] = useState<number>(deckData?.likeCount ?? 0);
     const toggleLikeMutation = useToggleLikeDeck(id!);
     useEffect(() => {
         if (!deckData) return;
         setTotalLikes(deckData.likeCount ?? 0);
-    }, [deckData?.likeCount]);
+        setLiked(deckData.liked ?? false);
+    }, [deckData?.likeCount, deckData?.liked]);
 
     const handleLike = () => {
         if (!currentUser) return;
 
         toggleLikeMutation.mutate(undefined, {
             onSuccess: (res) => {
-                // Cập nhật trạng thái liked và totalLikes
                 setLiked(res.liked ?? false);
                 setTotalLikes(res.likeCount);
                 queryClient.setQueryData(['deck', id], (old: any) => ({
