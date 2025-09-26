@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     ChevronLeft,
@@ -224,13 +224,14 @@ const DeckDetail = () => {
         }
     };
     const [liked, setLiked] = useState(false);
+    const [totalLikes, setTotalLikes] = useState(0);
 
     const toggleLikeMutation = useToggleLikeDeck(id!);
 
-    const handleLike = async (deckId: string, newLiked: boolean) => {
+    const handleLike = async () => {
         try {
-            const res = await toggleLikeMutation.mutateAsync({ deckId });
-            setLiked(res.liked ?? false);
+            const res = await toggleLikeMutation.mutateAsync();
+            setLiked(res.liked);
             setTotalLikes(res.likeCount);
         } catch (err) {
             console.error('Failed to update like:', err);
