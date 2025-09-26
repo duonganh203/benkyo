@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThumbsUp } from 'lucide-react';
 
 interface User {
@@ -18,7 +18,7 @@ interface DeckData {
 interface LikeDeckProps {
     deckData: DeckData;
     currentUser?: User;
-    onLikeApi: (deckId: string, liked: boolean) => Promise<void>; // API call
+    onLikeApi: (deckId: string, liked: boolean) => Promise<void>; // gọi API like/unlike
 }
 
 export default function LikeDeck({ deckData, currentUser, onLikeApi }: LikeDeckProps) {
@@ -27,31 +27,35 @@ export default function LikeDeck({ deckData, currentUser, onLikeApi }: LikeDeckP
     const isOwner = currentUser?._id === deckData.owner._id;
     const isPublic = deckData.publicStatus === 2;
 
-    // initial state dựa trên backend
     const initialLiked =
-        currentUser && Array.isArray(deckData.likes) ? deckData.likes.some((id) => id === currentUser._id) : false;
+        currentUser && Array.isArray(deckData.likes) ? deckData.likes.includes(currentUser._id) : false;
 
     const [liked, setLiked] = useState<boolean>(initialLiked);
     const [totalLikes, setTotalLikes] = useState<number>(deckData.likeCount ?? 0);
     const [loading, setLoading] = useState<boolean>(false);
 
+    // Đồng bộ state khi deckData thay đổi
+    useEffect(() => {
+        setLiked(currentUser && deckData.likes?.includes(currentUser._id) ? true : false);
+        setTotalLikes(deckData.likeCount ?? 0);
+    }, [deckData, currentUser]);
+
+    // Xử lý like/unlike với optimistic UI
     const handleLike = async () => {
         if (!currentUser || loading) return;
 
-        // lưu giá trị cũ để rollback nếu lỗi
         const prevLiked = liked;
         const prevTotalLikes = totalLikes;
 
-        // optimistic update
         const newLiked = !liked;
         setLiked(newLiked);
         setTotalLikes((prev) => (newLiked ? prev + 1 : prev - 1));
 
         setLoading(true);
         try {
-            await onLikeApi(deckData._id, newLiked); // gọi API
+            await onLikeApi(deckData._id, newLiked); // gọi API backend
         } catch (err) {
-            // rollback nếu API fail
+            // rollback nếu fail
             setLiked(prevLiked);
             setTotalLikes(prevTotalLikes);
             console.error('Failed to update like:', err);
@@ -62,10 +66,12 @@ export default function LikeDeck({ deckData, currentUser, onLikeApi }: LikeDeckP
 
     return (
         <div className='flex items-center gap-2 text-sm'>
-            {deckData.publicStatus === 2 && currentUser?._id !== deckData.owner._id && (
+            {/* Button like nếu deck public và user không phải owner */}
+            {isPublic && !isOwner && (
                 <button
                     type='button'
-                    onClick={handleLike} // gọi hàm
+                    onClick={handleLike}
+                    disabled={loading}
                     className={`flex items-center gap-1 px-2.5 py-1 rounded-full border transition-colors ${
                         liked
                             ? 'bg-blue-100 text-blue-600 border-blue-200'
@@ -79,6 +85,7 @@ export default function LikeDeck({ deckData, currentUser, onLikeApi }: LikeDeckP
                 </button>
             )}
 
+            {/* Hiển thị tổng likes */}
             <div className='flex items-center gap-1 px-2 py-0.5 bg-muted/60 border rounded-full min-w-[50px]'>
                 <ThumbsUp className='h-4 w-4 text-blue-500 fill-blue-500' />
                 <span className='font-semibold'>{totalLikes}</span>

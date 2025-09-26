@@ -223,15 +223,18 @@ const DeckDetail = () => {
             getToast('error', `${error}`);
         }
     };
+    const [liked, setLiked] = useState(false);
+    const [totalLikes, setTotalLikes] = useState(0);
 
-    const [liked, setLiked] = useState<boolean>(deckData?.liked ?? false);
-    const [totalLikes, setTotalLikes] = useState<number>(deckData?.likeCount ?? 0);
     const toggleLikeMutation = useToggleLikeDeck(id!);
+
     useEffect(() => {
-        if (!deckData) return;
-        setTotalLikes(deckData.likeCount ?? 0);
+        if (!deckData || !currentUser) return;
+
+        setTotalLikes(deckData.likeCount || 0);
+
         setLiked(deckData.liked ?? false);
-    }, [deckData?.likeCount, deckData?.liked]);
+    }, [deckData, currentUser]);
 
     const handleLike = () => {
         if (!currentUser) return;
@@ -240,16 +243,16 @@ const DeckDetail = () => {
             onSuccess: (res) => {
                 setLiked(res.liked ?? false);
                 setTotalLikes(res.likeCount);
-                queryClient.setQueryData(['deck', id], (old: any) => ({
-                    ...old,
-                    liked: res.liked,
+
+                queryClient.setQueryData(['deck', id], (oldData: any) => ({
+                    ...oldData,
+                    liked: res.liked ?? false,
                     likeCount: res.likeCount
                 }));
             },
             onError: (err) => console.error(err)
         });
     };
-
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
