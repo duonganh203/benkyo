@@ -223,14 +223,13 @@ const DeckDetail = () => {
             getToast('error', `${error}`);
         }
     };
-    const [liked, setLiked] = useState(false);
-
     const toggleLikeMutation = useToggleLikeDeck(id!);
 
     const handleLike = async () => {
         try {
             const res = await toggleLikeMutation.mutateAsync();
-            setLiked(res.liked);
+            // nếu không cần dùng liked thì không set luôn
+            console.log('Like status:', res.liked);
         } catch (err) {
             console.error('Failed to update like:', err);
         }
