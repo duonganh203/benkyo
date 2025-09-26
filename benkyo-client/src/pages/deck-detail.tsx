@@ -231,26 +231,24 @@ const DeckDetail = () => {
     const toggleLikeMutation = useToggleLikeDeck(id!);
 
     useEffect(() => {
-        if (deckData && currentUser) {
-            setTotalLikes(deckData.likeCount || 0);
-            // kiểm tra xem currentUser đã like chưa
-            const hasLiked = deckData.likes?.some((userId: string) => userId === currentUser._id);
-            setLiked(hasLiked);
-        }
+        if (!deckData || !currentUser) return;
+
+        setTotalLikes(deckData.likeCount || 0);
+
+        setLiked(deckData.liked);
     }, [deckData, currentUser]);
 
     const handleLike = () => {
+        if (!currentUser) return;
+
         toggleLikeMutation.mutate(undefined, {
             onSuccess: (res) => {
                 setLiked(res.liked);
                 setTotalLikes(res.likeCount);
 
-                // update cache React Query
                 queryClient.setQueryData(['deck', id], (oldData: any) => ({
                     ...oldData,
-                    likes: res.liked
-                        ? [...(oldData.likes || []), currentUser._id]
-                        : (oldData.likes || []).filter((id: string) => id !== currentUser._id),
+                    liked: res.liked,
                     likeCount: res.likeCount
                 }));
             },
