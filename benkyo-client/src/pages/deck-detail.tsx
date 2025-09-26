@@ -223,19 +223,9 @@ const DeckDetail = () => {
             getToast('error', `${error}`);
         }
     };
-    const [liked, setLiked] = useState(false);
-    const [totalLikes, setTotalLikes] = useState(0);
 
     const toggleLikeMutation = useToggleLikeDeck(id!);
 
-    useEffect(() => {
-        if (!deckData || !currentUser) return;
-
-        setTotalLikes(deckData.likeCount || 0);
-        setLiked(deckData.likes?.includes(currentUser._id) ?? false);
-    }, [deckData, currentUser]);
-
-    // Hàm này truyền xuống LikeDeck
     const handleLike = async (deckId: string, newLiked: boolean) => {
         try {
             const res = await toggleLikeMutation.mutateAsync({ deckId });

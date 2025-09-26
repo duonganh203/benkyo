@@ -66,11 +66,10 @@ export default function LikeDeck({ deckData, currentUser, onLikeApi }: LikeDeckP
 
     return (
         <div className='flex items-center gap-2 text-sm'>
-            {/* Button like nếu deck public và user không phải owner */}
             {isPublic && !isOwner && (
                 <button
                     type='button'
-                    onClick={handleLike} // ✅ gọi handleLike thay vì onLikeApi
+                    onClick={handleLike}
                     disabled={loading}
                     className={`flex items-center gap-1 px-2.5 py-1 rounded-full border transition-colors ${
                         liked
