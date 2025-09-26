@@ -12,7 +12,8 @@ import {
     reviewPublicServiceDeck,
     sendReqPublicDeck,
     updateDeckFsrsParams,
-    getDeckStats
+    getDeckStats,
+    toggleLikeDeck
 } from '~/controllers/deckController';
 import { errorHandler } from '~/errorHandler';
 import adminAuthMiddleware from '~/middlewares/adminAuthMiddleware';
@@ -33,4 +34,5 @@ deckRoutes.get('/:id/cards', [authMiddleware], errorHandler(getCards));
 deckRoutes.delete('/:id', [authMiddleware], errorHandler(deleteDeck));
 deckRoutes.patch('/:id/request-public', [authMiddleware], errorHandler(sendReqPublicDeck));
 deckRoutes.patch('/:id/fsrs', [authMiddleware], errorHandler(updateDeckFsrsParams));
+deckRoutes.post('/:id/like', [authMiddleware], errorHandler(toggleLikeDeck));
 export default deckRoutes;
