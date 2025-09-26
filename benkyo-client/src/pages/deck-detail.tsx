@@ -41,7 +41,7 @@ import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-p
 import useMe from '@/hooks/queries/use-me';
 import FlashcardViewer from '@/components/flashcard-viewer';
 import { DeckFSRSSettingsForm } from '@/components/forms/deck-fsrs-settings-form';
-import LikeDeck from '@/components/ui/Rating-deck';
+import LikeDeck from '@/components/rating-deck';
 import useToggleLikeDeck from '@/hooks/queries/use-toggle-like-deck';
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -224,36 +224,34 @@ const DeckDetail = () => {
         }
     };
 
-    const [liked, setLiked] = useState(false);
-    const [totalLikes, setTotalLikes] = useState(0);
-
+    //   const [liked, setLiked] = useState<boolean>(false);
+    // const [totalLikes, setTotalLikes] = useState<number>(0);
+    const [liked, setLiked] = useState<boolean>(deckData?.liked ?? false);
+    const [totalLikes, setTotalLikes] = useState<number>(deckData?.likeCount ?? 0);
     const toggleLikeMutation = useToggleLikeDeck(id!);
-
     useEffect(() => {
-        if (!deckData || !currentUser) return;
-
-        setTotalLikes(deckData.likeCount || 0);
-
-        setLiked(deckData.liked ?? false);
-    }, [deckData, currentUser]);
+        if (!deckData) return;
+        setTotalLikes(deckData.likeCount ?? 0);
+    }, [deckData?.likeCount]);
 
     const handleLike = () => {
         if (!currentUser) return;
 
         toggleLikeMutation.mutate(undefined, {
             onSuccess: (res) => {
+                // Cập nhật trạng thái liked và totalLikes
                 setLiked(res.liked ?? false);
                 setTotalLikes(res.likeCount);
-
-                queryClient.setQueryData(['deck', id], (oldData: any) => ({
-                    ...oldData,
-                    liked: res.liked ?? false,
+                queryClient.setQueryData(['deck', id], (old: any) => ({
+                    ...old,
+                    liked: res.liked,
                     likeCount: res.likeCount
                 }));
             },
             onError: (err) => console.error(err)
         });
     };
+
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
@@ -300,9 +298,9 @@ const DeckDetail = () => {
                                 <LikeDeck
                                     deckData={deckData}
                                     currentUser={currentUser}
-                                    liked={liked}
-                                    totalLikes={totalLikes}
-                                    onLike={handleLike}
+                                    onLikeApi={async (deckId, liked) => {
+                                        await toggleLikeMutation.mutateAsync(deckId);
+                                    }}
                                 />
                             </div>
                             <Badge
