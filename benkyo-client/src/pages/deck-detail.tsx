@@ -232,27 +232,20 @@ const DeckDetail = () => {
         if (!deckData || !currentUser) return;
 
         setTotalLikes(deckData.likeCount || 0);
-
-        setLiked(deckData.liked ?? false);
+        setLiked(deckData.likes?.includes(currentUser._id) ?? false);
     }, [deckData, currentUser]);
 
-    const handleLike = () => {
-        if (!currentUser) return;
-
-        toggleLikeMutation.mutate(undefined, {
-            onSuccess: (res) => {
-                setLiked(res.liked ?? false);
-                setTotalLikes(res.likeCount);
-
-                queryClient.setQueryData(['deck', id], (oldData: any) => ({
-                    ...oldData,
-                    liked: res.liked ?? false,
-                    likeCount: res.likeCount
-                }));
-            },
-            onError: (err) => console.error(err)
-        });
+    // Hàm này truyền xuống LikeDeck
+    const handleLike = async (deckId: string, newLiked: boolean) => {
+        try {
+            const res = await toggleLikeMutation.mutateAsync({ deckId });
+            setLiked(res.liked ?? false);
+            setTotalLikes(res.likeCount);
+        } catch (err) {
+            console.error('Failed to update like:', err);
+        }
     };
+
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
@@ -296,13 +289,7 @@ const DeckDetail = () => {
                             <div>
                                 <h1 className='text-2xl font-bold'>{deckData.name}</h1>
                                 <p className='text-muted-foreground'>{deckData.description || 'No description'}</p>
-                                <LikeDeck
-                                    deckData={deckData}
-                                    currentUser={currentUser}
-                                    onLikeApi={async (deckId, liked) => {
-                                        await toggleLikeMutation.mutateAsync(deckId);
-                                    }}
-                                />
+                                <LikeDeck deckData={deckData} currentUser={currentUser} onLikeApi={handleLike} />
                             </div>
                             <Badge
                                 variant='outline'

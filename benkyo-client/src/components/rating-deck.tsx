@@ -53,9 +53,9 @@ export default function LikeDeck({ deckData, currentUser, onLikeApi }: LikeDeckP
 
         setLoading(true);
         try {
-            await onLikeApi(deckData._id, newLiked); // gọi API backend
+            // gọi đúng API với deckId
+            await onLikeApi(deckData._id, newLiked);
         } catch (err) {
-            // rollback nếu fail
             setLiked(prevLiked);
             setTotalLikes(prevTotalLikes);
             console.error('Failed to update like:', err);
@@ -70,7 +70,7 @@ export default function LikeDeck({ deckData, currentUser, onLikeApi }: LikeDeckP
             {isPublic && !isOwner && (
                 <button
                     type='button'
-                    onClick={handleLike}
+                    onClick={handleLike} // ✅ gọi handleLike thay vì onLikeApi
                     disabled={loading}
                     className={`flex items-center gap-1 px-2.5 py-1 rounded-full border transition-colors ${
                         liked
