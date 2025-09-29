@@ -1,0 +1,13 @@
+{
+    "private": true,
+    "workspaces": [
+        "benkyo-client",
+        "benkyo-server"
+    ],
+    "scripts": {
+        "dev": "concurrently \"npm run dev --prefix benkyo-server\" \"npm run dev --prefix benkyo-client\""
+    },
+    "devDependencies": {
+        "concurrently": "^9.2.1"
+    }
+}
