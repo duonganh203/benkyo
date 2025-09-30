@@ -1,5 +1,4 @@
 import { Class, Deck, Flashcard, MOOC } from '@/types/learning';
-import { string } from 'zod';
 
 // Sample flashcards for different topics
 const reactFlashcards: Flashcard[] = [
@@ -108,7 +107,7 @@ const sampleMOOCs: MOOC[] = [
 
 // Sample class
 export const sampleClass: Class = {
-    _id: string,
+    _id: 'class-1',
     id: 'class-1',
     title: 'Full-Stack Web Development',
     description: 'Master both frontend and backend development to become a complete web developer',
