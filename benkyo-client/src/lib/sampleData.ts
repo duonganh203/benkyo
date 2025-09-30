@@ -107,7 +107,6 @@ const sampleMOOCs: MOOC[] = [
 
 // Sample class
 export const sampleClass: Class = {
-    _id: 'class-1',
     id: 'class-1',
     title: 'Full-Stack Web Development',
     description: 'Master both frontend and backend development to become a complete web developer',
