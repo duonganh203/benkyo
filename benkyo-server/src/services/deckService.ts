@@ -9,17 +9,33 @@ import {
     Revlog,
     StudySession,
     User,
-    UserDeckState
+    UserDeckState,
+    Class
 } from '~/schemas';
 import { createDeckValidation } from '~/validations/deckValidation';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
+import { Types } from 'mongoose';
 
 export const createDeckService = async (userId: string, deckData: z.infer<typeof createDeckValidation>) => {
     const { name, description } = deckData;
-    const deck = await Deck.create({ name, description, owner: userId });
+
+    // Get user's FSRS params to copy to new deck
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Create deck with user's FSRS params as default
+    const deck = await Deck.create({
+        name,
+        description,
+        owner: userId,
+        fsrsParams: user.fsrsParams
+    });
+
     await User.findByIdAndUpdate(userId, { $push: { decks: deck._id } });
     const userDeckState = new UserDeckState({
         user: userId,
@@ -38,20 +54,90 @@ export const createDeckService = async (userId: string, deckData: z.infer<typeof
 };
 
 export const getDeckService = async (userId: string, deckId: string) => {
-    const deck = await Deck.findById(deckId);
+    const deck = await Deck.findById(deckId).populate('owner', 'name avatar _id');
     if (!deck) {
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
-    if (!deck.owner.equals(userId) && !deck.isPublic) {
-        throw new ForbiddenRequestsException('You do not have permission to view this deck', ErrorCode.FORBIDDEN);
+    if (deck.owner.equals(userId) || deck.isPublic) {
+        return deck;
     }
-    return deck;
+    const classWithDeck = await Class.findOne({
+        'decks.deck': deck._id,
+        users: userId
+    });
+    if (classWithDeck) {
+        return deck;
+    }
+    throw new ForbiddenRequestsException('You do not have permission to view this deck', ErrorCode.FORBIDDEN);
 };
 
 export const getAllDecksService = async (userId: string) => {
     const decks = await Deck.find({ owner: userId }).populate('owner');
-    const publicDeck = await Deck.find({ owner: { $ne: userId }, isPublic: true }).populate('owner');
-    return [...decks, ...publicDeck];
+    return decks;
+};
+export const duplicateDeckService = async (userId: string, deckId: string) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+    if (deck.owner.equals(userId)) {
+        throw new BadRequestsException('You cannot duplicate your own deck', ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    // Get user's FSRS params for the duplicated deck
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+    }
+
+    const newDeck = new Deck({
+        name: deck.name,
+        description: deck.description,
+        owner: userId,
+        cardCount: deck.cardCount,
+        isPublic: false,
+        publicStatus: PublicStatus.PRIVATE,
+        fsrsParams: user.fsrsParams
+    });
+    await newDeck.save();
+
+    const originalCards = await Card.find({ deck: deckId });
+
+    if (originalCards.length > 0) {
+        const newCards = originalCards.map((card) => ({
+            front: card.front,
+            back: card.back,
+            deck: newDeck._id,
+            state: 0,
+            due: new Date(),
+            stability: 0,
+            difficulty: 0,
+            elapsedDays: 0,
+            scheduledDays: 0,
+            reps: 0,
+            lapses: 0
+        }));
+
+        const insertedCards = await Card.insertMany(newCards);
+        console.log(`Successfully inserted ${insertedCards.length} cards to new deck`);
+    }
+
+    const userDeckState = new UserDeckState({
+        user: userId,
+        deck: newDeck._id,
+        stats: {
+            reviewCards: 0,
+            learningCards: 0,
+            newCards: originalCards.length,
+            totalCards: originalCards.length
+        },
+        lastStudied: null
+    });
+    await userDeckState.save();
+
+    await User.findByIdAndUpdate(userId, { $push: { decks: newDeck._id } });
+
+    return { message: 'Deck duplicated successfully', deckId: newDeck._id };
 };
 
 export const deleteDeckService = async (userId: string, deckId: string) => {
@@ -160,4 +246,70 @@ export const reviewPublicDeckService = async (
     await Deck.findByIdAndUpdate(deckId, { $set: updateData });
 
     return { message: 'Deck status and note updated successfully' };
+};
+
+export const updateDeckFsrsParamsService = async (userId: string, deckId: string, fsrsParams: any) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!deck.owner.equals(userId)) {
+        throw new ForbiddenRequestsException('You do not have permission to update this deck', ErrorCode.FORBIDDEN);
+    }
+
+    const updatedDeck = await Deck.findByIdAndUpdate(deckId, { $set: { fsrsParams } }, { new: true });
+
+    return updatedDeck?.fsrsParams;
+};
+
+export const getDeckStatsService = async () => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    const totalDecks = await Deck.countDocuments();
+
+    const pendingDecks = await Deck.countDocuments({
+        publicStatus: PublicStatus.PENDING
+    });
+
+    const createdThisMonth = await Deck.countDocuments({
+        createdAt: { $gte: startOfMonth }
+    });
+
+    const createdLastMonth = await Deck.countDocuments({
+        createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth }
+    });
+
+    const growthPercentage =
+        createdLastMonth === 0 ? 100 : Math.round(((createdThisMonth - createdLastMonth) / createdLastMonth) * 100);
+
+    return {
+        totalDecks,
+        pendingDecks,
+        createdThisMonth,
+        growthPercentage
+    };
+};
+export const toggleLikeDeckService = async (userId: string, deckId: string) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+    const userObjectId = new Types.ObjectId(userId);
+    const hasLiked = deck.likes.some((id: Types.ObjectId) => id.equals(userObjectId));
+    if (hasLiked) {
+        deck.likes = deck.likes.filter((id: Types.ObjectId) => !id.equals(userObjectId));
+    } else {
+        deck.likes.push(userObjectId);
+    }
+    deck.likeCount = deck.likes.length;
+    await deck.save();
+    return {
+        message: hasLiked ? 'Unliked deck successfully' : 'Liked deck successfully',
+        likeCount: deck.likeCount,
+        liked: !hasLiked
+    };
 };

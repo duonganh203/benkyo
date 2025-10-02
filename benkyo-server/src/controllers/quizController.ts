@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
 import {
+    createClassQuizService,
     createQuizService,
+    deleteQuizService,
     getAllQuizAttemptsService,
+    getClassQuizzesService,
     getQuizAttemptById,
     getQuizByIdService,
-    saveQuizAttemptService
+    saveQuizAttemptService,
+    updateQuizService
 } from '~/services/quizService';
-import { createQuizValidation, saveQuizAttemptValidation } from '~/validations/quizValitation';
+import { createQuizValidation, saveQuizAttemptValidation, updateQuizValidation } from '~/validations/quizValitation';
 
 export const createQuiz = async (req: Request, res: Response) => {
     const userId = req.user._id;
@@ -43,4 +47,36 @@ export const getAllQuizAttempts = async (req: Request, res: Response) => {
     const userId = req.user._id;
     const quizAttempt = await getAllQuizAttemptsService(userId);
     res.json(quizAttempt);
+};
+
+export const createClassQuiz = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const { _id: classId } = req.params;
+
+    const quiz = await createClassQuizService(userId, classId, req.body);
+    res.status(201).json({ quiz });
+};
+
+export const getClassQuizzes = async (req: Request, res: Response) => {
+    const { _id: classId } = req.params;
+    const quizzes = await getClassQuizzesService(classId);
+    return res.json(quizzes);
+};
+
+export const updateClassQuizzes = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const { quizId } = req.params;
+    const updatedData = req.body;
+
+    updateQuizValidation.parse(updatedData);
+    const result = await updateQuizService(userId, quizId, updatedData);
+    res.json(result);
+};
+
+export const deleteClassQuizzes = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const { quizId } = req.params;
+
+    const result = await deleteQuizService(userId, quizId);
+    res.json({ message: 'Quiz deleted successfully', ...result });
 };

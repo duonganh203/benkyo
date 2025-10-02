@@ -573,3 +573,72 @@ body {
         top: 100%;
     }
 }
+
+@keyframes gentle-bounce {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+.perspective-1000 {
+    perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+    transform-style: preserve-3d;
+}
+
+.backface-hidden {
+    backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+    transform: rotateY(180deg);
+}
+
+@keyframes gradient-pro {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 300% 50%;
+    }
+}
+
+@keyframes gradient-premium {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 400% 50%;
+    }
+}
+
+.text-gradient-pro {
+    background: linear-gradient(90deg, #fff5cc, #ffd700, #e6b800, #c9974b, #e6b800, #ffd700, #fff5cc);
+    background-size: 300% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: gradient-pro 16s ease-in-out infinite;
+}
+
+.text-gradient-premium {
+    background: linear-gradient(90deg, #ff3b3b, #ff8c00, #ffcc00, #00b140, #007bff, #6a0dad, #ff3b3b);
+    background-size: 600% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: gradient-premium 25s ease-in-out infinite;
+}
+
+.text-basic {
+    color: inherit;
+}
+

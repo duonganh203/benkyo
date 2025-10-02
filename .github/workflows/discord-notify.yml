@@ -1,0 +1,55 @@
+name: Notify Discord on PR Opened
+
+on:
+    pull_request:
+        types: [opened, reopened, ready_for_review]
+
+jobs:
+    notify-discord:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Get PR commit message
+              id: get-commit
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  PR_COMMITS_API="${{ github.event.pull_request.commits_url }}"
+                  FIRST_COMMIT_MSG=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$PR_COMMITS_API" | jq -r '.[0].commit.message')
+                  echo "msg=${FIRST_COMMIT_MSG}" >> $GITHUB_OUTPUT
+
+            - name: Send PR info to Discord
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+                  TITLE: ${{ github.event.pull_request.title }}
+                  URL: ${{ github.event.pull_request.html_url }}
+                  AUTHOR: ${{ github.event.pull_request.user.login }}
+                  COMMIT_MSG: ${{ steps.get-commit.outputs.msg }}
+              run: |
+                  TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+                  curl -X POST "$DISCORD_WEBHOOK" \
+                    -H "Content-Type: application/json" \
+                    -d @- <<EOF
+                  {
+                    "content": "@everyone",
+                    "embeds": [
+                      {
+                        "title": "📢 New Pull Request: ${TITLE}",
+                        "url": "${URL}",
+                        "description": "📦 **Commit**: \`${COMMIT_MSG}\`\n👤 **Author**: [${AUTHOR}](https://github.com/${AUTHOR})",
+                        "color": 3447003,
+                        "author": {
+                          "name": "${AUTHOR}",
+                          "url": "https://github.com/${AUTHOR}"
+                        },
+                        "thumbnail": {
+                          "url": "https://github.com/${AUTHOR}.png"
+                        },
+                        "footer": {
+                          "text": "🕒 Opened at ${TIMESTAMP}"
+                        }
+                      }
+                    ]
+                  }
+                  EOF

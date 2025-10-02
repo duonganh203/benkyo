@@ -50,8 +50,7 @@ export const getDeckCardsService = async (userId: string, deckId: string) => {
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
 
-    const hasAccess =
-        deck.owner.equals(userId) || (deck.isPublic && deck.subscribers.some((sub) => sub.equals(userId)));
+    const hasAccess = deck.owner.equals(userId) || deck.isPublic;
 
     if (!hasAccess) {
         throw new ForbiddenRequestsException('You do not have access to this deck', ErrorCode.FORBIDDEN);
@@ -118,6 +117,111 @@ export const getDeckCardsService = async (userId: string, deckId: string) => {
         deckId,
         deckName: deck.name,
         cards: cardsWithProgress
+    };
+};
+
+export const getCardDetailsService = async (userId: string, cardId: string) => {
+    const card = await Card.findById(cardId).populate('deck', 'name description owner');
+    if (!card) {
+        throw new NotFoundException('Card not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Check if user has access to this card
+    const deck = card.deck as any;
+    const hasAccess = deck.owner.equals(userId) || deck.isPublic;
+    if (!hasAccess) {
+        throw new ForbiddenRequestsException('You do not have access to this card', ErrorCode.FORBIDDEN);
+    }
+
+    // Get all review logs for this card by this user
+    const revlogs = await Revlog.find({
+        user: userId,
+        card: cardId,
+        deleted: false
+    }).sort({ review: 1 }); // Sort chronologically
+
+    // Get the latest review log for current learning state
+    const latestRevlog = revlogs.length > 0 ? revlogs[revlogs.length - 1] : null;
+
+    // Calculate metrics
+    const totalReviews = revlogs.length;
+    const averageRating = totalReviews > 0 ? revlogs.reduce((sum, log) => sum + log.grade, 0) / totalReviews : 0;
+
+    // Count ratings
+    const ratingCounts = {
+        again: revlogs.filter((log) => log.grade === 1).length,
+        hard: revlogs.filter((log) => log.grade === 2).length,
+        good: revlogs.filter((log) => log.grade === 3).length,
+        easy: revlogs.filter((log) => log.grade === 4).length
+    };
+
+    // Calculate success rate (ratings 2, 3, 4 are considered successful)
+    const successRate =
+        totalReviews > 0 ? (ratingCounts.hard + ratingCounts.good + ratingCounts.easy) / totalReviews : 0;
+
+    // Current learning state
+    const currentLearningState = latestRevlog
+        ? {
+              state: latestRevlog.state,
+              due: latestRevlog.due,
+              stability: latestRevlog.stability,
+              difficulty: latestRevlog.difficulty,
+              elapsed_days: latestRevlog.elapsed_days,
+              scheduled_days: latestRevlog.scheduled_days
+          }
+        : {
+              state: 0, // NEW
+              due: new Date(),
+              stability: 0,
+              difficulty: 0,
+              elapsed_days: 0,
+              scheduled_days: 0
+          };
+
+    // Calculate retrievability if we have a stability value
+    let retrievability = null;
+    if (latestRevlog && latestRevlog.stability > 0) {
+        const daysSinceReview = (new Date().getTime() - latestRevlog.review.getTime()) / (24 * 3600 * 1000);
+        retrievability = Math.pow(1 + daysSinceReview / (9 * latestRevlog.stability), -1);
+    }
+
+    return {
+        card: {
+            _id: card._id,
+            front: card.front,
+            back: card.back,
+            tags: card.tags,
+            createdAt: card.createdAt,
+            updatedAt: card.updatedAt,
+            media: card.media,
+            deck: {
+                _id: deck._id,
+                name: deck.name,
+                description: deck.description
+            }
+        },
+        learningState: currentLearningState,
+        retrievability,
+        revlogs: revlogs.map((log) => ({
+            _id: log._id,
+            grade: log.grade,
+            state: log.state,
+            due: log.due,
+            stability: log.stability,
+            difficulty: log.difficulty,
+            elapsed_days: log.elapsed_days,
+            last_elapsed_days: log.last_elapsed_days,
+            scheduled_days: log.scheduled_days,
+            review: log.review,
+            duration: log.duration,
+            created_at: log.created_at
+        })),
+        metrics: {
+            totalReviews,
+            averageRating: Math.round(averageRating * 100) / 100,
+            successRate: Math.round(successRate * 100) / 100,
+            ratingCounts
+        }
     };
 };
 

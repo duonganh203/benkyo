@@ -17,6 +17,7 @@ import CreateCard from './pages/create-card';
 import StudyCard from './pages/study-card';
 import Library from './pages/library';
 import UpdateCard from './pages/update-card';
+import CardDetails from './pages/card-details';
 import Profile from './pages/profile';
 import ProgressPage from './pages/progress';
 import Quizzes from './pages/quizzes';
@@ -26,6 +27,18 @@ import AIChat from './pages/ai-chat';
 import Payment from './pages/payment';
 import Packages from './pages/package';
 import Community from './pages/community';
+import ClassManagement from './pages/class-management';
+import Notifications from './pages/notification';
+import { InviteDialog } from './components/invite-dialog';
+import ClassDetailUser from './pages/class-detail-user';
+import TopLearners from './pages/top-study-streak';
+import ClassQuizManagement from './pages/class-quiz-management';
+import ClassUpdate from './pages/class-update';
+import ClassJoin from './pages/class-join';
+import ClassCreate from './pages/class-create';
+import ClassList from './pages/class-list';
+import { ForgotPasswordForm } from './components/forms/forgot-password-form';
+import { ResetPasswordForm } from './components/forms/reset-password-form';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -47,28 +60,42 @@ const App = () => {
                             <Route path='/login' element={<LoginForm />} />
                             <Route path='/register' element={<RegisterForm />} />
                             <Route path='/passport' element={<LoginPassport />} />
+                            <Route path='/forgotPassword' element={<ForgotPasswordForm />} />
+                            <Route path='/resetPassword' element={<ResetPasswordForm />} />
                         </Route>
                         <Route element={<GlobalLayout />}>
                             <Route path='/' element={<Marketing />} />
-                            <Route element={<ProtectedRoute />}>
-                                <Route path='/home' element={<ProgressPage />} />
-                                <Route path='/deck/:id' element={<DeckDetail />} />
-                                <Route path='/deck/:deckId/create-card' element={<CreateCard />} />
-                                <Route path='/deck/:deckId/edit-card/:cardId' element={<UpdateCard />} />
-                                <Route path='/profile' element={<Profile />} />
-                                <Route path='/my-decks' element={<Library />} />
-                                <Route path='/study/:id' element={<StudyCard />} />
-                                <Route path='do-quiz/:quizId' element={<Quiz />} />
-                                <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />
-                                <Route path='/quizzes' element={<Quizzes />} />
-                                <Route path='/ai-chat' element={<AIChat />} />
-                                <Route path='/payment/:packageId' element={<Payment />} />
-                                <Route path='/package' element={<Packages />} />
-                                <Route path='/community' element={<Community />} />
-                            </Route>
+                        </Route>
+                        <Route element={<ProtectedRoute />}>
+                            <Route path='/home' element={<ProgressPage />} />
+                            <Route path='/deck/:id' element={<DeckDetail />} />
+                            <Route path='/deck/:deckId/create-card' element={<CreateCard />} />
+                            <Route path='/deck/:deckId/edit-card/:cardId' element={<UpdateCard />} />
+                            <Route path='/flashcards/:id/details' element={<CardDetails />} />
+                            <Route path='/profile' element={<Profile />} />
+                            <Route path='/my-decks' element={<Library />} />
+                            <Route path='/study/:id' element={<StudyCard />} />
+                            <Route path='do-quiz/:quizId' element={<Quiz />} />
+                            <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />
+                            <Route path='/quizzes' element={<Quizzes />} />
+                            <Route path='/ai-chat' element={<AIChat />} />
+                            <Route path='/payment/:packageId' element={<Payment />} />
+                            <Route path='/package' element={<Packages />} />
+                            <Route path='/top-learners' element={<TopLearners />} />
+                            <Route path='/community' element={<Community />} />
+                            <Route path='/class/update' element={<ClassUpdate />} />
+                            <Route path='/class/create' element={<ClassCreate />} />
+                            <Route path='/class/:classId/update' element={<ClassUpdate />} />
+                            <Route path='/class/list' element={<ClassList />} />
+                            <Route path='/class/:classId/management' element={<ClassManagement />} />
+                            <Route path='/class/:_id/management/quizzes' element={<ClassQuizManagement />} />
+                            <Route path='/notification' element={<Notifications />} />
+                            <Route path='/class/:classId' element={<ClassDetailUser />} />
+                            <Route path='/class/:classId/request' element={<ClassJoin />} />
                         </Route>
                     </Routes>
                     <ModalProvider />
+                    <InviteDialog />
                 </Router>
                 <Toaster closeButton richColors position='top-right' />
             </ThemeProvider>

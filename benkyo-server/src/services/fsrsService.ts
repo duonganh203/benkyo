@@ -1,5 +1,7 @@
-import { User, Card, Revlog, Rating, State, UserDeckState } from '~/schemas';
+import { User, Card, Revlog, Rating, State, UserDeckState, Deck } from '~/schemas';
 import mongoose from 'mongoose';
+import { NotFoundException } from '~/exceptions/notFound';
+import { ErrorCode } from '~/exceptions/root';
 
 interface FSRSParams {
     request_retention: number;
@@ -11,90 +13,150 @@ interface FSRSParams {
     lapses: number;
 }
 
-const calculateRetrievability = (stability: number, elapsedDays: number): number => {
-    return Math.exp((Math.log(0.9) * elapsedDays) / stability);
+const FSRS_CONSTANTS = {
+    F: 19 / 81,
+    C: -0.5,
+    MIN_DIFFICULTY: 1.0,
+    MAX_DIFFICULTY: 10.0,
+    INITIAL_RETRIEVABILITY: 1.0
+} as const;
+
+const calculateRetrievability = (elapsedDays: number, stability: number): number => {
+    const { F, C } = FSRS_CONSTANTS;
+
+    if (stability <= 0) return 0;
+    if (elapsedDays <= 0) return FSRS_CONSTANTS.INITIAL_RETRIEVABILITY;
+
+    return Math.pow(1 + F * (elapsedDays / stability), C);
 };
 
-const calculateStability = (
-    stability: number,
-    difficulty: number,
+const calculateInterval = (stability: number, desiredRetention: number): number => {
+    const { F, C } = FSRS_CONSTANTS;
+
+    if (stability <= 0) return 1;
+
+    const interval = (stability / F) * (Math.pow(desiredRetention, 1 / C) - 1);
+    return Math.max(Math.round(interval), 1);
+};
+
+const calculateInitialStability = (grade: Rating, params: FSRSParams): number => {
+    const { w } = params;
+
+    switch (grade) {
+        case Rating.AGAIN:
+            return w[0];
+        case Rating.HARD:
+            return w[1];
+        case Rating.GOOD:
+            return w[2];
+        case Rating.EASY:
+            return w[3];
+        default:
+            return w[2];
+    }
+};
+
+const calculateInitialDifficulty = (grade: Rating, params: FSRSParams): number => {
+    const { w } = params;
+    const gradeValue = grade as number;
+
+    const difficulty = w[4] - Math.exp(w[5] * (gradeValue - 1)) + 1;
+    return Math.max(FSRS_CONSTANTS.MIN_DIFFICULTY, Math.min(FSRS_CONSTANTS.MAX_DIFFICULTY, difficulty));
+};
+
+const calculateStabilityOnSuccess = (
+    currentDifficulty: number,
+    currentStability: number,
     retrievability: number,
-    rating: Rating,
+    grade: Rating,
     params: FSRSParams
 ): number => {
     const { w } = params;
-    let stabilityFactor, difficultyFactor;
 
-    switch (rating) {
-        case Rating.AGAIN:
-            stabilityFactor = w[0];
-            difficultyFactor = 1 - w[1] * (1 - retrievability);
-            break;
-        case Rating.HARD:
-            stabilityFactor = w[2];
-            difficultyFactor = 1 + w[3] * (retrievability - 1);
-            break;
-        case Rating.GOOD:
-            stabilityFactor = w[4];
-            difficultyFactor = 1 + w[5] * (retrievability - 1);
-            break;
-        case Rating.EASY:
-            stabilityFactor = w[6];
-            difficultyFactor = 1 + w[7] * (retrievability - 1);
-            break;
-        default:
-            stabilityFactor = w[4];
-            difficultyFactor = 1;
-    }
+    const difficultyFactor = 11 - currentDifficulty;
+    const stabilityFactor = Math.pow(currentStability, -w[9]);
+    const retrievabilityFactor = Math.exp(w[10] * (1 - retrievability)) - 1;
+    const hardPenalty = grade === Rating.HARD ? w[15] : 1.0;
+    const easyBonus = grade === Rating.EASY ? w[16] : 1.0;
+    const growthMultiplier = Math.exp(w[8]);
 
-    return stability * stabilityFactor * difficultyFactor;
+    const alpha =
+        1 + difficultyFactor * stabilityFactor * retrievabilityFactor * hardPenalty * easyBonus * growthMultiplier;
+
+    return currentStability * alpha;
 };
 
-const calculateDifficulty = (previousDifficulty: number, rating: Rating, params: FSRSParams): number => {
+const calculateStabilityOnFailure = (
+    currentDifficulty: number,
+    currentStability: number,
+    retrievability: number,
+    params: FSRSParams
+): number => {
     const { w } = params;
-    let newDifficulty = previousDifficulty;
 
-    switch (rating) {
-        case Rating.AGAIN:
-            newDifficulty = previousDifficulty + w[10];
-            break;
-        case Rating.HARD:
-            newDifficulty = previousDifficulty + w[10] / 2;
-            break;
-        case Rating.GOOD:
-            break;
-        case Rating.EASY:
-            newDifficulty = previousDifficulty - w[9];
-            break;
-    }
+    const difficultyFactor = Math.pow(currentDifficulty, -w[12]);
+    const stabilityFactor = Math.pow(currentStability + 1, w[13]) - 1;
+    const retrievabilityFactor = Math.exp(w[14] * (1 - retrievability));
+    const baseFactor = w[11];
 
-    return Math.min(Math.max(newDifficulty, w[11]), w[12]);
+    const newStability = difficultyFactor * stabilityFactor * retrievabilityFactor * baseFactor;
+
+    return Math.min(newStability, currentStability);
 };
 
-const calculateInterval = (stability: number, targetRetention: number, rating: Rating, params: FSRSParams): number => {
-    let retentionFactor;
-    switch (rating) {
+const calculateNewDifficulty = (currentDifficulty: number, grade: Rating, params: FSRSParams): number => {
+    const { w } = params;
+    const gradeValue = grade as number;
+
+    const difficultyChange = -w[6] * (gradeValue - 3);
+    const scalingFactor = (FSRS_CONSTANTS.MAX_DIFFICULTY - currentDifficulty) / 9;
+    const adjustedDifficulty = currentDifficulty + difficultyChange * scalingFactor;
+    const easyTargetDifficulty = calculateInitialDifficulty(Rating.EASY, params);
+    const newDifficulty = w[7] * easyTargetDifficulty + (1 - w[7]) * adjustedDifficulty;
+
+    return Math.max(FSRS_CONSTANTS.MIN_DIFFICULTY, Math.min(FSRS_CONSTANTS.MAX_DIFFICULTY, newDifficulty));
+};
+
+const getNextState = (currentState: State, grade: Rating): State => {
+    switch (grade) {
+        case Rating.AGAIN:
+            if (currentState === State.NEW) {
+                return State.LEARNING;
+            } else if (currentState === State.REVIEW) {
+                return State.RELEARNING;
+            } else {
+                return currentState;
+            }
+
         case Rating.HARD:
-            retentionFactor = 0.85;
-            break;
+            if (currentState === State.NEW || currentState === State.LEARNING) {
+                return State.LEARNING;
+            } else if (currentState === State.RELEARNING) {
+                return State.RELEARNING;
+            } else {
+                return State.REVIEW;
+            }
+
         case Rating.GOOD:
-            retentionFactor = 0.9;
-            break;
+            return State.REVIEW;
+
         case Rating.EASY:
-            retentionFactor = 0.95;
-            break;
+            return State.REVIEW;
+
         default:
-            retentionFactor = targetRetention;
+            return currentState;
+    }
+};
+
+const applyFuzzing = (interval: number, enableFuzz: boolean): number => {
+    if (!enableFuzz || interval <= 1) {
+        return interval;
     }
 
-    const interval = Math.ceil((stability * Math.log(targetRetention)) / Math.log(retentionFactor));
+    const fuzzRange = 0.05;
+    const fuzzFactor = 1 + (Math.random() * 2 - 1) * fuzzRange;
 
-    if (params.enable_fuzz && interval > 1) {
-        const fuzz = 1 + (Math.random() * 0.1 - 0.05);
-        return Math.round(interval * fuzz);
-    }
-
-    return Math.abs(interval);
+    return Math.round(interval * fuzzFactor);
 };
 
 export const processReview = async (
@@ -105,10 +167,24 @@ export const processReview = async (
 ): Promise<{ state: State; due: Date; interval: number }> => {
     const user = await User.findById(userId);
     if (!user || !user.fsrsParams) {
-        throw new Error('User or FSRS parameters not found');
+        throw new NotFoundException('User or FSRS parameters not found', ErrorCode.NOT_FOUND);
     }
 
-    const fsrsParams = user.fsrsParams as unknown as FSRSParams;
+    // Get the card to find its deck
+    const card = await Card.findById(cardId);
+    if (!card) {
+        throw new NotFoundException('Card not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Get deck to check for deck-specific FSRS parameters
+    const deck = await Deck.findById(card.deck);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Prefer deck FSRS parameters over user parameters
+    const fsrsParams = (deck.fsrsParams as unknown as FSRSParams) || (user.fsrsParams as unknown as FSRSParams);
+    const now = new Date();
 
     const lastReview = await Revlog.findOne(
         { user: userId, card: cardId, deleted: false },
@@ -116,103 +192,59 @@ export const processReview = async (
         { sort: { review: -1 } }
     );
 
-    const now = new Date();
-    let state = State.NEW;
-    let difficulty = fsrsParams.w[8];
-    let stability = 0;
+    let currentState = State.NEW;
+    let currentDifficulty = 0;
+    let currentStability = 0;
     let elapsedDays = 0;
     let lastElapsedDays = 0;
 
     if (lastReview) {
-        state = lastReview.state as State;
-        difficulty = lastReview.difficulty;
-        stability = lastReview.stability;
-
+        currentState = lastReview.state as State;
+        currentDifficulty = lastReview.difficulty;
+        currentStability = lastReview.stability;
         elapsedDays = (now.getTime() - lastReview.review.getTime()) / (24 * 3600 * 1000);
         lastElapsedDays = lastReview.elapsed_days;
-
-        if (difficulty <= 0) {
-            difficulty = fsrsParams.w[8];
-        }
     }
 
-    let newState: State;
-
-    switch (rating) {
-        case Rating.AGAIN:
-            if (state === State.NEW) {
-                newState = State.LEARNING;
-            } else if (state === State.REVIEW) {
-                newState = State.RELEARNING;
-            } else {
-                newState = state;
-            }
-            break;
-
-        case Rating.HARD:
-            if (state === State.NEW || state === State.LEARNING) {
-                newState = State.LEARNING;
-            } else if (state === State.RELEARNING) {
-                newState = State.RELEARNING;
-            } else {
-                newState = State.REVIEW;
-            }
-            break;
-
-        case Rating.GOOD:
-            if (state === State.NEW || state === State.LEARNING || state === State.RELEARNING) {
-                newState = State.REVIEW;
-            } else {
-                newState = State.REVIEW;
-            }
-            break;
-
-        case Rating.EASY:
-            newState = State.REVIEW;
-            break;
-
-        default:
-            newState = state;
+    let retrievability: number;
+    if (!lastReview || currentState === State.NEW) {
+        retrievability = FSRS_CONSTANTS.INITIAL_RETRIEVABILITY;
+    } else {
+        retrievability = calculateRetrievability(elapsedDays, currentStability);
     }
-
-    const retrievability = lastReview ? calculateRetrievability(stability, elapsedDays) : fsrsParams.w[13];
 
     let newStability: number;
-    if (!lastReview || rating === Rating.AGAIN || state === State.NEW) {
-        switch (rating) {
-            case Rating.AGAIN:
-                newStability = fsrsParams.w[0];
-                break;
-            case Rating.HARD:
-                newStability = fsrsParams.w[2];
-                break;
-            case Rating.GOOD:
-                newStability = fsrsParams.w[4];
-                break;
-            case Rating.EASY:
-                newStability = fsrsParams.w[6];
-                break;
-            default:
-                newStability = fsrsParams.w[4];
-        }
+    if (!lastReview || currentState === State.NEW) {
+        newStability = calculateInitialStability(rating, fsrsParams);
+    } else if (rating === Rating.AGAIN) {
+        newStability = calculateStabilityOnFailure(currentDifficulty, currentStability, retrievability, fsrsParams);
     } else {
-        newStability = calculateStability(stability, difficulty, retrievability, rating, fsrsParams);
+        newStability = calculateStabilityOnSuccess(
+            currentDifficulty,
+            currentStability,
+            retrievability,
+            rating,
+            fsrsParams
+        );
     }
 
-    const newDifficulty = calculateDifficulty(difficulty, rating, fsrsParams);
+    let newDifficulty: number;
+    if (!lastReview || currentState === State.NEW) {
+        newDifficulty = calculateInitialDifficulty(rating, fsrsParams);
+    } else {
+        newDifficulty = calculateNewDifficulty(currentDifficulty, rating, fsrsParams);
+    }
+
+    const newState = getNextState(currentState, rating);
 
     let scheduledDays: number;
-
     if (rating === Rating.AGAIN) {
-        if (fsrsParams.enable_short_term) {
-            scheduledDays = 0;
-        } else {
-            scheduledDays = 1;
-        }
-    } else if ((state === State.LEARNING || state === State.RELEARNING) && rating !== Rating.EASY) {
+        scheduledDays = fsrsParams.enable_short_term ? 0 : 1;
+    } else if ((currentState === State.LEARNING || currentState === State.RELEARNING) && rating !== Rating.EASY) {
         scheduledDays = rating === Rating.HARD ? 1 : 1;
     } else {
-        scheduledDays = calculateInterval(newStability, fsrsParams.request_retention, rating, fsrsParams);
+        scheduledDays = calculateInterval(newStability, fsrsParams.request_retention);
+        scheduledDays = applyFuzzing(scheduledDays, fsrsParams.enable_fuzz);
     }
 
     scheduledDays = Math.min(scheduledDays, fsrsParams.maximum_interval);
@@ -220,11 +252,12 @@ export const processReview = async (
     const dueDate = new Date(now);
     dueDate.setDate(dueDate.getDate() + scheduledDays);
 
+    // Create new review log entry
     const newRevlog = new Revlog({
         user: userId,
         card: cardId,
-        grade: rating,
-        state: newState,
+        grade: rating as number,
+        state: newState as number,
         due: dueDate,
         stability: newStability,
         difficulty: newDifficulty,
@@ -239,87 +272,31 @@ export const processReview = async (
 
     await newRevlog.save();
 
+    // Update user statistics
     await User.findByIdAndUpdate(userId, {
         $inc: { 'stats.totalReviews': 1 },
         $set: { 'stats.lastStudyDate': now }
     });
 
-    const card = await Card.findById(cardId);
-    if (card) {
-        const deckId = card.deck;
-        if (lastReview) {
-            const updateObj: any = {
-                'stats.newCards': 0,
-                'stats.learningCards': 0,
-                'stats.reviewCards': 0
-            };
-            const dateFields = { lastStudied: now };
-            switch (state) {
-                case State.NEW:
-                    updateObj['stats.newCards'] = -1;
-                    break;
-                case State.LEARNING:
-                case State.RELEARNING:
-                    updateObj['stats.learningCards'] = -1;
-                    break;
-                case State.REVIEW:
-                    updateObj['stats.reviewCards'] = -1;
-                    break;
-            }
+    // Update deck statistics
+    await updateDeckStatistics(userId, card.deck.toString(), currentState, newState, now);
 
-            switch (newState) {
-                case State.NEW:
-                    updateObj['stats.newCards'] = updateObj['stats.newCards'] + 1;
-                    break;
-                case State.LEARNING:
-                case State.RELEARNING:
-                    updateObj['stats.learningCards'] = updateObj['stats.learningCards'] + 1;
-                    break;
-                case State.REVIEW:
-                    updateObj['stats.reviewCards'] = updateObj['stats.reviewCards'] + 1;
-                    break;
-            }
-            await mongoose.model('UserDeckState').findOneAndUpdate(
-                { user: userId, deck: deckId },
-                {
-                    $inc: updateObj,
-                    $set: dateFields
-                },
-                { new: true }
-            );
-        } else {
-            const updateObj: any = { 'stats.newCards': -1 };
-            const dateFields = { lastStudied: now };
-
-            switch (newState) {
-                case State.LEARNING:
-                case State.RELEARNING:
-                    updateObj['stats.learningCards'] = 1;
-                    break;
-                case State.REVIEW:
-                    updateObj['stats.reviewCards'] = 1;
-                    break;
-            }
-
-            await mongoose.model('UserDeckState').findOneAndUpdate(
-                { user: userId, deck: deckId },
-                {
-                    $inc: updateObj,
-                    $set: dateFields
-                }
-            );
-        }
-    }
-
+    // Check for lapse threshold
     if (rating === Rating.AGAIN) {
-        const lapses = await Revlog.countDocuments({
+        const lapseCount = await Revlog.countDocuments({
             user: userId,
             card: cardId,
-            grade: Rating.AGAIN
+            grade: Rating.AGAIN,
+            deleted: false
         });
 
-        if (lapses >= fsrsParams.lapses) {
-            newState = State.NEW;
+        if (lapseCount >= fsrsParams.lapses) {
+            // Reset card to NEW state if too many lapses
+            return {
+                state: State.NEW,
+                due: dueDate,
+                interval: scheduledDays
+            };
         }
     }
 
@@ -330,11 +307,73 @@ export const processReview = async (
     };
 };
 
+/**
+ * Update deck statistics after a review
+ * Maintains accurate counts of cards in different states
+ */
+const updateDeckStatistics = async (
+    userId: string,
+    deckId: string,
+    oldState: State,
+    newState: State,
+    reviewDate: Date
+): Promise<void> => {
+    const updateObj: any = {};
+    const setObj: any = { lastStudied: reviewDate };
+
+    // Decrement old state count
+    switch (oldState) {
+        case State.NEW:
+            updateObj['stats.newCards'] = -1;
+            break;
+        case State.LEARNING:
+        case State.RELEARNING:
+            updateObj['stats.learningCards'] = -1;
+            break;
+        case State.REVIEW:
+            updateObj['stats.reviewCards'] = -1;
+            break;
+    }
+
+    // Increment new state count
+    switch (newState) {
+        case State.NEW:
+            updateObj['stats.newCards'] = (updateObj['stats.newCards'] || 0) + 1;
+            break;
+        case State.LEARNING:
+        case State.RELEARNING:
+            updateObj['stats.learningCards'] = (updateObj['stats.learningCards'] || 0) + 1;
+            break;
+        case State.REVIEW:
+            updateObj['stats.reviewCards'] = (updateObj['stats.reviewCards'] || 0) + 1;
+            break;
+    }
+
+    await UserDeckState.findOneAndUpdate(
+        { user: userId, deck: deckId },
+        {
+            $inc: updateObj,
+            $set: setObj
+        },
+        { upsert: true, new: true }
+    );
+};
+
+// Export existing functions (keeping API compatibility)
 export const getDueCards = async (userId: string, deckId: string) => {
     const user = await User.findById(userId);
     if (!user) {
-        throw new Error('User not found');
+        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
     }
+
+    // Get deck to check for deck-specific FSRS parameters
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Prefer deck FSRS parameters over user parameters
+    const fsrsParams = (deck.fsrsParams as unknown as FSRSParams) || (user.fsrsParams as unknown as FSRSParams);
 
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -382,12 +421,13 @@ export const getDueCards = async (userId: string, deckId: string) => {
         }
     }
 
-    const userDeckState = await mongoose.model('UserDeckState').findOne({
+    const userDeckState = await UserDeckState.findOne({
         user: userId,
         deck: deckId
     });
 
-    const newCardsPerDay = userDeckState?.newCardsPerDay || 20;
+    // Use deck FSRS parameters if available, otherwise fall back to user deck state or defaults
+    const newCardsPerDay = fsrsParams.card_limit || 20;
     const reviewsPerDay = userDeckState?.reviewsPerDay || 100;
 
     const newCardsSeenToday = await Revlog.countDocuments({
@@ -411,7 +451,7 @@ export const getDueCards = async (userId: string, deckId: string) => {
 export const updateFSRSParams = async (userId: string, params: Partial<FSRSParams>): Promise<FSRSParams> => {
     const user = await User.findById(userId);
     if (!user) {
-        throw new Error('User not found');
+        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
     }
 
     const updateObj: any = {};
@@ -428,14 +468,14 @@ export const updateFSRSParams = async (userId: string, params: Partial<FSRSParam
 export const getUserFSRSParams = async (userId: string): Promise<FSRSParams> => {
     const user = await User.findById(userId);
     if (!user) {
-        throw new Error('User not found');
+        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
     }
 
     return user.fsrsParams as unknown as FSRSParams;
 };
 
 export const getUserProgressService = async (userId: string) => {
-    const totalReviews = await Revlog.countDocuments({ user: userId });
+    const totalReviews = await Revlog.countDocuments({ user: userId, deleted: false });
 
     const userDecks = await UserDeckState.find({ user: userId });
 
@@ -469,48 +509,66 @@ export const getUserProgressService = async (userId: string) => {
 };
 
 export const skipCardService = async (userId: string, cardId: string) => {
-    const revlog = await Revlog.findOne({ user: userId, card: cardId, deleted: false }, {}, { sort: { review: -1 } });
-    const now = new Date();
-    const dueDate = new Date(now);
-    dueDate.setDate(dueDate.getDate() + 100000);
+    const user = await User.findById(userId);
+    if (!user || !user.fsrsParams) {
+        throw new NotFoundException('User or FSRS parameters not found', ErrorCode.NOT_FOUND);
+    }
 
-    if (!revlog) {
-        const newRevlog = new Revlog({
+    // Get the card to find its deck
+    const card = await Card.findById(cardId);
+    if (!card) {
+        throw new NotFoundException('Card not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Get deck to check for deck-specific FSRS parameters
+    const deck = await Deck.findById(card.deck);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Prefer deck FSRS parameters over user parameters
+    const fsrsParams = (deck.fsrsParams as unknown as FSRSParams) || (user.fsrsParams as unknown as FSRSParams);
+    const now = new Date();
+
+    // Set due date far in the future (effectively skipping)
+    const dueDate = new Date(now);
+    dueDate.setDate(dueDate.getDate() + fsrsParams.maximum_interval);
+
+    const revlog = await Revlog.findOne(
+        {
             user: userId,
             card: cardId,
-            grade: Rating.EASY,
-            state: State.REVIEW,
-            due: dueDate,
-            stability: 100,
-            difficulty: 1,
-            elapsed_days: 0,
-            last_elapsed_days: 0,
-            scheduled_days: 1,
-            review: now,
-            duration: 0,
-            deleted: false,
-            created_at: now
-        });
-        newRevlog.save();
-        return 'success';
+            deleted: false
+        },
+        {},
+        { sort: { review: -1 } }
+    );
+
+    let stability = 365; // High stability for skipped cards
+    let difficulty: number = FSRS_CONSTANTS.MIN_DIFFICULTY;
+
+    if (revlog) {
+        stability = Math.max(revlog.stability, 365);
+        difficulty = revlog.difficulty;
     }
 
     const newRevlog = new Revlog({
         user: userId,
         card: cardId,
-        grade: Rating.EASY,
-        state: State.REVIEW,
+        grade: Rating.EASY as number, // Treat skip as easy
+        state: State.REVIEW as number,
         due: dueDate,
-        stability: revlog.stability,
-        difficulty: revlog.difficulty,
-        elapsed_days: revlog.elapsed_days,
-        last_elapsed_days: revlog.last_elapsed_days,
-        scheduled_days: 1,
+        stability: stability,
+        difficulty: difficulty,
+        elapsed_days: revlog?.elapsed_days || 0,
+        last_elapsed_days: revlog?.last_elapsed_days || 0,
+        scheduled_days: fsrsParams.maximum_interval,
         review: now,
         duration: 0,
         deleted: false,
         created_at: now
     });
+
     await newRevlog.save();
     return 'success';
 };

@@ -1,19 +1,28 @@
 import 'dotenv/config';
 import { Request, Response } from 'express';
-import { checkPaid, findAllPackages, getTransaction, saveTransaction } from '~/services/paymentService';
+import {
+    checkPaid,
+    findAllPackages,
+    getTransaction,
+    saveTransaction,
+    getDashboardMetricsService,
+    getMonthlyRevenueService,
+    getQuarterlyRevenueService
+} from '~/services/paymentService';
 
 export const webhook = async (req: Request, res: Response) => {
     const transactionData = {
-        tid: req.body.data[0].tid,
-        description: req.body.data[0].description,
-        amount: req.body.data[0].amount,
-        when: req.body.data[0].when,
-        bank_sub_acc_id: req.body.data[0].bank_sub_acc_id,
-        subAccId: req.body.data[0].subAccId,
-        bankName: req.body.data[0].bankName,
-        bankAbbreviation: req.body.data[0].bankAbbreviation,
-        corresponsiveAccount: req.body.data[0].corresponsiveAccount
+        tid: req.body.data.tid,
+        description: req.body.data.description,
+        amount: req.body.data.amount,
+        when: req.body.data.when,
+        bank_sub_acc_id: req.body.data.bank_sub_acc_id,
+        subAccId: req.body.data.subAccId,
+        bankName: req.body.data.bankName,
+        bankAbbreviation: req.body.data.bankAbbreviation,
+        corresponsiveAccount: req.body.data.corresponsiveAccount
     };
+
     const response = await saveTransaction(transactionData);
     return res.json(response);
 };
@@ -33,4 +42,22 @@ export const getIsPaid = async (req: Request, res: Response) => {
 export const getAllPackages = async (req: Request, res: Response) => {
     const packages = await findAllPackages();
     return res.json(packages);
+};
+
+export const getDashboardMetrics = async (req: Request, res: Response) => {
+    const year = req.query.year as string;
+    const metrics = await getDashboardMetricsService(year);
+    res.json(metrics);
+};
+
+export const getMonthlyRevenue = async (req: Request, res: Response) => {
+    const year = req.query.year as string;
+    const data = await getMonthlyRevenueService(year);
+    res.status(200).json(data);
+};
+
+export const getQuarterlyRevenue = async (req: Request, res: Response) => {
+    const year = parseInt(req.query.year as string) || new Date().getFullYear();
+    const data = await getQuarterlyRevenueService(year);
+    res.json(data);
 };

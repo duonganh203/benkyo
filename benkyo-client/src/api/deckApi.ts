@@ -1,6 +1,8 @@
 import { CardInterface } from '@/types/card';
 import { CreateDeckPayload, DeckDetails, DeckInterface } from '@/types/deck';
 import { api } from '.';
+import { FSRSParamsSchema } from '@/schemas/deckSchema';
+import { z } from 'zod';
 
 export const createDeck = async (deck: CreateDeckPayload) => {
     const { data } = await api.post('decks', deck);
@@ -34,4 +36,22 @@ export const sendRequestPublicDeck = async (deckId: string) => {
 export const getPublicDecks = async () => {
     const response = await api.get('decks/public-deck');
     return response.data;
+};
+
+export const duplicateDeck = async (deckId: string) => {
+    const response = await api.post(`decks/${deckId}/duplicate`);
+    return response.data;
+};
+
+export const updateDeckFsrsParams = async (deckId: string, fsrsParams: z.infer<typeof FSRSParamsSchema>) => {
+    const response = await api.patch(`decks/${deckId}/fsrs`, fsrsParams);
+    return response.data;
+};
+export const toggleLikeDeck = async (deckId: string) => {
+    const response = await api.post(`decks/${deckId}/like`);
+    return response.data as {
+        message: string;
+        likeCount: number;
+        liked: boolean;
+    };
 };

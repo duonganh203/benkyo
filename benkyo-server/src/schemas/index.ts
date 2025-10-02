@@ -53,17 +53,21 @@ const UserSchema = new Schema({
         maximum_interval: { type: Number, default: 36500 },
         w: {
             type: [Number],
-            default: [0.4, 0.6, 2.4, 5.8, 4.93, 9.93, 5.8, 19.25, 1.64, 1.01, 1.55, 0.1, 3.0, 0.9]
+            default: [
+                0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395,
+                0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621
+            ]
         },
         enable_fuzz: { type: Boolean, default: false },
         enable_short_term: { type: Boolean, default: true },
-        card_limit: { type: Number, default: 50 },
+        card_limit: { type: Number, default: 20 },
         lapses: { type: Number, default: 8 }
     },
     decks: [{ type: Schema.Types.ObjectId, ref: 'Deck' }],
     stats: {
         totalReviews: { type: Number, default: 0 },
         studyStreak: { type: Number, default: 0 },
+        longestStudyStreak: { type: Number, default: 0 },
         lastStudyDate: { type: Date }
     }
 });
@@ -80,12 +84,20 @@ const DeckSchema = new Schema({
     updatedAt: { type: Date, default: Date.now },
     cardCount: { type: Number, default: 0 },
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    subscribers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    avgRating: { type: Number, default: 0 },
-    ratingCount: { type: Number, default: 0 },
+    likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    likeCount: { type: Number, default: 0 },
     popularity: { type: Number, default: 0 },
     reviewedBy: { type: Schema.Types.ObjectId, ref: 'User' },
-    reviewNote: { type: String }
+    reviewNote: { type: String },
+    fsrsParams: {
+        request_retention: { type: Number },
+        maximum_interval: { type: Number },
+        w: { type: [Number] },
+        enable_fuzz: { type: Boolean },
+        enable_short_term: { type: Boolean },
+        card_limit: { type: Number },
+        lapses: { type: Number }
+    }
 });
 
 const CardSchema = new Schema({
@@ -138,7 +150,11 @@ const UserDeckStateSchema = new Schema({
     }
 });
 const QuizSchema = new Schema({
-    deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: true },
+    deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: false },
+    title: { type: String, required: false },
+    description: { type: String, required: false },
+    type: { type: String, enum: ['manual', 'ai'], default: 'manual', required: false },
+    class: { type: Schema.Types.ObjectId, ref: 'Class', required: false },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     createdAt: { type: Date, default: Date.now },
     questions: [
@@ -235,12 +251,69 @@ const PackageSchema = new Schema(
     },
     { timestamps: true }
 );
-
 const GenerationLogSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     function: { type: String, enum: Object.values(Func), required: true },
     remaining: { type: Number, default: 3 }
 });
+
+const ClassSchema = new Schema(
+    {
+        name: { type: String, required: true },
+        description: { type: String, required: true },
+        bannerUrl: { type: String, required: false },
+        owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        visibility: { type: String, enum: ['public', 'private'], default: 'private' },
+        requiredApprovalToJoin: { type: Boolean, default: false },
+        invitedUsers: [
+            {
+                user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                invitedAt: { type: Date, default: Date.now }
+            }
+        ],
+        visited: [
+            {
+                userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                lastVisit: { type: Date, default: Date.now }
+            }
+        ],
+        joinRequests: [
+            {
+                user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                requestDate: { type: Date, default: Date.now }
+            }
+        ],
+        users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        decks: [
+            {
+                deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: true },
+                description: { type: String },
+                startTime: { type: Date },
+                endTime: { type: Date }
+            }
+        ],
+        userClassStates: [{ type: Schema.Types.ObjectId, ref: 'UserClassState' }]
+    },
+    { timestamps: true }
+);
+
+const UserClassStateSchema = new Schema(
+    {
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        class: { type: Schema.Types.ObjectId, ref: 'Class', required: true },
+        deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: true },
+        completedCardIds: [{ type: Schema.Types.ObjectId, ref: 'Card' }],
+        correctCount: { type: Number, default: 0 },
+        totalCount: { type: Number, default: 0 },
+        startTime: { type: Date, default: Date.now },
+        endTime: { type: Date },
+        duration: { type: Number }
+    },
+    { timestamps: true }
+);
+
+export const Class = model('Class', ClassSchema);
+export const UserClassState = model('UserClassState', UserClassStateSchema);
 
 export const User = model('User', UserSchema);
 export const Deck = model('Deck', DeckSchema);
@@ -260,3 +333,5 @@ export type ConversationType = InferSchemaType<typeof ConversationSchema>;
 export type UserType = InferSchemaType<typeof UserSchema>;
 export const GenerationLog = model('GenerationLog', GenerationLogSchema);
 export { Rating, State, PublicStatus, PackageType, PackageDuration, Func };
+export type ClassStateType = InferSchemaType<typeof ClassSchema>;
+export type UserClassStateType = InferSchemaType<typeof UserClassStateSchema>;

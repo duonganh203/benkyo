@@ -9,7 +9,9 @@ import documentRoutes from './documentRoute';
 import chatRoutes from './chatRoute';
 import paymentRoutes from './paymentRoute';
 import limitRoutes from './limitRoute';
-
+import packageRoutes from './packageRouter';
+import streakRoutes from './streakRoute';
+import classRoutes from './classRoute';
 const rootRouter: Router = Router();
 
 rootRouter.use('/auth', authRoutes);
@@ -23,5 +25,8 @@ rootRouter.use('/documents', documentRoutes);
 rootRouter.use('/chat', chatRoutes);
 rootRouter.use('/payment', paymentRoutes);
 rootRouter.use('/limit', limitRoutes);
+rootRouter.use('/package', packageRoutes);
+rootRouter.use('/streak', streakRoutes);
+rootRouter.use('/class', classRoutes);
 
 export default rootRouter;

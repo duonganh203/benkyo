@@ -9,9 +9,14 @@ import {
     sendReqPublicDeckService,
     getPublicDecksService,
     getRequestPulbicDeckService,
-    reviewPublicDeckService
+    reviewPublicDeckService,
+    duplicateDeckService,
+    updateDeckFsrsParamsService,
+    getDeckStatsService,
+    toggleLikeDeckService
 } from '~/services/deckService';
-import { createDeckValidation } from '~/validations/deckValidation';
+import { createDeckValidation, updateDeckFsrsParamsValidation } from '~/validations/deckValidation';
+import { ErrorCode } from '~/exceptions/root';
 
 export const createDeck = async (req: Request, res: Response) => {
     const deckData = req.body;
@@ -77,4 +82,37 @@ export const reviewPublicServiceDeck = async (req: Request, res: Response) => {
 
     const result = await reviewPublicDeckService(id, status, req.user._id, note);
     return res.json({ message: result.message });
+};
+
+export const duplicateDeck = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const result = await duplicateDeckService(userId, id);
+    return res.json({ message: result.message });
+};
+
+export const updateDeckFsrsParams = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const fsrsParams = req.body;
+
+    // Validate the FSRS parameters
+    const validatedParams = updateDeckFsrsParamsValidation.parse(fsrsParams);
+
+    const result = await updateDeckFsrsParamsService(userId, id, validatedParams);
+    return res.json({ message: 'FSRS parameters updated successfully', data: result });
+};
+export const getDeckStats = async (req: Request, res: Response) => {
+    const stats = await getDeckStatsService();
+    res.json(stats);
+};
+// Toggle like/unlike a deck
+export const toggleLikeDeck = async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized', code: ErrorCode.UNAUTHORIZED });
+    }
+
+    const result = await toggleLikeDeckService(userId, req.params.id);
+    return res.json(result);
 };
