@@ -41,7 +41,8 @@ import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-p
 import useMe from '@/hooks/queries/use-me';
 import FlashcardViewer from '@/components/flashcard-viewer';
 import { DeckFSRSSettingsForm } from '@/components/forms/deck-fsrs-settings-form';
-
+import LikeDeck from '@/components/rating-deck';
+import useToggleLikeDeck from '@/hooks/queries/use-toggle-like-deck';
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -222,6 +223,18 @@ const DeckDetail = () => {
             getToast('error', `${error}`);
         }
     };
+    const toggleLikeMutation = useToggleLikeDeck(id!);
+
+    const handleLike = async () => {
+        try {
+            const res = await toggleLikeMutation.mutateAsync();
+            // nếu không cần dùng liked thì không set luôn
+            console.log('Like status:', res.liked);
+        } catch (err) {
+            console.error('Failed to update like:', err);
+        }
+    };
+
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
@@ -265,6 +278,7 @@ const DeckDetail = () => {
                             <div>
                                 <h1 className='text-2xl font-bold'>{deckData.name}</h1>
                                 <p className='text-muted-foreground'>{deckData.description || 'No description'}</p>
+                                <LikeDeck deckData={deckData} currentUser={currentUser} onLikeApi={handleLike} />
                             </div>
                             <Badge
                                 variant='outline'

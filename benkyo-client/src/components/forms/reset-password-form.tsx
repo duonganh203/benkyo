@@ -50,7 +50,7 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentPropsW
             {
                 onSuccess: () => {
                     setIsSuccess(true);
-                    setTimeout(() => navigate('/'), 1500);
+                    navigate('/login');
                 },
                 onError: (error: any) => {
                     alert(error?.response?.data?.message || 'Failed to reset password.');
@@ -74,7 +74,7 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentPropsW
                     </div>
                     <div className='text-center'>
                         <Link
-                            to='/'
+                            to='/login'
                             className='text-sm text-muted-foreground underline underline-offset-4 hover:text-primary'
                         >
                             Back to login

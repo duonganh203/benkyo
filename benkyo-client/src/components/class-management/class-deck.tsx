@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Book, Plus, Trash2, Calendar, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -220,7 +221,10 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
                                     key={deck._id}
                                     className='flex items-center justify-between p-4 bg-muted/30 rounded-lg border'
                                 >
-                                    <div className='flex items-center gap-4 flex-1'>
+                                    <Link
+                                        to={`/deck/${deck.deck?._id}`}
+                                        className='flex items-center gap-4 flex-1 no-underline hover:opacity-90'
+                                    >
                                         <div className='w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center'>
                                             <Book className='w-6 h-6 text-primary' />
                                         </div>
@@ -250,7 +254,7 @@ export const ClassDeck = ({ onDeckChange }: ClassDeckProps) => {
                                                 )}
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                     <Button
                                         size='sm'
                                         variant='outline'

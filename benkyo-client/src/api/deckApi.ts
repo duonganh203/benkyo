@@ -52,3 +52,11 @@ export const updateDeckFsrsParams = async (deckId: string, fsrsParams: z.infer<t
     const response = await api.patch(`decks/${deckId}/fsrs`, fsrsParams);
     return response.data;
 };
+export const toggleLikeDeck = async (deckId: string) => {
+    const response = await api.post(`decks/${deckId}/like`);
+    return response.data as {
+        message: string;
+        likeCount: number;
+        liked: boolean;
+    };
+};

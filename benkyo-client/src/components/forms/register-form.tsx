@@ -14,11 +14,15 @@ import { ApiError } from '@/types/api';
 import useRegister from '@/hooks/queries/use-register';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { getToast } from '@/utils/getToast';
+import { OtpModal } from '../modals/otp-modal';
 
 export function RegisterForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
     const { mutate: register, isPending } = useRegister();
     const [error, setError] = useState<AxiosError<ApiError>>();
+    const [isOtpOpen, setIsOtpOpen] = useState(false);
+    const [email, setEmail] = useState('');
     const navigate = useNavigate();
+
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
@@ -35,10 +39,12 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
             name: `${data.firstName} ${data.lastName}`,
             password: data.password
         };
+
         register(payload, {
             onSuccess: () => {
-                getToast('success', 'Account created successfully!!!', 'Now you can login with your credentials');
-                navigate('/login');
+                setEmail(data.email);
+                setIsOtpOpen(true);
+                getToast('success', 'OTP has been sent to your email!');
             },
             onError: (error) => {
                 getToast('error', error.message || 'Something went wrong!!!');
@@ -168,6 +174,16 @@ export function RegisterForm({ className, ...props }: React.ComponentPropsWithou
                 By clicking continue, you agree to our <Link to='#'>Terms of Service</Link> and{' '}
                 <Link to='#'>Privacy Policy</Link>.
             </div>
+            <OtpModal
+                isOpen={isOtpOpen}
+                onClose={() => setIsOtpOpen(false)}
+                email={email}
+                onVerifySuccess={() => {
+                    getToast('success', 'Account created successfully!');
+                    navigate('/login');
+                }}
+                mode='register'
+            />
         </div>
     );
 }

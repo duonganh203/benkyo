@@ -18,13 +18,23 @@ import { generateOTP, verifyOTP } from './otpService';
 
 export const registerService = async (userData: z.infer<typeof registerValidation>) => {
     const { name, email, password } = userData;
-    let user = await User.findOne({ email: email.toLowerCase() });
-    if (user) {
+
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
         throw new BadRequestsException('User already exists!', ErrorCode.USER_ALREADY_EXISTS);
     }
+
     const hashedPassword = await hash(password, 10);
-    user = await User.create({ name, email: email.toLowerCase(), password: hashedPassword });
-    return user;
+    const otp = await generateOTP(email, 'register', {
+        name,
+        email: email.toLowerCase(),
+        password: hashedPassword
+    });
+    await sendOTPEmail(email, otp);
+
+    return {
+        message: 'OTP has been sent to your email!'
+    };
 };
 
 export const loginService = async (userData: z.infer<typeof loginValidation>, options?: { isAdmin?: boolean }) => {
@@ -62,14 +72,24 @@ export const forgotPasswordService = async (email: string) => {
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) throw new Error('User not found!');
 
-    const otp = await generateOTP(user.email);
+    const otp = await generateOTP(user.email, 'forgotPassword');
     await sendOTPEmail(user.email, otp);
 
     return { message: 'OTP has been sent to your email!' };
 };
 
 export const verifyOtpService = async (email: string, otp: string) => {
-    await verifyOTP(email, otp);
+    const { mode, tempUser } = await verifyOTP(email, otp);
+
+    if (mode === 'register' && tempUser) {
+        const user = await User.create(tempUser);
+        return { message: 'Account created successfully!', user };
+    }
+
+    if (mode === 'forgotPassword') {
+        return { message: 'OTP verified successfully! You can now reset your password.' };
+    }
+
     return { message: 'OTP verified successfully!' };
 };
 
