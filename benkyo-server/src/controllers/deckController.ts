@@ -13,7 +13,8 @@ import {
     duplicateDeckService,
     updateDeckFsrsParamsService,
     getDeckStatsService,
-    toggleLikeDeckService
+    toggleLikeDeckService,
+    getUserPublicDecksService
 } from '~/services/deckService';
 import { createDeckValidation, updateDeckFsrsParamsValidation } from '~/validations/deckValidation';
 import { ErrorCode } from '~/exceptions/root';
@@ -60,6 +61,12 @@ export const getPublicDecks = async (req: Request, res: Response) => {
 
 export const getAllRequestPublicDecks = async (req: Request, res: Response) => {
     const result = await getAllRequestedPublicDecksService();
+    res.json(result);
+};
+
+export const getUserPublicDecks = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const result = await getUserPublicDecksService(userId);
     res.json(result);
 };
 
