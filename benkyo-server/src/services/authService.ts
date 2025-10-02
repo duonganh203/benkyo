@@ -13,6 +13,7 @@ import {
 import { generateRefreshToken, generateToken } from '~/utils/generateJwt';
 import * as jwt from 'jsonwebtoken';
 import { UnauthorizedException } from '~/exceptions/unauthorized';
+import { addCreditFromNewUser } from './limitService';
 import { sendOTPEmail } from '~/utils//mailService';
 import { generateOTP, verifyOTP } from './otpService';
 
@@ -31,7 +32,6 @@ export const registerService = async (userData: z.infer<typeof registerValidatio
         password: hashedPassword
     });
     await sendOTPEmail(email, otp);
-
     return {
         message: 'OTP has been sent to your email!'
     };
