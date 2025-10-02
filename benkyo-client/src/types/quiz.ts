@@ -10,6 +10,7 @@ export interface Question {
     questionText: string;
     choices: { text: string }[];
     correctAnswer: number;
+    ss: string;
 }
 
 export interface QuizRes {
