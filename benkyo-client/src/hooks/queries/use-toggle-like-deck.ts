@@ -1,4 +1,4 @@
-import { toggleLikeDeck, getLikedDecks } from '@/api/deckApi';
+import { toggleLikeDeck } from '@/api/deckApi';
 import { ApiError } from '@/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';

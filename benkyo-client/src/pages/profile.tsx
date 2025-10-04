@@ -69,19 +69,31 @@ export default function Profile() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { setUser, user } = useAuthStore((store) => store);
 
-    // Dữ liệu từ hook useLikedDecksHistory
-    // Giả định kiểu trả về của likedDecks.data là LikedDeckItem[]
     const { data: likedDecks, isLoading: isLikedLoading } = useLikedDecksHistory();
     console.log('likedDecks >>>', likedDecks);
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
 
     const filteredDecks = useMemo(() => {
-        if (!likedDecks?.data) return [] as LikedDeckItem[]; // Ép kiểu kết quả trống
-        // Ép kiểu cho từng deck trong quá trình lọc
-        return likedDecks.data.filter((deck: LikedDeckItem) =>
-            deck.name.toLowerCase().includes(search.toLowerCase())
-        ) as LikedDeckItem[];
+        if (!likedDecks || typeof likedDecks !== 'object' || likedDecks === null) {
+            return [];
+        }
+
+        let decks: LikedDeckItem[] = [];
+        if (Array.isArray(likedDecks)) {
+            decks = likedDecks as LikedDeckItem[];
+        } else {
+            const values = Object.values(likedDecks);
+            decks = values.filter(
+                (item: any) => item && typeof item.id === 'string' && typeof item.name === 'string'
+            ) as LikedDeckItem[];
+        }
+        return decks.filter((deck) => {
+            if (!deck || !deck.name) {
+                return false;
+            }
+            return deck.name.toLowerCase().includes(search.toLowerCase());
+        });
     }, [likedDecks, search]);
 
     const totalPages = Math.ceil(filteredDecks.length / ITEMS_PER_PAGE);
@@ -471,7 +483,7 @@ export default function Profile() {
                     ) : (
                         <div className='grid gap-4 grid-cols-1'>
                             {paginatedDecks.length > 0 ? (
-                                (paginatedDecks as LikedDeckItem[]).map((deck, index: number) => (
+                                (paginatedDecks as LikedDeckItem[]).map((deck) => (
                                     <Card
                                         key={deck.id}
                                         className='group flex flex-col sm:flex-row gap-4 p-5 rounded-xl shadow-md border border-gray-200 transition-all duration-300 hover:shadow-xl hover:border-blue-500 cursor-pointer bg-white dark:bg-gray-800 dark:border-gray-700'
