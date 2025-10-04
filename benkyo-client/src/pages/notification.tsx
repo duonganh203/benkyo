@@ -1,4 +1,4 @@
-import { Bell, Loader2, Users, Clock, AlertTriangle, Calendar } from 'lucide-react';
+import { Bell, Loader2, Users, Clock, AlertTriangle, Calendar, Shield } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,9 @@ import { getToast } from '@/utils/getToast';
 import { useNotificationStore } from '@/hooks/stores/use-notification-store';
 import { UnifiedNotification } from '@/types/class';
 import { Button } from '@/components/ui/button';
+import useAcceptJoinRequest from '@/hooks/queries/use-accept-join-request';
+import useRejectJoinRequest from '@/hooks/queries/use-reject-join-request';
+import { ClassNotification } from '@/types/notification';
 
 const Notifications = () => {
     const { data: notificationsData, isLoading, error, refetch } = useGetAllNotifications();
@@ -18,42 +21,53 @@ const Notifications = () => {
     const { setNotifications } = useNotificationStore();
     const { mutateAsync: acceptInvite } = useAcceptInviteClass();
     const { mutateAsync: rejectInvite } = useRejectInviteClass();
+    const { mutateAsync: acceptJoinRequest } = useAcceptJoinRequest();
+    const { mutateAsync: rejectJoinRequest } = useRejectJoinRequest();
 
     const allNotifications = notificationsData?.all || [];
-    const displayedNotifications = notificationsData?.invites || [];
+    const invitesOnly = allNotifications.filter((n) => n.notificationType === 'invite');
+    const joinRequestsOnly = allNotifications.filter((n) => n.notificationType === 'join_request');
     const overdueSchedules = notificationsData?.schedules?.overdue || [];
     const upcomingDeadlines = notificationsData?.schedules?.upcoming || [];
     const criticalUpcoming = notificationsData?.schedules?.criticalUpcoming || [];
 
-    const totalInvites = notificationsData?.summary?.totalInvites || 0;
+    const totalInvites = invitesOnly.length;
+    const totalJoinRequests = joinRequestsOnly.length;
     const totalSchedule =
         (notificationsData?.summary?.totalOverdue || 0) + (notificationsData?.schedules?.upcoming?.length || 0);
-    const totalNotifications = notificationsData?.summary?.totalAll || 0;
+    const totalNotifications = allNotifications.length || notificationsData?.summary?.totalAll || 0;
 
-    const handleAccept = async (classId: string) => {
+    const handleAcceptOrReject = (action: 'accept' | 'reject') => async (classId: string, requestUserId?: string) => {
         try {
-            await acceptInvite({ classId });
+            if (requestUserId) {
+                if (action === 'accept') {
+                    await acceptJoinRequest({ classId, userId: requestUserId });
+                } else {
+                    await rejectJoinRequest({ classId, userId: requestUserId });
+                }
+            } else {
+                if (action === 'accept') {
+                    await acceptInvite({ classId });
+                } else {
+                    await rejectInvite({ classId });
+                }
+            }
             await refetch();
-            setNotifications(displayedNotifications);
-            getToast('success', 'Successfully joined the class.');
+            const safeInvites = (notificationsData?.invites || []).filter(
+                (n: ClassNotification): n is ClassNotification & { type: 'invite' | 'system' } =>
+                    n.type === 'invite' || n.type === 'system'
+            );
+            setNotifications(safeInvites);
         } catch {
-            getToast('error', 'Failed to join the class.');
+            getToast('error', 'Action failed.');
         }
     };
 
-    const handleReject = async (classId: string) => {
-        try {
-            await rejectInvite({ classId });
-            await refetch();
-            setNotifications(displayedNotifications);
-            getToast('success', 'Invitation rejected.');
-        } catch {
-            getToast('error', 'Failed to reject the invitation.');
-        }
-    };
+    const handleAccept = handleAcceptOrReject('accept');
+    const handleReject = handleAcceptOrReject('reject');
 
     const renderNotification = (notification: UnifiedNotification) => {
-        if (notification.notificationType === 'invite') {
+        if (notification.notificationType === 'invite' || notification.notificationType === 'join_request') {
             return (
                 <NotificationCard
                     key={notification.id}
@@ -123,7 +137,7 @@ const Notifications = () => {
                     </div>
                 ) : (
                     <Tabs defaultValue='all' className='w-full'>
-                        <TabsList className='grid w-full grid-cols-3'>
+                        <TabsList className='grid w-full grid-cols-4'>
                             <TabsTrigger value='all' className='relative'>
                                 All
                                 {totalNotifications > 0 && (
@@ -134,10 +148,19 @@ const Notifications = () => {
                             </TabsTrigger>
                             <TabsTrigger value='invites' className='relative'>
                                 <Users className='w-4 h-4 mr-1' />
-                                Class Invites
+                                Invites
                                 {totalInvites > 0 && (
                                     <Badge variant='secondary' className='ml-1 text-xs'>
                                         {totalInvites}
+                                    </Badge>
+                                )}
+                            </TabsTrigger>
+                            <TabsTrigger value='join-requests' className='relative'>
+                                <Shield className='w-4 h-4 mr-1' />
+                                Join Requests
+                                {totalJoinRequests > 0 && (
+                                    <Badge variant='secondary' className='ml-1 text-xs'>
+                                        {totalJoinRequests}
                                     </Badge>
                                 )}
                             </TabsTrigger>
@@ -178,20 +201,36 @@ const Notifications = () => {
                                     <CardContent className='pt-6'>
                                         <div className='text-center py-12'>
                                             <Users className='w-16 h-16 mx-auto mb-4 text-muted-foreground' />
-                                            <h3 className='text-lg font-medium mb-2 text-foreground'>
-                                                No class invitations
-                                            </h3>
-                                            <p className='text-muted-foreground'>
-                                                You have no pending class invitations
-                                            </p>
+                                            <h3 className='text-lg font-medium mb-2 text-foreground'>No invites</h3>
+                                            <p className='text-muted-foreground'>No pending class invitations</p>
                                         </div>
                                     </CardContent>
                                 </Card>
                             ) : (
                                 <div className='space-y-4'>
                                     {allNotifications
-                                        .filter((notification) => notification.notificationType === 'invite')
+                                        .filter((n) => n.notificationType === 'invite')
                                         .map((notification) => renderNotification(notification))}
+                                </div>
+                            )}
+                        </TabsContent>
+
+                        <TabsContent value='join-requests' className='space-y-4 mt-6'>
+                            {totalJoinRequests === 0 ? (
+                                <Card>
+                                    <CardContent className='pt-6'>
+                                        <div className='text-center py-12'>
+                                            <Shield className='w-16 h-16 mx-auto mb-4 text-muted-foreground' />
+                                            <h3 className='text-lg font-medium mb-2 text-foreground'>
+                                                No join requests
+                                            </h3>
+                                            <p className='text-muted-foreground'>No pending join requests</p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                <div className='space-y-4'>
+                                    {joinRequestsOnly.map((notification) => renderNotification(notification))}
                                 </div>
                             )}
                         </TabsContent>
