@@ -118,13 +118,12 @@ export const toggleLikeDeck = async (req: Request, res: Response) => {
 export const getLikedDecksByUser = async (req: Request, res: Response) => {
     const userId = req.user?._id;
     if (!userId) {
-        return res.status(401).json({ message: 'Unauthorized', code: ErrorCode.UNAUTHORIZED });
+        return res.status(401).json({
+            message: 'Unauthorized',
+            code: ErrorCode.UNAUTHORIZED
+        });
     }
 
     const likedDecks = await getLikedDecksByUserService(userId);
-
-    return res.json({
-        message: 'Fetched liked decks successfully',
-        data: likedDecks
-    });
+    return res.json(likedDecks);
 };

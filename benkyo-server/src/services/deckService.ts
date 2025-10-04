@@ -315,20 +315,21 @@ export const toggleLikeDeckService = async (userId: string, deckId: string) => {
 };
 export const getLikedDecksByUserService = async (userId: string) => {
     const userObjectId = new Types.ObjectId(userId);
+
     const likedDecks = await Deck.find({ likes: userObjectId })
         .sort({ updatedAt: -1 })
         .populate('owner', 'name')
         .lean();
 
     return likedDecks.map((deck) => {
-        const owner = deck.owner as unknown as { name?: string };
+        const owner = deck.owner as { name?: string };
 
         return {
             id: deck._id.toString(),
             name: deck.name,
             description: deck.description,
-            likeCount: deck.likeCount,
-            cardCount: deck.cardCount,
+            likeCount: deck.likeCount || 0,
+            cardCount: deck.cardCount || 0,
             creatorName: owner?.name || 'Unknown',
             createdAt: deck.createdAt,
             updatedAt: deck.updatedAt
