@@ -13,7 +13,8 @@ import {
     duplicateDeckService,
     updateDeckFsrsParamsService,
     getDeckStatsService,
-    toggleLikeDeckService
+    toggleLikeDeckService,
+    getLikedDecksByUserService
 } from '~/services/deckService';
 import { createDeckValidation, updateDeckFsrsParamsValidation } from '~/validations/deckValidation';
 import { ErrorCode } from '~/exceptions/root';
@@ -95,8 +96,6 @@ export const updateDeckFsrsParams = async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.user._id;
     const fsrsParams = req.body;
-
-    // Validate the FSRS parameters
     const validatedParams = updateDeckFsrsParamsValidation.parse(fsrsParams);
 
     const result = await updateDeckFsrsParamsService(userId, id, validatedParams);
@@ -115,4 +114,17 @@ export const toggleLikeDeck = async (req: Request, res: Response) => {
 
     const result = await toggleLikeDeckService(userId, req.params.id);
     return res.json(result);
+};
+export const getLikedDecksByUser = async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized', code: ErrorCode.UNAUTHORIZED });
+    }
+
+    const likedDecks = await getLikedDecksByUserService(userId);
+
+    return res.json({
+        message: 'Fetched liked decks successfully',
+        data: likedDecks
+    });
 };

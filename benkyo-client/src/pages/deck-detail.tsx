@@ -224,13 +224,12 @@ const DeckDetail = () => {
         }
     };
     const toggleLikeMutation = useToggleLikeDeck(id!);
-
     const handleLike = async () => {
         try {
             const res = await toggleLikeMutation.mutateAsync();
-            // nếu không cần dùng liked thì không set luôn
-            console.log('Like status:', res.liked);
+            getToast('success', res.liked ? 'You liked this deck!' : 'You unliked this deck!');
         } catch (err) {
+            getToast('error', 'Failed to update like!');
             console.error('Failed to update like:', err);
         }
     };
