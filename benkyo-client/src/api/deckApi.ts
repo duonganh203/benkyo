@@ -38,6 +38,11 @@ export const getPublicDecks = async () => {
     return response.data;
 };
 
+export const getUserPublicDecks = async () => {
+    const response = await api.get('decks/user-public-decks');
+    return response.data;
+};
+
 export const duplicateDeck = async (deckId: string) => {
     const response = await api.post(`decks/${deckId}/duplicate`);
     return response.data;

@@ -10,6 +10,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import Deck from '@/components/deck';
 
 const ITEMS_PER_PAGE = 16;
+import { useNavigate } from 'react-router-dom';
 
 const Library = () => {
     const [search, setSearch] = useState('');
@@ -25,6 +26,8 @@ const Library = () => {
 
     const totalPages = Math.ceil(filteredDecks.length / ITEMS_PER_PAGE);
     const paginatedDecks = filteredDecks.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+    const navigate = useNavigate();
 
     return (
         <div className='max-w-7xl mx-auto py-8 px-4'>
@@ -47,6 +50,10 @@ const Library = () => {
                             }}
                         />
                     </div>
+                    <Button onClick={() => navigate('requests')}>
+                        <Book className='h-4 w-4 mr-2' />
+                        Requests
+                    </Button>
                     <Button onClick={open}>
                         <Plus className='h-4 w-4 mr-2' />
                         Create Deck

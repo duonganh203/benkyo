@@ -8,12 +8,20 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import { Button } from './ui/button';
 import { Card, CardContent, CardFooter } from './ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Badge } from './ui/badge';
+
+const statusMap: Record<string, { label: string; className: string }> = {
+    1: { label: 'Pending', className: 'bg-yellow-100 text-yellow-700' },
+    2: { label: 'Approved', className: 'bg-green-100 text-green-700' },
+    3: { label: 'Rejected', className: 'bg-red-100 text-red-700' }
+};
 
 interface DeckProps {
     deck: DeckInterface;
+    showStatus?: boolean;
 }
 
-function Deck({ deck }: DeckProps) {
+function Deck({ deck, showStatus = false }: DeckProps) {
     const { open } = useSendRequestPublicDeckModal((store) => store);
     const navigate = useNavigate();
 
@@ -30,11 +38,19 @@ function Deck({ deck }: DeckProps) {
             )}
             onClick={() => handleDeckClick(deck._id)}
         >
-            <CardContent className='p-6 h-44 flex flex-col'>
+            <CardContent className='p-6 h-44 flex flex-col relative'>
+                {showStatus && deck.publicStatus !== undefined && (
+                    <Badge className={cn('absolute top-3 right-3', statusMap[deck.publicStatus]?.className)}>
+                        {statusMap[deck.publicStatus]?.label || 'Unknown'}
+                    </Badge>
+                )}
+
                 <h3 className='font-bold text-lg mb-2 line-clamp-2 text-foreground'>{deck.name}</h3>
+
                 <p className='text-muted-foreground text-sm mb-4 flex-grow line-clamp-3'>
                     {deck.description || 'No description'}
                 </p>
+
                 <div className='mt-auto'>
                     <div className='flex items-center text-sm text-primary'>
                         <GraduationCap className='h-4 w-4 mr-1' />
@@ -44,6 +60,7 @@ function Deck({ deck }: DeckProps) {
                     </div>
                 </div>
             </CardContent>
+
             <CardFooter className='py-2 px-6 border-t flex justify-between'>
                 <div className='flex items-center text-xs text-muted-foreground'>
                     <Clock className='h-3 w-3 mr-1' />
