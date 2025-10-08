@@ -38,6 +38,8 @@ function ClassDetailUser() {
     const { data: allMoocs } = useGetAllMoocs(classId);
 
     console.log('class id  ', classId);
+    console.log('classData ', classData);
+    console.log('allMoocs ', allMoocs);
 
     const navigate = useNavigate();
 
@@ -72,8 +74,7 @@ function ClassDetailUser() {
 
     const isOwner = user?.id === classData.owner._id;
     const totalLearnersCount = classData.users?.length || 0;
-    console.log('isOwner  ', isOwner);
-    console.log('user?.id  ', user?.id);
+   
     const allDecksRaw = classData.decks || [];
     const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
     const scheduledDecks = allDecks.filter((deck: DeckInClass) => deck.startTime && deck.endTime);
@@ -213,7 +214,7 @@ function ClassDetailUser() {
                         totalLearnersCount={totalLearnersCount}
                         createdAt={classData.createdAt}
                         completionRate={completionRate}
-                        visited={classData.visited.history.length || 0}
+                        visited={classData.visited?.history?.length ?? 0}
                     />
                 </div>
 
@@ -226,12 +227,15 @@ function ClassDetailUser() {
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                             {Array.isArray(allMoocs?.data) && allMoocs.data.length > 0 ? (
                                 allMoocs.data
-                                    .filter((mooc) => mooc.publicStatus === 2 || mooc.owner._id === user?.id)
+                                    .filter((mooc) => {
+                                        const ownerId = typeof mooc.owner === 'string' ? mooc.owner : mooc.owner?._id;
+                                        return mooc.publicStatus === 2 || ownerId === user?.id;
+                                    })
                                     .map((mooc) => (
                                         <ProgressCard
                                             key={mooc._id}
                                             title={mooc.title}
-                                            description={mooc.description || 'No description available'}
+                                            description={mooc.description || 'Không có mô tả'}
                                             progress={0}
                                             status='available'
                                             onClick={() => handleMOOCClick(mooc._id)}

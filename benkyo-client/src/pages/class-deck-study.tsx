@@ -15,7 +15,6 @@ const DeckStudy: React.FC = () => {
     const { data: cardsData, isLoading } = useGetDeckCards(deckId!);
     const deckTitle = location.state?.deckTitle ?? 'Deck Title';
     const totalCards = Array.isArray(cardsData) ? cardsData.length : 0;
-    const moocId = cardsData?.deck?.moocId;
 
     const storageKey = `deck-${deckId}-currentIndex`;
     const [currentCardIndex, setCurrentCardIndex] = useState(() => {
@@ -24,7 +23,6 @@ const DeckStudy: React.FC = () => {
     });
 
     const [studyCompleted, setStudyCompleted] = useState(false);
-    const [hasCompletedOnce, setHasCompletedOnce] = useState(false);
 
     useEffect(() => {
         setCurrentCardIndex(0);
@@ -59,7 +57,6 @@ const DeckStudy: React.FC = () => {
     const handleFinishStudy = () => {
         if (currentCardIndex === totalCards - 1) {
             setStudyCompleted(true);
-            setHasCompletedOnce(true);
             getToast('success', 'You have completed the deck!');
         } else {
             getToast('error', 'You have not reviewed all flashcards yet!');

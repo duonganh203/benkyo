@@ -192,15 +192,41 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, Zap } from 'lucide-react';
 import ProgressCard from '@/components/moocs-card';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
+
+// Định nghĩa các kiểu dữ liệu để tránh dùng "any"
+interface Deck {
+    _id: string;
+    name: string;
+    description?: string;
+    cardCount?: number;
+    publicStatus?: number;
+}
+
+interface DeckWrapper {
+    _id: string;
+    order?: number;
+    pointsRequired?: number;
+    deck: Deck;
+}
+
+interface Mooc {
+    _id: string;
+    title: string;
+    description?: string;
+    decks: DeckWrapper[];
+}
+
 const MOOCDetail: React.FC = () => {
     const { classId, moocId } = useParams<{ classId: string; moocId: string }>();
     const navigate = useNavigate();
 
     const { data: mooc, isLoading, isError } = useGetMoocDetail(moocId!);
+
+    console.log('MOOC decks:', mooc?.decks);
 
     if (isLoading) {
         return (
@@ -223,6 +249,7 @@ const MOOCDetail: React.FC = () => {
             state: { deckTitle }
         });
     };
+
     const handleQuizHub = (deckId: string) => {
         navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
     };
@@ -253,36 +280,38 @@ const MOOCDetail: React.FC = () => {
                     </div>
 
                     <div className='grid grid-cols-1 gap-6'>
-                        {mooc.decks.map((deckWrapper) => {
-                            const deck = deckWrapper.deck;
-                            if (!deck) return null;
+                        {Array.isArray(mooc.decks) && mooc.decks.length > 0 ? (
+                            mooc.decks.map((deckWrapper: DeckWrapper) => {
+                                const deck = deckWrapper?.deck ?? deckWrapper;
+                                if (!deck) return null;
 
-                            return (
-                                <div key={deck._id} className='space-y-3'>
-                                    <ProgressCard
-                                        title={deck.name}
-                                        description={`${deck.description} • ${deck.cardCount} flashcards • ${deckWrapper.pointsRequired ?? 0} điểm cần thiết`}
-                                        progress={0} // tạm thời bỏ qua progress
-                                        status='available'
-                                        onClick={() => handleGoToDeck(deck._id, deck.name)}
-                                    />
+                                return (
+                                    <div key={deck._id} className='space-y-3'>
+                                        <ProgressCard
+                                            title={deck.name ?? 'Không có tên'}
+                                            description={`${deck.description ?? ''} • ${
+                                                deck.cardCount ?? 0
+                                            } flashcards • ${deckWrapper.pointsRequired ?? 0} điểm cần thiết`}
+                                            progress={0}
+                                            status='available'
+                                            onClick={() => handleGoToDeck(deck._id, deck.name)}
+                                        />
 
-                                    <div className='flex justify-end'>
-                                        <Button
-                                            variant='outline'
-                                            size='sm'
-                                            onClick={() => handleQuizHub(deck._id)}
-                                            className='flex items-center gap-2'
-                                        >
-                                            <Zap className='w-4 h-4' />
-                                            Thử thách thêm
-                                        </Button>
+                                        <div className='flex justify-end'>
+                                            <Button
+                                                variant='outline'
+                                                size='sm'
+                                                onClick={() => handleQuizHub(deck._id)}
+                                                className='flex items-center gap-2'
+                                            >
+                                                <Zap className='w-4 h-4' />
+                                                Thử thách thêm
+                                            </Button>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
-
-                        {mooc.decks.length === 0 && (
+                                );
+                            })
+                        ) : (
                             <Card className='shadow-card'>
                                 <CardContent className='p-8 text-center'>
                                     <BookOpen className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
