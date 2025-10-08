@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Loader2, Settings2 } from 'lucide-react';
 
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -16,6 +16,8 @@ import ClassResumeSessionModal from '@/components/modals/ClassResumeSessionModal
 import useStartClassDeckSession from '@/hooks/queries/use-start-class-deck-session';
 import { getToast } from '@/utils/getToast';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
+import { sampleClass } from '@/lib/sampleData';
+import ProgressCard from '@/components/moocs-card';
 
 function ClassDetailUser() {
     const { user } = useAuthStore();
@@ -32,6 +34,13 @@ function ClassDetailUser() {
 
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
     const { mutateAsync: startSession } = useStartClassDeckSession();
+
+    const navigate = useNavigate();
+
+    const handleMOOCClick = (moocId: string) => {
+        if (!classData) return;
+        navigate(`/class/${classData._id}/mooc/${moocId}`);
+    };
 
     if (!classId) {
         return (
@@ -206,7 +215,20 @@ function ClassDetailUser() {
                 <div className='grid grid-cols-1 lg:grid-cols-4 gap-8'>
                     <div className='lg:col-span-3'>
                         <div className='flex items-center justify-between mb-6'>
-                            <h2 className='text-2xl font-bold'>Flashcard Decks</h2>
+                            <h2 className='text-2xl font-bold'>Available MOOCs</h2>
+                        </div>
+
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                            {sampleClass.moocs.map((mooc, index) => (
+                                <ProgressCard
+                                    key={mooc.id}
+                                    title={mooc.title}
+                                    description={mooc.description}
+                                    progress={mooc.progress}
+                                    status={index === 0 ? 'available' : 'locked'}
+                                    onClick={() => handleMOOCClick(mooc.id)}
+                                />
+                            ))}
                         </div>
 
                         {scheduledDecks.length > 0 && (
