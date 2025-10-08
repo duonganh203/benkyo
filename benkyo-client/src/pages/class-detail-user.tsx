@@ -16,12 +16,13 @@ import ClassResumeSessionModal from '@/components/modals/ClassResumeSessionModal
 import useStartClassDeckSession from '@/hooks/queries/use-start-class-deck-session';
 import { getToast } from '@/utils/getToast';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
-import { sampleClass } from '@/lib/sampleData';
+import useGetAllMoocs from '@/hooks/queries/use-get-all-mooc-class';
 import ProgressCard from '@/components/moocs-card';
 
 function ClassDetailUser() {
     const { user } = useAuthStore();
     const { classId } = useParams<{ classId: string }>();
+    console.log('class id  ', classId);
     const [isExpanded, setIsExpanded] = useState(false);
     const [studyingDeck, setStudyingDeck] = useState<DeckInClass | null>(null);
     const [classSession, setClassSession] = useState<ClassStudySession | null>(null);
@@ -34,6 +35,9 @@ function ClassDetailUser() {
 
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
     const { mutateAsync: startSession } = useStartClassDeckSession();
+    const { data: allMoocs } = useGetAllMoocs(classId);
+
+    console.log('class id  ', classId);
 
     const navigate = useNavigate();
 
@@ -66,9 +70,10 @@ function ClassDetailUser() {
         );
     }
 
-    const isOwner = user?._id === classData.owner._id;
+    const isOwner = user?.id === classData.owner._id;
     const totalLearnersCount = classData.users?.length || 0;
-
+    console.log('isOwner  ', isOwner);
+    console.log('user?.id  ', user?.id);
     const allDecksRaw = classData.decks || [];
     const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
     const scheduledDecks = allDecks.filter((deck: DeckInClass) => deck.startTime && deck.endTime);
@@ -219,16 +224,22 @@ function ClassDetailUser() {
                         </div>
 
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                            {sampleClass.moocs.map((mooc, index) => (
-                                <ProgressCard
-                                    key={mooc.id}
-                                    title={mooc.title}
-                                    description={mooc.description}
-                                    progress={mooc.progress}
-                                    status={index === 0 ? 'available' : 'locked'}
-                                    onClick={() => handleMOOCClick(mooc.id)}
-                                />
-                            ))}
+                            {Array.isArray(allMoocs?.data) && allMoocs.data.length > 0 ? (
+                                allMoocs.data
+                                    .filter((mooc) => mooc.publicStatus === 2 || mooc.owner._id === user?.id)
+                                    .map((mooc) => (
+                                        <ProgressCard
+                                            key={mooc._id}
+                                            title={mooc.title}
+                                            description={mooc.description || 'No description available'}
+                                            progress={0}
+                                            status='available'
+                                            onClick={() => handleMOOCClick(mooc._id)}
+                                        />
+                                    ))
+                            ) : (
+                                <p>Không có dữ liệu MOOC</p>
+                            )}
                         </div>
 
                         {scheduledDecks.length > 0 && (

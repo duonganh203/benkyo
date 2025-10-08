@@ -1,40 +1,75 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, BookOpen, Target } from 'lucide-react';
-import { sampleClass } from '@/lib/sampleData';
+import { ChevronLeft, BookOpen, Target } from 'lucide-react';
 import FlashcardViewer from '@/components/flashcard-viewer';
+import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
+import { getToast } from '@/utils/getToast';
 
 const DeckStudy: React.FC = () => {
     const { classId, deckId } = useParams<{ classId: string; deckId: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const { data: cardsData, isLoading } = useGetDeckCards(deckId!);
+    const deckTitle = location.state?.deckTitle ?? 'Deck Title';
+    const totalCards = Array.isArray(cardsData) ? cardsData.length : 0;
+    const moocId = cardsData?.deck?.moocId;
+
+    const storageKey = `deck-${deckId}-currentIndex`;
+    const [currentCardIndex, setCurrentCardIndex] = useState(() => {
+        const saved = sessionStorage.getItem(storageKey);
+        return saved ? Number(saved) : 0;
+    });
+
     const [studyCompleted, setStudyCompleted] = useState(false);
+    const [hasCompletedOnce, setHasCompletedOnce] = useState(false);
 
-    // Find deck
-    let deck;
-    let moocId: string;
-    for (const mooc of sampleClass.moocs) {
-        const foundDeck = mooc.decks.find((d) => d.id === deckId);
-        if (foundDeck) {
-            deck = foundDeck;
-            moocId = mooc.id;
-            break;
-        }
-    }
+    useEffect(() => {
+        setCurrentCardIndex(0);
+        setStudyCompleted(false);
+        sessionStorage.removeItem(storageKey);
+    }, [deckId]);
 
-    if (!deck) {
+    useEffect(() => {
+        sessionStorage.setItem(storageKey, String(currentCardIndex));
+    }, [currentCardIndex]);
+
+    if (!deckId || !classId) {
         return (
             <div className='min-h-screen flex items-center justify-center'>
-                <p className='text-lg text-muted-foreground'>Deck not found</p>
+                <p className='text-lg text-muted-foreground'>Invalid URL</p>
             </div>
         );
     }
 
-    const handleBackToMOOC = () => navigate(`/class/${classId}/mooc/${moocId}`);
+    if (isLoading) {
+        return (
+            <div className='min-h-screen flex items-center justify-center'>
+                <p className='text-lg text-muted-foreground'>Loading...</p>
+            </div>
+        );
+    }
+    const handleBack = () => {
+        navigate(-1);
+    };
     const handleTakeTest = () => navigate(`/test/${deckId}`);
-    const handleRestart = () => setStudyCompleted(false);
 
+    const handleFinishStudy = () => {
+        if (currentCardIndex === totalCards - 1) {
+            setStudyCompleted(true);
+            setHasCompletedOnce(true);
+            getToast('success', 'You have completed the deck!');
+        } else {
+            getToast('error', 'You have not reviewed all flashcards yet!');
+        }
+    };
+
+    const handleRestart = () => {
+        setCurrentCardIndex(0);
+        setStudyCompleted(false);
+    };
     if (studyCompleted) {
         return (
             <div className='min-h-screen bg-background flex items-center justify-center px-4'>
@@ -43,21 +78,16 @@ const DeckStudy: React.FC = () => {
                         <div className='p-4 bg-green-100 rounded-full w-fit mx-auto mb-6'>
                             <Target className='w-12 h-12 text-green-600' />
                         </div>
-
                         <h2 className='text-2xl font-bold text-foreground mb-4'>Deck Study Complete!</h2>
-
                         <p className='text-lg text-muted-foreground mb-8'>
-                            Great job studying <strong>{deck.title}</strong>! You reviewed all {deck.flashcards.length}{' '}
-                            flashcards.
+                            You studied <strong>{totalCards}</strong> out of {totalCards} flashcards.
                         </p>
-
                         <div className='flex flex-col sm:flex-row gap-4 justify-center'>
                             <Button variant='outline' onClick={handleRestart}>
                                 Review Again
                             </Button>
                             <Button variant='outline' onClick={handleTakeTest} className='flex items-center gap-2'>
-                                <Target className='w-4 h-4' />
-                                Take the Test
+                                <Target className='w-4 h-4' /> Take the Test
                             </Button>
                         </div>
                     </CardContent>
@@ -68,57 +98,43 @@ const DeckStudy: React.FC = () => {
 
     return (
         <div className='min-h-screen bg-background'>
-            {/* Header */}
-            <header className='bg-card border-b border-border py-4 px-4 shadow-sm'>
-                <div className='max-w-4xl mx-auto flex items-center justify-between'>
-                    <Button variant='ghost' onClick={handleBackToMOOC} className='flex items-center gap-2'>
-                        <ArrowLeft className='w-4 h-4' />
-                        Back to MOOC
+            <header>
+                <div className='max-w-4xl mx-auto flex justify-between items-center py-4 px-4'>
+                    <Button variant='outline' onClick={handleBack} className='flex items-center gap-2'>
+                        <ChevronLeft className='h-5 w-5' />
+                        Back
                     </Button>
-                    <div className='text-center'>
-                        <h1 className='text-xl font-semibold text-foreground'>{deck.title}</h1>
+
+                    <div className='text-center flex-1'>
+                        <h1 className='text-xl font-semibold text-foreground'>{deckTitle}</h1>
                         <p className='text-sm text-muted-foreground'>Study Mode</p>
                     </div>
-                    <div className='w-20' /> {/* Spacer for alignment */}
+
+                    <div className='w-20' />
                 </div>
             </header>
 
-            {/* Study Area */}
             <main className='py-12 px-4 flex flex-col items-center gap-6'>
                 <div className='w-full max-w-2xl'>
                     <FlashcardViewer
-                        cards={
-                            Array.isArray(deck.flashcards)
-                                ? deck.flashcards.map((flashcard: any) => ({
-                                      _id: flashcard._id ?? '',
-                                      deck: flashcard.deck ?? '',
-                                      tags: flashcard.tags ?? [],
-                                      createdAt: flashcard.createdAt ?? '',
-                                      updatedAt: flashcard.updatedAt ?? '',
-                                      question: flashcard.question,
-                                      answer: flashcard.answer,
-                                      ...flashcard
-                                  }))
-                                : []
-                        }
-                        initialIndex={0}
+                        cards={Array.isArray(cardsData) ? cardsData : []}
+                        initialIndex={currentCardIndex}
+                        onCardChange={(index) => setCurrentCardIndex(index)}
                     />
                 </div>
 
                 <Button
-                    onClick={() => setStudyCompleted(true)}
+                    onClick={handleFinishStudy}
                     className='mt-6 px-8 py-3 rounded-full text-lg font-semibold text-white 
-               bg-gradient-to-r from-green-500 to-emerald-600 
-               hover:from-green-600 hover:to-emerald-700 
-               transition-all duration-300 shadow-lg hover:shadow-xl 
-               flex items-center gap-2'
+                     bg-gradient-to-r from-green-500 to-emerald-600 
+                     hover:from-green-600 hover:to-emerald-700 
+                     transition-all duration-300 shadow-lg hover:shadow-xl 
+                     flex items-center gap-2'
                 >
-                    <Target className='w-5 h-5' />
-                    Finish Study
+                    <Target className='w-5 h-5' /> Finish Study
                 </Button>
             </main>
 
-            {/* Study Tips */}
             <section className='pb-16 px-4'>
                 <div className='max-w-2xl mx-auto'>
                     <Card className='shadow-md bg-accent/40 border'>
