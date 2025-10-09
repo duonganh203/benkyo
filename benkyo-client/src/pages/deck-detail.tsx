@@ -277,15 +277,23 @@ const DeckDetail = () => {
                             <Button
                                 variant='outline'
                                 size='icon'
-                                onClick={() => navigate('/my-decks')}
+                                onClick={() => {
+                                    if (deckData.publicStatus === 2) {
+                                        navigate('/community');
+                                    } else {
+                                        navigate('/my-decks');
+                                    }
+                                }}
                                 className='transition-transform'
                             >
                                 <ChevronLeft className='h-5 w-5' />
                             </Button>
+
                             <div>
                                 <h1 className='text-2xl font-bold'>{deckData.name}</h1>
                                 <p className='text-muted-foreground'>{deckData.description || 'No description'}</p>
                             </div>
+
                             <Badge
                                 variant='outline'
                                 className={`ml-2 text-white text-xs flex items-center px-2 ${publicStatus[deckData.publicStatus].color} border-1}`}
