@@ -231,11 +231,14 @@ const DeckDetail = () => {
             updatedAt: new Date().toISOString(),
             createdAt: new Date().toISOString(),
             isPublic: deckData.publicStatus === 1,
-            owner: deckData.owner
+            owner: deckData.owner,
+            likeCount: deckData.likeCount ?? 0,
+            liked: deckData.liked ?? false
         };
 
         updateDeckModal.open(deckToUpdate);
     };
+
     const handleDuplicateDeck = async () => {
         try {
             await duplicateDeck({ deckId: id! });
@@ -249,7 +252,6 @@ const DeckDetail = () => {
     const handleLike = async () => {
         try {
             const res = await toggleLikeMutation.mutateAsync();
-            // nếu không cần dùng liked thì không set luôn
             console.log('Like status:', res.liked);
         } catch (err) {
             console.error('Failed to update like:', err);

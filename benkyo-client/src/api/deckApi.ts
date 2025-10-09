@@ -52,15 +52,11 @@ export const updateDeck = async (deckId: string, deck: Partial<UpdateDeckPayload
     const { data } = await api.put(`decks/${deckId}`, deck);
     return data;
 };
-export const toggleLikeDeck = async (deckId: string, currentDeck: DeckInterface): Promise<DeckInterface> => {
+export const toggleLikeDeck = async (deckId: string): Promise<{ likeCount: number; liked: boolean }> => {
     const response = await api.post(`decks/${deckId}/like`);
     const data = response.data;
-
-    const updatedDeck: DeckInterface = {
-        ...currentDeck,
+    return {
         likeCount: data.likeCount ?? 0,
         liked: data.liked ?? false
     };
-
-    return updatedDeck;
 };
