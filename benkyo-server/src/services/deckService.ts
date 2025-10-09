@@ -317,19 +317,15 @@ export const toggleLikeDeckService = async (userId: string, deckId: string) => {
     if (!deck) {
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
-
     const userObjectId = new Types.ObjectId(userId);
     const hasLiked = deck.likes.some((id: Types.ObjectId) => id.equals(userObjectId));
-
     if (hasLiked) {
         deck.likes = deck.likes.filter((id: Types.ObjectId) => !id.equals(userObjectId));
     } else {
         deck.likes.push(userObjectId);
     }
-
     deck.likeCount = deck.likes.length;
     await deck.save();
-
     return {
         message: hasLiked ? 'Unliked deck successfully' : 'Liked deck successfully',
         likeCount: deck.likeCount,
