@@ -1,5 +1,5 @@
 import { CardInterface } from '@/types/card';
-import { CreateDeckPayload, DeckDetails, DeckInterface } from '@/types/deck';
+import { CreateDeckPayload, DeckDetails, DeckInterface, UpdateDeckPayload } from '@/types/deck';
 import { api } from '.';
 import { FSRSParamsSchema } from '@/schemas/deckSchema';
 import { z } from 'zod';
@@ -46,6 +46,11 @@ export const duplicateDeck = async (deckId: string) => {
 export const updateDeckFsrsParams = async (deckId: string, fsrsParams: z.infer<typeof FSRSParamsSchema>) => {
     const response = await api.patch(`decks/${deckId}/fsrs`, fsrsParams);
     return response.data;
+};
+
+export const updateDeck = async (deckId: string, deck: Partial<UpdateDeckPayload>) => {
+    const { data } = await api.put(`decks/${deckId}`, deck);
+    return data;
 };
 export const toggleLikeDeck = async (deckId: string) => {
     const response = await api.post(`decks/${deckId}/like`);
