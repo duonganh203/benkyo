@@ -44,10 +44,11 @@ const StudyCard = () => {
     const streakLoggedRef = useRef(false);
 
     const { data: dueCards = [], isLoading } = useGetDueCards(deckId!);
-
     const { mutate: submitReview } = useSubmitReview(deckId!);
-
     const { mutate: updateStreak } = useUpdateStudyStreak();
+    const { mutate: skipCard } = useSkipCard(deckId!);
+
+    const { setJustStudied } = useStudyFlagStore();
 
     const logStreakOnce = () => {
         if (streakLoggedRef.current) return;
@@ -57,6 +58,8 @@ const StudyCard = () => {
             onSuccess: (data) => {
                 if (data.updated) {
                     setJustStudied(true, data.studyStreak);
+                } else {
+                    setJustStudied(true, null);
                 }
                 queryClient.invalidateQueries({ queryKey: ['studyStreak'] });
             },
@@ -80,13 +83,11 @@ const StudyCard = () => {
 
     useEffect(() => {
         startTimeRef.current = Date.now();
-
         const interval = setInterval(() => {
             setCurrentCardTime(Math.round((Date.now() - startTimeRef.current) / 1000));
         }, 1000);
 
         timerRef.current = interval as unknown as number;
-
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
@@ -97,7 +98,11 @@ const StudyCard = () => {
         setCurrentCardTime(0);
     }, [currentCardIndex]);
 
-    const { setJustStudied } = useStudyFlagStore();
+    useEffect(() => {
+        if (studyComplete && !streakLoggedRef.current) {
+            logStreakOnce();
+        }
+    }, [studyComplete]);
 
     const handleRate = (rating: Rating) => {
         const isLastCard = currentCardIndex + 1 === cards.length;
@@ -119,8 +124,6 @@ const StudyCard = () => {
         );
     };
 
-    const { mutate: skipCard } = useSkipCard(deckId!);
-
     const nextCard = () => {
         const nextIndex = currentCardIndex + 1;
         if (nextIndex >= cards.length) {
@@ -136,30 +139,19 @@ const StudyCard = () => {
         }
     };
 
-    const formatTime = (seconds: number): string => {
-        if (seconds < 60) return `${seconds}s`;
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes}m ${remainingSeconds}s`;
-    };
-
-    const handleExit = () => {
-        setExitDialog(true);
-    };
-
     const handleSkip = () => {
         if (!cards.length || currentCardIndex >= cards.length) return;
         const currentCard = cards[currentCardIndex];
         skipCard(
             { cardId: currentCard._id },
             {
-                onSuccess: () => {
-                    nextCard();
-                },
+                onSuccess: () => nextCard(),
                 onError: () => getToast('error', 'Failed to skip card')
             }
         );
     };
+
+    const handleExit = () => setExitDialog(true);
 
     const endStudySession = () => {
         if (timerRef.current) {
@@ -167,6 +159,13 @@ const StudyCard = () => {
             timerRef.current = null;
         }
         navigate(`/deck/${deckId}`);
+    };
+
+    const formatTime = (seconds: number): string => {
+        if (seconds < 60) return `${seconds}s`;
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}m ${remainingSeconds}s`;
     };
 
     if (isLoading || !cards.length) {
@@ -206,7 +205,6 @@ const StudyCard = () => {
 
     if (studyComplete) {
         const totalTime = Math.round((Date.now() - stats.started.getTime()) / 1000);
-
         return (
             <div className='max-w-2xl mx-auto py-8 px-4'>
                 <div className='text-center mb-8'>
@@ -330,9 +328,7 @@ const StudyCard = () => {
                     <div className='flex gap-5 animate-slide-up'>
                         <Button
                             variant='secondary'
-                            onClick={() => {
-                                handleSkip();
-                            }}
+                            onClick={handleSkip}
                             className='w-full transition-all hover:bg-gray-200 active:scale-95'
                         >
                             Skip

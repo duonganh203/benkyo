@@ -47,6 +47,8 @@ import { DeckInterface, DeckDetails } from '@/types/deck';
 import ConfirmDeleteCardModal from '@/components/modals/confirm-delete-card-modals';
 import { useDeleteCardModal } from '@/hooks/stores/use-delete-card-modal';
 
+import LikeDeck from '@/components/rating-deck';
+import useToggleLikeDeck from '@/hooks/queries/use-toggle-like-deck';
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -242,6 +244,18 @@ const DeckDetail = () => {
             getToast('error', `${error}`);
         }
     };
+    const toggleLikeMutation = useToggleLikeDeck(id!);
+
+    const handleLike = async () => {
+        try {
+            const res = await toggleLikeMutation.mutateAsync();
+            // nếu không cần dùng liked thì không set luôn
+            console.log('Like status:', res.liked);
+        } catch (err) {
+            console.error('Failed to update like:', err);
+        }
+    };
+
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
@@ -292,6 +306,7 @@ const DeckDetail = () => {
                             <div>
                                 <h1 className='text-2xl font-bold'>{deckData.name}</h1>
                                 <p className='text-muted-foreground'>{deckData.description || 'No description'}</p>
+                                <LikeDeck deckData={deckData} currentUser={currentUser} onLikeApi={handleLike} />
                             </div>
 
                             <Badge

@@ -17,6 +17,7 @@ import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
+import { Types } from 'mongoose';
 
 export const createDeckService = async (userId: string, deckData: z.infer<typeof createDeckValidation>) => {
     const { name, description } = deckData;
@@ -299,16 +300,39 @@ export const updateDeckService = async (
 ) => {
     const { name, description } = deckData;
 
+    const deck = await Deck.findOne({ _id: deckId, owner: userId });
+    if (!deck) {
+        throw new Error('Deck not found or you do not have permission to update it');
+    }
+
+    if (name !== undefined) deck.name = name;
+    if (description !== undefined) deck.description = description;
+    await deck.save();
+
+    return deck;
+};
+
+export const toggleLikeDeckService = async (userId: string, deckId: string) => {
     const deck = await Deck.findById(deckId);
     if (!deck) {
         throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
     }
 
-    if (!deck.owner.equals(userId)) {
-        throw new ForbiddenRequestsException('You are not allowed to update this deck', ErrorCode.FORBIDDEN);
+    const userObjectId = new Types.ObjectId(userId);
+    const hasLiked = deck.likes.some((id: Types.ObjectId) => id.equals(userObjectId));
+
+    if (hasLiked) {
+        deck.likes = deck.likes.filter((id: Types.ObjectId) => !id.equals(userObjectId));
+    } else {
+        deck.likes.push(userObjectId);
     }
-    deck.name = name ?? deck.name;
-    deck.description = description ?? deck.description;
+
+    deck.likeCount = deck.likes.length;
     await deck.save();
-    return deck.toObject();
+
+    return {
+        message: hasLiked ? 'Unliked deck successfully' : 'Liked deck successfully',
+        likeCount: deck.likeCount,
+        liked: !hasLiked
+    };
 };

@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { easeOut } from 'motion';
 import { Button } from '@/components/ui/button';
 import { useTheme } from './providers/theme-provider';
 
@@ -33,7 +34,7 @@ export function ModeToggle() {
             scale: 1,
             transition: {
                 duration: 0.5,
-                ease: 'easeOut',
+                ease: easeOut,
                 pathLength: { duration: 0.3 },
                 opacity: { duration: 0.2 },
                 scale: { duration: 0.3 }
@@ -55,7 +56,7 @@ export function ModeToggle() {
             filter: ['blur(2px)', 'blur(2px)', 'blur(0px)'],
             transition: {
                 duration: 0.75,
-                ease: 'linear'
+                ease: easeOut
             }
         }
     };

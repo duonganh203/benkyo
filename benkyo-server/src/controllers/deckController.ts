@@ -13,13 +13,15 @@ import {
     duplicateDeckService,
     updateDeckFsrsParamsService,
     getDeckStatsService,
-    updateDeckService
+    updateDeckService,
+    toggleLikeDeckService
 } from '~/services/deckService';
 import {
     createDeckValidation,
     updateDeckFsrsParamsValidation,
     updateDeckValidation
 } from '~/validations/deckValidation';
+import { ErrorCode } from '~/exceptions/root';
 
 export const createDeck = async (req: Request, res: Response) => {
     const deckData = req.body;
@@ -116,4 +118,13 @@ export const updateDeck = async (req: Request, res: Response) => {
     updateDeckValidation.parse(deckData);
     const updatedDeck = await updateDeckService(req.user.id, deckId, deckData);
     res.json(updatedDeck);
+};
+export const toggleLikeDeck = async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized', code: ErrorCode.UNAUTHORIZED });
+    }
+
+    const result = await toggleLikeDeckService(userId, req.params.id);
+    return res.json(result);
 };
