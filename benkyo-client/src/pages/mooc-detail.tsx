@@ -213,13 +213,6 @@ interface DeckWrapper {
     deck: Deck;
 }
 
-interface Mooc {
-    _id: string;
-    title: string;
-    description?: string;
-    decks: DeckWrapper[];
-}
-
 const MOOCDetail: React.FC = () => {
     const { classId, moocId } = useParams<{ classId: string; moocId: string }>();
     const navigate = useNavigate();

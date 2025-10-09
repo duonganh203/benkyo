@@ -17,9 +17,12 @@ import { getToast } from '@/utils/getToast';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
 import useGetAllMoocs from '@/hooks/queries/use-get-all-mooc-class';
 import ProgressCard from '@/components/moocs-card';
-
+import useMe from '@/hooks/queries/use-me';
 function ClassDetailUser() {
-    // const { user } = useAuthStore();
+    const { data: user } = useMe();
+    const userId = user?._id;
+
+    console.log('User ID:', userId);
     const { classId } = useParams<{ classId: string }>();
     console.log('class id  ', classId);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -36,10 +39,10 @@ function ClassDetailUser() {
     const { mutateAsync: startSession } = useStartClassDeckSession();
     const { data: allMoocs } = useGetAllMoocs(classId);
 
-    console.log('User ID:', userId);
-    console.log('class id  ', classId);
-    console.log('classData ', classData);
-    console.log('allMoocs ', allMoocs);
+    // console.log('User ID:', userId);
+    // console.log('class id  ', classId);
+    // console.log('classData ', classData);
+    // console.log('allMoocs ', allMoocs);
 
     const navigate = useNavigate();
 
@@ -72,7 +75,7 @@ function ClassDetailUser() {
         );
     }
 
-    const isOwner = user?.id === classData.owner._id;
+    const isOwner = user?._id === classData.owner._id;
     const totalLearnersCount = classData.users?.length || 0;
 
     const allDecksRaw = classData.decks || [];
@@ -84,7 +87,7 @@ function ClassDetailUser() {
         classData.userClassStates
             ?.map((ucs) => {
                 return {
-                    id: ucs.user.id,
+                    id: ucs.user._id,
                     name: ucs.user.name,
                     avatar: ucs.user.avatar,
                     points: ucs.points || 0,
@@ -229,7 +232,7 @@ function ClassDetailUser() {
                                 allMoocs.data
                                     .filter((mooc) => {
                                         const ownerId = typeof mooc.owner === 'string' ? mooc.owner : mooc.owner?._id;
-                                        return mooc.publicStatus === 2 || ownerId === user?.id;
+                                        return mooc.publicStatus === 2 || ownerId === user?._id;
                                     })
                                     .map((mooc) => (
                                         <ProgressCard
