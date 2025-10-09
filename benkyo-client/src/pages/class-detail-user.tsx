@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Loader2, Settings2 } from 'lucide-react';
-
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
-import useAuthStore from '@/hooks/stores/use-auth-store';
+// import useAuthStore from '@/hooks/stores/use-auth-store';
 import useGetClassUserById from '@/hooks/queries/use-get-class-user-id';
 import ClassHeader from '@/components/class-header';
 import DeckCard from '@/components/deck-card';
@@ -20,7 +19,7 @@ import useGetAllMoocs from '@/hooks/queries/use-get-all-mooc-class';
 import ProgressCard from '@/components/moocs-card';
 
 function ClassDetailUser() {
-    const { user } = useAuthStore();
+    // const { user } = useAuthStore();
     const { classId } = useParams<{ classId: string }>();
     console.log('class id  ', classId);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -37,6 +36,7 @@ function ClassDetailUser() {
     const { mutateAsync: startSession } = useStartClassDeckSession();
     const { data: allMoocs } = useGetAllMoocs(classId);
 
+    console.log('User ID:', userId);
     console.log('class id  ', classId);
     console.log('classData ', classData);
     console.log('allMoocs ', allMoocs);
@@ -74,7 +74,7 @@ function ClassDetailUser() {
 
     const isOwner = user?.id === classData.owner._id;
     const totalLearnersCount = classData.users?.length || 0;
-   
+
     const allDecksRaw = classData.decks || [];
     const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
     const scheduledDecks = allDecks.filter((deck: DeckInClass) => deck.startTime && deck.endTime);
@@ -84,7 +84,7 @@ function ClassDetailUser() {
         classData.userClassStates
             ?.map((ucs) => {
                 return {
-                    id: ucs.user._id,
+                    id: ucs.user.id,
                     name: ucs.user.name,
                     avatar: ucs.user.avatar,
                     points: ucs.points || 0,
