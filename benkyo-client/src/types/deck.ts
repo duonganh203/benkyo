@@ -32,7 +32,7 @@ export interface DeckInterface {
     createdAt: string;
     owner: Owner;
     isPublic: boolean;
-    likeCount: number;
+    likeCount: likeResult.likeCount;
     liked?: boolean;
 }
 
