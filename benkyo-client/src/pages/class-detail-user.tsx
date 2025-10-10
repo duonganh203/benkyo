@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Loader2, Settings2 } from 'lucide-react';
-
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
-import useAuthStore from '@/hooks/stores/use-auth-store';
+// import useAuthStore from '@/hooks/stores/use-auth-store';
 import useGetClassUserById from '@/hooks/queries/use-get-class-user-id';
 import ClassHeader from '@/components/class-header';
 import DeckCard from '@/components/deck-card';
@@ -16,10 +15,16 @@ import ClassResumeSessionModal from '@/components/modals/ClassResumeSessionModal
 import useStartClassDeckSession from '@/hooks/queries/use-start-class-deck-session';
 import { getToast } from '@/utils/getToast';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
-
+import useGetAllMoocs from '@/hooks/queries/use-get-all-mooc-class';
+import ProgressCard from '@/components/moocs-card';
+import useMe from '@/hooks/queries/use-me';
 function ClassDetailUser() {
-    const { user } = useAuthStore();
+    const { data: user } = useMe();
+    const userId = user?._id;
+
+    console.log('User ID:', userId);
     const { classId } = useParams<{ classId: string }>();
+    console.log('class id  ', classId);
     const [isExpanded, setIsExpanded] = useState(false);
     const [studyingDeck, setStudyingDeck] = useState<DeckInClass | null>(null);
     const [classSession, setClassSession] = useState<ClassStudySession | null>(null);
@@ -32,6 +37,19 @@ function ClassDetailUser() {
 
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
     const { mutateAsync: startSession } = useStartClassDeckSession();
+    const { data: allMoocs } = useGetAllMoocs(classId);
+
+    // console.log('User ID:', userId);
+    // console.log('class id  ', classId);
+    // console.log('classData ', classData);
+    // console.log('allMoocs ', allMoocs);
+
+    const navigate = useNavigate();
+
+    const handleMOOCClick = (moocId: string) => {
+        if (!classData) return;
+        navigate(`/class/${classData._id}/mooc/${moocId}`);
+    };
 
     if (!classId) {
         return (
@@ -199,14 +217,36 @@ function ClassDetailUser() {
                         totalLearnersCount={totalLearnersCount}
                         createdAt={classData.createdAt}
                         completionRate={completionRate}
-                        visited={classData.visited.history.length || 0}
+                        visited={classData.visited?.history?.length ?? 0}
                     />
                 </div>
 
                 <div className='grid grid-cols-1 lg:grid-cols-4 gap-8'>
                     <div className='lg:col-span-3'>
                         <div className='flex items-center justify-between mb-6'>
-                            <h2 className='text-2xl font-bold'>Flashcard Decks</h2>
+                            <h2 className='text-2xl font-bold'>Available MOOCs</h2>
+                        </div>
+
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                            {Array.isArray(allMoocs?.data) && allMoocs.data.length > 0 ? (
+                                allMoocs.data
+                                    .filter((mooc) => {
+                                        const ownerId = typeof mooc.owner === 'string' ? mooc.owner : mooc.owner?._id;
+                                        return mooc.publicStatus === 2 || ownerId === user?._id;
+                                    })
+                                    .map((mooc) => (
+                                        <ProgressCard
+                                            key={mooc._id}
+                                            title={mooc.title}
+                                            description={mooc.description || 'Không có mô tả'}
+                                            progress={0}
+                                            status='available'
+                                            onClick={() => handleMOOCClick(mooc._id)}
+                                        />
+                                    ))
+                            ) : (
+                                <p>Không có dữ liệu MOOC</p>
+                            )}
                         </div>
 
                         {scheduledDecks.length > 0 && (

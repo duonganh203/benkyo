@@ -252,7 +252,6 @@ const DeckDetail = () => {
     const handleLike = async () => {
         try {
             const res = await toggleLikeMutation.mutateAsync();
-            // nếu không cần dùng liked thì không set luôn
             console.log('Like status:', res.liked);
         } catch (err) {
             console.error('Failed to update like:', err);

@@ -22,5 +22,6 @@ export enum ErrorCode {
     NOT_FOUND = 4001,
     INTERNAL_SERVER_ERROR = 5001,
     FORBIDDEN = 6001,
-    CONFLICT = 7001
+    CONFLICT = 7001,
+    BAD_REQUEST = 8001
 }
