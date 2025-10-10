@@ -81,7 +81,7 @@ const UserClassManagement = () => {
                 {currentTab === Tab.Home && <ClassOverview classItem={classItem} classId={classId!} />}
                 {currentTab === Tab.Member && <ClassMember onMemberChange={refetch} />}
                 {currentTab === Tab.Deck && <ClassDeck onDeckChange={refetch} />}
-                {currentTab === Tab.CreateMooc && <ClassCreateMooc onDeckChange={refetch} />}
+                {currentTab === Tab.CreateMooc && <ClassCreateMooc />}
                 {currentTab === Tab.Invited && <ClassInvited />}
                 {currentTab === Tab.RequestJoin && <ClassRequestJoin onMemberChange={refetch} />}
                 {currentTab === Tab.LearningStatus && <ClassMemberLearningStatus />}

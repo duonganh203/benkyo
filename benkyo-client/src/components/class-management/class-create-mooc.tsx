@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, X, GripVertical } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -57,12 +57,6 @@ export const ClassCreateMooc = () => {
         setDecks(newDecks);
     };
 
-    const removeCard = (deckIndex: number, cardIndex: number) => {
-        const newDecks = [...decks];
-        newDecks[deckIndex].cards = newDecks[deckIndex].cards.filter((_, i) => i !== cardIndex);
-        setDecks(newDecks);
-    };
-
     const updateCard = (deckIndex: number, cardIndex: number, field: keyof CardData, value: any) => {
         const newDecks = [...decks];
         newDecks[deckIndex].cards[cardIndex] = { ...newDecks[deckIndex].cards[cardIndex], [field]: value };
@@ -87,20 +81,20 @@ export const ClassCreateMooc = () => {
         setDecks(newDecks);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if (!title.trim()) return toast.error('Please enter a MOOC title');
 
         const payload = {
             title,
             description: description || undefined,
-            decks: decks.map((deck) => ({
-                name: deck.name,
-                description: deck.description || undefined,
-                order: deck.order,
-                cards: deck.cards.map((card) => ({
-                    front: card.front,
-                    back: card.back,
-                    tags: card.tags.length > 0 ? card.tags : undefined
+            decks: decks.map((d) => ({
+                name: d.name,
+                description: d.description || undefined,
+                order: d.order,
+                cards: d.cards.map((c) => ({
+                    front: c.front,
+                    back: c.back,
+                    tags: c.tags.length ? c.tags : undefined
                 }))
             })),
             isPaid,
@@ -112,11 +106,15 @@ export const ClassCreateMooc = () => {
         createMoocMutation.mutate(payload, {
             onSuccess: (res) => {
                 toast.success(res.message || 'MOOC created successfully!');
-                navigate(`/class/${classId}`);
+                setTitle('');
+                setDescription('');
+                setDecks([]);
+                setIsPaid(false);
+                setPrice('');
+                setCurrency('VND');
+                setIsPublic(true);
             },
-            onError: (error) => {
-                toast.error(error.message || 'Failed to create MOOC');
-            }
+            onError: (err) => toast.error(err.message || 'Failed to create MOOC')
         });
     };
 
