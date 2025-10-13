@@ -14,9 +14,8 @@ import {
     updateDeckFsrsParams,
     getDeckStats,
     toggleLikeDeck,
-    getUserPublicDecks
-    updateDeck,
-    toggleLikeDeck
+    getUserPublicDecks,
+    updateDeck
 } from '~/controllers/deckController';
 import { errorHandler } from '~/errorHandler';
 import adminAuthMiddleware from '~/middlewares/adminAuthMiddleware';

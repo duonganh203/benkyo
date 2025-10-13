@@ -14,9 +14,8 @@ import {
     updateDeckFsrsParamsService,
     getDeckStatsService,
     toggleLikeDeckService,
-    getUserPublicDecksService
-    updateDeckService,
-    toggleLikeDeckService
+    getUserPublicDecksService,
+    updateDeckService
 } from '~/services/deckService';
 import {
     createDeckValidation,
