@@ -54,7 +54,7 @@ export const ClassUpdateMooc = () => {
     const deckIds = mooc?.decks?.map((d: { deck?: { _id: string }; _id?: string }) => d.deck?._id ?? d._id);
 
     deckIds.forEach((deckId: string, index: number) => {
-        const { data } = useGetDeckCards(deckId);
+        const { data } = useGetDeckCards(deckId!);
         useEffect(() => {
             if (data) {
                 setDeckCardsData((prev) => {

@@ -17,10 +17,10 @@ const DeckStudy: React.FC = () => {
 
     const { data: user } = useMe();
 
-    const { data: mooc, isLoading: isMoocLoading } = useGetMoocDetail(moocId!);
+    const { data: mooc, isLoading: isMoocLoading } = useGetMoocDetail(moocId ?? '');
     const isOwner = user?._id === mooc?.owner?._id;
     const canAccess = isOwner || mooc?.publicStatus === 2;
-    const { data: cardsData, isLoading: isCardsLoading } = useGetDeckCards(canAccess ? deckId! : undefined);
+    const { data: cardsData, isLoading: isCardsLoading } = useGetDeckCards(canAccess && deckId ? deckId : '');
     const totalCards = Array.isArray(cardsData) ? cardsData.length : 0;
 
     const storageKey = `deck-${deckId}-currentIndex`;
