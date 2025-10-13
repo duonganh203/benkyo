@@ -162,9 +162,10 @@ export const ClassUpdateMooc = () => {
             {
                 onSuccess: (res) => {
                     toast.success(res.message || 'MOOC updated successfully!');
-                    if (mooc?.class) {
-                        queryClient.invalidateQueries(['getClassMoocs', mooc.class]);
-                    }
+                    queryClient.invalidateQueries({
+                        queryKey: ['getClassMoocs', mooc.class]
+                    });
+
                     navigate(-1);
                 },
                 onError: (err: any) => {
