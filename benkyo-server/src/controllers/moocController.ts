@@ -66,16 +66,32 @@ export const getMoocById = async (req: Request, res: Response) => {
     });
 };
 
-export const updateMooc = async (req: Request, res: Response) => {
+export const updateMooc = async (req: any, res: Response) => {
     const { id } = req.params;
     const data = req.body;
 
-    const updated = await updateMoocService(id, data);
-    if (!updated) return res.status(404).json({ data: null });
+    if (!id) {
+        return res.status(400).json({
+            success: false,
+            message: 'Thiếu ID của Mooc cần cập nhật'
+        });
+    }
 
-    res.status(200).json({ data: updated });
+    const updatedMooc = await updateMoocService(id, data);
+
+    if (!updatedMooc) {
+        return res.status(404).json({
+            success: false,
+            message: 'Không tìm thấy Mooc để cập nhật'
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: 'Cập nhật Mooc thành công',
+        data: updatedMooc
+    });
 };
-
 export const deleteMooc = async (req: Request, res: Response) => {
     const { id } = req.params;
     const deleted = await deleteMoocService(id);

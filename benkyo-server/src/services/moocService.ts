@@ -9,7 +9,7 @@ export const createMoocService = async (data: {
     isPaid?: boolean;
     price?: number;
     currency?: string;
-    publicStatus?: number;
+    publicStatus?: number; // 0 = private, 2 = public
     decks?: {
         name: string;
         description?: string;
@@ -20,6 +20,7 @@ export const createMoocService = async (data: {
     try {
         const createdDecks: { deck: string; order: number }[] = [];
         let classInfo = null;
+
         if (data.class) {
             classInfo = await Class.findById(data.class);
             if (!classInfo) {
@@ -31,13 +32,16 @@ export const createMoocService = async (data: {
             }
         }
 
+        const isMoocPublic = data.publicStatus === 2;
+
         if (data.decks && data.decks.length > 0) {
             for (const deckData of data.decks) {
                 const deck = new Deck({
                     name: deckData.name,
                     description: deckData.description,
                     owner: data.owner,
-                    publicStatus: 0
+                    publicStatus: isMoocPublic ? 2 : 0, // deck cũng public nếu MOOC public
+                    isPublic: isMoocPublic
                 });
 
                 const savedDeck = await deck.save();
@@ -67,12 +71,12 @@ export const createMoocService = async (data: {
             isPaid: data.isPaid || false,
             price: data.price || 0,
             currency: data.currency || 'VND',
-            publicStatus: data.publicStatus ?? PublicStatus.PRIVATE,
+            publicStatus: data.publicStatus ?? 0,
+            isPublic: isMoocPublic,
             decks: createdDecks
         });
 
         const savedMooc = await mooc.save();
-
         if (!savedMooc) {
             return { success: false, message: 'Failed to create MOOC', data: null };
         }
@@ -122,11 +126,101 @@ export const getMoocByIdService = async (id: string) => {
         data: mooc
     };
 };
+export const updateMoocService = async (moocId: string, data: any) => {
+    const mooc: any = await Mooc.findById(moocId);
+    if (!mooc) return null;
 
-export const updateMoocService = async (id: string, data: Partial<any>) => {
-    const updated = await Mooc.findByIdAndUpdate(id, data, { new: true });
-    if (!updated) return { success: false, message: 'MOOC not found', data: null };
-    return { success: true, message: 'MOOC updated successfully', data: updated };
+    if (data.title) mooc.title = data.title;
+    if (data.description) mooc.description = data.description;
+
+    if (data.publicStatus !== undefined) {
+        mooc.publicStatus = data.publicStatus;
+
+        // Nếu MOOC public, tự động set tất cả deck bên trong public
+        if (data.publicStatus === 2 && Array.isArray(mooc.decks)) {
+            for (const deckWrapper of mooc.decks) {
+                if (deckWrapper.deck) {
+                    const deck: any = await Deck.findById(deckWrapper.deck);
+                    if (deck) {
+                        deck.publicStatus = 2; // set deck public
+                        await deck.save();
+                    }
+                }
+            }
+        }
+    }
+
+    if (data.isPaid !== undefined) mooc.isPaid = data.isPaid;
+    if (data.price !== undefined) mooc.price = data.price;
+    if (data.currency) mooc.currency = data.currency;
+
+    if (data.class) {
+        const classInfo: any = await Class.findById(data.class);
+        if (classInfo) {
+            mooc.class = classInfo._id as any;
+        }
+    }
+
+    if (Array.isArray(data.decks)) {
+        const updatedDecks: any[] = [];
+
+        for (const deckData of data.decks) {
+            let deck: any = null;
+
+            if (deckData.deck) {
+                deck = await Deck.findById(deckData.deck);
+            }
+
+            if (!deck) {
+                deck = new Deck({
+                    name: deckData.name || 'Untitled Deck',
+                    description: deckData.description || '',
+                    owner: mooc.owner,
+                    publicStatus: mooc.publicStatus
+                });
+            } else {
+                if (deckData.name) deck.name = deckData.name;
+                if (deckData.description) deck.description = deckData.description;
+                if (mooc.publicStatus === 2) deck.publicStatus = 2;
+            }
+
+            if (Array.isArray(deckData.cards)) {
+                for (const cardData of deckData.cards) {
+                    if (cardData._id) {
+                        const card: any = await Card.findById(cardData._id);
+                        if (card) {
+                            if (cardData.front) card.front = cardData.front;
+                            if (cardData.back) card.back = cardData.back;
+                            if (cardData.image) card.image = cardData.image;
+                            await card.save();
+                        }
+                    } else {
+                        const newCard = new Card({
+                            front: cardData.front,
+                            back: cardData.back,
+                            image: cardData.image,
+                            deck: deck._id
+                        });
+                        await newCard.save();
+                    }
+                }
+            }
+
+            await deck.save();
+
+            updatedDecks.push({
+                deck: deck._id,
+                order: deckData.order ?? 0
+            });
+        }
+
+        mooc.decks = [...updatedDecks] as any;
+    }
+
+    mooc.updatedAt = new Date();
+    await mooc.save();
+
+    return mooc;
 };
 
 export const deleteMoocService = async (id: string) => {
