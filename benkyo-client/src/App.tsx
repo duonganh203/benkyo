@@ -42,6 +42,7 @@ import { ResetPasswordForm } from './components/forms/reset-password-form';
 import MOOCDetail from './pages/mooc-detail';
 import DeckStudy from './pages/class-deck-study';
 import { ClassUpdateMooc } from './pages/update-mooc';
+import Requests from './pages/requests';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -78,6 +79,7 @@ const App = () => {
                             <Route path='/flashcards/:id/details' element={<CardDetails />} />
                             <Route path='/profile' element={<Profile />} />
                             <Route path='/my-decks' element={<Library />} />
+                            <Route path='/my-decks/requests' element={<Requests />} />
                             <Route path='/study/:id' element={<StudyCard />} />
                             <Route path='do-quiz/:quizId' element={<Quiz />} />
                             <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />

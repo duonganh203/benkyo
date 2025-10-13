@@ -34,6 +34,7 @@ export interface DeckInterface {
     isPublic: boolean;
     likeCount: number;
     liked?: boolean;
+    publicStatus?: number;
 }
 
 interface Owner {
