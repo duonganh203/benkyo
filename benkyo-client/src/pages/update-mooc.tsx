@@ -167,7 +167,6 @@ export const ClassUpdateMooc = () => {
                             queryKey: ['getClassMoocs', mooc.class] as const
                         });
                     }
-
                     navigate(-1);
                 },
                 onError: (err: any) => {
