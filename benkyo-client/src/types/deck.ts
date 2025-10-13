@@ -42,3 +42,7 @@ interface Owner {
     name: string;
     avatar?: string;
 }
+export interface UpdateDeckPayload {
+    name?: string;
+    description?: string;
+}

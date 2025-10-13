@@ -2,6 +2,7 @@ import { User, Card, Revlog, Rating, State, UserDeckState, Deck } from '~/schema
 import mongoose from 'mongoose';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
+import { updateStudyStreakService } from './streakService';
 
 interface FSRSParams {
     request_retention: number;
@@ -271,6 +272,8 @@ export const processReview = async (
     });
 
     await newRevlog.save();
+
+    await updateStudyStreakService(userId);
 
     // Update user statistics
     await User.findByIdAndUpdate(userId, {

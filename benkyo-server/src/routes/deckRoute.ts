@@ -15,6 +15,8 @@ import {
     getDeckStats,
     toggleLikeDeck,
     getUserPublicDecks
+    updateDeck,
+    toggleLikeDeck
 } from '~/controllers/deckController';
 import { errorHandler } from '~/errorHandler';
 import adminAuthMiddleware from '~/middlewares/adminAuthMiddleware';
@@ -23,6 +25,7 @@ import authMiddleware from '~/middlewares/authMiddleware';
 const deckRoutes: Router = Router();
 
 deckRoutes.post('/', [authMiddleware], errorHandler(createDeck));
+deckRoutes.put('/:deckId', [authMiddleware], errorHandler(updateDeck));
 deckRoutes.get('/public-requests', [adminAuthMiddleware], errorHandler(getAllRequestPublicDecks));
 deckRoutes.get('/deckStats', [adminAuthMiddleware], errorHandler(getDeckStats));
 deckRoutes.get('/public-requests/:id', [adminAuthMiddleware], errorHandler(getRequestPulbicDeck));
