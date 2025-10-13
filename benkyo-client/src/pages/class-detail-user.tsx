@@ -43,7 +43,6 @@ function ClassDetailUser() {
     // console.log('class id  ', classId);
     // console.log('classData ', classData);
     // console.log('allMoocs ', allMoocs);
-
     const navigate = useNavigate();
 
     const handleMOOCClick = (moocId: string) => {
@@ -226,27 +225,24 @@ function ClassDetailUser() {
                         <div className='flex items-center justify-between mb-6'>
                             <h2 className='text-2xl font-bold'>Available MOOCs</h2>
                         </div>
-
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                            {Array.isArray(allMoocs?.data) && allMoocs.data.length > 0 ? (
-                                allMoocs.data
-                                    .filter((mooc) => {
-                                        const ownerId = typeof mooc.owner === 'string' ? mooc.owner : mooc.owner?._id;
-                                        return mooc.publicStatus === 2 || ownerId === user?._id;
-                                    })
-                                    .map((mooc) => (
-                                        <ProgressCard
-                                            key={mooc._id}
-                                            title={mooc.title}
-                                            description={mooc.description || 'Không có mô tả'}
-                                            progress={0}
-                                            status='available'
-                                            onClick={() => handleMOOCClick(mooc._id)}
-                                        />
-                                    ))
-                            ) : (
-                                <p>Không có dữ liệu MOOC</p>
-                            )}
+                            {allMoocs?.data
+                                ?.filter((mooc) => {
+                                    // Nếu là chủ class thì show tất cả MOOC
+                                    if (isOwner) return true;
+                                    return mooc.publicStatus === 2;
+                                })
+                                .map((mooc) => (
+                                    <ProgressCard
+                                        key={mooc._id}
+                                        // id={mooc._id}
+                                        title={mooc.title}
+                                        description={mooc.description || 'Không có mô tả'}
+                                        progress={0}
+                                        status='available'
+                                        onClick={() => handleMOOCClick(mooc._id)}
+                                    />
+                                ))}
                         </div>
 
                         {scheduledDecks.length > 0 && (

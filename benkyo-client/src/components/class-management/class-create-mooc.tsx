@@ -37,8 +37,8 @@ export const ClassCreateMooc = () => {
     const [isPublic, setIsPublic] = useState(true);
     const [price, setPrice] = useState('');
     const [currency, setCurrency] = useState('VND');
-    const [currentTag, setCurrentTag] = useState('');
-
+    const [currentTags, setCurrentTags] = useState<{ [key: string]: string }>({});
+    const getTagKey = (deckIndex: number, cardIndex: number) => `${deckIndex}-${cardIndex}`;
     const addDeck = () => {
         setDecks([...decks, { name: '', description: '', order: decks.length, cards: [] }]);
     };
@@ -252,20 +252,34 @@ export const ClassCreateMooc = () => {
                                             <div className='flex gap-2 mt-2'>
                                                 <Input
                                                     placeholder='Add tag'
-                                                    value={currentTag}
-                                                    onChange={(e) => setCurrentTag(e.target.value)}
+                                                    value={currentTags[getTagKey(deckIndex, cardIndex)] || ''}
+                                                    onChange={(e) =>
+                                                        setCurrentTags({
+                                                            ...currentTags,
+                                                            [getTagKey(deckIndex, cardIndex)]: e.target.value
+                                                        })
+                                                    }
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter') {
                                                             e.preventDefault();
-                                                            addTag(deckIndex, cardIndex, currentTag);
-                                                            setCurrentTag('');
+                                                            const tag =
+                                                                currentTags[getTagKey(deckIndex, cardIndex)] || '';
+                                                            addTag(deckIndex, cardIndex, tag);
+                                                            setCurrentTags({
+                                                                ...currentTags,
+                                                                [getTagKey(deckIndex, cardIndex)]: ''
+                                                            });
                                                         }
                                                     }}
                                                 />
                                                 <Button
                                                     onClick={() => {
-                                                        addTag(deckIndex, cardIndex, currentTag);
-                                                        setCurrentTag('');
+                                                        const tag = currentTags[getTagKey(deckIndex, cardIndex)] || '';
+                                                        addTag(deckIndex, cardIndex, tag);
+                                                        setCurrentTags({
+                                                            ...currentTags,
+                                                            [getTagKey(deckIndex, cardIndex)]: ''
+                                                        });
                                                     }}
                                                     size='sm'
                                                     variant='secondary'

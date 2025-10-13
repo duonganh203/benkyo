@@ -5,23 +5,29 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, BookOpen, Target } from 'lucide-react';
 import FlashcardViewer from '@/components/flashcard-viewer';
 import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
+import useMe from '@/hooks/queries/use-me';
+import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import { getToast } from '@/utils/getToast';
 
 const DeckStudy: React.FC = () => {
-    const { classId, deckId } = useParams<{ classId: string; deckId: string }>();
+    const { classId, deckId, moocId } = useParams<{ classId: string; deckId: string; moocId: string }>();
     const navigate = useNavigate();
     const location = useLocation();
-
-    const { data: cardsData, isLoading } = useGetDeckCards(deckId!);
     const deckTitle = location.state?.deckTitle ?? 'Deck Title';
-    const totalCards = Array.isArray(cardsData) ? cardsData.length : 0;
+
+    const { data: user } = useMe();
+
+    const { data: mooc, isLoading: isMoocLoading } = useGetMoocDetail(moocId!);
+    const isOwner = user?._id === mooc?.owner?._id;
+    const canAccess = isOwner || mooc?.publicStatus === 2;
+    const { data: cardsData, isLoading: isCardsLoading } =
+        canAccess && deckId ? useGetDeckCards(deckId) : { data: [], isLoading: false };
 
     const storageKey = `deck-${deckId}-currentIndex`;
     const [currentCardIndex, setCurrentCardIndex] = useState(() => {
         const saved = sessionStorage.getItem(storageKey);
         return saved ? Number(saved) : 0;
     });
-
     const [studyCompleted, setStudyCompleted] = useState(false);
 
     useEffect(() => {
@@ -34,7 +40,7 @@ const DeckStudy: React.FC = () => {
         sessionStorage.setItem(storageKey, String(currentCardIndex));
     }, [currentCardIndex]);
 
-    if (!deckId || !classId) {
+    if (!deckId || !classId || !moocId) {
         return (
             <div className='min-h-screen flex items-center justify-center'>
                 <p className='text-lg text-muted-foreground'>Invalid URL</p>
@@ -42,16 +48,23 @@ const DeckStudy: React.FC = () => {
         );
     }
 
-    if (isLoading) {
+    if (isMoocLoading || isCardsLoading) {
         return (
             <div className='min-h-screen flex items-center justify-center'>
                 <p className='text-lg text-muted-foreground'>Loading...</p>
             </div>
         );
     }
-    const handleBack = () => {
-        navigate(-1);
-    };
+
+    if (!canAccess) {
+        return (
+            <div className='min-h-screen flex items-center justify-center'>
+                <p className='text-lg text-muted-foreground'>Bạn không có quyền truy cập MOOC này.</p>
+            </div>
+        );
+    }
+
+    const handleBack = () => navigate(-1);
     const handleTakeTest = () => navigate(`/test/${deckId}`);
 
     const handleFinishStudy = () => {
@@ -67,6 +80,7 @@ const DeckStudy: React.FC = () => {
         setCurrentCardIndex(0);
         setStudyCompleted(false);
     };
+
     if (studyCompleted) {
         return (
             <div className='min-h-screen bg-background flex items-center justify-center px-4'>
@@ -98,8 +112,7 @@ const DeckStudy: React.FC = () => {
             <header>
                 <div className='max-w-4xl mx-auto flex justify-between items-center py-4 px-4'>
                     <Button variant='outline' onClick={handleBack} className='flex items-center gap-2'>
-                        <ChevronLeft className='h-5 w-5' />
-                        Back
+                        <ChevronLeft className='h-5 w-5' /> Back
                     </Button>
 
                     <div className='text-center flex-1'>
@@ -116,17 +129,17 @@ const DeckStudy: React.FC = () => {
                     <FlashcardViewer
                         cards={Array.isArray(cardsData) ? cardsData : []}
                         initialIndex={currentCardIndex}
-                        onCardChange={(index) => setCurrentCardIndex(index)}
+                        onCardChange={setCurrentCardIndex}
                     />
                 </div>
 
                 <Button
                     onClick={handleFinishStudy}
                     className='mt-6 px-8 py-3 rounded-full text-lg font-semibold text-white 
-                     bg-gradient-to-r from-green-500 to-emerald-600 
-                     hover:from-green-600 hover:to-emerald-700 
-                     transition-all duration-300 shadow-lg hover:shadow-xl 
-                     flex items-center gap-2'
+                        bg-gradient-to-r from-green-500 to-emerald-600 
+                        hover:from-green-600 hover:to-emerald-700 
+                        transition-all duration-300 shadow-lg hover:shadow-xl 
+                        flex items-center gap-2'
                 >
                     <Target className='w-5 h-5' /> Finish Study
                 </Button>

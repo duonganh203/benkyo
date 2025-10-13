@@ -68,11 +68,24 @@ export interface CreateMoocPayload {
 export interface UpdateMoocPayload {
     title?: string;
     description?: string;
-    decks?: string[];
-    publicStatus?: number;
+    class?: string;
+    decks?: {
+        deck?: string;
+        name?: string;
+        description?: string;
+        order?: number;
+        cards?: {
+            _id?: string;
+            front?: string;
+            back?: string;
+            image?: string;
+            tags?: string[];
+        }[];
+    }[];
     isPaid?: boolean;
     price?: number;
     currency?: string;
+    publicStatus?: PublicStatus;
 }
 
 export interface EnrollPayload {

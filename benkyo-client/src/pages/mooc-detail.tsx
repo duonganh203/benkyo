@@ -193,9 +193,16 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { BookOpen, Zap } from 'lucide-react';
+import { BookOpen, Zap, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import ProgressCard from '@/components/moocs-card';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
+import useMe from '@/hooks/queries/use-me';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 
 interface Deck {
     _id: string;
@@ -215,8 +222,9 @@ interface DeckWrapper {
 const MOOCDetail: React.FC = () => {
     const { classId, moocId } = useParams<{ classId: string; moocId: string }>();
     const navigate = useNavigate();
-
     const { data: mooc, isLoading, isError } = useGetMoocDetail(moocId!);
+    const { data: user } = useMe();
+    const isOwner = mooc ? user?._id === mooc.owner?._id : false;
 
     console.log('MOOC decks:', mooc?.decks);
 
@@ -236,6 +244,16 @@ const MOOCDetail: React.FC = () => {
         );
     }
 
+    const handleEdit = () => {
+        navigate(`/moocs/update/${moocId}`);
+    };
+
+    const handleDelete = () => {
+        if (confirm('Bạn có chắc muốn xoá MOOC này không?')) {
+            console.log('Deleting mooc:', moocId);
+        }
+    };
+
     const handleGoToDeck = (deckId: string, deckTitle: string) => {
         navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}`, {
             state: { deckTitle }
@@ -250,14 +268,44 @@ const MOOCDetail: React.FC = () => {
         <div className='min-h-screen bg-background'>
             {/* Header */}
             <header className='bg-card border-b border-border py-6 px-4'>
-                <div className='max-w-4xl mx-auto flex items-start gap-4'>
-                    <div className='p-3 bg-primary/10 rounded-lg'>
-                        <BookOpen className='w-8 h-8 text-primary' />
+                <div className='max-w-4xl mx-auto flex items-start justify-between'>
+                    <div className='flex items-start gap-4'>
+                        <div className='p-3 bg-primary/10 rounded-lg'>
+                            <BookOpen className='w-8 h-8 text-primary' />
+                        </div>
+                        <div>
+                            <h1 className='text-3xl font-bold text-foreground mb-2'>{mooc.title}</h1>
+                            <p className='text-lg text-muted-foreground'>{mooc.description}</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className='text-3xl font-bold text-foreground mb-2'>{mooc.title}</h1>
-                        <p className='text-lg text-muted-foreground'>{mooc.description}</p>
-                    </div>
+
+                    {/* Chỉ hiện nút Edit/Delete nếu là chủ class */}
+                    {isOwner && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant='ghost'
+                                    size='icon'
+                                    className='text-muted-foreground hover:text-foreground'
+                                >
+                                    <MoreVertical className='h-5 w-5' />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align='end' className='w-32'>
+                                <DropdownMenuItem onClick={handleEdit}>
+                                    <Pencil className='mr-2 h-4 w-4' />
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={handleDelete}
+                                    className='text-destructive focus:text-destructive'
+                                >
+                                    <Trash2 className='mr-2 h-4 w-4' />
+                                    Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
                 </div>
             </header>
 

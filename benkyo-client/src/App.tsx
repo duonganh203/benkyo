@@ -41,6 +41,7 @@ import { ForgotPasswordForm } from './components/forms/forgot-password-form';
 import { ResetPasswordForm } from './components/forms/reset-password-form';
 import MOOCDetail from './pages/mooc-detail';
 import DeckStudy from './pages/class-deck-study';
+import { ClassUpdateMooc } from './pages/update-mooc';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -97,6 +98,7 @@ const App = () => {
                             <Route path='/class/:classId/request' element={<ClassJoin />} />
                             <Route path='/class/:classId/mooc/:moocId' element={<MOOCDetail />} />
                             <Route path='/class/:classId/mooc/:moocId/deck/:deckId' element={<DeckStudy />} />
+                            <Route path='/moocs/update/:moocId' element={<ClassUpdateMooc />} />
                         </Route>
                     </Routes>
                     <ModalProvider />
