@@ -10,31 +10,19 @@ import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import { getToast } from '@/utils/getToast';
 
 const DeckStudy: React.FC = () => {
-    const { classId, deckId, moocId } = useParams<{ classId: string; deckId: string; moocId: string }>();
+    const { classId, deckId, moocId } = useParams<{
+        classId: string;
+        deckId: string;
+        moocId: string;
+    }>();
+
     const navigate = useNavigate();
     const location = useLocation();
     const deckTitle = location.state?.deckTitle ?? 'Deck Title';
 
-    // Early return nếu thiếu params
-    if (!classId || !deckId || !moocId) {
-        return (
-            <div className='min-h-screen flex items-center justify-center'>
-                <p className='text-lg text-muted-foreground'>Invalid URL</p>
-            </div>
-        );
-    }
-
     const { data: user } = useMe();
-    const { data: mooc, isLoading: isMoocLoading } = useGetMoocDetail(moocId);
-
-    const isOwner = user?._id === mooc?.owner?._id;
-    const canAccess = isOwner || mooc?.publicStatus === 2;
-
-    // Chỉ gọi hook khi có quyền
-    const { data: cardsData, isLoading: isCardsLoading } = canAccess
-        ? useGetDeckCards(deckId)
-        : { data: undefined, isLoading: false };
-
+    const { data: mooc, isLoading: isMoocLoading } = useGetMoocDetail(moocId!);
+    const { data: cardsData, isLoading: isCardsLoading } = useGetDeckCards(deckId ?? '');
     const totalCards = Array.isArray(cardsData) ? cardsData.length : 0;
 
     const storageKey = `deck-${deckId}-currentIndex`;
@@ -54,6 +42,14 @@ const DeckStudy: React.FC = () => {
         sessionStorage.setItem(storageKey, String(currentCardIndex));
     }, [currentCardIndex]);
 
+    if (!deckId || !classId || !moocId) {
+        return (
+            <div className='min-h-screen flex items-center justify-center'>
+                <p className='text-lg text-muted-foreground'>Invalid URL</p>
+            </div>
+        );
+    }
+
     if (isMoocLoading || isCardsLoading) {
         return (
             <div className='min-h-screen flex items-center justify-center'>
@@ -62,6 +58,9 @@ const DeckStudy: React.FC = () => {
         );
     }
 
+    // Kiểm tra quyền truy cập sau khi dữ liệu load xong
+    const isOwner = user?._id === mooc?.owner?._id;
+    const canAccess = isOwner || mooc?.publicStatus === 2; // 2 = public
     if (!canAccess) {
         return (
             <div className='min-h-screen flex items-center justify-center'>
@@ -142,10 +141,10 @@ const DeckStudy: React.FC = () => {
                 <Button
                     onClick={handleFinishStudy}
                     className='mt-6 px-8 py-3 rounded-full text-lg font-semibold text-white 
-                        bg-gradient-to-r from-green-500 to-emerald-600 
-                        hover:from-green-600 hover:to-emerald-700 
-                        transition-all duration-300 shadow-lg hover:shadow-xl 
-                        flex items-center gap-2'
+                    bg-gradient-to-r from-green-500 to-emerald-600 
+                    hover:from-green-600 hover:to-emerald-700 
+                    transition-all duration-300 shadow-lg hover:shadow-xl 
+                    flex items-center gap-2'
                 >
                     <Target className='w-5 h-5' /> Finish Study
                 </Button>
