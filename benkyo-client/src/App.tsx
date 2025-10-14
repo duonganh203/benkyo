@@ -39,7 +39,9 @@ import ClassCreate from './pages/class-create';
 import ClassList from './pages/class-list';
 import { ForgotPasswordForm } from './components/forms/forgot-password-form';
 import { ResetPasswordForm } from './components/forms/reset-password-form';
-
+import MOOCDetail from './pages/mooc-detail';
+import DeckStudy from './pages/class-deck-study';
+import { ClassUpdateMooc } from './pages/update-mooc';
 import Requests from './pages/requests';
 
 const queryClient = new QueryClient({
@@ -96,6 +98,9 @@ const App = () => {
                             <Route path='/notification' element={<Notifications />} />
                             <Route path='/class/:classId' element={<ClassDetailUser />} />
                             <Route path='/class/:classId/request' element={<ClassJoin />} />
+                            <Route path='/class/:classId/mooc/:moocId' element={<MOOCDetail />} />
+                            <Route path='/class/:classId/mooc/:moocId/deck/:deckId' element={<DeckStudy />} />
+                            <Route path='/moocs/update/:moocId' element={<ClassUpdateMooc />} />
                         </Route>
                     </Routes>
                     <ModalProvider />
