@@ -8,7 +8,7 @@ import {
     enrollUserService,
     updateProgressService
 } from '~/services/moocService';
-export const createMooc = async (req: any, res: Response) => {
+export const createMooc = async (req: Request, res: Response) => {
     const { classId } = req.params;
     const { title, description, decks, isPaid, price, currency, publicStatus } = req.body;
     const ownerId = req.user.id;
@@ -66,14 +66,13 @@ export const getMoocById = async (req: Request, res: Response) => {
     });
 };
 
-export const updateMooc = async (req: any, res: Response) => {
+export const updateMooc = async (req: Request, res: Response) => {
     const { id } = req.params;
     const data = req.body;
 
     if (!id) {
         return res.status(400).json({
-            success: false,
-            message: 'Thiếu ID của Mooc cần cập nhật'
+            success: false
         });
     }
 
@@ -81,17 +80,16 @@ export const updateMooc = async (req: any, res: Response) => {
 
     if (!updatedMooc) {
         return res.status(404).json({
-            success: false,
-            message: 'Không tìm thấy Mooc để cập nhật'
+            success: false
         });
     }
 
     return res.status(200).json({
         success: true,
-        message: 'Cập nhật Mooc thành công',
         data: updatedMooc
     });
 };
+
 export const deleteMooc = async (req: Request, res: Response) => {
     const { id } = req.params;
     const deleted = await deleteMoocService(id);
