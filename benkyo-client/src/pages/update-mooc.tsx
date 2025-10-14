@@ -8,11 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
+import { getToast } from '@/utils/getToast';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import useUpdateMooc from '@/hooks/queries/use-update-mooc-in-class';
-import { useQueryClient } from '@tanstack/react-query';
 import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
 
 interface CardData {
@@ -33,7 +32,6 @@ interface DeckData {
 export const ClassUpdateMooc = () => {
     const { moocId } = useParams<{ moocId: string }>();
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
 
     const { data: mooc, isLoading: moocLoading } = useGetMoocDetail(moocId!);
     const updateMoocMutation = useUpdateMooc();
@@ -49,7 +47,7 @@ export const ClassUpdateMooc = () => {
     const [deckCardsData, setDeckCardsData] = useState<CardData[][]>([]);
 
     if (moocLoading) return <p className='text-center py-10'>Loading MOOC data...</p>;
-    if (!mooc) return <p className='text-center py-10'>Không tìm thấy MOOC.</p>;
+    if (!mooc) return <p className='text-center py-10'>MOOC not found.</p>;
 
     const deckIds = mooc?.decks?.map((d: { deck?: { _id: string }; _id?: string }) => d.deck?._id ?? d._id);
 
@@ -89,7 +87,7 @@ export const ClassUpdateMooc = () => {
         }
     }, [deckCardsData, mooc]);
 
-    // --- Deck & Card handlers ---
+    // --- Deck & Card Handlers ---
     const addDeck = () => setDecks([...decks, { name: '', description: '', order: decks.length, cards: [] }]);
     const removeDeck = (index: number) => setDecks(decks.filter((_, i) => i !== index));
     const updateDeck = (index: number, field: keyof DeckData, value: any) => {
@@ -133,7 +131,7 @@ export const ClassUpdateMooc = () => {
 
     // --- Submit ---
     const handleSubmit = () => {
-        if (!title.trim()) return toast.error('Please enter a MOOC title');
+        if (!title.trim()) return getToast('error', 'Please enter a MOOC title');
         if (!moocId) return;
 
         const payload = {
@@ -160,18 +158,13 @@ export const ClassUpdateMooc = () => {
         updateMoocMutation.mutate(
             { moocId, payload },
             {
-                onSuccess: (res) => {
-                    toast.success(res.message || 'MOOC updated successfully!');
-                    if (mooc?.class) {
-                        queryClient.invalidateQueries({
-                            queryKey: ['getClassMoocs', mooc.class] as const
-                        });
-                    }
+                onSuccess: () => {
+                    getToast('success', 'MOOC updated successfully!');
                     navigate(-1);
                 },
                 onError: (err: any) => {
-                    console.error(err.response?.data || err);
-                    toast.error(err.message || 'Failed to update MOOC');
+                    console.error(err?.response?.data || err?.message || err);
+                    getToast('error', 'Failed to update MOOC');
                 }
             }
         );
@@ -240,7 +233,7 @@ export const ClassUpdateMooc = () => {
                         </div>
                         {decks.length === 0 ? (
                             <p className='text-muted-foreground text-center py-4'>
-                                Không có deck nào. Nhấn "Add Deck" để thêm.
+                                No decks found. Click "Add Deck" to create one.
                             </p>
                         ) : (
                             decks.map((deck, deckIndex) => (
@@ -255,14 +248,14 @@ export const ClassUpdateMooc = () => {
                                     </Button>
 
                                     <div>
-                                        <Label>Deck name</Label>
+                                        <Label>Deck Name</Label>
                                         <Input
                                             value={deck.name}
                                             onChange={(e) => updateDeck(deckIndex, 'name', e.target.value)}
                                         />
                                     </div>
                                     <div>
-                                        <Label>Deck description</Label>
+                                        <Label>Deck Description</Label>
                                         <Textarea
                                             value={deck.description}
                                             onChange={(e) => updateDeck(deckIndex, 'description', e.target.value)}
@@ -279,7 +272,7 @@ export const ClassUpdateMooc = () => {
                                         </div>
                                         {deck.cards.length === 0 ? (
                                             <p className='text-sm text-muted-foreground'>
-                                                Không có thẻ nào. Nhấn "Add Card" để thêm.
+                                                No cards yet. Click "Add Card" to create one.
                                             </p>
                                         ) : (
                                             deck.cards.map((card, cardIndex) => (

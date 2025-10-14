@@ -231,7 +231,7 @@ const MOOCDetail: React.FC = () => {
     if (isLoading) {
         return (
             <div className='min-h-screen flex items-center justify-center'>
-                <p className='text-lg text-muted-foreground'>Đang tải dữ liệu MOOC...</p>
+                <p className='text-lg text-muted-foreground'>Loading MOOC data...</p>
             </div>
         );
     }
@@ -239,7 +239,7 @@ const MOOCDetail: React.FC = () => {
     if (isError || !mooc) {
         return (
             <div className='min-h-screen flex items-center justify-center'>
-                <p className='text-lg text-muted-foreground'>Không tìm thấy MOOC</p>
+                <p className='text-lg text-muted-foreground'>MOOC not found</p>
             </div>
         );
     }
@@ -249,15 +249,13 @@ const MOOCDetail: React.FC = () => {
     };
 
     const handleDelete = () => {
-        if (confirm('Bạn có chắc muốn xoá MOOC này không?')) {
+        if (confirm('Are you sure you want to delete this MOOC?')) {
             console.log('Deleting mooc:', moocId);
         }
     };
 
-    const handleGoToDeck = (deckId: string, deckTitle: string) => {
-        navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}`, {
-            state: { deckTitle }
-        });
+    const handleGoToDeck = (deckId: string) => {
+        navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}`);
     };
 
     const handleQuizHub = (deckId: string) => {
@@ -279,7 +277,7 @@ const MOOCDetail: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Chỉ hiện nút Edit/Delete nếu là chủ class */}
+                    {/* Edit/Delete only for owner */}
                     {isOwner && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -315,7 +313,7 @@ const MOOCDetail: React.FC = () => {
                     <div className='mb-8'>
                         <h2 className='text-2xl font-bold text-foreground mb-2'>Learning Decks</h2>
                         <p className='text-muted-foreground'>
-                            Master each deck through flashcard practice, then take a test to proceed
+                            Master each deck through flashcard study, then take a test to move forward.
                         </p>
                     </div>
 
@@ -328,13 +326,13 @@ const MOOCDetail: React.FC = () => {
                                 return (
                                     <div key={deck._id} className='space-y-3'>
                                         <ProgressCard
-                                            title={deck.name ?? 'Không có tên'}
+                                            title={deck.name ?? 'Untitled Deck'}
                                             description={`${deck.description ?? ''} • ${
                                                 deck.cardCount ?? 0
-                                            } flashcards • ${deckWrapper.pointsRequired ?? 0} điểm cần thiết`}
+                                            } flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
                                             progress={0}
                                             status='available'
-                                            onClick={() => handleGoToDeck(deck._id, deck.name)}
+                                            onClick={() => handleGoToDeck(deck._id)}
                                         />
 
                                         <div className='flex justify-end'>
@@ -345,7 +343,7 @@ const MOOCDetail: React.FC = () => {
                                                 className='flex items-center gap-2'
                                             >
                                                 <Zap className='w-4 h-4' />
-                                                Thử thách thêm
+                                                Extra Challenge
                                             </Button>
                                         </div>
                                     </div>
@@ -355,8 +353,10 @@ const MOOCDetail: React.FC = () => {
                             <Card className='shadow-card'>
                                 <CardContent className='p-8 text-center'>
                                     <BookOpen className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
-                                    <h3 className='text-lg font-semibold text-foreground mb-2'>Đang cập nhật</h3>
-                                    <p className='text-muted-foreground'>Các bộ thẻ cho MOOC này đang được chuẩn bị.</p>
+                                    <h3 className='text-lg font-semibold text-foreground mb-2'>Coming Soon</h3>
+                                    <p className='text-muted-foreground'>
+                                        The decks for this MOOC are currently being prepared.
+                                    </p>
                                 </CardContent>
                             </Card>
                         )}

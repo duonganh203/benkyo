@@ -228,7 +228,6 @@ function ClassDetailUser() {
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                             {allMoocs?.data
                                 ?.filter((mooc) => {
-                                    // Nếu là chủ class thì show tất cả MOOC
                                     if (isOwner) return true;
                                     return mooc.publicStatus === 2;
                                 })

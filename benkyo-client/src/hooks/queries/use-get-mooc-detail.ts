@@ -6,6 +6,6 @@ export const useGetMoocDetail = (moocId: string) => {
         queryKey: ['mooc-detail', moocId],
         queryFn: () => getMoocById(moocId),
         select: (response) => response.data as any,
-        staleTime: 1000 * 60 * 5
+        staleTime: 1000 * 2
     });
 };
