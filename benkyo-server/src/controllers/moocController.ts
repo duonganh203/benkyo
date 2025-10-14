@@ -92,11 +92,21 @@ export const updateMooc = async (req: Request, res: Response) => {
 
 export const deleteMooc = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const deleted = await deleteMoocService(id);
+    const userId = req.user?.id;
 
-    if (!deleted) return res.status(404).json({ data: null });
+    if (!userId) {
+        return res.status(401).json({
+            success: false,
+            message: 'You need to log in to delete the mooc.'
+        });
+    }
 
-    res.status(200).json({ data: deleted });
+    const result = await deleteMoocService(id, userId);
+
+    if (!result.success) {
+        return res.status(400).json(result);
+    }
+    return res.status(200).json(result);
 };
 
 export const enrollUser = async (req: Request, res: Response) => {
