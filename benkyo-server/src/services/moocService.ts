@@ -223,10 +223,32 @@ export const updateMoocService = async (moocId: string, data: any) => {
     return mooc;
 };
 
-export const deleteMoocService = async (id: string) => {
-    const deleted = await Mooc.findByIdAndDelete(id);
-    if (!deleted) return { success: false, message: 'MOOC not found', data: null };
-    return { success: true, message: 'MOOC deleted successfully', data: deleted };
+export const deleteMoocService = async (moocId: string, userId: string) => {
+    const mooc = await Mooc.findById(moocId);
+    if (!mooc) {
+        return { success: false, message: 'MOOC không tồn tại', data: null };
+    }
+
+    if (mooc.owner.toString() !== userId) {
+        return {
+            success: false,
+            message: 'Bạn không có quyền xóa MOOC này',
+            data: null
+        };
+    }
+    const deckIds = mooc.decks.map((d: any) => d.deck);
+
+    if (deckIds.length > 0) {
+        await Card.deleteMany({ deck: { $in: deckIds } });
+        await Deck.deleteMany({ _id: { $in: deckIds } });
+    }
+    await Mooc.findByIdAndDelete(moocId);
+
+    return {
+        success: true,
+        message: 'MOOC deleted successfully',
+        data: mooc
+    };
 };
 
 export const enrollUserService = async (moocId: string, userId: string) => {
