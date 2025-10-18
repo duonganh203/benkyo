@@ -1,14 +1,15 @@
 import { Request, Response } from 'express';
 import {
-    createClassQuizService,
+    createQuizForMoocDeckService,
     createQuizService,
-    deleteQuizService,
+    deleteQuizForMoocDeckService,
     getAllQuizAttemptsService,
     getClassQuizzesService,
     getQuizAttemptById,
     getQuizByIdService,
+    getQuizzesByDeckService,
     saveQuizAttemptService,
-    updateQuizService
+    updateQuizForMoocDeckService
 } from '~/services/quizService';
 import { createQuizValidation, saveQuizAttemptValidation, updateQuizValidation } from '~/validations/quizValitation';
 
@@ -49,34 +50,44 @@ export const getAllQuizAttempts = async (req: Request, res: Response) => {
     res.json(quizAttempt);
 };
 
-export const createClassQuiz = async (req: Request, res: Response) => {
+export const deleteMoocDeckQuiz = async (req: Request, res: Response) => {
     const userId = req.user._id;
-    const { _id: classId } = req.params;
+    const { classId, quizId } = req.params;
 
-    const quiz = await createClassQuizService(userId, classId, req.body);
-    res.status(201).json({ quiz });
+    const result = await deleteQuizForMoocDeckService(userId, classId, quizId);
+};
+
+export const createMoocDeckQuiz = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const { classId } = req.params;
+    const { moocId, deckId, questions, title, description, type } = req.body;
+
+    createQuizValidation.parse({ deckId, questions, title, description, type });
+
+    const quiz = await createQuizForMoocDeckService(userId, classId, moocId, deckId, {
+        title,
+        description,
+        type,
+        questions,
+        deckId
+    });
+
+    res.status(201).json({ message: 'Quiz created successfully', quiz });
 };
 
 export const getClassQuizzes = async (req: Request, res: Response) => {
-    const { _id: classId } = req.params;
-    const quizzes = await getClassQuizzesService(classId);
-    return res.json(quizzes);
+    const { classId } = req.params;
+    const { moocId } = req.query;
+
+    const quizzes = await getClassQuizzesService(classId, moocId as string | undefined);
+    return res.status(200).json(quizzes);
 };
 
-export const updateClassQuizzes = async (req: Request, res: Response) => {
+export const updateMoocDeckQuiz = async (req: Request, res: Response) => {
     const userId = req.user._id;
-    const { quizId } = req.params;
+    const { classId, moocId, deckId, quizId } = req.params;
     const updatedData = req.body;
 
-    updateQuizValidation.parse(updatedData);
-    const result = await updateQuizService(userId, quizId, updatedData);
-    res.json(result);
-};
-
-export const deleteClassQuizzes = async (req: Request, res: Response) => {
-    const userId = req.user._id;
-    const { quizId } = req.params;
-
-    const result = await deleteQuizService(userId, quizId);
-    res.json({ message: 'Quiz deleted successfully', ...result });
+    const result = await updateQuizForMoocDeckService(userId, classId, moocId, deckId, quizId, updatedData);
+    res.status(200).json(result);
 };

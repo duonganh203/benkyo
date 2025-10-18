@@ -15,7 +15,7 @@ import {
 } from './ui/alert-dialog';
 import { useState } from 'react';
 import { CreateQuizModal } from './modals/create-quiz-modal';
-import useClassDeleteQuiz from '@/hooks/queries/use-delete-quiz';
+import useDeleteMoocDeckQuiz from '@/hooks/queries/use-delete-class-quiz';
 
 interface QuizCardProps {
     quiz: Quiz;
@@ -27,17 +27,20 @@ export const QuizCardClass = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
 
-    const { mutate: deleteQuiz } = useClassDeleteQuiz(quiz.classId || '', quiz.id);
+    const { mutate: deleteQuiz, isPending } = useDeleteMoocDeckQuiz();
+
     const handleDelete = () => {
+        if (!quiz.classId) return;
+
         deleteQuiz(
-            { classId: quiz.classId || '', quizId: quiz.id },
+            { classId: quiz.classId, quizId: quiz.id },
             {
                 onSuccess: () => {
+                    setShowDeleteDialog(false);
                     onDelete(quiz.id);
                 }
             }
         );
-        setShowDeleteDialog(false);
     };
 
     const handleEdit = (updatedQuiz: Omit<Quiz, 'id' | 'createdAt'>) => {
@@ -105,12 +108,10 @@ export const QuizCardClass = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
                         </div>
                     </div>
 
-                    {quiz.type === 'ai' && quiz.deck && (
-                        <div className='flex items-center gap-2 p-2 bg-muted/50 rounded-md'>
-                            <Zap className='w-4 h-4 text-primary' />
-                            <span className='text-sm font-medium text-foreground'>From: {quiz.deck}</span>
-                        </div>
-                    )}
+                    <div className='flex items-center gap-2 p-2 bg-muted/50 rounded-md'>
+                        <Zap className='w-4 h-4 text-primary' />
+                        <span className='text-sm font-medium text-foreground'>From: {quiz.deck?.name}</span>
+                    </div>
 
                     {quiz.questions.length > 0 && (
                         <div className='p-3 bg-muted/30 rounded-md border-l-4 border-primary'>
@@ -128,7 +129,9 @@ export const QuizCardClass = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
                             size='sm'
                             variant='outline'
                             className='text-foreground hover:bg-muted'
-                            onClick={() => setShowEditModal(true)}
+                            onClick={() => {
+                                setShowEditModal(true);
+                            }}
                         >
                             <Edit className='w-4 h-4' />
                         </Button>
@@ -137,6 +140,7 @@ export const QuizCardClass = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
                             variant='destructive'
                             className='hover:bg-destructive/90'
                             onClick={() => setShowDeleteDialog(true)}
+                            disabled={isPending}
                         >
                             <Trash2 className='w-4 h-4' />
                         </Button>
@@ -153,12 +157,13 @@ export const QuizCardClass = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDelete}
                             className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                            disabled={isPending}
                         >
-                            Delete
+                            {isPending ? 'Deleting...' : 'Delete'}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -166,7 +171,9 @@ export const QuizCardClass = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
 
             <CreateQuizModal
                 open={showEditModal}
-                onOpenChange={setShowEditModal}
+                onOpenChange={(open) => {
+                    setShowEditModal(open);
+                }}
                 onSubmit={handleEdit}
                 initialData={quiz}
             />

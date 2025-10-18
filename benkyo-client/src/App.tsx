@@ -32,7 +32,6 @@ import Notifications from './pages/notification';
 import { InviteDialog } from './components/invite-dialog';
 import ClassDetailUser from './pages/class-detail-user';
 import TopLearners from './pages/top-study-streak';
-import ClassQuizManagement from './pages/class-quiz-management';
 import ClassUpdate from './pages/class-update';
 import ClassJoin from './pages/class-join';
 import ClassCreate from './pages/class-create';
@@ -94,7 +93,6 @@ const App = () => {
                             <Route path='/class/:classId/update' element={<ClassUpdate />} />
                             <Route path='/class/list' element={<ClassList />} />
                             <Route path='/class/:classId/management' element={<ClassManagement />} />
-                            <Route path='/class/:_id/management/quizzes' element={<ClassQuizManagement />} />
                             <Route path='/notification' element={<Notifications />} />
                             <Route path='/class/:classId' element={<ClassDetailUser />} />
                             <Route path='/class/:classId/request' element={<ClassJoin />} />

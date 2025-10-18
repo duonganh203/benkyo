@@ -130,17 +130,23 @@ export const createClassQuizApi = async ({ classId, title, description, question
 };
 
 export const getClassQuizApi = async (classId: string) => {
-    const response = await api.get(`/class/${classId}/management/quiz`);
+    const response = await api.get(`/class/${classId}/quiz`);
     return response.data as CreateQuizRes[];
 };
 
-export const updateClassQuizApi = async (classId: string, quizId: string, data: createQuizPayload) => {
-    const response = await api.put(`/class/${classId}/management/quiz/${quizId}`, data);
+export const updateMoocDeckQuizApi = async (
+    classId: string,
+    quizId: string,
+    moocId: string,
+    deckId: string,
+    data: createQuizPayload
+) => {
+    const response = await api.put(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz/${quizId}`, data);
     return response.data as CreateQuizRes;
 };
 
-export const deleteClassQuizApi = async (classId: string, quizId: string) => {
-    const response = await api.delete(`/class/${classId}/management/quiz/${quizId}`);
+export const deleteMoocDeckQuizApi = async (classId: string, quizId: string) => {
+    const response = await api.delete(`/class/${classId}/quizzes/${quizId}`);
     return response.data as { message: string };
 };
 
@@ -230,4 +236,23 @@ export const getClassRequestJoinApi = async (classId: string) => {
 export const getClassVisitedApi = async (classId: string) => {
     const response = await api.get(`/class/${classId}/visited`);
     return response.data as ClassVisitedResponse;
+};
+
+export const createMoocDeckQuizApi = async (
+    classId: string,
+    data: {
+        moocId: string;
+        deckId: string;
+        title: string;
+        description?: string;
+        type: string;
+        questions: {
+            questionText: string;
+            choices: { text: string }[];
+            correctAnswer: number;
+        }[];
+    }
+) => {
+    const response = await api.post(`/class/${classId}/quiz/mooc`, data);
+    return response.data;
 };

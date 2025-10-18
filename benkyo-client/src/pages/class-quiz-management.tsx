@@ -16,7 +16,14 @@ export interface Quiz {
     classId: string;
     createdAt: Date;
     type: 'manual' | 'ai';
-    deck?: string;
+    mooc?: {
+        _id: string;
+        title: string;
+    };
+    deck?: {
+        _id: string;
+        name: string;
+    };
     questions: Question[];
 }
 
@@ -28,10 +35,37 @@ export interface Question {
 }
 
 const ClassQuizManagement = () => {
-    const { _id: classId } = useParams<{ _id: string }>();
+    const { classId } = useParams<{ classId: string }>();
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showAIModal, setShowAIModal] = useState(false);
+
+    const { data: fetchedQuizzes = [], isLoading, refetch } = useGetAllClassQuiz(classId || '');
+
+    useEffect(() => {
+        if (!Array.isArray(fetchedQuizzes)) return;
+
+        const transformed = fetchedQuizzes.map(
+            (quiz): Quiz => ({
+                id: quiz._id ?? '',
+                title: quiz.title ?? 'Untitled Quiz',
+                description: quiz.description ?? '',
+                classId: quiz.class ?? '',
+                createdAt: new Date(quiz.createdAt),
+                type: quiz.type ?? 'manual',
+                mooc: quiz.mooc ? { _id: quiz.mooc._id, title: quiz.mooc.title } : undefined,
+                deck: quiz.moocDeck ? { _id: quiz.moocDeck._id, name: quiz.moocDeck.name } : undefined,
+                questions: (quiz.questions ?? []).map((q) => ({
+                    id: q._id,
+                    question: q.questionText,
+                    options: q.choices,
+                    correctAnswer: q.correctAnswer
+                }))
+            })
+        );
+
+        setQuizzes(transformed);
+    }, [fetchedQuizzes]);
 
     const handleCreateQuiz = (quiz: Omit<Quiz, 'id' | 'createdAt'>) => {
         const newQuiz: Quiz = {
@@ -40,43 +74,19 @@ const ClassQuizManagement = () => {
             createdAt: new Date(),
             classId: classId || ''
         };
-        setQuizzes([...quizzes, newQuiz]);
+        setQuizzes((prev) => [...prev, newQuiz]);
         setShowCreateModal(false);
+        refetch();
     };
-
-    const { data: fetchedQuizzes } = useGetAllClassQuiz(classId || '');
-
-    useEffect(() => {
-        if (fetchedQuizzes && Array.isArray(fetchedQuizzes)) {
-            const transformed = fetchedQuizzes.map(
-                (quiz): Quiz => ({
-                    id: quiz._id ?? '',
-                    title: quiz.title ?? 'Untitled Quiz',
-                    description: quiz.description ?? '',
-                    classId: quiz.class ?? '',
-                    createdAt: new Date(quiz.createdAt),
-                    type: quiz.type ?? 'manual',
-                    deck: quiz.deck,
-                    questions: (quiz.questions ?? []).map((q) => ({
-                        id: q._id,
-                        question: q.questionText,
-                        options: q.choices,
-                        correctAnswer: q.correctAnswer
-                    }))
-                })
-            );
-
-            console.log('Transformed quizzes:', transformed);
-            setQuizzes(transformed);
-        }
-    }, [fetchedQuizzes]);
 
     const handleEditQuiz = (updated: Quiz) => {
         setQuizzes((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
+        refetch();
     };
 
     const handleDeleteQuiz = (quizId: string) => {
-        setQuizzes(quizzes.filter((q) => q.id !== quizId));
+        setQuizzes((prev) => prev.filter((q) => q.id !== quizId));
+        refetch();
     };
 
     return (
@@ -111,7 +121,7 @@ const ClassQuizManagement = () => {
 
             <div className='container mx-auto px-4 py-6'>
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-                    <Card className='bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-800 dark:to-blue-600 text-white shadow-lg'>
+                    <Card className='bg-gradient-to-r from-blue-600 to-blue-400 text-white shadow-lg'>
                         <CardHeader className='pb-3'>
                             <CardTitle className='text-lg font-medium'>Total Quizzes</CardTitle>
                         </CardHeader>
@@ -119,7 +129,7 @@ const ClassQuizManagement = () => {
                             <div className='text-3xl font-bold'>{quizzes.length}</div>
                         </CardContent>
                     </Card>
-                    <Card className='bg-gradient-to-r from-green-600 to-green-500 dark:from-green-800 dark:to-green-600 text-white shadow-lg'>
+                    <Card className='bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg'>
                         <CardHeader className='pb-3'>
                             <CardTitle className='text-lg font-medium'>Manual Quizzes</CardTitle>
                         </CardHeader>
@@ -129,7 +139,7 @@ const ClassQuizManagement = () => {
                             </div>
                         </CardContent>
                     </Card>
-                    <Card className='bg-gradient-to-r from-purple-600 to-purple-400 dark:from-purple-800 dark:to-purple-600 text-white shadow-lg'>
+                    <Card className='bg-gradient-to-r from-purple-600 to-purple-400 text-white shadow-lg'>
                         <CardHeader className='pb-3'>
                             <CardTitle className='text-lg font-medium'>AI Generated</CardTitle>
                         </CardHeader>
@@ -141,7 +151,9 @@ const ClassQuizManagement = () => {
 
                 <div className='mb-6'>
                     <h2 className='text-2xl font-bold mb-4 text-foreground'>Your Quizzes</h2>
-                    {quizzes.length === 0 ? (
+                    {isLoading ? (
+                        <p className='text-muted-foreground'>Loading quizzes...</p>
+                    ) : quizzes.length === 0 ? (
                         <Card className='p-12 text-center bg-card'>
                             <BookOpen className='w-16 h-16 mx-auto text-muted-foreground mb-4' />
                             <h3 className='text-xl font-semibold mb-2 text-foreground'>No quizzes yet</h3>

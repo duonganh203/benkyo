@@ -150,6 +150,8 @@ const UserDeckStateSchema = new Schema({
     }
 });
 const QuizSchema = new Schema({
+    mooc: { type: Schema.Types.ObjectId, ref: 'Mooc', required: false },
+    moocDeck: { type: Schema.Types.ObjectId, ref: 'Deck', required: false },
     deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: false },
     title: { type: String, required: false },
     description: { type: String, required: false },
@@ -311,7 +313,6 @@ const MoocSchema = new Schema({
     description: { type: String },
     owner: { type: Types.ObjectId, ref: 'User', required: true },
     class: { type: Types.ObjectId, ref: 'Class', required: false },
-
     decks: [
         {
             deck: { type: Types.ObjectId, ref: 'Deck', required: true },

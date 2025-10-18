@@ -15,6 +15,7 @@ import { ClassSetting } from '@/components/class-management/class-setting';
 import { ClassVisited } from '@/components/class-management/class-visited';
 import { ClassMemberLearningStatus } from '@/components/class-member-learning-status';
 import { ClassCreateMooc } from '@/components/class-management/class-create-mooc';
+import ClassQuizManagement from './class-quiz-management';
 
 const UserClassManagement = () => {
     const { classId } = useParams<{ classId: string }>();
@@ -87,6 +88,7 @@ const UserClassManagement = () => {
                 {currentTab === Tab.LearningStatus && <ClassMemberLearningStatus />}
                 {currentTab === Tab.Visited && <ClassVisited />}
                 {currentTab === Tab.Setting && <ClassSetting />}
+                {currentTab === Tab.Quizzes && <ClassQuizManagement />}
             </div>
         </div>
     );
