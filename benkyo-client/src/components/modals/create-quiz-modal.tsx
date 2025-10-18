@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,8 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Trash2, Save } from 'lucide-react';
 import { Quiz, Question } from '@/pages/class-quiz-management';
-import { useCreateClassQuiz } from '@/hooks/queries/use-create-class-quiz';
+import { useCreateMoocDeckQuiz } from '@/hooks/queries/use-create-mooc-deck-quiz';
 import useUpdateClassQuiz from '@/hooks/queries/use-update-class-quiz';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import useGetAllMoocs from '@/hooks/queries/use-get-all-mooc-class';
+import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 
 interface CreateQuizModalProps {
     open: boolean;
@@ -25,12 +28,31 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData, cla
         initialData?.questions.map((q) => ({
             ...q,
             options: Array.isArray(q.options)
-                ? (q.options as (string | { text: string })[]).map((opt) => (typeof opt === 'string' ? opt : opt.text))
+                ? q.options.map((opt) => (typeof opt === 'string' ? opt : (opt as any).text))
                 : []
         })) || []
     );
 
-    const { mutate: createQuiz } = useCreateClassQuiz();
+    const { data: moocsData, isLoading: loadingMoocs } = useGetAllMoocs(classId);
+    const [selectedMoocId, setSelectedMoocId] = useState<string>('');
+    const [selectedDeckId, setSelectedDeckId] = useState<string>(
+        typeof initialData?.deck === 'string' ? initialData.deck : initialData?.deck?._id || ''
+    );
+
+    const [availableDecks, setAvailableDecks] = useState<any[]>([]);
+
+    const { data: moocDetail, isLoading: loadingMoocDetail } = useGetMoocDetail(selectedMoocId || '');
+
+    useEffect(() => {
+        if (moocDetail?.decks) {
+            setAvailableDecks(moocDetail.decks);
+        } else {
+            setAvailableDecks([]);
+        }
+        setSelectedDeckId('');
+    }, [moocDetail]);
+
+    const createMutation = useCreateMoocDeckQuiz(classId || '');
     const { mutate: updateQuiz } = useUpdateClassQuiz();
 
     const addQuestion = () => {
@@ -40,16 +62,16 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData, cla
             options: ['', '', '', ''],
             correctAnswer: 0
         };
-        setQuestions([...questions, newQuestion]);
+        setQuestions((prev) => [...prev, newQuestion]);
     };
 
     const updateQuestion = (id: string, field: keyof Question, value: any) => {
-        setQuestions(questions.map((q) => (q.id === id ? { ...q, [field]: value } : q)));
+        setQuestions((prev) => prev.map((q) => (q.id === id ? { ...q, [field]: value } : q)));
     };
 
     const updateOption = (questionId: string, optionIndex: number, value: string) => {
-        setQuestions(
-            questions.map((q) =>
+        setQuestions((prev) =>
+            prev.map((q) =>
                 q.id === questionId
                     ? { ...q, options: q.options.map((opt, i) => (i === optionIndex ? value : opt)) }
                     : q
@@ -57,91 +79,94 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData, cla
         );
     };
 
-    const removeQuestion = (id: string) => {
-        setQuestions(questions.filter((q) => q.id !== id));
-    };
-
-    const transformQuestions = (qs: Question[]) =>
-        qs.map((q) => ({
-            id: q.id,
-            questionText: q.question,
-            correctAnswer: q.correctAnswer,
-            choices: q.options.map((opt) => ({ text: opt }))
-        }));
+    const removeQuestion = (id: string) => setQuestions((prev) => prev.filter((q) => q.id !== id));
 
     const handleSubmit = () => {
-        if (!title.trim() || questions.length === 0) return;
-
+        if (!title.trim()) return;
         const validQuestions = questions.filter((q) => q.question.trim() && q.options.every((opt) => opt.trim()));
         if (validQuestions.length === 0) return;
 
-        const finalClassId = initialData?.classId || classId || '';
-        const finalDeckId = initialData?.deck || '';
+        const payloadQuestions = validQuestions.map((q) => ({
+            questionText: q.question,
+            choices: q.options.map((opt) => ({ text: opt })),
+            correctAnswer: q.correctAnswer
+        }));
 
+        // --------------- Edit Mode ----------------
         if (initialData) {
-            // EDIT MODE
+            const finalClassId = initialData.classId || classId || '';
+            const finalMoocId = initialData.mooc?._id || '';
+            const finalDeckId = initialData.deck?._id || '';
+            const finalQuizId = initialData.id;
+
             updateQuiz(
                 {
                     classId: finalClassId,
-                    quizId: initialData.id,
+                    moocId: finalMoocId,
+                    deckId: finalDeckId,
+                    quizId: finalQuizId,
                     data: {
                         title: title.trim(),
                         description: description.trim(),
                         deckId: finalDeckId,
-                        questions: transformQuestions(validQuestions)
+                        questions: payloadQuestions
                     }
                 },
                 {
                     onSuccess: () => {
                         onSubmit({
-                            id: initialData.id,
-                            createdAt: initialData.createdAt,
-                            classId: finalClassId,
+                            ...initialData,
                             title: title.trim(),
                             description: description.trim(),
-                            type: initialData.type,
-                            questions: validQuestions
+                            questions: validQuestions,
+                            deck: initialData.deck,
+                            mooc: initialData.mooc
                         });
                         onOpenChange(false);
-                    },
-                    onError: (err) => {
-                        console.error('Quiz update failed:', err?.response?.data?.message || err?.message || err);
                     }
                 }
             );
-        } else {
-            // CREATE MODE
-            createQuiz(
-                {
-                    classId: finalClassId,
-                    deckId: finalDeckId,
-                    title: title.trim(),
-                    description: description.trim(),
-                    questions: transformQuestions(validQuestions)
-                },
-                {
-                    onSuccess: () => {
-                        onSubmit({
-                            id: Date.now().toString(),
-                            createdAt: new Date(),
-                            classId: finalClassId,
-                            title: title.trim(),
-                            description: description.trim(),
-                            type: 'manual',
-                            questions: validQuestions
-                        });
-
-                        onOpenChange(false);
-                        setTitle('');
-                        setDescription('');
-                        setQuestions([]);
-                    },
-                    onError: (err) => {
-                        console.error('Quiz creation failed:', err?.response?.data?.message || err?.message || err);
-                    }
-                }
-            );
+            return;
         }
+
+        // --------------- Create Mode ----------------
+        if (!selectedMoocId || !selectedDeckId) return;
+
+        createMutation.mutate(
+            {
+                moocId: selectedMoocId,
+                deckId: selectedDeckId,
+                title: title.trim(),
+                description: description.trim(),
+                type: 'manual',
+                questions: payloadQuestions
+            },
+            {
+                onSuccess: (res) => {
+                    const created = res?.data;
+                    const createdDeck = availableDecks.find((d) => d.deck._id === selectedDeckId)?.deck;
+
+                    onSubmit({
+                        id: created?._id || Date.now().toString(),
+                        title: title.trim(),
+                        description: description.trim(),
+                        classId: classId || '',
+                        createdAt: created ? new Date(created.createdAt) : new Date(),
+                        type: 'manual',
+                        deck: createdDeck,
+                        mooc: { _id: selectedMoocId, title: title },
+                        questions: validQuestions
+                    });
+
+                    onOpenChange(false);
+                    setTitle('');
+                    setDescription('');
+                    setQuestions([]);
+                    setSelectedMoocId('');
+                    setSelectedDeckId('');
+                }
+            }
+        );
     };
 
     return (
@@ -151,19 +176,55 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData, cla
                     <DialogTitle className='text-2xl font-bold text-primary'>
                         {initialData ? 'Edit Quiz' : 'Create New Quiz'}
                     </DialogTitle>
-                    <DialogDescription>
-                        {initialData
-                            ? 'Update your quiz details and questions'
-                            : 'Build a custom quiz with your own questions and answers'}
-                    </DialogDescription>
+                    <DialogDescription>{initialData ? 'Update your quiz' : 'Build a custom quiz'}</DialogDescription>
                 </DialogHeader>
 
                 <div className='space-y-6 py-4'>
+                    {/* Mooc + Deck Selectors */}
+                    {!initialData && (
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                            <div>
+                                <Label>Select Mooc</Label>
+                                <Select onValueChange={(v) => setSelectedMoocId(v)} value={selectedMoocId}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder={loadingMoocs ? 'Loading...' : 'Choose Mooc'} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {moocsData?.data?.map((m) => (
+                                            <SelectItem key={m._id} value={m._id}>
+                                                {m.title}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div>
+                                <Label>Select Deck</Label>
+                                <Select
+                                    onValueChange={(v) => setSelectedDeckId(v)}
+                                    value={selectedDeckId}
+                                    disabled={!selectedMoocId || loadingMoocDetail}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder='Choose Deck' />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {availableDecks?.map((d: any) => (
+                                            <SelectItem key={d.deck._id} value={d.deck._id}>
+                                                {d.deck.title || d.deck.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Title + Description */}
                     <div className='space-y-4'>
                         <div>
-                            <Label htmlFor='title' className='text-base font-medium'>
-                                Quiz Title
-                            </Label>
+                            <Label htmlFor='title'>Quiz Title</Label>
                             <Input
                                 id='title'
                                 value={title}
@@ -172,11 +233,8 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData, cla
                                 className='mt-1'
                             />
                         </div>
-
                         <div>
-                            <Label htmlFor='description' className='text-base font-medium'>
-                                Description
-                            </Label>
+                            <Label htmlFor='description'>Description</Label>
                             <Textarea
                                 id='description'
                                 value={description}
@@ -189,9 +247,9 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData, cla
                     </div>
 
                     <div className='space-y-4'>
-                        <div className='flex items-center justify-between'>
-                            <h3 className='text-lg font-semibold'>Questions</h3>
-                            <Button onClick={addQuestion} size='sm' className='bg-secondary hover:bg-secondary/90'>
+                        <div className='flex justify-between items-center'>
+                            <h3>Questions</h3>
+                            <Button onClick={addQuestion} size='sm'>
                                 <Plus className='w-4 h-4 mr-2' />
                                 Add Question
                             </Button>
@@ -207,71 +265,43 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData, cla
                             </Card>
                         ) : (
                             <div className='space-y-4'>
-                                {questions.map((question, index) => (
-                                    <Card key={question.id} className='shadow-sm'>
-                                        <CardHeader className='pb-3'>
-                                            <div className='flex items-center justify-between'>
-                                                <CardTitle className='text-base'>Question {index + 1}</CardTitle>
-                                                <Button
-                                                    onClick={() => removeQuestion(question.id)}
-                                                    variant='destructive'
-                                                    size='sm'
-                                                >
-                                                    <Trash2 className='w-4 h-4' />
-                                                </Button>
-                                            </div>
+                                {questions.map((q, idx) => (
+                                    <Card key={q.id}>
+                                        <CardHeader className='flex flex-row justify-between'>
+                                            <CardTitle>Question {idx + 1}</CardTitle>
+                                            <Button
+                                                onClick={() => removeQuestion(q.id)}
+                                                variant='destructive'
+                                                size='icon'
+                                            >
+                                                <Trash2 className='w-4 h-4' />
+                                            </Button>
                                         </CardHeader>
-                                        <CardContent className='space-y-4'>
-                                            <div>
-                                                <Label className='text-sm font-medium'>Question</Label>
-                                                <Textarea
-                                                    value={question.question}
-                                                    onChange={(e) =>
-                                                        updateQuestion(question.id, 'question', e.target.value)
-                                                    }
-                                                    placeholder='Enter your question...'
-                                                    className='mt-1'
-                                                    rows={2}
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <Label className='text-sm font-medium mb-2 block'>Answer Options</Label>
-                                                <div className='space-y-2'>
-                                                    {question.options.map((option, optionIndex) => (
-                                                        <div key={optionIndex} className='flex items-center gap-2'>
-                                                            <input
-                                                                type='radio'
-                                                                name={`correct-${question.id}`}
-                                                                checked={question.correctAnswer === optionIndex}
-                                                                onChange={() =>
-                                                                    updateQuestion(
-                                                                        question.id,
-                                                                        'correctAnswer',
-                                                                        optionIndex
-                                                                    )
-                                                                }
-                                                                className='text-primary'
-                                                            />
-                                                            <Input
-                                                                value={option}
-                                                                onChange={(e) =>
-                                                                    updateOption(
-                                                                        question.id,
-                                                                        optionIndex,
-                                                                        e.target.value
-                                                                    )
-                                                                }
-                                                                placeholder={`Option ${optionIndex + 1}...`}
-                                                                className='flex-1'
-                                                            />
-                                                        </div>
-                                                    ))}
+                                        <CardContent>
+                                            <Label>Question</Label>
+                                            <Textarea
+                                                value={q.question}
+                                                onChange={(e) => updateQuestion(q.id, 'question', e.target.value)}
+                                                rows={2}
+                                                placeholder='Enter your question...'
+                                                className='mt-1'
+                                            />
+                                            <Label className='mt-2'>Answer Options</Label>
+                                            {q.options.map((opt, i) => (
+                                                <div key={i} className='flex gap-2 items-center mt-1'>
+                                                    <input
+                                                        type='radio'
+                                                        name={`correct-${q.id}`}
+                                                        checked={q.correctAnswer === i}
+                                                        onChange={() => updateQuestion(q.id, 'correctAnswer', i)}
+                                                    />
+                                                    <Input
+                                                        value={opt}
+                                                        onChange={(e) => updateOption(q.id, i, e.target.value)}
+                                                        placeholder={`Option ${i + 1}`}
+                                                    />
                                                 </div>
-                                                <p className='text-xs text-muted-foreground mt-1'>
-                                                    Select the radio button next to the correct answer
-                                                </p>
-                                            </div>
+                                            ))}
                                         </CardContent>
                                     </Card>
                                 ))}
@@ -279,15 +309,13 @@ export const CreateQuizModal = ({ open, onOpenChange, onSubmit, initialData, cla
                         )}
                     </div>
 
-                    <div className='flex gap-3 justify-end pt-4 border-t'>
+                    <div className='flex justify-end gap-3 pt-4 border-t'>
                         <Button variant='outline' onClick={() => onOpenChange(false)}>
                             Cancel
                         </Button>
                         <Button onClick={handleSubmit} className='bg-primary hover:bg-primary-hover'>
-                            <>
-                                <Save className='w-4 h-4 mr-2' />
-                                {initialData ? 'Update Quiz' : 'Create Quiz'}
-                            </>
+                            <Save className='w-4 h-4 mr-2' />
+                            {initialData ? 'Update Quiz' : 'Create Quiz'}
                         </Button>
                     </div>
                 </div>
