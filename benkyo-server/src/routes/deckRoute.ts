@@ -14,6 +14,7 @@ import {
     updateDeckFsrsParams,
     getDeckStats,
     toggleLikeDeck,
+    getLikedDecksByUser,
     getUserPublicDecks,
     updateDeck
 } from '~/controllers/deckController';
@@ -31,6 +32,7 @@ deckRoutes.get('/public-requests/:id', [adminAuthMiddleware], errorHandler(getRe
 deckRoutes.patch('/public-requests/:id', [adminAuthMiddleware], errorHandler(reviewPublicServiceDeck));
 deckRoutes.get('/my-decks', [authMiddleware], errorHandler(getAllDecks));
 deckRoutes.get('/public-deck', [authMiddleware], errorHandler(getPublicDecks));
+deckRoutes.get('/liked', [authMiddleware], errorHandler(getLikedDecksByUser));
 deckRoutes.get('/user-public-decks', [authMiddleware], errorHandler(getUserPublicDecks));
 deckRoutes.get('/:id', [authMiddleware], errorHandler(getDeck));
 deckRoutes.post('/:id/duplicate', [authMiddleware], errorHandler(duplicateDeck));

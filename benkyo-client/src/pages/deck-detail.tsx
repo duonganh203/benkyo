@@ -46,7 +46,6 @@ import { useUpdateDeckModal } from '@/hooks/stores/use-update-deck-modal';
 import { DeckInterface, DeckDetails } from '@/types/deck';
 import ConfirmDeleteCardModal from '@/components/modals/confirm-delete-card-modals';
 import { useDeleteCardModal } from '@/hooks/stores/use-delete-card-modal';
-
 import LikeDeck from '@/components/rating-deck';
 import useToggleLikeDeck from '@/hooks/queries/use-toggle-like-deck';
 const DeckDetail = () => {
@@ -248,12 +247,13 @@ const DeckDetail = () => {
         }
     };
     const toggleLikeMutation = useToggleLikeDeck(id!);
-
     const handleLike = async () => {
         try {
             const res = await toggleLikeMutation.mutateAsync();
+            getToast('success', res.liked ? 'You liked this deck!' : 'You unliked this deck!');
             console.log('Like status:', res.liked);
         } catch (err) {
+            getToast('error', 'Failed to update like!');
             console.error('Failed to update like:', err);
         }
     };
