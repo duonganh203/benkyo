@@ -41,6 +41,12 @@ import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-p
 import useMe from '@/hooks/queries/use-me';
 import FlashcardViewer from '@/components/flashcard-viewer';
 import { DeckFSRSSettingsForm } from '@/components/forms/deck-fsrs-settings-form';
+import { UpdateDeckModal } from '@/components/modals/update-deck-modal';
+import { useUpdateDeckModal } from '@/hooks/stores/use-update-deck-modal';
+import { DeckInterface, DeckDetails } from '@/types/deck';
+import ConfirmDeleteCardModal from '@/components/modals/confirm-delete-card-modals';
+import { useDeleteCardModal } from '@/hooks/stores/use-delete-card-modal';
+
 import LikeDeck from '@/components/rating-deck';
 import useToggleLikeDeck from '@/hooks/queries/use-toggle-like-deck';
 const DeckDetail = () => {
@@ -54,7 +60,8 @@ const DeckDetail = () => {
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
     const { open } = useGenerateQuizModal((store) => store);
-
+    const updateDeckModal = useUpdateDeckModal();
+    const deleteCardModal = useDeleteCardModal();
     const publicStatus = [
         {
             label: 'Private',
@@ -215,6 +222,23 @@ const DeckDetail = () => {
             }
         );
     };
+    const handleOpenUpdateModal = (deckData: DeckDetails) => {
+        const deckToUpdate: DeckInterface = {
+            _id: deckData._id,
+            name: deckData.name,
+            description: deckData.description || '',
+            cardCount: deckData.fsrsParams?.card_limit || 0,
+            updatedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            isPublic: deckData.publicStatus === 1,
+            owner: deckData.owner,
+            likeCount: deckData.likeCount ?? 0,
+            liked: deckData.liked ?? false
+        };
+
+        updateDeckModal.open(deckToUpdate);
+    };
+
     const handleDuplicateDeck = async () => {
         try {
             await duplicateDeck({ deckId: id! });
@@ -269,16 +293,24 @@ const DeckDetail = () => {
                             <Button
                                 variant='outline'
                                 size='icon'
-                                onClick={() => navigate('/my-decks')}
+                                onClick={() => {
+                                    if (deckData.publicStatus === 2) {
+                                        navigate('/community');
+                                    } else {
+                                        navigate('/my-decks');
+                                    }
+                                }}
                                 className='transition-transform'
                             >
                                 <ChevronLeft className='h-5 w-5' />
                             </Button>
+
                             <div>
                                 <h1 className='text-2xl font-bold'>{deckData.name}</h1>
                                 <p className='text-muted-foreground'>{deckData.description || 'No description'}</p>
                                 <LikeDeck deckData={deckData} currentUser={currentUser} onLikeApi={handleLike} />
                             </div>
+
                             <Badge
                                 variant='outline'
                                 className={`ml-2 text-white text-xs flex items-center px-2 ${publicStatus[deckData.publicStatus].color} border-1}`}
@@ -321,14 +353,19 @@ const DeckDetail = () => {
                                 </>
                             )}
                             {currentUser && deckData.owner._id === currentUser._id && (
-                                <DropdownMenu>
+                                <DropdownMenu modal={false}>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant='outline' size='icon'>
                                             <MoreHorizontal className='h-5 w-5' />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align='end'>
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleOpenUpdateModal(deckData);
+                                            }}
+                                        >
                                             <Edit className='mr-2 h-4 w-4' />
                                             <span>Edit Deck</span>
                                         </DropdownMenuItem>
@@ -556,7 +593,7 @@ const DeckDetail = () => {
                                                                 <span>{status.dueText}</span>
                                                             </div>
                                                             {currentUser && deckData.owner._id === currentUser._id && (
-                                                                <DropdownMenu>
+                                                                <DropdownMenu modal={false}>
                                                                     <DropdownMenuTrigger asChild>
                                                                         <Button
                                                                             variant='ghost'
@@ -581,7 +618,7 @@ const DeckDetail = () => {
                                                                         <DropdownMenuItem
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
-                                                                                handleDelete(card._id);
+                                                                                deleteCardModal.open(card._id);
                                                                             }}
                                                                         >
                                                                             <Trash2 className='mr-2 h-4 w-4' />
@@ -711,8 +748,10 @@ const DeckDetail = () => {
                             </TabsContent>
                         )}
                     </Tabs>
+                    <UpdateDeckModal />
                 </div>
             )}
+            <ConfirmDeleteCardModal onConfirm={handleDelete} />
         </>
     );
 };

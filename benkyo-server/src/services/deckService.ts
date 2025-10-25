@@ -12,7 +12,7 @@ import {
     UserDeckState,
     Class
 } from '~/schemas';
-import { createDeckValidation } from '~/validations/deckValidation';
+import { createDeckValidation, updateDeckValidation } from '~/validations/deckValidation';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { BadRequestsException } from '~/exceptions/badRequests';
@@ -201,6 +201,10 @@ export const getAllRequestedPublicDecksService = async () => {
     return decks;
 };
 
+export const getUserPublicDecksService = async (userId: string) => {
+    return await Deck.find({ owner: userId, publicStatus: { $in: [1, 2, 3] } }).populate('owner', 'name avatar');
+};
+
 export const getRequestPulbicDeckService = async (deckId: string) => {
     const deck = await Deck.findById(deckId).populate('owner').populate('reviewedBy').lean();
 
@@ -293,6 +297,25 @@ export const getDeckStatsService = async () => {
         growthPercentage
     };
 };
+export const updateDeckService = async (
+    userId: string,
+    deckId: string,
+    deckData: z.infer<typeof updateDeckValidation>
+) => {
+    const { name, description } = deckData;
+
+    const deck = await Deck.findOne({ _id: deckId, owner: userId });
+    if (!deck) {
+        throw new Error('Deck not found or you do not have permission to update it');
+    }
+
+    if (name !== undefined) deck.name = name;
+    if (description !== undefined) deck.description = description;
+    await deck.save();
+
+    return deck;
+};
+
 export const toggleLikeDeckService = async (userId: string, deckId: string) => {
     const deck = await Deck.findById(deckId);
     if (!deck) {

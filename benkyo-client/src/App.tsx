@@ -39,6 +39,11 @@ import ClassCreate from './pages/class-create';
 import ClassList from './pages/class-list';
 import { ForgotPasswordForm } from './components/forms/forgot-password-form';
 import { ResetPasswordForm } from './components/forms/reset-password-form';
+import MOOCDetail from './pages/mooc-detail';
+import DeckStudy from './pages/class-deck-study';
+import { ClassUpdateMooc } from './pages/update-mooc';
+import Requests from './pages/requests';
+
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -74,6 +79,7 @@ const App = () => {
                             <Route path='/flashcards/:id/details' element={<CardDetails />} />
                             <Route path='/profile' element={<Profile />} />
                             <Route path='/my-decks' element={<Library />} />
+                            <Route path='/my-decks/requests' element={<Requests />} />
                             <Route path='/study/:id' element={<StudyCard />} />
                             <Route path='do-quiz/:quizId' element={<Quiz />} />
                             <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />
@@ -92,6 +98,9 @@ const App = () => {
                             <Route path='/notification' element={<Notifications />} />
                             <Route path='/class/:classId' element={<ClassDetailUser />} />
                             <Route path='/class/:classId/request' element={<ClassJoin />} />
+                            <Route path='/class/:classId/mooc/:moocId' element={<MOOCDetail />} />
+                            <Route path='/class/:classId/mooc/:moocId/deck/:deckId' element={<DeckStudy />} />
+                            <Route path='/moocs/update/:moocId' element={<ClassUpdateMooc />} />
                         </Route>
                     </Routes>
                     <ModalProvider />

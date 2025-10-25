@@ -1,4 +1,4 @@
-import { InferSchemaType, Schema, model } from 'mongoose';
+import { InferSchemaType, Schema, Types, model } from 'mongoose';
 
 enum Rating {
     AGAIN = 1,
@@ -30,6 +30,11 @@ enum PackageDuration {
     THREE_MONTHS = '3M',
     SIX_MONTHS = '6M',
     ONE_YEAR = '1Y'
+}
+enum ProgressState {
+    NOT_STARTED = 0,
+    IN_PROGRESS = 1,
+    COMPLETED = 2
 }
 
 const UserSchema = new Schema({
@@ -301,7 +306,54 @@ const UserClassStateSchema = new Schema(
     },
     { timestamps: true }
 );
+const MoocSchema = new Schema({
+    title: { type: String, required: true },
+    description: { type: String },
+    owner: { type: Types.ObjectId, ref: 'User', required: true },
+    class: { type: Types.ObjectId, ref: 'Class', required: false },
 
+    decks: [
+        {
+            deck: { type: Types.ObjectId, ref: 'Deck', required: true },
+            order: { type: Number, required: true }
+        }
+    ],
+
+    enrolledUsers: [
+        {
+            user: { type: Types.ObjectId, ref: 'User', required: true },
+            currentDeckIndex: { type: Number, default: 0 },
+            progressState: {
+                type: Number,
+                enum: ProgressState,
+                default: ProgressState.NOT_STARTED
+            },
+            deckProgress: [
+                {
+                    deck: { type: Types.ObjectId, ref: 'Deck', required: true },
+                    completed: { type: Boolean, default: false },
+                    completedAt: { type: Date }
+                }
+            ],
+            startedAt: { type: Date },
+            completedAt: { type: Date }
+        }
+    ],
+
+    publicStatus: {
+        type: Number,
+        enum: PublicStatus,
+        default: PublicStatus.PRIVATE
+    },
+
+    isPaid: { type: Boolean, default: false },
+    price: { type: Number, default: 0 },
+    currency: { type: String, default: 'VND' },
+    likes: { type: Number, default: 0 },
+    views: { type: Number, default: 0 },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
 export const Class = model('Class', ClassSchema);
 export const UserClassState = model('UserClassState', UserClassStateSchema);
 export const User = model('User', UserSchema);
@@ -317,6 +369,8 @@ export const Conversation = model('Chat', ConversationSchema);
 export const StudySession = model('StudySession', StudySessionSchema);
 export const Transaction = model('Transaction', TransactionSchema);
 export const Package = model('Package', PackageSchema);
+export const Mooc = model<Mooc>('Mooc', MoocSchema);
+export type Mooc = InferSchemaType<typeof MoocSchema>;
 export type TransactionType = InferSchemaType<typeof TransactionSchema>;
 export type ConversationType = InferSchemaType<typeof ConversationSchema>;
 export type ClassStateType = InferSchemaType<typeof ClassSchema>;

@@ -34,10 +34,15 @@ export interface DeckInterface {
     isPublic: boolean;
     likeCount: number;
     liked?: boolean;
+    publicStatus?: number;
 }
 
 interface Owner {
     _id: string;
     name: string;
     avatar?: string;
+}
+export interface UpdateDeckPayload {
+    name?: string;
+    description?: string;
 }
