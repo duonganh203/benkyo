@@ -1,4 +1,4 @@
-import { Users, Settings, Eye, Calendar, Mail, Shield, AlertTriangle } from 'lucide-react';
+import { Users, Settings, Eye, Calendar, Mail, Shield, AlertTriangle, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { ClassManagementResponseDto } from '@/types/class';
@@ -11,7 +11,8 @@ export const enum Tab {
     RequestJoin = 'REQUEST_JOIN',
     Setting = 'SETTING',
     Visited = 'VISITED',
-    LearningStatus = 'LEARNING_STATUS'
+    LearningStatus = 'LEARNING_STATUS',
+    CreateMooc = 'CREATE_MOOC'
 }
 
 interface ClassTabHeaderProps {
@@ -63,6 +64,20 @@ export const ClassTabHeader = ({ classItem, currentTab, setTab }: ClassTabHeader
                     <Calendar className='w-4 h-4 mr-2' />
                     Decks ({classItem?.decks?.length || 0})
                 </Button>
+                <Button
+                    variant={currentTab === Tab.CreateMooc ? 'default' : 'outline'}
+                    size='sm'
+                    onClick={() => setTab(Tab.CreateMooc)}
+                    className={`rounded-lg px-4 py-2 font-medium transition-all duration-200 ${
+                        currentTab === Tab.CreateMooc
+                            ? 'bg-primary text-primary-foreground shadow-md'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                >
+                    <Plus className='w-4 h-4 mr-2' />
+                    Create MOOC
+                </Button>
+
                 <Button
                     variant={currentTab === Tab.Invited ? 'default' : 'outline'}
                     size='sm'

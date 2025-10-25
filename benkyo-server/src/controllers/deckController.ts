@@ -14,9 +14,15 @@ import {
     updateDeckFsrsParamsService,
     getDeckStatsService,
     toggleLikeDeckService,
-    getLikedDecksByUserService
+    getLikedDecksByUserService,
+    getUserPublicDecksService,
+    updateDeckService
 } from '~/services/deckService';
-import { createDeckValidation, updateDeckFsrsParamsValidation } from '~/validations/deckValidation';
+import {
+    createDeckValidation,
+    updateDeckFsrsParamsValidation,
+    updateDeckValidation
+} from '~/validations/deckValidation';
 import { ErrorCode } from '~/exceptions/root';
 
 export const createDeck = async (req: Request, res: Response) => {
@@ -64,6 +70,12 @@ export const getAllRequestPublicDecks = async (req: Request, res: Response) => {
     res.json(result);
 };
 
+export const getUserPublicDecks = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const result = await getUserPublicDecksService(userId);
+    res.json(result);
+};
+
 export const getRequestPulbicDeck = async (req: Request, res: Response) => {
     const { id } = req.params;
     const result = await getRequestPulbicDeckService(id);
@@ -105,7 +117,14 @@ export const getDeckStats = async (req: Request, res: Response) => {
     const stats = await getDeckStatsService();
     res.json(stats);
 };
-// Toggle like/unlike a deck
+
+export const updateDeck = async (req: Request, res: Response) => {
+    const { deckId } = req.params;
+    const deckData = req.body;
+    updateDeckValidation.parse(deckData);
+    const updatedDeck = await updateDeckService(req.user.id, deckId, deckData);
+    res.json(updatedDeck);
+};
 export const toggleLikeDeck = async (req: Request, res: Response) => {
     const userId = req.user?._id;
     if (!userId) {
