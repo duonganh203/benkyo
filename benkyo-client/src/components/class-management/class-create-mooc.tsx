@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
+import { getToast } from '@/utils/getToast';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCreateMooc } from '@/hooks/queries/use-create-mooc-in-class';
 
@@ -82,7 +82,26 @@ export const ClassCreateMooc = () => {
     };
 
     const handleSubmit = () => {
-        if (!title.trim()) return toast.error('Please enter a MOOC title');
+        // Bắt buộc nhập title
+        if (!title.trim()) return getToast('error', 'Please enter a MOOC title');
+
+        // Validate decks và cards
+        for (let i = 0; i < decks.length; i++) {
+            const deck = decks[i];
+            if (!deck.name.trim()) {
+                return getToast('error', `Please enter a name for deck ${i + 1}`);
+            }
+
+            for (let j = 0; j < deck.cards.length; j++) {
+                const card = deck.cards[j];
+                if (!card.front.trim() || !card.back.trim()) {
+                    return getToast(
+                        'error',
+                        `Please enter both front and back for card ${j + 1} in deck "${deck.name}"`
+                    );
+                }
+            }
+        }
 
         const payload = {
             title,
@@ -105,7 +124,7 @@ export const ClassCreateMooc = () => {
 
         createMoocMutation.mutate(payload, {
             onSuccess: (res) => {
-                toast.success(res.message || 'MOOC created successfully!');
+                getToast('success', res.message || 'MOOC created successfully!');
                 setTitle('');
                 setDescription('');
                 setDecks([]);
@@ -113,8 +132,9 @@ export const ClassCreateMooc = () => {
                 setPrice('');
                 setCurrency('VND');
                 setIsPublic(true);
+                setCurrentTags({});
             },
-            onError: (err) => toast.error(err.message || 'Failed to create MOOC')
+            onError: (err) => getToast('error', err.message || 'Failed to create MOOC')
         });
     };
 

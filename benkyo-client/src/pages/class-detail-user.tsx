@@ -3,8 +3,6 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Loader2, Settings2 } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-
-// import useAuthStore from '@/hooks/stores/use-auth-store';
 import useGetClassUserById from '@/hooks/queries/use-get-class-user-id';
 import ClassHeader from '@/components/class-header';
 import DeckCard from '@/components/deck-card';
@@ -39,10 +37,6 @@ function ClassDetailUser() {
     const { mutateAsync: startSession } = useStartClassDeckSession();
     const { data: allMoocs } = useGetAllMoocs(classId);
 
-    // console.log('User ID:', userId);
-    // console.log('class id  ', classId);
-    // console.log('classData ', classData);
-    // console.log('allMoocs ', allMoocs);
     const navigate = useNavigate();
 
     const handleMOOCClick = (moocId: string) => {
