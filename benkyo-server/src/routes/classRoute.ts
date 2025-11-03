@@ -6,6 +6,7 @@ import {
     createMoocDeckQuiz,
     deleteMoocDeckQuiz,
     getClassQuizzes,
+    getQuizzesByDeck,
     updateMoocDeckQuiz
 } from '~/controllers/quizController';
 
@@ -59,5 +60,7 @@ classRoutes.get('/:classId/quiz', errorHandler(getClassQuizzes));
 classRoutes.put('/:classId/mooc/:moocId/deck/:deckId/quiz/:quizId', [authMiddleware], errorHandler(updateMoocDeckQuiz));
 classRoutes.delete('/:classId/quizzes/:quizId', [authMiddleware], errorHandler(deleteMoocDeckQuiz));
 classRoutes.post('/:classId/quiz/mooc', [authMiddleware], errorHandler(createMoocDeckQuiz));
+
+classRoutes.get('/:classId/mooc/:moocId/deck/:deckId/quizzes', [authMiddleware], errorHandler(getQuizzesByDeck));
 
 export default classRoutes;

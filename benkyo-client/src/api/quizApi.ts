@@ -26,3 +26,8 @@ export const getAllQuizAttempts = async () => {
     const { data } = await api.get(`/quiz/attempts`);
     return data;
 };
+
+export const getQuizzesByDeck = async (classId: string, moocId: string, deckId: string) => {
+    const { data } = await api.get(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quizzes`);
+    return data;
+};

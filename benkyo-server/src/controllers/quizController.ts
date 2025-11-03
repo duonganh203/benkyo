@@ -91,3 +91,14 @@ export const updateMoocDeckQuiz = async (req: Request, res: Response) => {
     const result = await updateQuizForMoocDeckService(userId, classId, moocId, deckId, quizId, updatedData);
     res.status(200).json(result);
 };
+
+export const getQuizzesByDeck = async (req: Request, res: Response) => {
+    const { classId, moocId, deckId } = req.params;
+
+    const quizzes = await getQuizzesByDeckService(classId, moocId, deckId);
+
+    return res.status(200).json({
+        success: true,
+        data: quizzes
+    });
+};
