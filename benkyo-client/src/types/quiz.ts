@@ -95,9 +95,9 @@ export interface CreateQuizAIRes {
         _id: string;
         class: string;
         createdAt: string;
-        createdBy: {
-            name: string;
-        };
+        createdBy?: { _id?: string; name?: string; email?: string };
+        mooc?: { _id: string; title: string };
+        moocDeck?: { _id: string; name: string }; // note name field
         questions: {
             _id: string;
             questionText: string;
@@ -108,7 +108,7 @@ export interface CreateQuizAIRes {
         title?: string;
         description?: string;
         type?: 'manual' | 'ai';
-        deck?: string;
+        deck?: string | { _id: string; name?: string };
     };
 }
 
