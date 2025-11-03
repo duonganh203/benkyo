@@ -1,4 +1,4 @@
-import { Users, Settings, Eye, Calendar, Mail, Shield, AlertTriangle, Plus } from 'lucide-react';
+import { Users, Settings, Eye, Calendar, Mail, Shield, AlertTriangle, Plus, BookOpen } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { ClassManagementResponseDto } from '@/types/class';
@@ -12,7 +12,8 @@ export const enum Tab {
     Setting = 'SETTING',
     Visited = 'VISITED',
     LearningStatus = 'LEARNING_STATUS',
-    CreateMooc = 'CREATE_MOOC'
+    CreateMooc = 'CREATE_MOOC',
+    Quizzes = 'QUIZZES'
 }
 
 interface ClassTabHeaderProps {
@@ -76,6 +77,19 @@ export const ClassTabHeader = ({ classItem, currentTab, setTab }: ClassTabHeader
                 >
                     <Plus className='w-4 h-4 mr-2' />
                     Create MOOC
+                </Button>
+                <Button
+                    variant={currentTab === Tab.Quizzes ? 'default' : 'outline'}
+                    size='sm'
+                    onClick={() => setTab(Tab.Quizzes)}
+                    className={`rounded-lg px-4 py-2 font-medium transition-all duration-200 ${
+                        currentTab === Tab.Quizzes
+                            ? 'bg-primary text-primary-foreground shadow-md'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                >
+                    <BookOpen className='w-4 h-4 mr-2' />
+                    Quizzes
                 </Button>
 
                 <Button

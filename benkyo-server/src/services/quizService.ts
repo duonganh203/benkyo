@@ -3,7 +3,7 @@ import z from 'zod';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { Class, Quiz, QuizAttempt } from '~/schemas';
+import { Class, Mooc, Quiz, QuizAttempt } from '~/schemas';
 import { createQuizValidation, saveQuizAttemptValidation, updateQuizValidation } from '~/validations/quizValitation';
 
 export const createQuizService = async (
@@ -93,9 +93,120 @@ export const getAllQuizAttemptsService = async (userId: string) => {
     return quizAllAttempt;
 };
 
-export const createClassQuizService = async (
+export const updateQuizForMoocDeckService = async (
     userId: string,
     classId: string,
+    moocId: string,
+    deckId: string,
+    quizId: string,
+    updatedData: z.infer<typeof createQuizValidation>
+) => {
+    const classDoc = await Class.findById(classId);
+    if (!classDoc) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!classDoc.owner.equals(userId)) {
+        throw new ForbiddenRequestsException('Only the class owner can update quizzes', ErrorCode.FORBIDDEN);
+    }
+
+    const mooc = await Mooc.findById(moocId);
+    if (!mooc) {
+        throw new NotFoundException('Mooc not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (mooc.class?.toString() !== classId) {
+        throw new NotFoundException('Mooc does not belong to this class', ErrorCode.NOT_FOUND);
+    }
+
+    const deckInMooc = mooc.decks.find((d) => d.deck.toString() === deckId);
+    if (!deckInMooc) {
+        throw new NotFoundException('Deck not found in this Mooc', ErrorCode.NOT_FOUND);
+    }
+
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+        throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (
+        quiz.class?.toString() !== classId ||
+        quiz.mooc?.toString() !== moocId ||
+        quiz.moocDeck?.toString() !== deckId
+    ) {
+        throw new ForbiddenRequestsException(
+            'This quiz does not belong to the specified Mooc or Deck',
+            ErrorCode.FORBIDDEN
+        );
+    }
+
+    updateQuizValidation.parse(updatedData);
+
+    if (updatedData.title !== undefined) quiz.title = updatedData.title;
+    if (updatedData.description !== undefined) quiz.description = updatedData.description;
+    if (updatedData.questions !== undefined) quiz.set('questions', updatedData.questions);
+    if (updatedData.type !== undefined) quiz.type = updatedData.type;
+
+    await quiz.save();
+    return { id: quiz._id };
+};
+
+export const getClassQuizzesService = async (classId: string, moocId?: string) => {
+    const classDoc = await Class.findById(classId);
+    if (!classDoc) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (moocId) {
+        const mooc = await Mooc.findById(moocId);
+        if (!mooc) {
+            throw new NotFoundException('Mooc not found', ErrorCode.NOT_FOUND);
+        }
+
+        if (mooc.class?.toString() !== classId) {
+            throw new NotFoundException('Mooc does not belong to this class', ErrorCode.NOT_FOUND);
+        }
+    }
+
+    const filter: any = { class: new mongoose.Types.ObjectId(classId) };
+    if (moocId) {
+        filter.mooc = new mongoose.Types.ObjectId(moocId);
+    }
+
+    const quizzes = await Quiz.find(filter)
+        .populate('mooc', 'title')
+        .populate('moocDeck', 'name')
+        .populate('createdBy', 'name email')
+        .sort({ createdAt: -1 });
+
+    return quizzes;
+};
+
+export const deleteQuizForMoocDeckService = async (userId: string, classId: string, quizId: string) => {
+    const [quiz, classDoc] = await Promise.all([Quiz.findById(quizId), Class.findById(classId)]);
+
+    if (!classDoc) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!classDoc.owner.equals(userId)) {
+        throw new ForbiddenRequestsException('Only the class owner can delete quizzes', ErrorCode.FORBIDDEN);
+    }
+
+    if (!quiz) {
+        throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
+    }
+
+    await Quiz.deleteOne({ _id: quizId });
+
+    return { id: quizId };
+};
+
+export const createQuizForMoocDeckService = async (
+    userId: string,
+    classId: string,
+    moocId: string,
+    deckId: string,
     quizData: z.infer<typeof createQuizValidation>
 ) => {
     const classDoc = await Class.findById(classId);
@@ -107,75 +218,57 @@ export const createClassQuizService = async (
         throw new ForbiddenRequestsException('Only the class owner can create quizzes', ErrorCode.FORBIDDEN);
     }
 
+    const mooc = await Mooc.findById(moocId);
+    if (!mooc) {
+        throw new NotFoundException('Mooc not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (mooc.class?.toString() !== classId) {
+        throw new NotFoundException('Mooc does not belong to this class', ErrorCode.NOT_FOUND);
+    }
+
+    const deckInMooc = mooc.decks.find((d) => d.deck.toString() === deckId);
+    if (!deckInMooc) {
+        throw new NotFoundException('Deck not found in this Mooc', ErrorCode.NOT_FOUND);
+    }
+
     const newQuiz = new Quiz({
         class: classId,
+        mooc: moocId,
+        moocDeck: deckId,
+        createdBy: userId,
         title: quizData.title,
         description: quizData.description,
-        createdBy: userId,
-        createdAt: new Date(),
+        type: quizData.type,
         questions: quizData.questions,
-        deck: quizData.deckId,
-        type: quizData.type
+        createdAt: new Date()
     });
 
-    console.log('Received quizData.type:', quizData.type);
     await newQuiz.save();
 
     return newQuiz;
 };
 
-export const getClassQuizzesService = async (classId: string) => {
-    const quizzes = await Quiz.find({ class: new mongoose.Types.ObjectId(classId) })
-        .populate('deck', 'name')
-        .populate('createdBy', 'name');
+export const getQuizzesByDeckService = async (classId: string, moocId: string, deckId: string) => {
+    const mooc = await Mooc.findById(moocId);
+    if (!mooc) {
+        throw new NotFoundException('Mooc not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (mooc.class?.toString() !== classId) {
+        throw new NotFoundException('Mooc does not belong to this class', ErrorCode.NOT_FOUND);
+    }
+
+    const deckInMooc = mooc.decks.find((d) => d.deck.toString() === deckId);
+    if (!deckInMooc) {
+        throw new NotFoundException('Deck not found in this Mooc', ErrorCode.NOT_FOUND);
+    }
+
+    const quizzes = await Quiz.find({
+        class: classId,
+        mooc: moocId,
+        moocDeck: deckId
+    }).sort({ createdAt: -1 });
+
     return quizzes;
-};
-
-export const updateQuizService = async (
-    userId: string,
-    quizId: string,
-    updatedData: z.infer<typeof createQuizValidation>
-) => {
-    const quiz = await Quiz.findById(quizId);
-    if (!quiz) {
-        throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
-    }
-
-    if (!quiz.createdBy.equals(userId)) {
-        throw new ForbiddenRequestsException('You do not have permission to update this quiz', ErrorCode.FORBIDDEN);
-    }
-
-    updateQuizValidation.parse(updatedData);
-
-    if (updatedData.title !== undefined) {
-        quiz.title = updatedData.title;
-    }
-
-    if (updatedData.description !== undefined) {
-        quiz.description = updatedData.description;
-    }
-
-    if (updatedData.questions !== undefined) {
-        quiz.set('questions', updatedData.questions);
-    }
-    await quiz.save();
-
-    return { id: quiz._id };
-};
-
-export const deleteQuizService = async (userId: string, quizId: string) => {
-    const quiz = await Quiz.findById(quizId);
-    if (!quiz) {
-        throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
-    }
-
-    if (!quiz.createdBy.equals(userId)) {
-        throw new ForbiddenRequestsException('You do not have permission to delete this quiz', ErrorCode.FORBIDDEN);
-    }
-
-    await Quiz.findByIdAndDelete(quizId);
-
-    await QuizAttempt.deleteMany({ quiz: quizId });
-
-    return { id: quizId };
 };
