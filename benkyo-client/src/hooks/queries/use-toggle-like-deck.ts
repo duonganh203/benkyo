@@ -1,6 +1,6 @@
 import { toggleLikeDeck } from '@/api/deckApi';
 import { ApiError } from '@/types/api';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
 interface ToggleLikeDeckRes {
@@ -10,9 +10,14 @@ interface ToggleLikeDeckRes {
 }
 
 const useToggleLikeDeck = (deckId: string) => {
+    const queryClient = useQueryClient();
+
     return useMutation<ToggleLikeDeckRes, AxiosError<ApiError>, void>({
         mutationKey: ['toggleLikeDeck', deckId],
-        mutationFn: () => toggleLikeDeck(deckId)
+        mutationFn: () => toggleLikeDeck(deckId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['likedDecks'] });
+        }
     });
 };
 

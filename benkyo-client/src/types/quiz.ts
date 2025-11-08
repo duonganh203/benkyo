@@ -81,20 +81,13 @@ export interface CreateQuizRes {
     id?: string;
     class: string;
     createdAt: string;
-    createdBy: {
-        name: string;
-    };
-    questions: {
-        _id: string;
-        questionText: string;
-        choices: string[];
-        correctAnswer: number;
-        explanation?: string;
-    }[];
+    createdBy: { _id?: string; name: string; email?: string };
+    mooc?: { _id: string; title: string };
+    moocDeck?: { _id: string; name: string };
+    questions: { _id: string; questionText: string; choices: string[]; correctAnswer: number; explanation?: string }[];
     title?: string;
     description?: string;
     type?: 'manual' | 'ai';
-    deck?: string;
 }
 
 export interface CreateQuizAIRes {
@@ -102,9 +95,9 @@ export interface CreateQuizAIRes {
         _id: string;
         class: string;
         createdAt: string;
-        createdBy: {
-            name: string;
-        };
+        createdBy?: { _id?: string; name?: string; email?: string };
+        mooc?: { _id: string; title: string };
+        moocDeck?: { _id: string; name: string }; // note name field
         questions: {
             _id: string;
             questionText: string;
@@ -115,6 +108,23 @@ export interface CreateQuizAIRes {
         title?: string;
         description?: string;
         type?: 'manual' | 'ai';
-        deck?: string;
+        deck?: string | { _id: string; name?: string };
     };
+}
+
+export interface MoocDeckQuizInterface {
+    _id: string;
+    classId: string;
+    moocId: string;
+    deckId: string;
+    title: string;
+    description?: string;
+    type: string;
+    questions: {
+        questionText: string;
+        options: string[];
+        correctAnswer: string;
+    }[];
+    createdAt: string;
+    updatedAt: string;
 }

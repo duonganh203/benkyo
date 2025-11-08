@@ -65,3 +65,7 @@ export const toggleLikeDeck = async (deckId: string) => {
         liked: boolean;
     };
 };
+export const getLikedDecks = async () => {
+    const { data } = await api.get('decks/liked');
+    return data;
+};

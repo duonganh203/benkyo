@@ -2,7 +2,12 @@ import { Router } from 'express';
 import * as classController from '~/controllers/classController';
 import authMiddleware from '~/middlewares/authMiddleware';
 import { errorHandler } from '~/errorHandler';
-import { createClassQuiz, deleteClassQuizzes, getClassQuizzes, updateClassQuizzes } from '~/controllers/quizController';
+import {
+    createMoocDeckQuiz,
+    deleteMoocDeckQuiz,
+    getClassQuizzes,
+    updateMoocDeckQuiz
+} from '~/controllers/quizController';
 
 const classRoutes: Router = Router();
 
@@ -50,9 +55,9 @@ classRoutes.post('/:classId/deck/:deckId/session/answer', errorHandler(classCont
 classRoutes.post('/:classId/deck/:deckId/session/end', errorHandler(classController.endClassDeckSession));
 classRoutes.get('/:classId/deck/:deckId/session/history', errorHandler(classController.getClassDeckSessionHistory));
 
-classRoutes.post('/:_id/management/quiz', [authMiddleware], errorHandler(createClassQuiz));
-classRoutes.get('/:_id/management/quiz', errorHandler(getClassQuizzes));
-classRoutes.put('/:_id/management/quiz/:quizId', [authMiddleware], errorHandler(updateClassQuizzes));
-classRoutes.delete('/:_id/management/quiz/:quizId', [authMiddleware], errorHandler(deleteClassQuizzes));
+classRoutes.get('/:classId/quiz', errorHandler(getClassQuizzes));
+classRoutes.put('/:classId/mooc/:moocId/deck/:deckId/quiz/:quizId', [authMiddleware], errorHandler(updateMoocDeckQuiz));
+classRoutes.delete('/:classId/quizzes/:quizId', [authMiddleware], errorHandler(deleteMoocDeckQuiz));
+classRoutes.post('/:classId/quiz/mooc', [authMiddleware], errorHandler(createMoocDeckQuiz));
 
 export default classRoutes;
