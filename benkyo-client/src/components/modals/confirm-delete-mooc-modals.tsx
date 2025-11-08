@@ -7,7 +7,7 @@ type ConfirmDeleteMoocModalProps = {
     onConfirm: () => void;
 };
 
-const ConfirmDeleteMoocModal = ({ open, onClose, onConfirm, moocTitle }: ConfirmDeleteMoocModalProps) => (
+const ConfirmDeleteMoocModal = ({ open, onClose, onConfirm }: ConfirmDeleteMoocModalProps) => (
     <Dialog open={open} onOpenChange={onClose}>
         <DialogContent className='sm:max-w-md' aria-describedby='delete-mooc-description'>
             <DialogHeader>
