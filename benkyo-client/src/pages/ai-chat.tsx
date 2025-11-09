@@ -54,10 +54,10 @@ const AIChat = () => {
                 <main className='w-[80%] flex flex-col'>
                     <div className='border-b p-4 flex items-center justify-between'>
                         <div className='flex items-center space-x-4'>
-                            <Button variant='ghost' size='icon' onClick={() => navigate(-1)} className='h-8 w-8'>
+                            {/* <Button variant='ghost' size='icon' onClick={() => navigate(-1)} className='h-8 w-8'>
                                 <ChevronLeft className='h-4 w-4' />
                                 <span className='sr-only'>Back</span>
-                            </Button>
+                            </Button> */}
                             <h1 className='text-xl font-bold tracking-tight'>Chat with SUPER CAT</h1>
                         </div>
                         <Button variant='outline' size='icon' onClick={toggleSidebar} className='md:hidden'>

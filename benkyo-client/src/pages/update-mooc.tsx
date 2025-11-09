@@ -13,6 +13,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import useUpdateMooc from '@/hooks/queries/use-update-mooc-in-class';
 import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
+import useDeleteCard from '@/hooks/queries/use-delete-card';
 
 interface CardData {
     _id?: string;
@@ -35,6 +36,7 @@ export const ClassUpdateMooc = () => {
 
     const { data: mooc, isLoading: moocLoading } = useGetMoocDetail(moocId!);
     const updateMoocMutation = useUpdateMooc();
+    const deleteCardMutation = useDeleteCard();
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -49,7 +51,10 @@ export const ClassUpdateMooc = () => {
     if (moocLoading) return <p className='text-center py-10'>Loading MOOC data...</p>;
     if (!mooc) return <p className='text-center py-10'>MOOC not found.</p>;
 
-    const deckIds = mooc?.decks?.map((d: { deck?: { _id: string }; _id?: string }) => d.deck?._id ?? d._id);
+    const deckIds = (mooc?.decks || [])
+        .map((d: { deck?: { _id: string }; _id?: string }) => d.deck ?? d)
+        .filter((deck: any) => deck && deck._id && deck.name)
+        .map((deck: any) => deck._id);
 
     deckIds.forEach((deckId: string, index: number) => {
         const { data } = useGetDeckCards(deckId!);
@@ -67,16 +72,18 @@ export const ClassUpdateMooc = () => {
     useEffect(() => {
         if (deckCardsData.length === deckIds.length && decks.length === 0) {
             const mergedDecks: DeckData[] =
-                mooc.decks?.map((deckWrapper: any, index: number) => {
-                    const deck = deckWrapper.deck ?? deckWrapper;
-                    return {
-                        _id: deck._id,
-                        name: deck.name || '',
-                        description: deck.description || '',
-                        order: deckWrapper.order ?? index,
-                        cards: deckCardsData[index] || []
-                    };
-                }) || [];
+                mooc.decks
+                    ?.filter((deckWrapper: any) => (deckWrapper.deck ?? deckWrapper)?._id)
+                    .map((deckWrapper: any, index: number) => {
+                        const deck = deckWrapper.deck ?? deckWrapper;
+                        return {
+                            _id: deck._id,
+                            name: deck.name || '',
+                            description: deck.description || '',
+                            order: deckWrapper.order ?? index,
+                            cards: deckCardsData[index] || []
+                        };
+                    }) || [];
             setDecks(mergedDecks);
             setTitle(mooc.title || '');
             setDescription(mooc.description || '');
@@ -87,9 +94,15 @@ export const ClassUpdateMooc = () => {
         }
     }, [deckCardsData, mooc]);
 
-    // --- Deck & Card Handlers ---
-    const addDeck = () => setDecks([...decks, { name: '', description: '', order: decks.length, cards: [] }]);
-    const removeDeck = (index: number) => setDecks(decks.filter((_, i) => i !== index));
+    const addDeck = () => {
+        setDecks((prev) => [...prev, { name: '', description: '', order: prev.length, cards: [] }]);
+    };
+
+    const removeDeck = (deckIndex: number) => {
+        setDecks((prev) => prev.filter((_, i) => i !== deckIndex));
+        setDeckCardsData((prev) => prev.filter((_, i) => i !== deckIndex));
+    };
+
     const updateDeck = (index: number, field: keyof DeckData, value: any) => {
         const newDecks = [...decks];
         newDecks[index] = { ...newDecks[index], [field]: value };
@@ -97,14 +110,43 @@ export const ClassUpdateMooc = () => {
     };
 
     const addCard = (deckIndex: number) => {
-        const newDecks = [...decks];
-        newDecks[deckIndex].cards.push({ front: '', back: '', tags: [] });
-        setDecks(newDecks);
+        setDecks((prev) => {
+            const newDecks = prev.map((deck, i) => {
+                if (i === deckIndex) {
+                    return {
+                        ...deck,
+                        cards: [...deck.cards, { front: '', back: '', tags: [] }]
+                    };
+                }
+                return deck;
+            });
+            return newDecks;
+        });
     };
-    const removeCard = (deckIndex: number, cardIndex: number) => {
-        const newDecks = [...decks];
-        newDecks[deckIndex].cards = newDecks[deckIndex].cards.filter((_, i) => i !== cardIndex);
-        setDecks(newDecks);
+    const removeCard = async (deckIndex: number, cardIndex: number) => {
+        const cardToDelete = decks[deckIndex].cards[cardIndex];
+        const cardId = cardToDelete._id;
+        if (cardId) {
+            try {
+                await deleteCardMutation.mutateAsync({ cardId });
+                setDecks((prev) => {
+                    const newDecks = [...prev];
+                    newDecks[deckIndex].cards = newDecks[deckIndex].cards.filter((_, i) => i !== cardIndex);
+                    return newDecks;
+                });
+                getToast('success', 'Card deleted successfully');
+            } catch (err) {
+                console.error(err);
+                getToast('error', 'Failed to delete card');
+            }
+        } else {
+            setDecks((prev) => {
+                const newDecks = [...prev];
+                newDecks[deckIndex].cards = newDecks[deckIndex].cards.filter((_, i) => i !== cardIndex);
+                return newDecks;
+            });
+            getToast('success', 'Card deleted successfully');
+        }
     };
     const updateCard = (deckIndex: number, cardIndex: number, field: keyof CardData, value: any) => {
         const newDecks = [...decks];
@@ -129,7 +171,6 @@ export const ClassUpdateMooc = () => {
         setDecks(newDecks);
     };
 
-    // --- Submit ---
     const handleSubmit = () => {
         if (!title.trim()) return getToast('error', 'Please enter a MOOC title');
         if (!moocId) return;
