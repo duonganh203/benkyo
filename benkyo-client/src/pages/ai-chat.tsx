@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, PanelRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { PanelRight } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import ChatInterface from '@/components/chat-interface';
 import DocumentSidebar from '@/components/document-sidebar';
@@ -11,7 +10,6 @@ import useGetDocuments from '@/hooks/queries/use-get-documents';
 import useUploadDocument from '@/hooks/queries/use-upload-document';
 
 const AIChat = () => {
-    const navigate = useNavigate();
     const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const queryClient = useQueryClient();
