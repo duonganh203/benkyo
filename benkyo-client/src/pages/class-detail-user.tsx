@@ -34,15 +34,12 @@ function ClassDetailUser() {
     const [showResumeDialog, setShowResumeDialog] = useState(false);
     const [pendingDeck, setPendingDeck] = useState<DeckInClass | null>(null);
     const [pendingSessionData, setPendingSessionData] = useState<ClassStudySession | null>(null);
+    const [moocPage, setMoocPage] = useState(1);
 
+    const moocsPerPage = 6;
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
     const { mutateAsync: startSession } = useStartClassDeckSession();
     const { data: allMoocs } = useGetAllMoocs(classId);
-
-    // console.log('User ID:', userId);
-    // console.log('class id  ', classId);
-    // console.log('classData ', classData);
-    // console.log('allMoocs ', allMoocs);
     const navigate = useNavigate();
 
     const handleMOOCClick = (moocId: string) => {
@@ -80,7 +77,6 @@ function ClassDetailUser() {
     const allDecksRaw = classData.decks || [];
     const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
     const scheduledDecks = allDecks.filter((deck: DeckInClass) => deck.startTime && deck.endTime);
-    const moreDecks = allDecks.filter((deck: DeckInClass) => !deck.startTime || !deck.endTime);
 
     const topLearners: TopLearner[] =
         classData.userClassStates
@@ -178,6 +174,14 @@ function ClassDetailUser() {
         setLoadingSession(false);
     };
 
+    const filteredMoocs =
+        allMoocs?.data?.filter((mooc) => {
+            if (isOwner) return true;
+            return mooc.publicStatus === 2;
+        }) || [];
+    const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
+    const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
+
     return (
         <div className='min-h-screen bg-background'>
             <main className='container mx-auto px-4 py-8 max-w-7xl'>
@@ -226,23 +230,24 @@ function ClassDetailUser() {
                             <h2 className='text-2xl font-bold'>Available MOOCs</h2>
                         </div>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                            {allMoocs?.data
-                                ?.filter((mooc) => {
-                                    if (isOwner) return true;
-                                    return mooc.publicStatus === 2;
-                                })
-                                .map((mooc) => (
-                                    <ProgressCard
-                                        key={mooc._id}
-                                        // id={mooc._id}
-                                        title={mooc.title}
-                                        description={mooc.description || 'Không có mô tả'}
-                                        progress={0}
-                                        status='available'
-                                        onClick={() => handleMOOCClick(mooc._id)}
-                                    />
-                                ))}
+                            {paginatedMoocs.map((mooc) => (
+                                <ProgressCard
+                                    key={mooc._id}
+                                    title={mooc.title}
+                                    description={mooc.description || 'Không có mô tả'}
+                                    progress={0}
+                                    status='available'
+                                    onClick={() => handleMOOCClick(mooc._id)}
+                                />
+                            ))}
                         </div>
+                        {hasMoreMoocs && (
+                            <div className='flex justify-center mt-4'>
+                                <Button variant='outline' onClick={() => setMoocPage((prev) => prev + 1)}>
+                                    Load More
+                                </Button>
+                            </div>
+                        )}
 
                         {scheduledDecks.length > 0 && (
                             <div className='mb-6'>
@@ -251,25 +256,6 @@ function ClassDetailUser() {
                                     {scheduledDecks.map((deck, index) => (
                                         <DeckCard
                                             key={`scheduled-${deck._id}`}
-                                            deck={{
-                                                ...deck,
-                                                totalCount: deck.totalCount ?? deck.cardCount
-                                            }}
-                                            index={index}
-                                            onStartStudy={startStudyMode}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {moreDecks.length > 0 && (
-                            <div>
-                                <h3 className='pl-4 text-xl font-semibold mb-4'>More Decks</h3>
-                                <div className='pl-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                                    {moreDecks.map((deck, index) => (
-                                        <DeckCard
-                                            key={`more-${deck._id}`}
                                             deck={{
                                                 ...deck,
                                                 totalCount: deck.totalCount ?? deck.cardCount

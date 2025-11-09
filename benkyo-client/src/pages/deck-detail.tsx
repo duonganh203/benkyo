@@ -369,17 +369,6 @@ const DeckDetail = () => {
                                             <Edit className='mr-2 h-4 w-4' />
                                             <span>Edit Deck</span>
                                         </DropdownMenuItem>
-
-                                        <DropdownMenuItem
-                                            className='text-destructive'
-                                            onClick={() => {
-                                                setActiveTab('settings');
-                                                setConfirmDelete(true);
-                                            }}
-                                        >
-                                            <Trash2 className='mr-2 h-4 w-4' />
-                                            <span>Delete Deck</span>
-                                        </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             )}
