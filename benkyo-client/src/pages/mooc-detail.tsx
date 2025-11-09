@@ -197,6 +197,9 @@ import { BookOpen, Zap, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import ProgressCard from '@/components/moocs-card';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import useMe from '@/hooks/queries/use-me';
+import ConfirmDeleteMoocModal from '@/components/modals/confirm-delete-mooc-modals';
+import useDeleteMooc from '@//hooks/queries/use-delete-mooc-class';
+import { getToast } from '@/utils/getToast';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -225,8 +228,10 @@ const MOOCDetail: React.FC = () => {
     const { data: mooc, isLoading, isError } = useGetMoocDetail(moocId!);
     const { data: user } = useMe();
     const isOwner = mooc ? user?._id === mooc.owner?._id : false;
-
+    console.log('moocId', moocId);
+    const { mutateAsync: deleteMooc } = useDeleteMooc();
     console.log('MOOC decks:', mooc?.decks);
+    const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
 
     if (isLoading) {
         return (
@@ -248,12 +253,16 @@ const MOOCDetail: React.FC = () => {
         navigate(`/moocs/update/${moocId}`);
     };
 
-    const handleDelete = () => {
-        if (confirm('Are you sure you want to delete this MOOC?')) {
-            console.log('Deleting mooc:', moocId);
+    const handleDelete = async () => {
+        if (!moocId) return;
+        const res = await deleteMooc(moocId);
+        if (res.success) {
+            getToast('success', 'MOOC deleted successfully');
+            navigate(`/class/${classId}`);
+        } else {
+            getToast('error', 'MOOC deleted failure');
         }
     };
-
     const handleGoToDeck = (deckId: string) => {
         navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}`);
     };
@@ -295,7 +304,7 @@ const MOOCDetail: React.FC = () => {
                                     Edit
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                    onClick={handleDelete}
+                                    onClick={() => setOpenDeleteModal(true)}
                                     className='text-destructive focus:text-destructive'
                                 >
                                     <Trash2 className='mr-2 h-4 w-4' />
@@ -363,6 +372,11 @@ const MOOCDetail: React.FC = () => {
                     </div>
                 </div>
             </section>
+            <ConfirmDeleteMoocModal
+                open={openDeleteModal}
+                onClose={() => setOpenDeleteModal(false)}
+                onConfirm={handleDelete}
+            />
         </div>
     );
 };
