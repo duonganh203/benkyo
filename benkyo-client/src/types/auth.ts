@@ -47,4 +47,5 @@ export interface ResetPasswordPayload {
 export interface VerifyOtpPayload {
     email: string;
     otp: string;
+    mode: string;
 }

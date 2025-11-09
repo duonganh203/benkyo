@@ -59,7 +59,7 @@ export type ClassType = {
     _id: string;
     name: string;
     description: string;
-    bannerUrl: string;
+    bannerUrl?: string;
     owner: ClassOwnerType;
     visibility: 'public' | 'private';
     requiredApprovalToJoin: boolean;
@@ -101,7 +101,7 @@ export type ClassUserType = {
     createdAt: Date;
     userClassStates: ClassUserStateDataType[];
     completionRate: number;
-    bannerUrl: string;
+    bannerUrl?: string;
     visited: {
         history: string[];
     };
@@ -142,6 +142,23 @@ export type InviteNotificationType = {
     type: string;
     createdAt: Date;
     message: string;
+};
+
+export type JoinRequestNotificationType = {
+    notificationType: 'join_request';
+    sortTime: Date;
+    priority: number;
+    id: string;
+    classId: string;
+    className: string;
+    description: string;
+    type: 'join_request';
+    createdAt: Date;
+    message: string;
+    requestUserId: string;
+    requestUserName: string;
+    requestUserEmail: string;
+    requestUserAvatar?: string;
 };
 
 export type OverdueNotificationType = {

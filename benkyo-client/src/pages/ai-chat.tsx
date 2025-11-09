@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, PanelRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { PanelRight } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import ChatInterface from '@/components/chat-interface';
 import DocumentSidebar from '@/components/document-sidebar';
@@ -11,7 +10,6 @@ import useGetDocuments from '@/hooks/queries/use-get-documents';
 import useUploadDocument from '@/hooks/queries/use-upload-document';
 
 const AIChat = () => {
-    const navigate = useNavigate();
     const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const queryClient = useQueryClient();
@@ -54,10 +52,10 @@ const AIChat = () => {
                 <main className='w-[80%] flex flex-col'>
                     <div className='border-b p-4 flex items-center justify-between'>
                         <div className='flex items-center space-x-4'>
-                            <Button variant='ghost' size='icon' onClick={() => navigate(-1)} className='h-8 w-8'>
+                            {/* <Button variant='ghost' size='icon' onClick={() => navigate(-1)} className='h-8 w-8'>
                                 <ChevronLeft className='h-4 w-4' />
                                 <span className='sr-only'>Back</span>
-                            </Button>
+                            </Button> */}
                             <h1 className='text-xl font-bold tracking-tight'>Chat with SUPER CAT</h1>
                         </div>
                         <Button variant='outline' size='icon' onClick={toggleSidebar} className='md:hidden'>

@@ -7,7 +7,7 @@ export interface ClassHeaderProps {
         _id: string;
         name: string;
         description: string;
-        bannerUrl: string;
+        bannerUrl?: string;
         visibility: 'public' | 'private';
         requiredApprovalToJoin: boolean;
         classCode?: string;
@@ -33,7 +33,7 @@ const ClassHeader = ({
                 isExpanded ? 'h-auto' : 'h-[200px]'
             }`}
             style={{
-                backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('${classData.bannerUrl}')`,
+                backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('${classData.bannerUrl || '/default-class-banner.svg'}')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
             }}

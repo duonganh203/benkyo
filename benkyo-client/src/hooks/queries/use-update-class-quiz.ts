@@ -1,18 +1,23 @@
-import { AxiosError } from 'axios';
 import { useMutation } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { ApiError } from '@/types/api';
-import { updateClassQuizApi } from '@/api/classApi';
 import { createQuizPayload, CreateQuizRes } from '@/types/quiz';
+import { updateMoocDeckQuizApi } from '@/api/classApi';
 
-type UpdateClassQuizParams = {
+export type UpdateMoocDeckQuizParams = {
     classId: string;
     quizId: string;
+    moocId: string;
+    deckId: string;
     data: createQuizPayload;
 };
 
 const useUpdateClassQuiz = () => {
-    return useMutation<CreateQuizRes, AxiosError<ApiError>, UpdateClassQuizParams>({
-        mutationFn: ({ classId, quizId, data }) => updateClassQuizApi(classId, quizId, data)
+    return useMutation<CreateQuizRes, AxiosError<ApiError>, UpdateMoocDeckQuizParams>({
+        mutationKey: ['updateClassQuiz'],
+        mutationFn: ({ classId, quizId, moocId, deckId, data }) =>
+            updateMoocDeckQuizApi(classId, quizId, moocId, deckId, data)
     });
 };
+
 export default useUpdateClassQuiz;

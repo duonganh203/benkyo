@@ -3,7 +3,7 @@ import type { ClassNotification } from './notification';
 export type ClassUserRequestDto = {
     name: string;
     description: string;
-    bannerUrl: string;
+    bannerUrl?: string;
     visibility: 'public' | 'private';
     requiredApprovalToJoin: boolean;
     message?: string;
@@ -14,7 +14,7 @@ export type ClassUserResponseDto = {
     name: string;
     description: string;
     owner: string;
-    bannerUrl: string;
+    bannerUrl?: string;
     visibility: 'public' | 'private';
     requiredApprovalToJoin: boolean;
 };
@@ -24,7 +24,7 @@ export type ClassListItemUserResponseDto = {
     name: string;
     description: string;
     owner: string;
-    bannerUrl: string;
+    bannerUrl?: string;
     progress: number;
     requiredApprovalToJoin: boolean;
     createdAt: Date;
@@ -246,7 +246,7 @@ export type GetClassUserByIdResponseDto = {
     createdAt: Date;
     userClassStates: ClassUserStatePopulated[];
     completionRate: number;
-    bannerUrl: string;
+    bannerUrl?: string;
     visited: {
         history: {
             userId: string;
@@ -351,6 +351,12 @@ export type NormalizedInviteNotification = ClassNotification & {
     priority: number;
 };
 
+export type NormalizedJoinRequestNotification = ClassNotification & {
+    notificationType: 'join_request';
+    sortTime: Date;
+    priority: number;
+};
+
 export type NormalizedOverdueNotification = OverdueSchedule & {
     notificationType: 'overdue';
     sortTime: Date;
@@ -365,6 +371,7 @@ export type NormalizedUpcomingNotification = UpcomingDeadline & {
 
 export type UnifiedNotification =
     | NormalizedInviteNotification
+    | NormalizedJoinRequestNotification
     | NormalizedOverdueNotification
     | NormalizedUpcomingNotification;
 
@@ -378,6 +385,7 @@ export type AllNotificationsResponse = {
     };
     summary: {
         totalInvites: number;
+        totalJoinRequests: number;
         totalOverdue: number;
         totalUpcoming: number;
         totalCritical: number;
@@ -416,7 +424,6 @@ export type ClassMemberProgressResponse = {
     message: string;
 };
 
-// New types for API responses - direct return without data wrapper
 export type ClassUsersResponse = ClassUser[];
 
 export type ClassJoinRequestsResponse = {

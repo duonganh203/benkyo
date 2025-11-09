@@ -12,11 +12,12 @@ import {
     UserDeckState,
     Class
 } from '~/schemas';
-import { createDeckValidation } from '~/validations/deckValidation';
+import { createDeckValidation, updateDeckValidation } from '~/validations/deckValidation';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
+import { Types } from 'mongoose';
 
 export const createDeckService = async (userId: string, deckData: z.infer<typeof createDeckValidation>) => {
     const { name, description } = deckData;
@@ -200,6 +201,10 @@ export const getAllRequestedPublicDecksService = async () => {
     return decks;
 };
 
+export const getUserPublicDecksService = async (userId: string) => {
+    return await Deck.find({ owner: userId, publicStatus: { $in: [1, 2, 3] } }).populate('owner', 'name avatar');
+};
+
 export const getRequestPulbicDeckService = async (deckId: string) => {
     const deck = await Deck.findById(deckId).populate('owner').populate('reviewedBy').lean();
 
@@ -291,4 +296,66 @@ export const getDeckStatsService = async () => {
         createdThisMonth,
         growthPercentage
     };
+};
+export const updateDeckService = async (
+    userId: string,
+    deckId: string,
+    deckData: z.infer<typeof updateDeckValidation>
+) => {
+    const { name, description } = deckData;
+
+    const deck = await Deck.findOne({ _id: deckId, owner: userId });
+    if (!deck) {
+        throw new Error('Deck not found or you do not have permission to update it');
+    }
+
+    if (name !== undefined) deck.name = name;
+    if (description !== undefined) deck.description = description;
+    await deck.save();
+
+    return deck;
+};
+
+export const toggleLikeDeckService = async (userId: string, deckId: string) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+    const userObjectId = new Types.ObjectId(userId);
+    const hasLiked = deck.likes.some((id: Types.ObjectId) => id.equals(userObjectId));
+    if (hasLiked) {
+        deck.likes = deck.likes.filter((id: Types.ObjectId) => !id.equals(userObjectId));
+    } else {
+        deck.likes.push(userObjectId);
+    }
+    deck.likeCount = deck.likes.length;
+    await deck.save();
+    return {
+        message: hasLiked ? 'Unliked deck successfully' : 'Liked deck successfully',
+        likeCount: deck.likeCount,
+        liked: !hasLiked
+    };
+};
+export const getLikedDecksByUserService = async (userId: string) => {
+    const userObjectId = new Types.ObjectId(userId);
+
+    const likedDecks = await Deck.find({ likes: userObjectId })
+        .sort({ updatedAt: -1 })
+        .populate('owner', 'name')
+        .lean();
+
+    return likedDecks.map((deck) => {
+        const owner = deck.owner as { name?: string };
+
+        return {
+            id: deck._id.toString(),
+            name: deck.name,
+            description: deck.description,
+            likeCount: deck.likeCount || 0,
+            cardCount: deck.cardCount || 0,
+            creatorName: owner?.name || 'Unknown',
+            createdAt: deck.createdAt,
+            updatedAt: deck.updatedAt
+        };
+    });
 };

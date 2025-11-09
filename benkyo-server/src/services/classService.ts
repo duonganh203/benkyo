@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
@@ -18,6 +17,7 @@ import {
 } from '~/types/classTypes';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ConflictException } from '~/exceptions/conflictException';
+import { Types } from 'mongoose';
 
 export const classCreateService = async (userId: string, data: ClassStateType) => {
     const user = await User.findById(userId);
@@ -735,9 +735,46 @@ export const getUpcomingDeadlinesService = async (userId: Types.ObjectId) => {
     return upcomingDeadlines.sort((a, b) => a.hoursUntilDeadline - b.hoursUntilDeadline);
 };
 
+const getJoinRequestNotificationsService = async (userId: Types.ObjectId) => {
+    const classes = await Class.find({
+        owner: userId,
+        'joinRequests.0': { $exists: true }
+    })
+        .select('_id name description joinRequests')
+        .populate({ path: 'joinRequests.user', select: '_id name email avatar' })
+        .lean();
+
+    if (!classes || classes.length === 0) return [];
+
+    const notifications = classes.flatMap((cls) => {
+        return (cls.joinRequests || []).map((req) => {
+            const u = req.user as any;
+            const requestUserId = (u?._id || req.user)?.toString();
+            const createdAt = req.requestDate ? new Date(req.requestDate) : new Date();
+
+            return {
+                id: `${cls._id.toString()}:${requestUserId}`,
+                classId: cls._id.toString(),
+                className: cls.name,
+                description: cls.description,
+                type: 'join_request',
+                createdAt,
+                message: `${u?.name || 'A user'} requested to join class: ${cls.name}`,
+                requestUserId,
+                requestUserName: u?.name || '',
+                requestUserEmail: u?.email || '',
+                requestUserAvatar: u?.avatar || ''
+            };
+        });
+    });
+
+    return notifications;
+};
+
 export const getAllNotificationsService = async (userId: Types.ObjectId) => {
-    const [inviteNotifications, overdueSchedules, upcomingDeadlines] = await Promise.all([
+    const [inviteNotifications, joinRequestNotifications, overdueSchedules, upcomingDeadlines] = await Promise.all([
         getInviteClassService(userId),
+        getJoinRequestNotificationsService(userId),
         getOverdueSchedulesService(userId),
         getUpcomingDeadlinesService(userId)
     ]);
@@ -746,6 +783,13 @@ export const getAllNotificationsService = async (userId: Types.ObjectId) => {
         ...invite,
         notificationType: 'invite',
         sortTime: new Date(invite.createdAt || new Date()),
+        priority: 2
+    }));
+
+    const normalizedJoinRequests = joinRequestNotifications.map((jr) => ({
+        ...jr,
+        notificationType: 'join_request' as const,
+        sortTime: new Date(jr.createdAt || new Date()),
         priority: 2
     }));
 
@@ -763,7 +807,12 @@ export const getAllNotificationsService = async (userId: Types.ObjectId) => {
         priority: deadline.hoursUntilDeadline <= 24 ? 3 : 4
     }));
 
-    const allNotifications = [...normalizedInvites, ...normalizedOverdue, ...normalizedUpcoming].sort((a, b) => {
+    const allNotifications = [
+        ...normalizedInvites,
+        ...normalizedJoinRequests,
+        ...normalizedOverdue,
+        ...normalizedUpcoming
+    ].sort((a, b) => {
         if (a.notificationType === 'invite' && b.notificationType === 'invite') {
             return new Date(b.sortTime).getTime() - new Date(a.sortTime).getTime();
         }
@@ -772,7 +821,7 @@ export const getAllNotificationsService = async (userId: Types.ObjectId) => {
 
     return {
         all: allNotifications,
-        invites: inviteNotifications,
+        invites: [...inviteNotifications, ...joinRequestNotifications],
         schedules: {
             overdue: overdueSchedules,
             upcoming: upcomingDeadlines,
@@ -780,10 +829,15 @@ export const getAllNotificationsService = async (userId: Types.ObjectId) => {
         },
         summary: {
             totalInvites: inviteNotifications.length,
+            totalJoinRequests: joinRequestNotifications.length,
             totalOverdue: overdueSchedules.length,
             totalUpcoming: upcomingDeadlines.length,
             totalCritical: upcomingDeadlines.filter((d) => d.hoursUntilDeadline <= 24).length,
-            totalAll: allNotifications.length
+            totalAll:
+                inviteNotifications.length +
+                joinRequestNotifications.length +
+                overdueSchedules.length +
+                upcomingDeadlines.length
         }
     };
 };
@@ -1371,7 +1425,7 @@ export const getClassDecksService = async (classId: string, userId: Types.Object
 
     const classData = await Class.findById(classId).populate({
         path: 'decks.deck',
-        select: '_id name description'
+        select: '_id name description cardCount'
     });
 
     if (!classData) {

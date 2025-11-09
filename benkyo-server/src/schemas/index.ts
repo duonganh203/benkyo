@@ -1,4 +1,4 @@
-import { InferSchemaType, Schema, model } from 'mongoose';
+import { InferSchemaType, Schema, Types, model } from 'mongoose';
 
 enum Rating {
     AGAIN = 1,
@@ -30,6 +30,11 @@ enum PackageDuration {
     THREE_MONTHS = '3M',
     SIX_MONTHS = '6M',
     ONE_YEAR = '1Y'
+}
+enum ProgressState {
+    NOT_STARTED = 0,
+    IN_PROGRESS = 1,
+    COMPLETED = 2
 }
 
 const UserSchema = new Schema({
@@ -79,8 +84,8 @@ const DeckSchema = new Schema({
     updatedAt: { type: Date, default: Date.now },
     cardCount: { type: Number, default: 0 },
     owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    avgRating: { type: Number, default: 0 },
-    ratingCount: { type: Number, default: 0 },
+    likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    likeCount: { type: Number, default: 0 },
     popularity: { type: Number, default: 0 },
     reviewedBy: { type: Schema.Types.ObjectId, ref: 'User' },
     reviewNote: { type: String },
@@ -145,6 +150,8 @@ const UserDeckStateSchema = new Schema({
     }
 });
 const QuizSchema = new Schema({
+    mooc: { type: Schema.Types.ObjectId, ref: 'Mooc', required: false },
+    moocDeck: { type: Schema.Types.ObjectId, ref: 'Deck', required: false },
     deck: { type: Schema.Types.ObjectId, ref: 'Deck', required: false },
     title: { type: String, required: false },
     description: { type: String, required: false },
@@ -251,7 +258,7 @@ const ClassSchema = new Schema(
     {
         name: { type: String, required: true },
         description: { type: String, required: true },
-        bannerUrl: { type: String, required: true },
+        bannerUrl: { type: String, required: false },
         owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         visibility: { type: String, enum: ['public', 'private'], default: 'private' },
         requiredApprovalToJoin: { type: Boolean, default: false },
@@ -301,7 +308,53 @@ const UserClassStateSchema = new Schema(
     },
     { timestamps: true }
 );
+const MoocSchema = new Schema({
+    title: { type: String, required: true },
+    description: { type: String },
+    owner: { type: Types.ObjectId, ref: 'User', required: true },
+    class: { type: Types.ObjectId, ref: 'Class', required: false },
+    decks: [
+        {
+            deck: { type: Types.ObjectId, ref: 'Deck', required: true },
+            order: { type: Number, required: true }
+        }
+    ],
 
+    enrolledUsers: [
+        {
+            user: { type: Types.ObjectId, ref: 'User', required: true },
+            currentDeckIndex: { type: Number, default: 0 },
+            progressState: {
+                type: Number,
+                enum: ProgressState,
+                default: ProgressState.NOT_STARTED
+            },
+            deckProgress: [
+                {
+                    deck: { type: Types.ObjectId, ref: 'Deck', required: true },
+                    completed: { type: Boolean, default: false },
+                    completedAt: { type: Date }
+                }
+            ],
+            startedAt: { type: Date },
+            completedAt: { type: Date }
+        }
+    ],
+
+    publicStatus: {
+        type: Number,
+        enum: PublicStatus,
+        default: PublicStatus.PRIVATE
+    },
+
+    isPaid: { type: Boolean, default: false },
+    price: { type: Number, default: 0 },
+    currency: { type: String, default: 'VND' },
+    likes: { type: Number, default: 0 },
+    views: { type: Number, default: 0 },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
 export const Class = model('Class', ClassSchema);
 export const UserClassState = model('UserClassState', UserClassStateSchema);
 export const User = model('User', UserSchema);
@@ -317,6 +370,8 @@ export const Conversation = model('Chat', ConversationSchema);
 export const StudySession = model('StudySession', StudySessionSchema);
 export const Transaction = model('Transaction', TransactionSchema);
 export const Package = model('Package', PackageSchema);
+export const Mooc = model<Mooc>('Mooc', MoocSchema);
+export type Mooc = InferSchemaType<typeof MoocSchema>;
 export type TransactionType = InferSchemaType<typeof TransactionSchema>;
 export type ConversationType = InferSchemaType<typeof ConversationSchema>;
 export type ClassStateType = InferSchemaType<typeof ClassSchema>;

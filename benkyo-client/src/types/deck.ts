@@ -11,6 +11,8 @@ export interface DeckDetails {
     description?: string;
     publicStatus: number;
     owner: Owner;
+    likeCount: number;
+    liked?: boolean;
     fsrsParams?: {
         request_retention?: number;
         maximum_interval?: number;
@@ -30,10 +32,17 @@ export interface DeckInterface {
     createdAt: string;
     owner: Owner;
     isPublic: boolean;
+    likeCount: number;
+    liked?: boolean;
+    publicStatus?: number;
 }
 
 interface Owner {
     _id: string;
     name: string;
     avatar?: string;
+}
+export interface UpdateDeckPayload {
+    name?: string;
+    description?: string;
 }

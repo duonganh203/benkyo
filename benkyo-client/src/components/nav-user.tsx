@@ -1,5 +1,5 @@
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     DropdownMenu,
@@ -31,7 +31,7 @@ export function NavUser({ user }: { user: User }) {
     const { isMobile } = useSidebar();
     const { logout } = useAuthStore((store) => store);
     const textClass = getSubscriptionTextClass(user);
-
+    const navigate = useNavigate();
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -90,7 +90,7 @@ export function NavUser({ user }: { user: User }) {
                         )}
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigate('/profile')}>
                                 <BadgeCheck />
                                 Account
                             </DropdownMenuItem>
@@ -98,8 +98,8 @@ export function NavUser({ user }: { user: User }) {
                                 <CreditCard />
                                 Billing
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Bell />
+                            <DropdownMenuItem onClick={() => navigate('/notification')}>
+                                <Bell className='mr-2 h-4 w-4' />
                                 Notifications
                             </DropdownMenuItem>
                         </DropdownMenuGroup>

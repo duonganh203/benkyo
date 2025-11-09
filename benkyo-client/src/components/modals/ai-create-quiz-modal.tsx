@@ -1,17 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Zap, Loader, Sparkles } from 'lucide-react';
+import { Zap, Loader } from 'lucide-react';
 import { Quiz } from '@/pages/class-quiz-management';
-import useGetUserDecks from '@/hooks/queries/use-get-user-decks';
 import { generateQuizFromFlashcards } from '@/utils/genAIQuiz';
+import useGetAllMoocs from '@/hooks/queries/use-get-all-mooc-class';
+import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCreateMoocDeckQuiz } from '@/hooks/queries/use-create-mooc-deck-quiz';
 import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
-import { useCreateClassAIQuiz } from '@/hooks/queries/use-create-class-quiz-by-ai';
 
 interface AIQuizModalProps {
     open: boolean;
@@ -23,228 +24,199 @@ interface AIQuizModalProps {
 export const AIQuizModal = ({ open, onOpenChange, onSubmit, classId }: AIQuizModalProps) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [selectedMoocId, setSelectedMoocId] = useState('');
     const [selectedDeckId, setSelectedDeckId] = useState('');
-    const [customTopic, setCustomTopic] = useState('');
     const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
     const [questionCount, setQuestionCount] = useState('5');
     const [isGenerating, setIsGenerating] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch user's decks
-    const { data: userDecks, isLoading: isLoadingDecks } = useGetUserDecks();
+    const { data: moocsData, isLoading: loadingMoocs } = useGetAllMoocs(classId);
+    const { data: moocDetail, isLoading: loadingMoocDetail } = useGetMoocDetail(selectedMoocId || '');
+    const { data: cardsData } = useGetDeckCards(selectedDeckId || '');
+    const [availableDecks, setAvailableDecks] = useState<any[]>([]);
 
-    // Fetch selected deck details
-    const { data: selectedDeck } = useGetDeckCards(selectedDeckId);
+    const queryClient = useQueryClient();
+    const createMutation = useCreateMoocDeckQuiz(classId || '');
+    const { mutateAsync: createQuiz } = createMutation;
 
-    const { mutateAsync: createQuiz } = useCreateClassAIQuiz();
+    useEffect(() => {
+        if (moocDetail?.decks) setAvailableDecks(moocDetail.decks);
+        else setAvailableDecks([]);
+
+        setSelectedDeckId('');
+    }, [moocDetail]);
 
     const generateQuiz = async () => {
+        if (!selectedMoocId || !selectedDeckId) {
+            setError('Please select both a Mooc and a Deck.');
+            return;
+        }
+
         setIsGenerating(true);
         setError(null);
 
         try {
-            let generatedQuestions: Array<{
-                questionText: string;
-                choices: { text: string }[];
-                correctAnswer: number;
-            }> = [];
-
-            if (selectedDeckId && selectedDeck) {
-                const flashcards = selectedDeck.map((card) => ({
+            const flashcards =
+                cardsData?.map((card: any) => ({
                     front: card.front,
                     back: card.back
-                }));
+                })) || [];
 
-                if (flashcards.length < 4) {
-                    throw new Error('Selected deck must have at least 4 flashcards to generate a quiz.');
-                }
-
-                generatedQuestions = await generateQuizFromFlashcards(flashcards, parseInt(questionCount), difficulty);
-
-                // Ensure choices are properly formatted
-                generatedQuestions = generatedQuestions.map((question) => ({
-                    ...question,
-                    choices: question.choices.map((choice) => (typeof choice === 'string' ? { text: choice } : choice))
-                }));
-            } else if (customTopic.trim()) {
-                generatedQuestions = await generateQuizFromFlashcards(
-                    [{ front: customTopic, back: customTopic }],
-                    parseInt(questionCount),
-                    difficulty
-                );
-
-                // Ensure choices are properly formatted
-                generatedQuestions = generatedQuestions.map((question) => ({
-                    ...question,
-                    choices: question.choices.map((choice) => (typeof choice === 'string' ? { text: choice } : choice))
-                }));
+            if (flashcards.length < 4) {
+                throw new Error('Selected deck must have at least 4 flashcards.');
             }
 
-            const deckName = selectedDeckId
-                ? userDecks?.find((deck) => deck._id === selectedDeckId)?.name
-                : customTopic;
+            const selectedDeck = availableDecks.find((d) => d.deck._id === selectedDeckId)?.deck;
+
+            let generatedQuestions = await generateQuizFromFlashcards(
+                flashcards,
+                parseInt(questionCount, 10),
+                difficulty
+            );
+
+            generatedQuestions = generatedQuestions.map((q: any) => ({
+                ...q,
+                choices: q.choices.map((c: any) => (typeof c === 'string' ? { text: c } : c))
+            }));
 
             const payload = {
-                title: title || `${deckName || 'Custom Topic'} Quiz`,
-                description: description || `AI-generated quiz about ${deckName || customTopic}`,
-                questions: generatedQuestions.map((q) => ({
-                    questionText: q.questionText,
-                    choices: q.choices.map((c) =>
-                        typeof c === 'string' ? { text: c } : typeof c?.text === 'string' ? c : { text: String(c) }
-                    ),
-                    correctAnswer: q.correctAnswer
-                })),
+                moocId: selectedMoocId,
+                deckId: selectedDeckId,
+                title: title || `${selectedDeck?.name || 'AI'} Quiz`,
+                description: description || `AI-generated quiz from ${selectedDeck?.name}`,
                 type: 'ai',
-                classId: classId,
-                deckId: selectedDeckId
+                questions: generatedQuestions.map((q: any) => ({
+                    questionText: q.questionText,
+                    choices: q.choices.map((c: any) => ({ text: c.text })),
+                    correctAnswer: q.correctAnswer
+                }))
             };
 
-            console.log('Final payload:', payload);
+            const saved = await createQuiz(payload);
+            queryClient.invalidateQueries({ queryKey: ['getClassQuizzes', classId] });
 
-            const savedQuiz = await createQuiz(payload);
-
-            console.log('Quiz created successfully:', savedQuiz);
+            const quizResp = (saved?.data || saved) ?? {};
 
             onSubmit({
-                title: savedQuiz.quiz.title || 'AI Generated Quiz',
-                description: savedQuiz.quiz.description || '',
-                classId: savedQuiz.quiz.class,
-                deck: savedQuiz.quiz.deck || '',
-                questions: savedQuiz.quiz.questions.map((q) => ({
-                    id: q._id,
+                title: quizResp.title || payload.title,
+                description: quizResp.description || payload.description,
+                classId: quizResp.classId || classId || '',
+                type: 'ai',
+                mooc: {
+                    _id: quizResp.moocId || selectedMoocId,
+                    title: moocDetail?.title || ''
+                },
+                deck: {
+                    _id: quizResp.deckId || selectedDeckId,
+                    name: selectedDeck?.name || ''
+                },
+                questions: (quizResp.questions || payload.questions).map((q: any) => ({
+                    id: q._id ?? q.questionText.slice(0, 10),
                     question: q.questionText,
-                    options: q.choices,
+                    options: q.options,
                     correctAnswer: q.correctAnswer
-                })),
-                type: 'ai' as const
+                }))
             });
 
             // Reset form
             setTitle('');
             setDescription('');
+            setSelectedMoocId('');
             setSelectedDeckId('');
-            setCustomTopic('');
             setDifficulty('Medium');
             setQuestionCount('5');
-
-            // Close modal
             onOpenChange(false);
         } catch (err) {
             console.error('Error generating quiz:', err);
-            setError(err instanceof Error ? err.message : 'Failed to generate quiz. Please try again.');
+            setError(err instanceof Error ? err.message : 'Failed to generate quiz.');
         } finally {
             setIsGenerating(false);
         }
     };
 
-    const canGenerate = (selectedDeckId || customTopic.trim()) && !isGenerating;
+    const canGenerate = !isGenerating && !!selectedMoocId && !!selectedDeckId;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className='max-w-2xl'>
                 <DialogHeader>
                     <DialogTitle className='flex items-center gap-2 text-2xl font-bold text-primary'>
-                        <Zap className='w-6 h-6' />
-                        AI Quiz Generator
+                        <Zap className='w-6 h-6' /> AI Quiz Generator
                     </DialogTitle>
-                    <DialogDescription>
-                        Let AI create a quiz for you based on your chosen deck or topic
-                    </DialogDescription>
+                    <DialogDescription>Let AI generate quiz questions from your chosen Mooc Deck.</DialogDescription>
                 </DialogHeader>
 
                 <div className='space-y-6 py-4'>
-                    {/* Quiz Basics */}
-                    <div className='space-y-4'>
+                    {/* Select Mooc and Deck */}
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                         <div>
-                            <Label htmlFor='ai-title' className='text-base font-medium'>
-                                Quiz Title (Optional)
-                            </Label>
-                            <Input
-                                id='ai-title'
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                placeholder='Leave blank to auto-generate...'
-                                className='mt-1'
-                            />
+                            <Label>Select Mooc</Label>
+                            <Select value={selectedMoocId} onValueChange={(v) => setSelectedMoocId(v)}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder={loadingMoocs ? 'Loading...' : 'Choose Mooc'} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {moocsData?.data?.map((m) => (
+                                        <SelectItem key={m._id} value={m._id}>
+                                            {m.title}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <div>
-                            <Label htmlFor='ai-description' className='text-base font-medium'>
-                                Description (Optional)
-                            </Label>
+                            <Label>Select Deck</Label>
+                            <Select
+                                value={selectedDeckId}
+                                onValueChange={(v) => setSelectedDeckId(v)}
+                                disabled={!selectedMoocId || loadingMoocDetail}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder='Choose Deck' />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableDecks?.map((d) => (
+                                        <SelectItem key={d.deck._id} value={d.deck._id}>
+                                            {d.deck.name || d.deck.title}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+
+                    {/* Title + Description */}
+                    <div className='space-y-4'>
+                        <div>
+                            <Label>Quiz Title</Label>
+                            <Input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder='Optional title...'
+                            />
+                        </div>
+                        <div>
+                            <Label>Description</Label>
                             <Textarea
-                                id='ai-description'
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                placeholder='Leave blank to auto-generate...'
-                                className='mt-1'
+                                placeholder='Optional description...'
                                 rows={2}
                             />
                         </div>
                     </div>
 
-                    {/* Topic Selection */}
-                    <Card className='bg-gradient-to-r from-quiz-primary/5 to-quiz-info/5 border-quiz-primary/20'>
-                        <CardContent className='p-4 space-y-4'>
-                            <div className='flex items-center gap-2 mb-2'>
-                                <Sparkles className='w-5 h-5 text-quiz-primary' />
-                                <h3 className='font-semibold text-quiz-primary'>Choose Your Topic</h3>
-                            </div>
-
-                            <div>
-                                <Label className='text-sm font-medium'>Select from Your Decks</Label>
-                                <Select
-                                    value={selectedDeckId}
-                                    onValueChange={(value) => {
-                                        setSelectedDeckId(value);
-                                        if (value) setCustomTopic('');
-                                    }}
-                                    disabled={isLoadingDecks}
-                                >
-                                    <SelectTrigger className='mt-1'>
-                                        <SelectValue
-                                            placeholder={isLoadingDecks ? 'Loading your decks...' : 'Choose a deck...'}
-                                        />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {userDecks?.map((deck) => (
-                                            <SelectItem key={deck._id} value={deck._id}>
-                                                {deck.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div className='text-center text-sm text-muted-foreground'>OR</div>
-
-                            <div>
-                                <Label className='text-sm font-medium'>Custom Topic</Label>
-                                <Input
-                                    value={customTopic}
-                                    onChange={(e) => {
-                                        setCustomTopic(e.target.value);
-                                        if (e.target.value.trim()) {
-                                            setSelectedDeckId('');
-                                        }
-                                    }}
-                                    placeholder='Enter any topic you want...'
-                                    className='mt-1'
-                                    disabled={!!selectedDeckId}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Generation Settings */}
+                    {/* Settings */}
                     <div className='grid grid-cols-2 gap-4'>
                         <div>
-                            <Label className='text-sm font-medium'>Difficulty Level</Label>
+                            <Label>Difficulty</Label>
                             <Select
                                 value={difficulty}
-                                onValueChange={(value: 'Easy' | 'Medium' | 'Hard') => setDifficulty(value)}
+                                onValueChange={(v: 'Easy' | 'Medium' | 'Hard') => setDifficulty(v)}
                             >
-                                <SelectTrigger className='mt-1'>
+                                <SelectTrigger>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -254,18 +226,17 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit, classId }: AIQuizMod
                                 </SelectContent>
                             </Select>
                         </div>
-
                         <div>
-                            <Label className='text-sm font-medium'>Number of Questions</Label>
+                            <Label>Question Count</Label>
                             <Select value={questionCount} onValueChange={setQuestionCount}>
-                                <SelectTrigger className='mt-1'>
+                                <SelectTrigger>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value='3'>3 Questions</SelectItem>
-                                    <SelectItem value='5'>5 Questions</SelectItem>
-                                    <SelectItem value='10'>10 Questions</SelectItem>
-                                    <SelectItem value='15'>15 Questions</SelectItem>
+                                    <SelectItem value='3'>3</SelectItem>
+                                    <SelectItem value='5'>5</SelectItem>
+                                    <SelectItem value='10'>10</SelectItem>
+                                    <SelectItem value='15'>15</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -273,8 +244,7 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit, classId }: AIQuizMod
 
                     {error && <div className='text-red-500 text-sm mt-2'>{error}</div>}
 
-                    {/* Actions */}
-                    <div className='flex gap-3 justify-end pt-4 border-t'>
+                    <div className='flex justify-end gap-3 pt-4 border-t'>
                         <Button variant='outline' onClick={() => onOpenChange(false)}>
                             Cancel
                         </Button>
@@ -285,13 +255,11 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit, classId }: AIQuizMod
                         >
                             {isGenerating ? (
                                 <>
-                                    <Loader className='w-4 h-4 mr-2 animate-spin' />
-                                    Generating...
+                                    <Loader className='w-4 h-4 mr-2 animate-spin' /> Generating...
                                 </>
                             ) : (
                                 <>
-                                    <Zap className='w-4 h-4 mr-2' />
-                                    Generate Quiz
+                                    <Zap className='w-4 h-4 mr-2' /> Generate Quiz
                                 </>
                             )}
                         </Button>

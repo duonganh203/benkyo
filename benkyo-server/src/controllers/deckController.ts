@@ -12,9 +12,18 @@ import {
     reviewPublicDeckService,
     duplicateDeckService,
     updateDeckFsrsParamsService,
-    getDeckStatsService
+    getDeckStatsService,
+    toggleLikeDeckService,
+    getLikedDecksByUserService,
+    getUserPublicDecksService,
+    updateDeckService
 } from '~/services/deckService';
-import { createDeckValidation, updateDeckFsrsParamsValidation } from '~/validations/deckValidation';
+import {
+    createDeckValidation,
+    updateDeckFsrsParamsValidation,
+    updateDeckValidation
+} from '~/validations/deckValidation';
+import { ErrorCode } from '~/exceptions/root';
 
 export const createDeck = async (req: Request, res: Response) => {
     const deckData = req.body;
@@ -61,6 +70,12 @@ export const getAllRequestPublicDecks = async (req: Request, res: Response) => {
     res.json(result);
 };
 
+export const getUserPublicDecks = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const result = await getUserPublicDecksService(userId);
+    res.json(result);
+};
+
 export const getRequestPulbicDeck = async (req: Request, res: Response) => {
     const { id } = req.params;
     const result = await getRequestPulbicDeckService(id);
@@ -93,8 +108,6 @@ export const updateDeckFsrsParams = async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.user._id;
     const fsrsParams = req.body;
-
-    // Validate the FSRS parameters
     const validatedParams = updateDeckFsrsParamsValidation.parse(fsrsParams);
 
     const result = await updateDeckFsrsParamsService(userId, id, validatedParams);
@@ -103,4 +116,33 @@ export const updateDeckFsrsParams = async (req: Request, res: Response) => {
 export const getDeckStats = async (req: Request, res: Response) => {
     const stats = await getDeckStatsService();
     res.json(stats);
+};
+
+export const updateDeck = async (req: Request, res: Response) => {
+    const { deckId } = req.params;
+    const deckData = req.body;
+    updateDeckValidation.parse(deckData);
+    const updatedDeck = await updateDeckService(req.user.id, deckId, deckData);
+    res.json(updatedDeck);
+};
+export const toggleLikeDeck = async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized', code: ErrorCode.UNAUTHORIZED });
+    }
+
+    const result = await toggleLikeDeckService(userId, req.params.id);
+    return res.json(result);
+};
+export const getLikedDecksByUser = async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+    if (!userId) {
+        return res.status(401).json({
+            message: 'Unauthorized',
+            code: ErrorCode.UNAUTHORIZED
+        });
+    }
+
+    const likedDecks = await getLikedDecksByUserService(userId);
+    return res.json(likedDecks);
 };

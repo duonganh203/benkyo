@@ -9,15 +9,25 @@ import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import Deck from '@/components/deck';
 
+const ITEMS_PER_PAGE = 16;
+import { useNavigate } from 'react-router-dom';
+
 const Library = () => {
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
     const { open } = useCreateDeckModal((store) => store);
     const { data: decks = [], isLoading } = useGetUserDecks();
+
     const filteredDecks = decks.filter(
         (deck: DeckInterface) =>
             deck.name.toLowerCase().includes(search.toLowerCase()) ||
             deck.description?.toLowerCase().includes(search.toLowerCase())
     );
+
+    const totalPages = Math.ceil(filteredDecks.length / ITEMS_PER_PAGE);
+    const paginatedDecks = filteredDecks.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+    const navigate = useNavigate();
 
     return (
         <div className='max-w-7xl mx-auto py-8 px-4'>
@@ -34,9 +44,16 @@ const Library = () => {
                             placeholder='Search decks...'
                             className='pl-8'
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e) => {
+                                setSearch(e.target.value);
+                                setPage(1);
+                            }}
                         />
                     </div>
+                    <Button onClick={() => navigate('requests')}>
+                        <Book className='h-4 w-4 mr-2' />
+                        Requests
+                    </Button>
                     <Button onClick={open}>
                         <Plus className='h-4 w-4 mr-2' />
                         Create Deck
@@ -46,7 +63,7 @@ const Library = () => {
 
             {isLoading ? (
                 <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-                    {Array(16)
+                    {Array(8)
                         .fill(0)
                         .map((_, i) => (
                             <Card key={i} className='overflow-hidden h-64'>
@@ -71,11 +88,30 @@ const Library = () => {
                     )}
                 </div>
             ) : (
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-                    {filteredDecks.map((deck: DeckInterface) => (
-                        <Deck key={deck._id} deck={deck} />
-                    ))}
-                </div>
+                <>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+                        {paginatedDecks.map((deck: DeckInterface) => (
+                            <Deck key={deck._id} deck={deck} />
+                        ))}
+                    </div>
+                    {totalPages > 1 && (
+                        <div className='flex justify-center items-center gap-2 mt-6'>
+                            <Button variant='outline' disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+                                Prev
+                            </Button>
+                            <span className='text-sm'>
+                                Page {page} of {totalPages}
+                            </span>
+                            <Button
+                                variant='outline'
+                                disabled={page === totalPages}
+                                onClick={() => setPage((p) => p + 1)}
+                            >
+                                Next
+                            </Button>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );
