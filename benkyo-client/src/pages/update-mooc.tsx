@@ -38,7 +38,6 @@ export const ClassUpdateMooc = () => {
     const { data: mooc, isLoading: moocLoading } = useGetMoocDetail(moocId!);
     const updateMoocMutation = useUpdateMooc();
     const deleteCardMutation = useDeleteCard();
-    const deleteDeckMutation = useDeleteDeck();
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -64,7 +63,7 @@ export const ClassUpdateMooc = () => {
         .map((d: any) => d.deck ?? d)
         .filter((deck: any) => deck && deck._id)
         .map((deck: any) => deck._id);
-
+    const deleteDeckMutation = useDeleteDeck(deckIds!);
     const deckQueries = useGetAllDeckCards(deckIds);
 
     /** Khi tất cả deckCards được load hoàn chỉnh */
