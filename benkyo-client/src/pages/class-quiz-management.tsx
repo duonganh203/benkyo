@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, BookOpen, Zap } from 'lucide-react';
 import { QuizCardClass } from '@/components/quiz-card-class';
-
 import { AIQuizModal } from '@/components/modals/ai-create-quiz-modal';
 import { CreateQuizModal } from '@/components/modals/create-quiz-modal';
 import { useParams } from 'react-router-dom';

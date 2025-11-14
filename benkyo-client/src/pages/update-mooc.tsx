@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Plus, X, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import useUpdateMooc from '@/hooks/queries/use-update-mooc-in-class';
 import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
 import useDeleteCard from '@/hooks/queries/use-delete-card';
-
+import useDeleteDeck from '@/hooks/queries/use-delete-deck';
 interface CardData {
     _id?: string;
     front: string;
@@ -34,10 +34,10 @@ export const ClassUpdateMooc = () => {
     const { moocId } = useParams<{ moocId: string }>();
     const navigate = useNavigate();
 
-    const { data: mooc, isLoading: moocLoading } = useGetMoocDetail(moocId!);
+    const { data: mooc, isLoading: moocLoading, refetch } = useGetMoocDetail(moocId!);
     const updateMoocMutation = useUpdateMooc();
     const deleteCardMutation = useDeleteCard();
-
+    const deleteDeckMutation = useDeleteDeck();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [isPaid, setIsPaid] = useState(false);
@@ -47,6 +47,9 @@ export const ClassUpdateMooc = () => {
     const [newTagInputs, setNewTagInputs] = useState<{ [key: string]: string }>({});
     const [decks, setDecks] = useState<DeckData[]>([]);
     const [deckCardsData, setDeckCardsData] = useState<CardData[][]>([]);
+    const deckRefs = useRef<Array<HTMLDivElement | null>>([]);
+    const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+    const [locked, setLocked] = useState(false);
 
     if (moocLoading) return <p className='text-center py-10'>Loading MOOC data...</p>;
     if (!mooc) return <p className='text-center py-10'>MOOC not found.</p>;
@@ -70,7 +73,7 @@ export const ClassUpdateMooc = () => {
     });
 
     useEffect(() => {
-        if (deckCardsData.length === deckIds.length && decks.length === 0) {
+        if (deckCardsData.length === deckIds.length) {
             const mergedDecks: DeckData[] =
                 mooc.decks
                     ?.filter((deckWrapper: any) => (deckWrapper.deck ?? deckWrapper)?._id)
@@ -91,16 +94,41 @@ export const ClassUpdateMooc = () => {
             setPrice(mooc.price?.toString() || '');
             setCurrency(mooc.currency || 'VND');
             setIsPublic(mooc.publicStatus === 2);
+            setLocked(!!mooc.locked);
         }
     }, [deckCardsData, mooc]);
 
     const addDeck = () => {
-        setDecks((prev) => [...prev, { name: '', description: '', order: prev.length, cards: [] }]);
+        setDecks((prev) => {
+            const newDecks = [...prev, { name: '', description: '', order: prev.length, cards: [] }];
+            setTimeout(() => {
+                const lastIndex = newDecks.length - 1;
+                if (deckRefs.current[lastIndex]) {
+                    deckRefs.current[lastIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            return newDecks;
+        });
     };
 
-    const removeDeck = (deckIndex: number) => {
-        setDecks((prev) => prev.filter((_, i) => i !== deckIndex));
-        setDeckCardsData((prev) => prev.filter((_, i) => i !== deckIndex));
+    const removeDeck = async (deckIndex: number) => {
+        const deckToDelete = decks[deckIndex];
+        if (!deckToDelete._id) {
+            setDecks((prev) => prev.filter((_, i) => i !== deckIndex));
+            setDeckCardsData((prev) => prev.filter((_, i) => i !== deckIndex));
+            getToast('success', 'Deck removed locally');
+            return;
+        }
+
+        try {
+            await deleteDeckMutation.mutateAsync({ deckId: deckToDelete._id });
+            setDecks((prev) => prev.filter((_, i) => i !== deckIndex));
+            setDeckCardsData((prev) => prev.filter((_, i) => i !== deckIndex));
+            getToast('success', 'Deck deleted successfully');
+        } catch (err) {
+            console.error(err);
+            getToast('error', 'Failed to delete deck');
+        }
     };
 
     const updateDeck = (index: number, field: keyof DeckData, value: any) => {
@@ -109,7 +137,7 @@ export const ClassUpdateMooc = () => {
         setDecks(newDecks);
     };
 
-    const addCard = (deckIndex: number) => {
+    const addCard = async (deckIndex: number) => {
         setDecks((prev) => {
             const newDecks = prev.map((deck, i) => {
                 if (i === deckIndex) {
@@ -120,32 +148,34 @@ export const ClassUpdateMooc = () => {
                 }
                 return deck;
             });
+            setTimeout(() => {
+                const cardKey = `${deckIndex}-${newDecks[deckIndex].cards.length - 1}`;
+                if (cardRefs.current[cardKey]) {
+                    cardRefs.current[cardKey]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
             return newDecks;
         });
+        await refetch();
     };
     const removeCard = async (deckIndex: number, cardIndex: number) => {
         const cardToDelete = decks[deckIndex].cards[cardIndex];
         const cardId = cardToDelete._id;
+
+        setDecks((prev) => {
+            const newDecks = [...prev];
+            newDecks[deckIndex].cards = newDecks[deckIndex].cards.filter((_, i) => i !== cardIndex);
+            return newDecks;
+        });
+        getToast('success', 'Card removed');
+
         if (cardId) {
             try {
                 await deleteCardMutation.mutateAsync({ cardId });
-                setDecks((prev) => {
-                    const newDecks = [...prev];
-                    newDecks[deckIndex].cards = newDecks[deckIndex].cards.filter((_, i) => i !== cardIndex);
-                    return newDecks;
-                });
-                getToast('success', 'Card deleted successfully');
             } catch (err) {
                 console.error(err);
-                getToast('error', 'Failed to delete card');
+                getToast('error', 'Failed to delete card from backend');
             }
-        } else {
-            setDecks((prev) => {
-                const newDecks = [...prev];
-                newDecks[deckIndex].cards = newDecks[deckIndex].cards.filter((_, i) => i !== cardIndex);
-                return newDecks;
-            });
-            getToast('success', 'Card deleted successfully');
         }
     };
     const updateCard = (deckIndex: number, cardIndex: number, field: keyof CardData, value: any) => {
@@ -193,14 +223,16 @@ export const ClassUpdateMooc = () => {
             isPaid,
             price: isPaid ? Number.parseFloat(price) : undefined,
             currency: isPaid ? currency : undefined,
-            publicStatus: isPublic ? 2 : 0
+            publicStatus: isPublic ? 2 : 0,
+            locked
         };
 
         updateMoocMutation.mutate(
             { moocId, payload },
             {
-                onSuccess: () => {
+                onSuccess: async () => {
                     getToast('success', 'MOOC updated successfully!');
+                    // Không cần await refetch ở đây, chỉ navigate(-1) để quay lại ngay
                     navigate(-1);
                 },
                 onError: (err: any) => {
@@ -262,6 +294,10 @@ export const ClassUpdateMooc = () => {
                             <Label htmlFor='isPublic'>Public</Label>
                             <Switch id='isPublic' checked={isPublic} onCheckedChange={setIsPublic} />
                         </div>
+                        <div className='flex items-center justify-between border-t pt-4'>
+                            <Label className='font-semibold'>Lock MOOC</Label>
+                            <Switch checked={locked} onCheckedChange={setLocked} />
+                        </div>
                     </div>
 
                     {/* Decks */}
@@ -278,7 +314,11 @@ export const ClassUpdateMooc = () => {
                             </p>
                         ) : (
                             decks.map((deck, deckIndex) => (
-                                <Card key={deckIndex} className='p-4 space-y-4 relative'>
+                                <Card
+                                    key={deckIndex}
+                                    className='p-4 space-y-4 relative'
+                                    ref={(el) => (deckRefs.current[deckIndex] = el)}
+                                >
                                     <Button
                                         variant='ghost'
                                         size='icon'
@@ -317,7 +357,11 @@ export const ClassUpdateMooc = () => {
                                             </p>
                                         ) : (
                                             deck.cards.map((card, cardIndex) => (
-                                                <Card key={cardIndex} className='p-3 space-y-2 relative bg-muted/30'>
+                                                <Card
+                                                    key={cardIndex}
+                                                    className='p-3 space-y-2 relative bg-muted/30'
+                                                    ref={(el) => (cardRefs.current[`${deckIndex}-${cardIndex}`] = el)}
+                                                >
                                                     <Button
                                                         variant='ghost'
                                                         size='icon'

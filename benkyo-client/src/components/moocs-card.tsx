@@ -1,18 +1,27 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Lock, PlayCircle } from 'lucide-react';
+import { CheckCircle, Lock, PlayCircle, CreditCard } from 'lucide-react';
 
 interface ProgressCardProps {
     title: string;
     description: string;
     progress?: number;
-    status: 'completed' | 'locked' | 'available' | 'in-progress';
+    status: 'completed' | 'locked' | 'available' | 'in-progress' | 'paid';
     onClick?: () => void;
     testScore?: number;
+    isOwner?: boolean;
 }
 
-const ProgressCard: React.FC<ProgressCardProps> = ({ title, description, progress, status, onClick, testScore }) => {
+const ProgressCard: React.FC<ProgressCardProps> = ({
+    title,
+    description,
+    progress,
+    status,
+    onClick,
+    testScore,
+    isOwner
+}) => {
     const getStatusIcon = () => {
         switch (status) {
             case 'completed':
@@ -21,6 +30,8 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ title, description, progres
                 return <Lock className='w-5 h-5 text-muted-foreground' />;
             case 'in-progress':
                 return <PlayCircle className='w-5 h-5 text-warning' />;
+            case 'paid':
+                return <CreditCard className='w-5 h-5 text-green-500' />;
             default:
                 return <PlayCircle className='w-5 h-5 text-primary' />;
         }
@@ -34,12 +45,14 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ title, description, progres
                 return <Badge variant='secondary'>Locked</Badge>;
             case 'in-progress':
                 return <Badge className='bg-warning text-warning-foreground'>In Progress</Badge>;
+            case 'paid':
+                return <Badge className='bg-green-500 text-white'>Paid</Badge>;
             default:
                 return <Badge variant='outline'>Available</Badge>;
         }
     };
 
-    const isClickable = status === 'available' || status === 'in-progress';
+    const isClickable = isOwner || status === 'available' || status === 'in-progress' || status === 'paid';
 
     return (
         <Card
