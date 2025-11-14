@@ -318,7 +318,7 @@ export const ClassUpdateMooc = () => {
                                     key={deckIndex}
                                     className='p-4 space-y-4 relative'
                                     ref={(el) => {
-                                        deckRefs.current[deckIndex] = el;
+                                        cardRefs.current[`${deckIndex}-${cardIndex}`] = el;
                                     }}
                                 >
                                     <Button
