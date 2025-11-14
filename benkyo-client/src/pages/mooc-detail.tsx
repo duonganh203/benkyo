@@ -139,7 +139,7 @@ const MOOCDetail: React.FC = () => {
                     <div className='grid grid-cols-1 gap-6'>
                         {Array.isArray(mooc.decks) && mooc.decks.length > 0 ? (
                             mooc.decks
-                                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                                .sort((a: DeckWrapper, b: DeckWrapper) => (a.order ?? 0) - (b.order ?? 0))
                                 .map((deckWrapper: DeckWrapper, idx: number) => {
                                     if (!deckWrapper || !deckWrapper.deck) return null;
                                     const deck = deckWrapper.deck;

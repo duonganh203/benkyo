@@ -260,7 +260,9 @@ export const ClassCreateMooc = () => {
                             <Card
                                 key={deckIndex}
                                 className='p-6 bg-secondary/50 border-border space-y-4'
-                                ref={(el) => (deckRefs.current[deckIndex] = el)}
+                                ref={(el) => {
+                                    cardRefs.current[`${deckIndex}-${cardIndex}`] = el;
+                                }}
                             >
                                 <div className='flex justify-between'>
                                     <div className='flex-1 space-y-3'>
