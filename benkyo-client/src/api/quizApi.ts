@@ -1,4 +1,4 @@
-import { createQuizPayload, QuizAttemptPayload } from '@/types/quiz';
+import { createQuizPayload, QuizAttemptPayload, QuizAttemptResult, QuizResponse } from '@/types/quiz';
 import { api } from '.';
 
 export const createQuiz = async (payload: createQuizPayload) => {
@@ -30,4 +30,17 @@ export const getAllQuizAttempts = async () => {
 export const getQuizzesByDeck = async (classId: string, moocId: string, deckId: string) => {
     const { data } = await api.get(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quizzes`);
     return data;
+};
+
+export const submitQuizAttempt = async (
+    classId: string,
+    moocId: string,
+    deckId: string,
+    quizId: string,
+    responses: QuizResponse[]
+): Promise<QuizAttemptResult> => {
+    const res = await api.post(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quizzes/${quizId}/submit-attempt`, {
+        responses
+    });
+    return res.data.data as QuizAttemptResult;
 };

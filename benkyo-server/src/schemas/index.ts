@@ -181,7 +181,7 @@ const QuizAttemptSchema = new Schema({
     correctAnswers: { type: Number, default: 0 },
     responses: [
         {
-            questionIndex: { type: Number, required: true },
+            questionIndex: { type: Number },
             selectedChoice: { type: Number, required: true }
         }
     ]

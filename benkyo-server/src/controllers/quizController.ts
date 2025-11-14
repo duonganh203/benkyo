@@ -9,9 +9,10 @@ import {
     getQuizByIdService,
     getQuizzesByDeckService,
     saveQuizAttemptService,
+    submitClassQuizAttemptService,
     updateQuizForMoocDeckService
 } from '~/services/quizService';
-import { createQuizValidation, saveQuizAttemptValidation, updateQuizValidation } from '~/validations/quizValitation';
+import { createQuizValidation, saveQuizAttemptValidation } from '~/validations/quizValitation';
 
 export const createQuiz = async (req: Request, res: Response) => {
     const userId = req.user._id;
@@ -101,4 +102,21 @@ export const getQuizzesByDeck = async (req: Request, res: Response) => {
         success: true,
         data: quizzes
     });
+};
+
+export const submitClassQuizAttempt = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const { classId, moocId, deckId, quizId } = req.params;
+    const { responses } = req.body;
+
+    if (!responses || !Array.isArray(responses)) {
+        return res.status(422).json({
+            success: false,
+            message: 'Invalid payload: responses must be an array'
+        });
+    }
+
+    const result = await submitClassQuizAttemptService(userId, classId, moocId, deckId, quizId, responses);
+
+    return res.status(200).json({ success: true, data: result });
 };

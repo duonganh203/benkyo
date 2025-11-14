@@ -152,3 +152,24 @@ export interface QuizHub {
     questions: QuizHubQuestion[];
     createdAt: string;
 }
+
+export interface QuizResponse {
+    questionId: string;
+    selectedChoice: number;
+}
+
+export interface QuizAttempt {
+    _id: string;
+    user: string;
+    quiz: string;
+    totalQuestions: number;
+    correctAnswers: number;
+    responses: QuizResponse[];
+    startTime: string;
+    endTime: string;
+}
+
+export interface QuizAttemptResult {
+    attempt: QuizAttempt;
+    scorePercent: number;
+}

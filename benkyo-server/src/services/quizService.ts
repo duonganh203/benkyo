@@ -4,6 +4,7 @@ import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { Class, Mooc, Quiz, QuizAttempt } from '~/schemas';
+import { QuizResponse } from '~/types/classTypes';
 import { createQuizValidation, saveQuizAttemptValidation, updateQuizValidation } from '~/validations/quizValitation';
 
 export const createQuizService = async (
@@ -271,4 +272,42 @@ export const getQuizzesByDeckService = async (classId: string, moocId: string, d
     }).sort({ createdAt: -1 });
 
     return quizzes;
+};
+
+export const submitClassQuizAttemptService = async (
+    userId: string,
+    classId: string,
+    moocId: string,
+    deckId: string,
+    quizId: string,
+    responses: QuizResponse[]
+) => {
+    const mooc = await Mooc.findById(moocId);
+    const quiz = await Quiz.findById(quizId);
+
+    if (!mooc) throw new NotFoundException('Mooc not found', ErrorCode.NOT_FOUND);
+    if (!quiz) throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
+
+    let correctAnswers = 0;
+    responses.forEach((res) => {
+        const question = (quiz.questions || []).find((q: any) => q._id.toString() === String(res.questionId));
+        if (question && question.correctAnswer === res.selectedChoice) {
+            correctAnswers++;
+        }
+    });
+
+    const totalQuestions = (quiz.questions || []).length || 0;
+    const scorePercent = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
+    const attempt = new QuizAttempt({
+        user: userId,
+        quiz: quizId,
+        totalQuestions,
+        correctAnswers,
+        responses,
+        startTime: new Date(),
+        endTime: new Date()
+    });
+    await attempt.save();
+
+    return { attempt, scorePercent };
 };

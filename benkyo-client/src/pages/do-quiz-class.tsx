@@ -1,24 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
 import useGetQuizzesByDeck from '@/hooks/queries/use-get-quizzes-by-deck';
+import { QuizHub } from '@/types/quiz';
+import { useSubmitQuizAttempt } from '@/hooks/queries/use-submit-quiz-attempt';
+import { toast } from 'sonner';
 
 type Choice = { _id: string; text: string };
-type Question = {
-    _id: string;
-    questionText: string;
-    choices: Choice[];
-    correctAnswer: number;
-};
-type Quiz = {
-    _id: string;
-    title: string;
-    description?: string;
-    questions: Question[];
-};
+type Quiz = QuizHub;
 
 const resolveQuizzes = (raw: unknown): Quiz[] | null => {
     if (!raw) return null;
@@ -59,6 +51,60 @@ const QuizTakingPage: React.FC = () => {
     const [score, setScore] = useState(0);
     const [isAnswered, setIsAnswered] = useState(false);
     const [finished, setFinished] = useState(false);
+    const [userResponses, setUserResponses] = useState<{ questionId: string; selectedChoice: number }[]>([]);
+
+    const submitAttempt = useSubmitQuizAttempt(classId ?? '', moocId ?? '', deckId ?? '', quizId ?? '');
+
+    const handleAnswerSelect = (choiceIndex: number) => {
+        if (isAnswered) return;
+        setSelectedAnswer(choiceIndex);
+        setIsAnswered(true);
+
+        const question = quiz?.questions[currentIndex];
+        if (!question) return;
+
+        setUserResponses((prev) => [
+            ...prev.filter((r) => r.questionId !== question._id),
+            { questionId: question._id, selectedChoice: choiceIndex }
+        ]);
+
+        if (choiceIndex === question.correctAnswer) {
+            setScore((s) => s + 1);
+        }
+
+        setTimeout(() => {
+            if (currentIndex + 1 < (quiz?.questions.length ?? 0)) {
+                setCurrentIndex((i) => i + 1);
+                setSelectedAnswer(null);
+                setIsAnswered(false);
+            } else {
+                setFinished(true);
+            }
+        }, 1000);
+    };
+
+    useEffect(() => {
+        if (finished && quiz && userResponses.length === quiz.questions.length) {
+            submitAttempt.mutate(userResponses, {
+                onSuccess: () => {
+                    toast.success('✅ Your quiz attempt has been successfully saved!');
+                },
+                onError: () => {
+                    toast.error('❌ Failed to save your attempt. Please try again.');
+                }
+            });
+        }
+    }, [finished, quiz, userResponses]);
+
+    const handleBack = () => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
+    const handleRestart = () => {
+        setCurrentIndex(0);
+        setSelectedAnswer(null);
+        setScore(0);
+        setIsAnswered(false);
+        setFinished(false);
+        setUserResponses([]);
+    };
 
     if (isError || !quiz) {
         return (
@@ -78,35 +124,6 @@ const QuizTakingPage: React.FC = () => {
     const currentQuestion = quiz.questions[currentIndex];
     const progressPercent = ((currentIndex + 1) / totalQuestions) * 100;
 
-    const handleAnswerSelect = (choiceIndex: number) => {
-        if (isAnswered) return;
-        setSelectedAnswer(choiceIndex);
-        setIsAnswered(true);
-
-        if (choiceIndex === currentQuestion.correctAnswer) {
-            setScore((s) => s + 1);
-        }
-
-        setTimeout(() => {
-            if (currentIndex + 1 < totalQuestions) {
-                setCurrentIndex((i) => i + 1);
-                setSelectedAnswer(null);
-                setIsAnswered(false);
-            } else {
-                setFinished(true);
-            }
-        }, 1200);
-    };
-
-    const handleBack = () => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
-    const handleRestart = () => {
-        setCurrentIndex(0);
-        setSelectedAnswer(null);
-        setScore(0);
-        setIsAnswered(false);
-        setFinished(false);
-    };
-
     return (
         <div className='min-h-screen bg-background px-4 py-8'>
             <div className='max-w-3xl mx-auto'>
@@ -122,7 +139,6 @@ const QuizTakingPage: React.FC = () => {
                     <CardContent className='space-y-6'>
                         {!finished ? (
                             <>
-                                {/* Progress */}
                                 <div>
                                     <p className='text-sm text-muted-foreground mb-2 text-right'>
                                         {currentIndex + 1} / {totalQuestions}
@@ -130,10 +146,8 @@ const QuizTakingPage: React.FC = () => {
                                     <Progress value={progressPercent} className='h-2' />
                                 </div>
 
-                                {/* Question */}
                                 <h2 className='text-xl font-semibold mb-4'>{currentQuestion.questionText}</h2>
 
-                                {/* Choices */}
                                 <div className='grid grid-cols-1 gap-3'>
                                     {currentQuestion.choices.map((choice: Choice, index: number) => {
                                         const isCorrect = index === currentQuestion.correctAnswer;
@@ -156,7 +170,7 @@ const QuizTakingPage: React.FC = () => {
                                             <Button
                                                 key={choice._id}
                                                 onClick={() => handleAnswerSelect(index)}
-                                                variant={variant as any} // cast because variant union is limited
+                                                variant={variant as any}
                                                 className={`justify-start text-left h-auto py-3 ${addedClass}`}
                                             >
                                                 {choice.text}
@@ -173,7 +187,6 @@ const QuizTakingPage: React.FC = () => {
                                 </div>
                             </>
                         ) : (
-                            // Finish view
                             <div className='text-center space-y-4'>
                                 <h2 className='text-3xl font-bold mb-2'>🎉 Hoàn thành!</h2>
                                 <p className='text-muted-foreground'>

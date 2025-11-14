@@ -327,9 +327,13 @@ const MOOCDetail: React.FC = () => {
                                     <div key={deck._id} className='space-y-3'>
                                         <ProgressCard
                                             title={deck.name ?? 'Untitled Deck'}
-                                            description={`${deck.description ?? ''} • ${
-                                                deck.cardCount ?? 0
-                                            } flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
+                                            description={[
+                                                deck.description,
+                                                `${deck.cardCount ?? 0} flashcards`,
+                                                `${(deck.cardCount ?? 0) * 10} pts required`
+                                            ]
+                                                .filter(Boolean)
+                                                .join(' • ')}
                                             progress={0}
                                             status='available'
                                             onClick={() => handleGoToDeck(deck._id)}
