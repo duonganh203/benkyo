@@ -35,7 +35,7 @@ export const ClassUpdateMooc = () => {
     const navigate = useNavigate();
 
     const { data: mooc, isLoading: moocLoading, refetch } = useGetMoocDetail(moocId!);
-    const updateMoocMutation = useUpdateMooc(moocId);
+    const updateMoocMutation = useUpdateMooc();
     const deleteCardMutation = useDeleteCard();
     const deleteDeckMutation = useDeleteDeck();
     const [title, setTitle] = useState('');
@@ -318,7 +318,7 @@ export const ClassUpdateMooc = () => {
                                     key={deckIndex}
                                     className='p-4 space-y-4 relative'
                                     ref={(el) => {
-                                        cardRefs.current[`${deckIndex}-${cardIndex}`] = el;
+                                        deckRefs.current[deckIndex] = el;
                                     }}
                                 >
                                     <Button
@@ -362,7 +362,9 @@ export const ClassUpdateMooc = () => {
                                                 <Card
                                                     key={cardIndex}
                                                     className='p-3 space-y-2 relative bg-muted/30'
-                                                    ref={(el) => (cardRefs.current[`${deckIndex}-${cardIndex}`] = el)}
+                                                    ref={(el) => {
+                                                        cardRefs.current[`${deckIndex}-${cardIndex}`] = el;
+                                                    }}
                                                 >
                                                     <Button
                                                         variant='ghost'
