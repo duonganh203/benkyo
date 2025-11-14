@@ -59,12 +59,18 @@ export const ClassUpdateMooc = () => {
         .filter((deck: any) => deck && deck._id && deck.name)
         .map((deck: any) => deck._id);
 
-    const deckCardsQueries = deckIds.map((deckId) => useGetDeckCards(deckId));
-
-    useEffect(() => {
-        const allDeckCards = deckCardsQueries.map((q) => q.data || []);
-        setDeckCardsData(allDeckCards);
-    }, [deckCardsQueries.map((q) => q.data).join(',')]);
+    deckIds.forEach((deckId: string, index: number) => {
+        const { data } = useGetDeckCards(deckId!);
+        useEffect(() => {
+            if (data) {
+                setDeckCardsData((prev) => {
+                    const newData = [...prev];
+                    newData[index] = data;
+                    return newData;
+                });
+            }
+        }, [data]);
+    });
 
     useEffect(() => {
         if (deckCardsData.length === deckIds.length) {
