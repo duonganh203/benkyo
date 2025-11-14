@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Loader2, Settings2 } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import useGetClassUserById from '@/hooks/queries/use-get-class-user-id';
 import useStartClassDeckSession from '@/hooks/queries/use-start-class-deck-session';
 import useGetAllMoocs from '@/hooks/queries/use-get-all-mooc-class';
 import useMe from '@/hooks/queries/use-me';
-
 import ClassHeader from '@/components/class-header';
 import DeckCard from '@/components/deck-card';
 import TopLearners from '@/components/top-learners';
@@ -161,18 +160,32 @@ function ClassDetailUser() {
     const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
     const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
     console.log('Filtered MOOCs:', filteredMoocs);
+    const [paymentPopup, setPaymentPopup] = useState<{ open: boolean; mooc?: any }>({
+        open: false,
+        mooc: undefined
+    });
+
     const handleMOOCClick = (mooc: any) => {
         if (isOwner) {
             navigate(`/class/${classData._id}/mooc/${mooc._id}`);
             return;
         }
-        if (mooc.locked && !mooc.price) return; // Locked and no price → do nothing
-        if (mooc.price) {
-            navigate(`/class/${classData._id}/mooc/${mooc._id}/payment`);
+
+        if (mooc.isPaid) {
+            if (mooc.enrolledUsers?.includes(userId)) {
+                navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+            } else {
+                setPaymentPopup({ open: true, mooc });
+            }
             return;
         }
-        navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+
+        if (mooc.locked && !mooc.isPaid) {
+            setPaymentPopup({ open: true, mooc });
+            return;
+        }
     };
+
     console.log('isOwner:', isOwner, 'userId:', userId, 'ownerId:', classData.owner._id);
 
     return (
@@ -218,16 +231,20 @@ function ClassDetailUser() {
                         <h2 className='text-2xl font-bold mb-4'>Available MOOCs</h2>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                             {paginatedMoocs.map((mooc: any) => {
-                                const hasPrice = !!mooc.price && mooc.price > 0;
+                                const isPaid = mooc.isPaid;
                                 const isLocked = mooc.locked;
+
                                 let status: 'available' | 'locked' | 'paid' = 'available';
-                                if (hasPrice) {
+
+                                if (isPaid) {
                                     status = 'paid';
                                 } else if (isLocked) {
                                     status = 'locked';
+                                } else {
+                                    status = 'available';
                                 }
 
-                                const isDisabledForNonOwner = !isOwner && isLocked && !hasPrice;
+                                const isDisabledForNonOwner = !isOwner && mooc.locked && !mooc.isPaid;
 
                                 return (
                                     <div key={mooc._id} className='relative group'>
@@ -303,6 +320,37 @@ function ClassDetailUser() {
                 onStartNew={handleStartNewSession}
                 pendingSessionData={pendingSessionData}
             />
+            {paymentPopup.open && paymentPopup.mooc && (
+                <Dialog open={paymentPopup.open} onOpenChange={() => setPaymentPopup({ open: false, mooc: undefined })}>
+                    <DialogContent className='sm:max-w-md'>
+                        <DialogHeader>
+                            <DialogTitle>Payment Required</DialogTitle>
+                        </DialogHeader>
+                        <p className='text-sm text-muted-foreground'>
+                            To continue studying "<strong className='text-foreground'>{paymentPopup.mooc.title}</strong>
+                            ", you need to pay{' '}
+                            <strong className='text-foreground'>
+                                {paymentPopup.mooc.price} {paymentPopup.mooc.currency || 'VND'}
+                            </strong>
+                            .
+                        </p>
+                        <DialogFooter>
+                            <Button variant='outline' onClick={() => setPaymentPopup({ open: false, mooc: undefined })}>
+                                Cancel
+                            </Button>
+                            <Button
+                                variant='destructive'
+                                onClick={() => {
+                                    console.log('Redirect to payment API for', paymentPopup.mooc._id);
+                                    // call payment API or navigate
+                                }}
+                            >
+                                Pay Now
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
         </div>
     );
 }

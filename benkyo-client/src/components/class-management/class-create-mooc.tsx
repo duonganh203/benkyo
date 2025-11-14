@@ -38,7 +38,6 @@ export const ClassCreateMooc = () => {
     const [price, setPrice] = useState('');
     const [currency, setCurrency] = useState('VND');
     const [currentTags, setCurrentTags] = useState<{ [key: string]: string }>({});
-    const [locked, setLocked] = useState(false);
     const deckRefs = useRef<Array<HTMLDivElement | null>>([]);
     const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
     const getTagKey = (deckIndex: number, cardIndex: number) => `${deckIndex}-${cardIndex}`;
@@ -142,8 +141,7 @@ export const ClassCreateMooc = () => {
             isPaid,
             price: isPaid ? parseFloat(price) : undefined,
             currency: isPaid ? currency : undefined,
-            publicStatus: isPublic ? 2 : 0,
-            locked: !!locked
+            publicStatus: isPublic ? 2 : 0
         };
 
         createMoocMutation.mutate(payload, {
@@ -240,10 +238,6 @@ export const ClassCreateMooc = () => {
                         <div className='flex items-center justify-between border-t pt-4'>
                             <Label className='font-semibold'>Public</Label>
                             <Switch checked={isPublic} onCheckedChange={setIsPublic} />
-                        </div>
-                        <div className='flex items-center justify-between border-t pt-4'>
-                            <Label className='font-semibold'>Lock MOOC</Label>
-                            <Switch checked={locked} onCheckedChange={setLocked} />
                         </div>
                     </div>
 

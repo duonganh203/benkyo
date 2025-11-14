@@ -45,7 +45,6 @@ export const ClassUpdateMooc = () => {
     const [isPublic, setIsPublic] = useState(true);
     const [price, setPrice] = useState('');
     const [currency, setCurrency] = useState('VND');
-    const [locked, setLocked] = useState(false);
 
     const [decks, setDecks] = useState<DeckData[]>([]);
     const [newTagInputs, setNewTagInputs] = useState<{ [key: string]: string }>({});
@@ -94,7 +93,6 @@ export const ClassUpdateMooc = () => {
         setPrice(mooc.price?.toString() || '');
         setCurrency(mooc.currency || 'VND');
         setIsPublic(mooc.publicStatus === 2);
-        setLocked(!!mooc.locked);
     }, [mooc, allLoaded]);
 
     /** ======================
@@ -240,7 +238,6 @@ export const ClassUpdateMooc = () => {
             price: isPaid ? Number(price) : undefined,
             currency: isPaid ? currency : undefined,
             publicStatus: isPublic ? 2 : 0,
-            locked,
 
             decks: decks.map((d) => ({
                 deck: d._id,
@@ -323,11 +320,6 @@ export const ClassUpdateMooc = () => {
                         <div className='flex items-center justify-between pt-4 border-t'>
                             <Label>Public</Label>
                             <Switch checked={isPublic} onCheckedChange={setIsPublic} />
-                        </div>
-
-                        <div className='flex items-center justify-between pt-4 border-t'>
-                            <Label>Lock MOOC</Label>
-                            <Switch checked={locked} onCheckedChange={setLocked} />
                         </div>
                     </div>
 
