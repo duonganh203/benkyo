@@ -39,6 +39,7 @@ export interface MoocInterface {
     views: number;
     createdAt: Date | string;
     updatedAt: Date | string;
+    locked?: boolean; // Add this line
 }
 
 export enum PublicStatus {
@@ -63,6 +64,7 @@ export interface CreateMoocPayload {
     price?: number;
     currency?: string;
     publicStatus?: PublicStatus;
+    locked?: boolean;
 }
 
 export interface UpdateMoocPayload {
@@ -86,6 +88,7 @@ export interface UpdateMoocPayload {
     price?: number;
     currency?: string;
     publicStatus?: PublicStatus;
+    locked?: boolean;
 }
 
 export interface EnrollPayload {

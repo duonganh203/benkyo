@@ -9,18 +9,18 @@ export const createMoocService = async (data: {
     isPaid?: boolean;
     price?: number;
     currency?: string;
-    publicStatus?: number; // 0 = private, 2 = public
+    publicStatus?: number;
+    locked?: boolean;
     decks?: {
         name: string;
         description?: string;
         order: number;
+        locked?: boolean;
         cards?: { front: string; back: string; tags?: string[] }[];
     }[];
 }) => {
     try {
-        const createdDecks: { deck: string; order: number }[] = [];
         let classInfo = null;
-
         if (data.class) {
             classInfo = await Class.findById(data.class);
             if (!classInfo) {
@@ -32,18 +32,32 @@ export const createMoocService = async (data: {
             }
         }
 
+        // Xác định MOOC sẽ bị lock hay không
+        let moocLocked = false;
+        if (data.locked || data.isPaid) {
+            moocLocked = true; // override nếu chủ muốn hoặc MOOC trả phí
+        } else if (data.class) {
+            // Lấy MOOC đã có trong class
+            const moocsInClass = await Mooc.find({ class: data.class }).sort({ createdAt: 1 });
+            moocLocked = moocsInClass.length > 0; // MOOC đầu tiên mở, các MOOC sau lock
+        }
+
         const isMoocPublic = data.publicStatus === 2;
 
+        // Tạo các deck
+        const createdDecks: { deck: string; order: number }[] = [];
         if (data.decks && data.decks.length > 0) {
             for (const deckData of data.decks) {
+                const isFirstDeck = deckData.order === 0;
+                const deckLocked = moocLocked ? true : !isFirstDeck;
                 const deck = new Deck({
                     name: deckData.name,
                     description: deckData.description,
                     owner: data.owner,
-                    publicStatus: isMoocPublic ? 2 : 0, // deck cũng public nếu MOOC public
-                    isPublic: isMoocPublic
+                    publicStatus: isMoocPublic ? 2 : 0,
+                    isPublic: isMoocPublic,
+                    locked: deckLocked
                 });
-
                 const savedDeck = await deck.save();
 
                 if (deckData.cards && deckData.cards.length > 0) {
@@ -53,7 +67,6 @@ export const createMoocService = async (data: {
                         back: card.back,
                         tags: card.tags || []
                     }));
-
                     await Card.insertMany(cardsToCreate);
                     savedDeck.cardCount = cardsToCreate.length;
                     await savedDeck.save();
@@ -63,6 +76,7 @@ export const createMoocService = async (data: {
             }
         }
 
+        // Tạo MOOC
         const mooc = new Mooc({
             title: data.title,
             description: data.description,
@@ -73,7 +87,8 @@ export const createMoocService = async (data: {
             currency: data.currency || 'VND',
             publicStatus: data.publicStatus ?? 0,
             isPublic: isMoocPublic,
-            decks: createdDecks
+            decks: createdDecks,
+            locked: moocLocked
         });
 
         const savedMooc = await mooc.save();
@@ -105,8 +120,12 @@ export const createMoocService = async (data: {
 export const getAllMoocsService = async (classId: string) => {
     const moocs = await Mooc.find({ class: classId })
         .populate('owner', 'name email')
-        .populate('decks.deck', 'title')
-        .sort({ createdAt: -1 });
+        .populate('decks.deck')
+        .sort({ createdAt: 1 });
+
+    if (moocs.length > 0) {
+        moocs[0].locked = false;
+    }
 
     return {
         success: true,
@@ -115,34 +134,49 @@ export const getAllMoocsService = async (classId: string) => {
     };
 };
 
-export const getMoocByIdService = async (id: string) => {
-    const mooc = await Mooc.findById(id).populate('owner', 'name email').populate('decks.deck').lean();
+export const getMoocByIdService = async (id: string, userId?: string) => {
+    const mooc: any = await Mooc.findById(id)
+        .populate('owner', 'name email')
+        .populate('decks.deck', 'name description cardCount locked publicStatus')
+        .lean();
 
     if (!mooc) return { success: false, message: 'MOOC not found', data: null };
+
+    const decksWithLocked = mooc.decks.map((deckWrapper: any) => ({
+        ...deckWrapper,
+        deck: {
+            ...deckWrapper.deck
+        }
+    }));
 
     return {
         success: true,
         message: 'MOOC fetched successfully',
-        data: mooc
+        data: {
+            ...mooc,
+            decks: decksWithLocked
+        }
     };
 };
+
 export const updateMoocService = async (moocId: string, data: any) => {
     const mooc: any = await Mooc.findById(moocId);
     if (!mooc) return null;
 
     if (data.title) mooc.title = data.title;
     if (data.description) mooc.description = data.description;
+    if (data.currency) mooc.currency = data.currency;
+    if (data.price !== undefined) mooc.price = data.price;
+    if (data.isPaid !== undefined) mooc.isPaid = data.isPaid;
 
     if (data.publicStatus !== undefined) {
         mooc.publicStatus = data.publicStatus;
-
-        // Nếu MOOC public, tự động set tất cả deck bên trong public
         if (data.publicStatus === 2 && Array.isArray(mooc.decks)) {
             for (const deckWrapper of mooc.decks) {
                 if (deckWrapper.deck) {
                     const deck: any = await Deck.findById(deckWrapper.deck);
                     if (deck) {
-                        deck.publicStatus = 2; // set deck public
+                        deck.publicStatus = 2;
                         await deck.save();
                     }
                 }
@@ -150,19 +184,27 @@ export const updateMoocService = async (moocId: string, data: any) => {
         }
     }
 
-    if (data.isPaid !== undefined) mooc.isPaid = data.isPaid;
-    if (data.price !== undefined) mooc.price = data.price;
-    if (data.currency) mooc.currency = data.currency;
-
     if (data.class) {
         const classInfo: any = await Class.findById(data.class);
         if (classInfo) {
-            mooc.class = classInfo._id as any;
+            mooc.class = classInfo._id;
         }
     }
 
+    let moocLocked = false;
+    if (data.locked || mooc.isPaid) {
+        moocLocked = true;
+    } else if (mooc.class) {
+        const moocsInClass = await Mooc.find({ class: mooc.class, _id: { $ne: mooc._id } }).sort({ createdAt: 1 });
+        moocLocked = moocsInClass.length > 0;
+    }
+    mooc.locked = moocLocked;
+
     if (Array.isArray(data.decks)) {
         const updatedDecks: any[] = [];
+        let minOrder = Number.POSITIVE_INFINITY;
+        let minOrderDeckId: any = null;
+        const deckIdToInstance: Record<string, any> = {};
 
         for (const deckData of data.decks) {
             let deck: any = null;
@@ -184,7 +226,18 @@ export const updateMoocService = async (moocId: string, data: any) => {
                 if (mooc.publicStatus === 2) deck.publicStatus = 2;
             }
 
+            const deckOrder = deckData.order ?? 0;
+
+            deck.locked = mooc.locked ? true : deckOrder > 0;
+
+            if (deckOrder < minOrder) {
+                minOrder = deckOrder;
+                minOrderDeckId = deck._id.toString();
+            }
+            deckIdToInstance[deck._id.toString()] = deck;
+
             if (Array.isArray(deckData.cards)) {
+                let cardCount = 0;
                 for (const cardData of deckData.cards) {
                     if (cardData._id) {
                         const card: any = await Card.findById(cardData._id);
@@ -192,29 +245,39 @@ export const updateMoocService = async (moocId: string, data: any) => {
                             if (cardData.front) card.front = cardData.front;
                             if (cardData.back) card.back = cardData.back;
                             if (cardData.image) card.image = cardData.image;
+                            if (cardData.tags) card.tags = cardData.tags;
                             await card.save();
+                            cardCount++;
                         }
                     } else {
                         const newCard = new Card({
                             front: cardData.front,
                             back: cardData.back,
                             image: cardData.image,
+                            tags: cardData.tags || [],
                             deck: deck._id
                         });
                         await newCard.save();
+                        cardCount++;
                     }
                 }
+                deck.cardCount = cardCount;
             }
 
             await deck.save();
 
             updatedDecks.push({
                 deck: deck._id,
-                order: deckData.order ?? 0
+                order: deckOrder
             });
         }
 
-        mooc.decks = [...updatedDecks] as any;
+        if (!mooc.locked && minOrderDeckId && deckIdToInstance[minOrderDeckId]) {
+            deckIdToInstance[minOrderDeckId].locked = false;
+            await deckIdToInstance[minOrderDeckId].save();
+        }
+
+        mooc.decks = [...updatedDecks];
     }
 
     mooc.updatedAt = new Date();
