@@ -35,6 +35,10 @@ function ClassDetailUser() {
     const [pendingDeck, setPendingDeck] = useState<DeckInClass | null>(null);
     const [pendingSessionData, setPendingSessionData] = useState<ClassStudySession | null>(null);
     const [moocPage, setMoocPage] = useState(1);
+    const [paymentPopup, setPaymentPopup] = useState<{ open: boolean; mooc?: any }>({
+        open: false,
+        mooc: undefined
+    });
 
     const moocsPerPage = 6;
 
@@ -155,15 +159,10 @@ function ClassDetailUser() {
         setLoadingSession(false);
     };
 
-    // Filter & paginate MOOCs
     const filteredMoocs = allMoocs?.data?.filter((mooc) => isOwner || mooc.publicStatus === 2) || [];
     const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
     const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
     console.log('Filtered MOOCs:', filteredMoocs);
-    const [paymentPopup, setPaymentPopup] = useState<{ open: boolean; mooc?: any }>({
-        open: false,
-        mooc: undefined
-    });
 
     const handleMOOCClick = (mooc: any) => {
         if (isOwner) {
@@ -180,10 +179,12 @@ function ClassDetailUser() {
             return;
         }
 
-        if (mooc.locked && !mooc.isPaid) {
+        if (mooc.locked) {
             setPaymentPopup({ open: true, mooc });
             return;
         }
+
+        navigate(`/class/${classData._id}/mooc/${mooc._id}`);
     };
 
     console.log('isOwner:', isOwner, 'userId:', userId, 'ownerId:', classData.owner._id);
