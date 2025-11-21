@@ -260,3 +260,8 @@ export type ClassVisited = {
     userId: Types.ObjectId;
     lastVisit: Date;
 };
+
+export interface QuizResponse {
+    questionId: string;
+    selectedChoice: number;
+}

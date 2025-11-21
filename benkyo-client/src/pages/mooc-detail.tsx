@@ -38,9 +38,8 @@ const MOOCDetail: React.FC = () => {
     const { data: mooc, isLoading, isError } = useGetMoocDetail(moocId!);
     const { data: user } = useMe();
     const isOwner = mooc ? user?._id === mooc.owner?._id : false;
-    console.log('moocId', moocId);
+
     const { mutateAsync: deleteMooc } = useDeleteMooc();
-    console.log('MOOC decks:', mooc?.decks);
     const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
 
     if (isLoading) {
@@ -73,6 +72,7 @@ const MOOCDetail: React.FC = () => {
             getToast('error', 'MOOC deleted failure');
         }
     };
+
     const handleGoToDeck = (deckId: string) => {
         navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}`);
     };
@@ -96,7 +96,6 @@ const MOOCDetail: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Edit/Delete only for owner */}
                     {isOwner && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -108,6 +107,7 @@ const MOOCDetail: React.FC = () => {
                                     <MoreVertical className='h-5 w-5' />
                                 </Button>
                             </DropdownMenuTrigger>
+
                             <DropdownMenuContent align='end' className='w-32'>
                                 <DropdownMenuItem onClick={handleEdit}>
                                     <Pencil className='mr-2 h-4 w-4' />
@@ -138,41 +138,40 @@ const MOOCDetail: React.FC = () => {
 
                     <div className='grid grid-cols-1 gap-6'>
                         {Array.isArray(mooc.decks) && mooc.decks.length > 0 ? (
-                            mooc.decks
-                                .sort((a: DeckWrapper, b: DeckWrapper) => (a.order ?? 0) - (b.order ?? 0))
-                                .map((deckWrapper: DeckWrapper, idx: number) => {
-                                    if (!deckWrapper || !deckWrapper.deck) return null;
-                                    const deck = deckWrapper.deck;
-                                    console.log('Deck object:', deck);
-                                    console.log(`Deck ${idx} id: ${deck._id}, locked:`, deck.locked);
-                                    const deckStatus = deck.locked === true ? 'locked' : 'available';
-                                    const isAvailable = deckStatus === 'available';
+                            mooc.decks.map((deckWrapper: DeckWrapper) => {
+                                const deck = deckWrapper?.deck ?? deckWrapper;
+                                if (!deck) return null;
 
-                                    return (
-                                        <div key={deck._id} className='space-y-3'>
-                                            <ProgressCard
-                                                title={deck.name ?? 'Untitled Deck'}
-                                                description={`${deck.description ?? ''} • ${deck.cardCount ?? 0} flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
-                                                progress={0}
-                                                status={deckStatus}
-                                                onClick={() => isAvailable && handleGoToDeck(deck._id)}
-                                            />
-                                            {isAvailable && (
-                                                <div className='flex justify-end'>
-                                                    <Button
-                                                        variant='outline'
-                                                        size='sm'
-                                                        onClick={() => handleQuizHub(deck._id)}
-                                                        className='flex items-center gap-2'
-                                                    >
-                                                        <Zap className='w-4 h-4' />
-                                                        Extra Challenge
-                                                    </Button>
-                                                </div>
-                                            )}
+                                return (
+                                    <div key={deck._id} className='space-y-3'>
+                                        <ProgressCard
+                                            title={deck.name ?? 'Untitled Deck'}
+                                            description={[
+                                                deck.description,
+                                                `${deck.cardCount ?? 0} flashcards`,
+                                                `${(deck.cardCount ?? 0) * 10} pts required`
+                                            ]
+                                                .filter(Boolean)
+                                                .join(' • ')}
+                                            progress={0}
+                                            status='available'
+                                            onClick={() => handleGoToDeck(deck._id)}
+                                        />
+
+                                        <div className='flex justify-end'>
+                                            <Button
+                                                variant='outline'
+                                                size='sm'
+                                                onClick={() => handleQuizHub(deck._id)}
+                                                className='flex items-center gap-2'
+                                            >
+                                                <Zap className='w-4 h-4' />
+                                                Extra Challenge
+                                            </Button>
                                         </div>
-                                    );
-                                })
+                                    </div>
+                                );
+                            })
                         ) : (
                             <Card className='shadow-card'>
                                 <CardContent className='p-8 text-center'>
@@ -187,6 +186,7 @@ const MOOCDetail: React.FC = () => {
                     </div>
                 </div>
             </section>
+
             <ConfirmDeleteMoocModal
                 open={openDeleteModal}
                 onClose={() => setOpenDeleteModal(false)}
