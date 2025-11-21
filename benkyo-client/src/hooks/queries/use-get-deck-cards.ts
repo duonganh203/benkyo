@@ -5,7 +5,8 @@ const useGetDeckCards = (deckId: string) => {
     return useQuery({
         queryKey: ['deckCards', deckId],
         queryFn: () => getDeckCards(deckId),
-        enabled: !!deckId
+        enabled: !!deckId,
+        staleTime: 1000 * 5
     });
 };
 
