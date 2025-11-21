@@ -72,7 +72,25 @@ export const getDeckService = async (userId: string, deckId: string) => {
 };
 
 export const getAllDecksService = async (userId: string) => {
-    const decks = await Deck.find({ owner: userId }).populate('owner');
+    // Find all deck IDs that are used in any MOOC
+    const moocDeckIds = await Deck.aggregate([
+        {
+            $lookup: {
+                from: 'moocs',
+                localField: '_id',
+                foreignField: 'decks.deck',
+                as: 'moocRefs'
+            }
+        },
+        {
+            $match: { owner: new Types.ObjectId(userId) }
+        },
+        {
+            $match: { moocRefs: { $size: 0 } }
+        }
+    ]);
+    const deckIds = moocDeckIds.map((d: any) => d._id);
+    const decks = await Deck.find({ _id: { $in: deckIds } }).populate('owner');
     return decks;
 };
 export const duplicateDeckService = async (userId: string, deckId: string) => {

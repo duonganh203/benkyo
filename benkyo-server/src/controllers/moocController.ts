@@ -10,7 +10,7 @@ import {
 } from '~/services/moocService';
 export const createMooc = async (req: Request, res: Response) => {
     const { classId } = req.params;
-    const { title, description, decks, isPaid, price, currency, publicStatus } = req.body;
+    const { title, description, decks, isPaid, price, currency, publicStatus, locked } = req.body;
     const ownerId = req.user.id;
 
     const result = await createMoocService({
@@ -22,7 +22,8 @@ export const createMooc = async (req: Request, res: Response) => {
         isPaid,
         price,
         currency,
-        publicStatus
+        publicStatus,
+        locked
     });
 
     if (!result.success) {
@@ -48,8 +49,8 @@ export const getAllMoocs = async (req: Request, res: Response) => {
 
 export const getMoocById = async (req: Request, res: Response) => {
     const { id } = req.params;
-
-    const mooc = await getMoocByIdService(id);
+    const userId = req.user?.id;
+    const mooc = await getMoocByIdService(id, userId);
 
     if (!mooc.success) {
         return res.status(404).json({
@@ -65,7 +66,6 @@ export const getMoocById = async (req: Request, res: Response) => {
         data: mooc.data
     });
 };
-
 export const updateMooc = async (req: Request, res: Response) => {
     const { id } = req.params;
     const data = req.body;

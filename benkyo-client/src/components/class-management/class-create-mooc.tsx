@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
+import { getToast } from '@/utils/getToast';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCreateMooc } from '@/hooks/queries/use-create-mooc-in-class';
 
@@ -38,9 +38,20 @@ export const ClassCreateMooc = () => {
     const [price, setPrice] = useState('');
     const [currency, setCurrency] = useState('VND');
     const [currentTags, setCurrentTags] = useState<{ [key: string]: string }>({});
+    const deckRefs = useRef<Array<HTMLDivElement | null>>([]);
+    const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
     const getTagKey = (deckIndex: number, cardIndex: number) => `${deckIndex}-${cardIndex}`;
     const addDeck = () => {
-        setDecks([...decks, { name: '', description: '', order: decks.length, cards: [] }]);
+        setDecks((prev) => {
+            const newDecks = [...prev, { name: '', description: '', order: prev.length, cards: [] }];
+            setTimeout(() => {
+                const lastIndex = newDecks.length - 1;
+                if (deckRefs.current[lastIndex]) {
+                    deckRefs.current[lastIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            return newDecks;
+        });
     };
 
     const removeDeck = (index: number) => setDecks(decks.filter((_, i) => i !== index));
@@ -52,9 +63,24 @@ export const ClassCreateMooc = () => {
     };
 
     const addCard = (deckIndex: number) => {
-        const newDecks = [...decks];
-        newDecks[deckIndex].cards.push({ front: '', back: '', tags: [] });
-        setDecks(newDecks);
+        setDecks((prev) => {
+            const newDecks = prev.map((deck, i) => {
+                if (i === deckIndex) {
+                    return {
+                        ...deck,
+                        cards: [...deck.cards, { front: '', back: '', tags: [] }]
+                    };
+                }
+                return deck;
+            });
+            setTimeout(() => {
+                const cardKey = `${deckIndex}-${newDecks[deckIndex].cards.length - 1}`;
+                if (cardRefs.current[cardKey]) {
+                    cardRefs.current[cardKey]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            return newDecks;
+        });
     };
 
     const updateCard = (deckIndex: number, cardIndex: number, field: keyof CardData, value: any) => {
@@ -82,7 +108,22 @@ export const ClassCreateMooc = () => {
     };
 
     const handleSubmit = () => {
-        if (!title.trim()) return toast.error('Please enter a MOOC title');
+        if (!title.trim()) return getToast('error', 'Please enter a MOOC title');
+        for (let i = 0; i < decks.length; i++) {
+            const deck = decks[i];
+            if (!deck.name.trim()) {
+                return getToast('error', `Please enter a name for deck ${i + 1}`);
+            }
+            for (let j = 0; j < deck.cards.length; j++) {
+                const card = deck.cards[j];
+                if (!card.front.trim() || !card.back.trim()) {
+                    return getToast(
+                        'error',
+                        `Please enter both front and back for card ${j + 1} in deck "${deck.name}"`
+                    );
+                }
+            }
+        }
 
         const payload = {
             title,
@@ -105,7 +146,7 @@ export const ClassCreateMooc = () => {
 
         createMoocMutation.mutate(payload, {
             onSuccess: (res) => {
-                toast.success(res.message || 'MOOC created successfully!');
+                getToast('success', res.message || 'MOOC created successfully!');
                 setTitle('');
                 setDescription('');
                 setDecks([]);
@@ -113,8 +154,12 @@ export const ClassCreateMooc = () => {
                 setPrice('');
                 setCurrency('VND');
                 setIsPublic(true);
+                setCurrentTags({});
+                if (classId) {
+                    navigate(`/class/${classId}`);
+                }
             },
-            onError: (err) => toast.error(err.message || 'Failed to create MOOC')
+            onError: (err) => getToast('error', err.message || 'Failed to create MOOC')
         });
     };
 
@@ -164,10 +209,6 @@ export const ClassCreateMooc = () => {
                             <Label className='font-semibold'>Paid MOOC</Label>
                             <Switch checked={isPaid} onCheckedChange={setIsPaid} />
                         </div>
-                        <div className='flex items-center justify-between border-t pt-4'>
-                            <Label className='font-semibold'>Public</Label>
-                            <Switch checked={isPublic} onCheckedChange={setIsPublic} />
-                        </div>
 
                         {isPaid && (
                             <div className='grid grid-cols-2 gap-4 pt-4 border-t border-border'>
@@ -194,6 +235,10 @@ export const ClassCreateMooc = () => {
                                 </div>
                             </div>
                         )}
+                        <div className='flex items-center justify-between border-t pt-4'>
+                            <Label className='font-semibold'>Public</Label>
+                            <Switch checked={isPublic} onCheckedChange={setIsPublic} />
+                        </div>
                     </div>
 
                     {/* Decks */}
@@ -206,7 +251,13 @@ export const ClassCreateMooc = () => {
                         </div>
 
                         {decks.map((deck, deckIndex) => (
-                            <Card key={deckIndex} className='p-6 bg-secondary/50 border-border space-y-4'>
+                            <Card
+                                key={deckIndex}
+                                className='p-6 bg-secondary/50 border-border space-y-4'
+                                ref={(el) => {
+                                    deckRefs.current[deckIndex] = el;
+                                }}
+                            >
                                 <div className='flex justify-between'>
                                     <div className='flex-1 space-y-3'>
                                         <Input
@@ -234,7 +285,13 @@ export const ClassCreateMooc = () => {
                                     </div>
 
                                     {deck.cards.map((card, cardIndex) => (
-                                        <Card key={cardIndex} className='p-4 bg-background'>
+                                        <Card
+                                            key={cardIndex}
+                                            className='p-4 bg-background'
+                                            ref={(el) => {
+                                                cardRefs.current[`${deckIndex}-${cardIndex}`] = el;
+                                            }}
+                                        >
                                             <Input
                                                 placeholder='Front side'
                                                 value={card.front}

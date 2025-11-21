@@ -8,7 +8,6 @@ import { getToast } from '@/utils/getToast';
 import { ClassOverview } from '@/components/class-management/class-overview';
 import { ClassTabHeader, Tab } from '@/components/class-management/class-tab-header';
 import { ClassMember } from '@/components/class-management/class-member';
-import { ClassDeck } from '@/components/class-management/class-deck';
 import { ClassInvited } from '@/components/class-management/class-invited';
 import { ClassRequestJoin } from '@/components/class-management/class-request-join';
 import { ClassSetting } from '@/components/class-management/class-setting';
@@ -81,7 +80,6 @@ const UserClassManagement = () => {
             <div className='space-y-6'>
                 {currentTab === Tab.Home && <ClassOverview classItem={classItem} classId={classId!} />}
                 {currentTab === Tab.Member && <ClassMember onMemberChange={refetch} />}
-                {currentTab === Tab.Deck && <ClassDeck onDeckChange={refetch} />}
                 {currentTab === Tab.CreateMooc && <ClassCreateMooc />}
                 {currentTab === Tab.Invited && <ClassInvited />}
                 {currentTab === Tab.RequestJoin && <ClassRequestJoin onMemberChange={refetch} />}

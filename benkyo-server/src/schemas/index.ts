@@ -80,6 +80,7 @@ const DeckSchema = new Schema({
         type: Number,
         default: PublicStatus.PRIVATE
     },
+    locked: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     cardCount: { type: Number, default: 0 },
@@ -353,7 +354,8 @@ const MoocSchema = new Schema({
     likes: { type: Number, default: 0 },
     views: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+    updatedAt: { type: Date, default: Date.now },
+    locked: { type: Boolean, default: false }
 });
 export const Class = model('Class', ClassSchema);
 export const UserClassState = model('UserClassState', UserClassStateSchema);
