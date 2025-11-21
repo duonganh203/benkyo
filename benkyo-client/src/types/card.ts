@@ -23,7 +23,9 @@ export interface CardFormData {
 export interface BatchImportCard {
     front: string;
     back: string;
-    tags: string[];
+    tags?: string[];
+    sourceText?: string;
+    pageNumber?: number;
 }
 export interface CardInterface {
     _id: string;
