@@ -91,7 +91,7 @@ const AICardEditor: React.FC<AICardEditorProps> = ({
                 <div className='space-y-4'>
                     <div className='space-y-2'>
                         <Label htmlFor={`card-${index}-front`} className='text-sm'>
-                            Question
+                            Front
                         </Label>
                         <Textarea
                             id={`card-${index}-front`}
@@ -106,7 +106,7 @@ const AICardEditor: React.FC<AICardEditorProps> = ({
 
                     <div className='space-y-2'>
                         <Label htmlFor={`card-${index}-back`} className='text-sm'>
-                            Answer
+                            Back
                         </Label>
                         <Textarea
                             id={`card-${index}-back`}
@@ -121,14 +121,14 @@ const AICardEditor: React.FC<AICardEditorProps> = ({
 
                     <div className='space-y-2'>
                         <Label htmlFor={`card-${index}-tags`} className='text-sm'>
-                            Tags
+                            Tags (comma separated)
                         </Label>
                         <Input
                             id={`card-${index}-tags`}
                             value={tagInput}
                             onChange={handleTagInputChange}
                             onBlur={handleTagBlur}
-                            placeholder='Enter tags separated by commas'
+                            placeholder='tag1, tag2, tag3'
                             className='w-full'
                         />
                     </div>
