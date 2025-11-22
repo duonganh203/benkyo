@@ -44,20 +44,18 @@ export const getClassListUserApi = async () => {
     return response.data as ClassUserResponseDto[];
 };
 
-export const getMyClassApi = async (page: number = 1, search?: string) => {
-    const response = await api.get(`/class/my-class?page=${page}${search ? `&search=${search}` : ''}`);
-    return response.data as {
-        data: ClassListItemUserResponseDto[];
-        hasMore: boolean;
-    };
+export const getMyClassApi = async (page: number = 1, search?: string, limit: number = 6) => {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (search) params.append('search', search);
+    const response = await api.get(`/class/my-class?${params.toString()}`);
+    return response.data as { data: ClassListItemUserResponseDto[]; hasMore: boolean };
 };
 
-export const getSuggestedClassApi = async (page: number = 1, search?: string) => {
-    const response = await api.get(`/class/suggested?page=${page}${search ? `&search=${search}` : ''}`);
-    return response.data as {
-        data: ClassListItemUserResponseDto[];
-        hasMore: boolean;
-    };
+export const getSuggestedClassApi = async (page: number = 1, search?: string, limit: number = 6) => {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (search) params.append('search', search);
+    const response = await api.get(`/class/suggested?${params.toString()}`);
+    return response.data as { data: ClassListItemUserResponseDto[]; hasMore: boolean };
 };
 
 export const requestJoinClassApi = async (classId: string) => {
