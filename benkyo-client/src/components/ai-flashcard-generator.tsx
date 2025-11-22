@@ -44,7 +44,12 @@ const AIFlashcardGenerator = () => {
     const [showDocumentViewer, setShowDocumentViewer] = useState(false);
     const [selectedCardForView, setSelectedCardForView] = useState<number | null>(null);
 
-    const allowedFileTypes = ['application/pdf', 'application/msword', 'text/plain'];
+    const allowedFileTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain'
+    ];
 
     const { mutateAsync: batchCreateCardsMutation } = useBatchCreateCards();
 
