@@ -48,6 +48,7 @@ import ConfirmDeleteCardModal from '@/components/modals/confirm-delete-card-moda
 import { useDeleteCardModal } from '@/hooks/stores/use-delete-card-modal';
 import LikeDeck from '@/components/rating-deck';
 import useToggleLikeDeck from '@/hooks/queries/use-toggle-like-deck';
+import DeckStatistics from '@/components/deck-statistics';
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -639,14 +640,7 @@ const DeckDetail = () => {
                         </TabsContent>
 
                         <TabsContent value='stats' className='animate-fade-in'>
-                            <Card className='hover:shadow-md transition-shadow'>
-                                <CardContent className='p-6'>
-                                    <h2 className='text-xl font-semibold mb-4'>Deck Statistics</h2>
-                                    <p className='text-muted-foreground'>
-                                        Statistics coming soon. This feature is under development.
-                                    </p>
-                                </CardContent>
-                            </Card>
+                            <DeckStatistics deckId={id!} />
                         </TabsContent>
 
                         {currentUser && deckData.owner._id === currentUser._id && (
