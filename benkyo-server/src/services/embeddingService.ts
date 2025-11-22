@@ -241,7 +241,7 @@ export const generateResponse = async (
             Maintain a serious and informative tone. Emojis can be used minimally to highlight key points.`;
 
     const result = await genAi.models.generateContent({
-        model: 'gemini-3-pro-preview',
+        model: 'gemini-2.0-flash-exp',
         contents: prompt
     });
     return (
