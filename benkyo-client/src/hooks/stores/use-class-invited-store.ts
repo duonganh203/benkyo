@@ -2,29 +2,43 @@ import { create } from 'zustand';
 import { getClassInvitedApi } from '@/api/classApi';
 import type { ClassInvitedResponse } from '@/types/class';
 
+type ClassInvitedPaged = {
+    data: ClassInvitedResponse;
+    page: number;
+    hasMore: boolean;
+    total: number;
+};
+
 interface ClassInvitedStore {
-    invitedUsers: ClassInvitedResponse;
+    invited: ClassInvitedPaged;
     isLoading: boolean;
     error: string | null;
-    fetchInvitedUsers: (classId: string) => Promise<void>;
+    fetchInvitedUsers: (classId: string, page?: number, limit?: number) => Promise<void>;
     clearInvitedUsers: () => void;
 }
 
+const emptyPaged: ClassInvitedPaged = {
+    data: [],
+    page: 1,
+    hasMore: false,
+    total: 0
+};
+
 export const useClassInvitedStore = create<ClassInvitedStore>((set) => ({
-    invitedUsers: [],
+    invited: emptyPaged,
     isLoading: false,
     error: null,
-    fetchInvitedUsers: async (classId: string) => {
+    fetchInvitedUsers: async (classId: string, page: number = 1, limit: number = 20) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await getClassInvitedApi(classId);
-            set({ invitedUsers: response || [], isLoading: false });
+            const response = await getClassInvitedApi(classId, page, limit);
+            set({ invited: response, isLoading: false });
         } catch {
             set({ error: 'Failed to fetch invited users', isLoading: false });
         }
     },
     clearInvitedUsers: () => {
-        set({ invitedUsers: [], error: null });
+        set({ invited: emptyPaged, error: null });
     }
 }));
 
