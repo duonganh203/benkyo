@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { Mail, UserX } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,8 +11,20 @@ import { getToast } from '@/utils/getToast';
 
 export const ClassInvited = () => {
     const { classData } = useClassManagementStore();
-    const { data: invitedUsers, isLoading, error, refetch } = useGetClassInvited(classData?._id || '');
+    const {
+        data: pagedInvited,
+        isLoading,
+        error,
+        hasNextPage,
+        fetchNextPage,
+        refetch
+    } = useGetClassInvited(classData?._id || '', 5);
     const { mutateAsync: cancelInvite } = useCancelInvite();
+
+    const invitedUsers = useMemo(() => {
+        if (!pagedInvited) return [];
+        return pagedInvited.pages.flatMap((page) => page.data);
+    }, [pagedInvited]);
 
     if (!classData) {
         return (
@@ -83,53 +97,66 @@ export const ClassInvited = () => {
                         <p>No invited users found</p>
                     </div>
                 ) : (
-                    <div className='space-y-4'>
-                        {invitedUsers.map((invitedUser) => (
-                            <div
-                                key={invitedUser._id}
-                                className='flex items-center justify-between p-4 bg-muted/30 rounded-lg border'
-                            >
-                                <div className='flex items-center gap-4 flex-1'>
-                                    <Avatar className='w-10 h-10'>
-                                        <AvatarImage src={invitedUser.user?.avatar} alt={invitedUser.user?.name} />
-                                        <AvatarFallback className='text-sm'>
-                                            {invitedUser.user?.name
-                                                ? invitedUser.user.name.charAt(0).toUpperCase()
-                                                : 'U'}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className='flex-1 min-w-0'>
-                                        <div className='font-medium text-foreground truncate'>
-                                            {invitedUser.user?.name || 'Unknown User'}
-                                        </div>
-                                        <div className='text-sm text-muted-foreground truncate'>
-                                            {invitedUser.user?.email}
+                    <div id='class-invited-scrollable' className='space-y-4 max-h-[400px] overflow-y-auto pr-1'>
+                        <InfiniteScroll
+                            dataLength={invitedUsers.length}
+                            next={() => fetchNextPage()}
+                            hasMore={!!hasNextPage}
+                            loader={
+                                <div className='flex justify-center py-2 text-xs text-muted-foreground'>
+                                    Loading more invited users...
+                                </div>
+                            }
+                            scrollableTarget='class-invited-scrollable'
+                            style={{ overflow: 'visible' }}
+                        >
+                            {invitedUsers.map((invitedUser) => (
+                                <div
+                                    key={invitedUser._id}
+                                    className='flex items-center justify-between p-4 bg-muted/30 rounded-lg border'
+                                >
+                                    <div className='flex items-center gap-4 flex-1'>
+                                        <Avatar className='w-10 h-10'>
+                                            <AvatarImage src={invitedUser.user?.avatar} alt={invitedUser.user?.name} />
+                                            <AvatarFallback className='text-sm'>
+                                                {invitedUser.user?.name
+                                                    ? invitedUser.user.name.charAt(0).toUpperCase()
+                                                    : 'U'}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className='flex-1 min-w-0'>
+                                            <div className='font-medium text-foreground truncate'>
+                                                {invitedUser.user?.name || 'Unknown User'}
+                                            </div>
+                                            <div className='text-sm text-muted-foreground truncate'>
+                                                {invitedUser.user?.email}
+                                            </div>
                                         </div>
                                     </div>
+                                    <div className='flex gap-2'>
+                                        <Button
+                                            size='sm'
+                                            variant='outline'
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(invitedUser.user?.email || '');
+                                                getToast('success', 'Email copied to clipboard');
+                                            }}
+                                        >
+                                            Copy Email
+                                        </Button>
+                                        <Button
+                                            size='sm'
+                                            variant='outline'
+                                            className='border-red-300 text-red-600 hover:bg-red-50'
+                                            onClick={() => handleCancelInvite(invitedUser.user?._id || invitedUser._id)}
+                                        >
+                                            <UserX className='w-4 h-4 mr-1' />
+                                            Cancel Invite
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className='flex gap-2'>
-                                    <Button
-                                        size='sm'
-                                        variant='outline'
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(invitedUser.user?.email || '');
-                                            getToast('success', 'Email copied to clipboard');
-                                        }}
-                                    >
-                                        Copy Email
-                                    </Button>
-                                    <Button
-                                        size='sm'
-                                        variant='outline'
-                                        className='border-red-300 text-red-600 hover:bg-red-50'
-                                        onClick={() => handleCancelInvite(invitedUser.user?._id || invitedUser._id)}
-                                    >
-                                        <UserX className='w-4 h-4 mr-1' />
-                                        Cancel Invite
-                                    </Button>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </InfiniteScroll>
                     </div>
                 )}
             </CardContent>

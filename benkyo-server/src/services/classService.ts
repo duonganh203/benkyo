@@ -1435,19 +1435,54 @@ export const getClassDecksService = async (classId: string, userId: Types.Object
     return classData.decks || [];
 };
 
-export const getClassInvitedService = async (classId: string, userId: Types.ObjectId) => {
+export const getClassInvitedService = async (classId: string, userId: Types.ObjectId, page: number, limit: number) => {
     await assertOwner(classId, userId);
 
-    const classData = await Class.findById(classId).populate({
-        path: 'invitedUsers.user',
-        select: '_id email name avatar'
-    });
+    const classData = await Class.findById(classId).select('invitedUsers').lean();
 
     if (!classData) {
         throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
     }
 
-    return classData.invitedUsers || [];
+    const invited = classData.invitedUsers ?? [];
+    const total = invited.length;
+
+    const safePage = page > 0 ? page : 1;
+    const safeLimit = limit > 0 ? limit : 20;
+    const start = (safePage - 1) * safeLimit;
+    const end = start + safeLimit;
+
+    const pageInvited = invited.slice(start, end);
+
+    if (pageInvited.length === 0) {
+        return {
+            data: [],
+            page: safePage,
+            hasMore: false,
+            total
+        };
+    }
+
+    const userIds = pageInvited.map((x) => x.user as Types.ObjectId);
+    const users = await User.find({ _id: { $in: userIds } })
+        .select('_id name email avatar')
+        .lean();
+    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
+
+    const data = pageInvited.map((entry) => ({
+        _id: entry.user,
+        user: userMap.get(entry.user.toString()) ?? null,
+        invitedAt: entry.invitedAt
+    }));
+
+    const hasMore = end < total;
+
+    return {
+        data,
+        page: safePage,
+        hasMore,
+        total
+    };
 };
 
 export const getClassRequestJoinService = async (classId: string, userId: Types.ObjectId) => {

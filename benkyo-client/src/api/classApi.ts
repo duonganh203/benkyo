@@ -223,9 +223,16 @@ export const getClassDeckApi = async (classId: string) => {
     return response.data as ClassDecksResponse;
 };
 
-export const getClassInvitedApi = async (classId: string) => {
-    const response = await api.get(`/class/${classId}/invited`);
-    return response.data as ClassInvitedResponse;
+export const getClassInvitedApi = async (classId: string, page: number = 1, limit: number = 20) => {
+    const response = await api.get(`/class/${classId}/invited`, {
+        params: { page, limit }
+    });
+    return response.data as {
+        data: ClassInvitedResponse;
+        page: number;
+        hasMore: boolean;
+        total: number;
+    };
 };
 
 export const getClassRequestJoinApi = async (classId: string) => {
