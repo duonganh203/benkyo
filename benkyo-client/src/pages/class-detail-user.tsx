@@ -3,13 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Loader2, Settings2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-
 import useGetClassUserById from '@/hooks/queries/use-get-class-user-id';
 import useStartClassDeckSession from '@/hooks/queries/use-start-class-deck-session';
-import useLeaveClass from '@/hooks/queries/use-leave-class';
 import useGetAllMoocs from '@/hooks/queries/use-get-all-mooc-class';
 import useMe from '@/hooks/queries/use-me';
-
 import ClassHeader from '@/components/class-header';
 import DeckCard from '@/components/deck-card';
 import TopLearners from '@/components/top-learners';
@@ -17,17 +14,21 @@ import StatsGrid from '@/components/stats-grid';
 import ProgressCard from '@/components/moocs-card';
 import ClassStudyDialog from '@/components/modals/ClassStudyDialog';
 import ClassResumeSessionModal from '@/components/modals/ClassResumeSessionModal';
-import ConfirmLeaveClassModal from '@/components/modals/confirm-leave-class-modal';
-import ProgressCard from '@/components/moocs-card';
 
+import { getToast } from '@/utils/getToast';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
-
+import useLeaveClass from '@/hooks/queries/use-leave-class';
+import ConfirmLeaveClassModal from '@/components/modals/confirm-leave-class-modal';
 function ClassDetailUser() {
     const { data: user } = useMe();
 
+    const userId = user?._id;
     const { classId } = useParams<{ classId: string }>();
     const [isExpanded, setIsExpanded] = useState(false);
+    const navigate = useNavigate();
+
     const [studyingDeck, setStudyingDeck] = useState<DeckInClass | null>(null);
+    const { mutateAsync: leaveCLass } = useLeaveClass();
     const [classSession, setClassSession] = useState<ClassStudySession | null>(null);
     const [sessionCards, setSessionCards] = useState<ClassStudyCard[]>([]);
     const [loadingSession, setLoadingSession] = useState(false);
@@ -35,19 +36,18 @@ function ClassDetailUser() {
     const [showResumeDialog, setShowResumeDialog] = useState(false);
     const [pendingDeck, setPendingDeck] = useState<DeckInClass | null>(null);
     const [pendingSessionData, setPendingSessionData] = useState<ClassStudySession | null>(null);
-    const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
-    const [leaving, setLeaving] = useState(false);
     const [moocPage, setMoocPage] = useState(1);
     const [paymentPopup, setPaymentPopup] = useState<{ open: boolean; mooc?: any }>({
         open: false,
         mooc: undefined
     });
 
+    const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+    const [leaving, setLeaving] = useState(false);
     const moocsPerPage = 6;
 
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
     const { mutateAsync: startSession } = useStartClassDeckSession();
-    const { mutateAsync: leaveClass } = useLeaveClass();
     const { data: allMoocs } = useGetAllMoocs(classId);
 
     if (!classId) {
@@ -66,9 +66,7 @@ function ClassDetailUser() {
         return <p>Class not found or invalid ID.</p>;
     }
 
-    const role = user?._id === classData.owner._id ? 'owner' : 'member';
-    const isOwner = role === 'owner';
-    const totalLearnersCount = classData.users?.length || 0;
+    const isOwner = user?._id === classData.owner._id;
 
     const allDecksRaw = classData.decks || [];
     const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
@@ -86,7 +84,7 @@ function ClassDetailUser() {
                 points: ucs.points || 0,
                 streak: ucs.studyStreak || 0
             }))
-            .sort((a: TopLearner, b: TopLearner) => b.points - a.points)
+            .sort((a, b) => b.points - a.points)
             .slice(0, 5) || [];
 
     // Completion rate
@@ -143,19 +141,27 @@ function ClassDetailUser() {
 
     const handleStartNewSession = async () => {
         if (pendingDeck) {
-            const res2 = await startSession({
-                classId: classId!,
-                deckId: pendingDeck._id,
-                forceNew: true
-            });
-            setClassSession(res2.session);
-            setSessionCards(res2.cards || []);
-            setIsResumedSession(false);
-            setStudyingDeck(pendingDeck);
-            setShowResumeDialog(false);
-            setPendingDeck(null);
-            setPendingSessionData(null);
+            try {
+                const res = await startSession({ classId: classId!, deckId: pendingDeck._id, forceNew: true });
+                setClassSession(res.session);
+                setSessionCards(res.cards || []);
+                setStudyingDeck(pendingDeck);
+                setIsResumedSession(false);
+                setShowResumeDialog(false);
+                setPendingDeck(null);
+                setPendingSessionData(null);
+            } catch {
+                getToast('error', 'Failed to start new session');
+            }
         }
+    };
+
+    const confirmLeaveClass = async () => {
+        if (!classId) return;
+        setLeaving(true);
+        await leaveCLass({ classId });
+        setLeaving(false);
+        setShowLeaveConfirm(false);
     };
 
     const handleCloseResumeDialog = () => {
@@ -165,21 +171,8 @@ function ClassDetailUser() {
         setLoadingSession(false);
     };
 
-    const confirmLeaveClass = async () => {
-        if (!classId) return;
-        setLeaving(true);
-        await leaveClass({ classId });
-        setLeaving(false);
-        setShowLeaveConfirm(false);
-    };
-
-    const filteredMoocs =
-        allMoocs?.data?.filter((mooc) => {
-            if (isOwner) return true;
-            return mooc.publicStatus === 2;
-        }) || [];
-
     const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
+    const filteredMoocs = allMoocs?.data?.filter((mooc) => isOwner || mooc.publicStatus === 2) || [];
     const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
     console.log('Filtered MOOCs:', filteredMoocs);
 
@@ -229,13 +222,14 @@ function ClassDetailUser() {
 
                 <div className='mb-8 flex justify-between items-center'>
                     <h2 className='text-2xl font-bold'>Class Status</h2>
-                    {role === 'owner' ? (
+                    {isOwner ? (
                         <Link to={`/class/${classData._id}/management`}>
                             <Button variant='default' size='default' className='flex items-center gap-2'>
-                                <Settings2 className='h-4 w-4' /> Manage Class
+                                <Settings2 className='h-4 w-4' />
+                                Manage Class
                             </Button>
                         </Link>
-                    ) : role === 'member' ? (
+                    ) : !isOwner ? (
                         <Button
                             variant='destructive'
                             size='default'
@@ -350,7 +344,36 @@ function ClassDetailUser() {
                 onStartNew={handleStartNewSession}
                 pendingSessionData={pendingSessionData}
             />
-
+            {paymentPopup.open && paymentPopup.mooc && (
+                <Dialog open={paymentPopup.open} onOpenChange={() => setPaymentPopup({ open: false, mooc: undefined })}>
+                    <DialogContent className='sm:max-w-md'>
+                        <DialogHeader>
+                            <DialogTitle>Payment Required</DialogTitle>
+                        </DialogHeader>
+                        <p className='text-sm text-muted-foreground'>
+                            To continue studying "<strong className='text-foreground'>{paymentPopup.mooc.title}</strong>
+                            ", you need to pay{' '}
+                            <strong className='text-foreground'>
+                                {paymentPopup.mooc.price} {paymentPopup.mooc.currency || 'VND'}
+                            </strong>
+                            .
+                        </p>
+                        <DialogFooter>
+                            <Button variant='outline' onClick={() => setPaymentPopup({ open: false, mooc: undefined })}>
+                                Cancel
+                            </Button>
+                            <Button
+                                variant='destructive'
+                                onClick={() => {
+                                    console.log('Redirect to payment API for', paymentPopup.mooc._id);
+                                }}
+                            >
+                                Pay Now
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
             <ConfirmLeaveClassModal
                 open={showLeaveConfirm}
                 onClose={() => setShowLeaveConfirm(false)}
