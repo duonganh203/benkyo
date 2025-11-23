@@ -23,7 +23,6 @@ import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/ty
 
 function ClassDetailUser() {
     const { data: user } = useMe();
-    const userId = user?._id;
 
     const { classId } = useParams<{ classId: string }>();
     const [isExpanded, setIsExpanded] = useState(false);
@@ -53,24 +52,24 @@ function ClassDetailUser() {
 
     if (!classId) {
         return (
-            <div className="min-h-screen flex flex-col justify-center items-center">
-                <p className="text-muted-foreground text-lg">Class ID is missing.</p>
+            <div className='min-h-screen flex flex-col justify-center items-center'>
+                <p className='text-muted-foreground text-lg'>Class ID is missing.</p>
             </div>
         );
     }
 
     if (isLoadingClass) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="w-6 h-6 animate-spin" />
+            <div className='min-h-screen flex items-center justify-center'>
+                <Loader2 className='w-6 h-6 animate-spin' />
             </div>
         );
     }
 
     if (!classData) {
         return (
-            <div className="min-h-screen flex flex-col justify-center items-center">
-                <p className="text-muted-foreground text-lg">Class not found or invalid ID.</p>
+            <div className='min-h-screen flex flex-col justify-center items-center'>
+                <p className='text-muted-foreground text-lg'>Class not found or invalid ID.</p>
             </div>
         );
     }
@@ -80,9 +79,7 @@ function ClassDetailUser() {
     const totalLearnersCount = classData.users?.length || 0;
 
     const allDecksRaw = classData.decks || [];
-    const allDecks = allDecksRaw.filter(
-        (deck, index, self) => self.findIndex((d) => d._id === deck._id) === index
-    );
+    const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
     const scheduledDecks = allDecks.filter((deck: DeckInClass) => deck.startTime && deck.endTime);
 
     const topLearners: TopLearner[] =
@@ -193,9 +190,9 @@ function ClassDetailUser() {
     const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
 
     return (
-        <div className="min-h-screen bg-background">
-            <main className="container mx-auto px-4 py-8 max-w-7xl">
-                <div className="mb-8">
+        <div className='min-h-screen bg-background'>
+            <main className='container mx-auto px-4 py-8 max-w-7xl'>
+                <div className='mb-8'>
                     <ClassHeader
                         classData={{
                             _id: classData._id,
@@ -213,20 +210,20 @@ function ClassDetailUser() {
                     />
                 </div>
 
-                <div className="mb-4 flex justify-between items-center">
-                    <h2 className="text-2xl font-bold">Class Status</h2>
+                <div className='mb-4 flex justify-between items-center'>
+                    <h2 className='text-2xl font-bold'>Class Status</h2>
                     {role === 'owner' ? (
                         <Link to={`/class/${classData._id}/management`}>
-                            <Button variant="default" size="default" className="flex items-center gap-2">
-                                <Settings2 className="h-4 w-4" />
+                            <Button variant='default' size='default' className='flex items-center gap-2'>
+                                <Settings2 className='h-4 w-4' />
                                 Manage Class
                             </Button>
                         </Link>
                     ) : role === 'member' ? (
                         <Button
-                            variant="destructive"
-                            size="default"
-                            className="flex items-center gap-2"
+                            variant='destructive'
+                            size='default'
+                            className='flex items-center gap-2'
                             onClick={() => setShowLeaveConfirm(true)}
                             disabled={leaving}
                         >
@@ -235,7 +232,7 @@ function ClassDetailUser() {
                     ) : null}
                 </div>
 
-                <div className="mb-8">
+                <div className='mb-8'>
                     <StatsGrid
                         totalLearnersCount={totalLearnersCount}
                         createdAt={classData.createdAt}
@@ -244,35 +241,35 @@ function ClassDetailUser() {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    <div className="lg:col-span-3">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold">Available MOOCs</h2>
+                <div className='grid grid-cols-1 lg:grid-cols-4 gap-8'>
+                    <div className='lg:col-span-3'>
+                        <div className='flex items-center justify-between mb-6'>
+                            <h2 className='text-2xl font-bold'>Available MOOCs</h2>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                             {paginatedMoocs.map((mooc) => (
                                 <ProgressCard
                                     key={mooc._id}
                                     title={mooc.title}
                                     description={mooc.description || 'Không có mô tả'}
                                     progress={0}
-                                    status="available"
+                                    status='available'
                                     onClick={() => handleMOOCClick(mooc._id)}
                                 />
                             ))}
                         </div>
                         {hasMoreMoocs && (
-                            <div className="flex justify-center mt-4">
-                                <Button variant="outline" onClick={() => setMoocPage((prev) => prev + 1)}>
+                            <div className='flex justify-center mt-4'>
+                                <Button variant='outline' onClick={() => setMoocPage((prev) => prev + 1)}>
                                     Load More
                                 </Button>
                             </div>
                         )}
 
                         {scheduledDecks.length > 0 && (
-                            <div className="mb-6">
-                                <h3 className="pl-2 text-xl font-semibold mb-4">Scheduled Decks</h3>
-                                <div className="pl-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className='mb-6'>
+                                <h3 className='pl-2 text-xl font-semibold mb-4'>Scheduled Decks</h3>
+                                <div className='pl-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                                     {scheduledDecks.map((deck, index) => (
                                         <DeckCard
                                             key={`scheduled-${deck._id}`}
@@ -289,14 +286,14 @@ function ClassDetailUser() {
                         )}
                     </div>
 
-                    <aside className="lg:col-span-1">
+                    <aside className='lg:col-span-1'>
                         <TopLearners topLearners={topLearners} />
                     </aside>
                 </div>
             </main>
 
             <Dialog open={!!studyingDeck} onOpenChange={(isOpen) => !isOpen && closeStudyDialog()}>
-                <DialogContent className="max-w-2xl w-full">
+                <DialogContent className='max-w-2xl w-full'>
                     {studyingDeck && classSession && (
                         <ClassStudyDialog
                             open={!!studyingDeck}
@@ -309,7 +306,7 @@ function ClassDetailUser() {
                         />
                     )}
                     {loadingSession && (
-                        <div className="flex items-center justify-center h-full">Loading session...</div>
+                        <div className='flex items-center justify-center h-full'>Loading session...</div>
                     )}
                 </DialogContent>
             </Dialog>
