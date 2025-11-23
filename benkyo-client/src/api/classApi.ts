@@ -228,9 +228,16 @@ export const getClassInvitedApi = async (classId: string) => {
     return response.data as ClassInvitedResponse;
 };
 
-export const getClassRequestJoinApi = async (classId: string) => {
-    const response = await api.get(`/class/${classId}/request-join`);
-    return response.data as ClassRequestJoinResponse;
+export const getClassRequestJoinApi = async (classId: string, page: number = 1, limit: number = 20) => {
+    const response = await api.get(`/class/${classId}/request-join`, {
+        params: { page, limit }
+    });
+    return response.data as {
+        data: ClassRequestJoinResponse;
+        page: number;
+        hasMore: boolean;
+        total: number;
+    };
 };
 
 export const getClassVisitedApi = async (classId: string) => {
