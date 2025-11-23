@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { getClassInvitedApi } from '@/api/classApi';
-import { ClassInvitedResponse } from '@/types/class';
+import type { ClassInvitedResponse } from '@/types/class';
 
 interface ClassInvitedStore {
     invitedUsers: ClassInvitedResponse;
