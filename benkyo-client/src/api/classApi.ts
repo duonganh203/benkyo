@@ -213,9 +213,16 @@ export const cancelInviteApi = async (classId: string, userId: string) => {
     return response.data as { message: string };
 };
 
-export const getClassMemberApi = async (classId: string) => {
-    const response = await api.get(`/class/${classId}/members`);
-    return response.data as ClassMembersResponse;
+export const getClassMemberApi = async (classId: string, page: number = 1, limit: number = 20) => {
+    const response = await api.get(`/class/${classId}/members`, {
+        params: { page, limit }
+    });
+    return response.data as {
+        data: ClassMembersResponse;
+        page: number;
+        hasMore: boolean;
+        total: number;
+    };
 };
 
 export const getClassDeckApi = async (classId: string) => {

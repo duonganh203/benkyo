@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { UserPlus, Mail, UserX, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,20 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [userToRemove, setUserToRemove] = useState<string | null>(null);
 
-    const { data: members, isLoading, error, refetch: refetchMembers } = useGetClassMember(classData?._id || '');
+    const { data: initialMembers, refetch: refetchMembersOnce } = useGetClassMember(classData?._id || '');
+
+    const {
+        data: pagedMembers,
+        isLoading,
+        hasNextPage,
+        fetchNextPage,
+        error
+    } = useGetClassMember(classData?._id || '', 5);
+
+    const members: ClassMembersResponse = useMemo(() => {
+        if (!pagedMembers) return (initialMembers ?? []) as ClassMembersResponse;
+        return pagedMembers.pages.flatMap((page) => page.data) as ClassMembersResponse;
+    }, [pagedMembers, initialMembers]);
 
     const { mutateAsync: inviteMember } = useInviteMemberClass();
     const { mutateAsync: removeUser } = useRemoveUserClass();
@@ -44,7 +58,7 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
         setIsInviting(true);
         await inviteMember({ classId: classData._id, inviteEmail: inviteEmail.trim() });
         setInviteEmail('');
-        refetchMembers();
+        refetchMembersOnce();
         onMemberChange?.();
         setIsInviting(false);
     };
@@ -64,7 +78,7 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
             return;
         }
         await removeUser({ classId: classData._id, userId: userToRemove });
-        refetchMembers();
+        await refetchMembersOnce();
         onMemberChange?.();
         setShowConfirmModal(false);
         setUserToRemove(null);
@@ -98,7 +112,13 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
                 <CardContent className='space-y-6'>
                     <div className='space-y-4'>
                         <div className='space-y-2'>
-                            <Label htmlFor='invite-email'>Invite Member by Email</Label>
+                            <Label htmlFor='invite-email'>
+                                Invite Member by Email
+                                <span className='text-red-500 ml-0.5'>*</span>
+                            </Label>
+                            <p className='text-xs text-muted-foreground'>
+                                Please enter the full email address of the member you want to invite.
+                            </p>
                             <div className='flex gap-2'>
                                 <Input
                                     id='invite-email'
@@ -130,45 +150,60 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
                             <p>No members found</p>
                         </div>
                     ) : (
-                        <div className='space-y-4'>
-                            {members.map((member: ClassMembersResponse[number]) => (
-                                <div
-                                    key={member._id}
-                                    className='flex items-center justify-between p-4 bg-muted/30 rounded-lg border'
-                                >
-                                    <div className='flex items-center gap-4 flex-1'>
-                                        <Avatar className='w-10 h-10'>
-                                            <AvatarImage src={member.avatar} alt={member.name} />
-                                            <AvatarFallback className='text-sm'>
-                                                {member.name ? member.name.charAt(0).toUpperCase() : 'U'}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className='flex-1 min-w-0'>
-                                            <div className='font-medium text-foreground truncate'>
-                                                {member.name || 'Unknown User'}
-                                            </div>
-                                            <div className='text-sm text-muted-foreground truncate'>{member.email}</div>
-                                            <div className='flex items-center gap-2 mt-1'>
-                                                <Badge variant='outline' className='text-xs'>
-                                                    <Clock className='w-3 h-3 mr-1' />
-                                                    Member
-                                                </Badge>
+                        <div id='class-members-scrollable' className='space-y-4 max-h-[400px] overflow-y-auto pr-1'>
+                            <InfiniteScroll
+                                dataLength={members.length}
+                                next={() => fetchNextPage()}
+                                hasMore={!!hasNextPage}
+                                loader={
+                                    <div className='flex justify-center py-2 text-xs text-muted-foreground'>
+                                        Loading more members...
+                                    </div>
+                                }
+                                scrollableTarget='class-members-scrollable'
+                                style={{ overflow: 'visible' }}
+                            >
+                                {members.map((member: ClassMembersResponse[number]) => (
+                                    <div
+                                        key={member._id}
+                                        className='flex items-center justify-between p-4 bg-muted/30 rounded-lg border'
+                                    >
+                                        <div className='flex items-center gap-4 flex-1'>
+                                            <Avatar className='w-10 h-10'>
+                                                <AvatarImage src={member.avatar} alt={member.name} />
+                                                <AvatarFallback className='text-sm'>
+                                                    {member.name ? member.name.charAt(0).toUpperCase() : 'U'}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className='flex-1 min-w-0'>
+                                                <div className='font-medium text-foreground truncate'>
+                                                    {member.name || 'Unknown User'}
+                                                </div>
+                                                <div className='text-sm text-muted-foreground truncate'>
+                                                    {member.email}
+                                                </div>
+                                                <div className='flex items-center gap-2 mt-1'>
+                                                    <Badge variant='outline' className='text-xs'>
+                                                        <Clock className='w-3 h-3 mr-1' />
+                                                        Member
+                                                    </Badge>
+                                                </div>
                                             </div>
                                         </div>
+                                        {classData?.owner?._id !== member._id && (
+                                            <Button
+                                                size='sm'
+                                                variant='outline'
+                                                className='border-red-300 text-red-600 hover:bg-red-50'
+                                                onClick={() => handleRemoveMember(member._id)}
+                                            >
+                                                <UserX className='w-4 h-4 mr-1' />
+                                                Remove
+                                            </Button>
+                                        )}
                                     </div>
-                                    {classData?.owner?._id !== member._id && (
-                                        <Button
-                                            size='sm'
-                                            variant='outline'
-                                            className='border-red-300 text-red-600 hover:bg-red-50'
-                                            onClick={() => handleRemoveMember(member._id)}
-                                        >
-                                            <UserX className='w-4 h-4 mr-1' />
-                                            Remove
-                                        </Button>
-                                    )}
-                                </div>
-                            ))}
+                                ))}
+                            </InfiniteScroll>
                         </div>
                     )}
                 </CardContent>
