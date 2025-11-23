@@ -1465,19 +1465,57 @@ export const getClassRequestJoinService = async (classId: string, userId: Types.
     return classData.joinRequests || [];
 };
 
-export const getClassVisitedService = async (classId: string, userId: Types.ObjectId) => {
+export const getClassVisitedService = async (classId: string, userId: Types.ObjectId, page: number, limit: number) => {
     await assertOwner(classId, userId);
 
-    const classData = await Class.findById(classId).populate({
-        path: 'visited.userId',
-        select: '_id email name avatar'
-    });
+    const classData = await Class.findById(classId).select('visited').lean();
 
     if (!classData) {
         throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
     }
 
-    return classData.visited || [];
+    const visited = classData.visited ?? [];
+    const total = visited.length;
+
+    const safePage = page > 0 ? page : 1;
+    const safeLimit = limit > 0 ? limit : 20;
+    const start = (safePage - 1) * safeLimit;
+    const end = start + safeLimit;
+
+    const pageVisited = visited
+        .slice()
+        .sort((a, b) => new Date(b.lastVisit).getTime() - new Date(a.lastVisit).getTime())
+        .slice(start, end);
+
+    if (pageVisited.length === 0) {
+        return {
+            data: [],
+            page: safePage,
+            hasMore: false,
+            total
+        };
+    }
+
+    const userIds = pageVisited.map((x) => x.userId as Types.ObjectId);
+    const users = await User.find({ _id: { $in: userIds } })
+        .select('_id name email avatar')
+        .lean();
+    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
+
+    const data = pageVisited.map((entry) => ({
+        _id: entry.userId,
+        user: userMap.get(entry.userId.toString()) ?? null,
+        lastVisit: entry.lastVisit
+    }));
+
+    const hasMore = end < total;
+
+    return {
+        data,
+        page: safePage,
+        hasMore,
+        total
+    };
 };
 
 export const getClassManagementService = async (classId: string, userId: Types.ObjectId) => {

@@ -517,6 +517,6 @@ export type ClassRequestJoinResponse = {
 
 export type ClassVisitedResponse = {
     _id: string;
-    userId: ClassUser;
+    user: ClassUser | null;
     lastVisit: string;
 }[];
