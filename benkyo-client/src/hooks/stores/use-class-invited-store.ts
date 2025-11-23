@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { getClassInvitedApi } from '@/api/classApi';
-import { ClassInvitedResponse } from '@/types/class';
+import type { ClassInvitedResponse } from '@/types/class';
 
 interface ClassInvitedStore {
     invitedUsers: ClassInvitedResponse;
@@ -18,7 +18,7 @@ export const useClassInvitedStore = create<ClassInvitedStore>((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await getClassInvitedApi(classId);
-            set({ invitedUsers: response || [], isLoading: false });
+            set({ invitedUsers: response.data || [], isLoading: false });
         } catch {
             set({ error: 'Failed to fetch invited users', isLoading: false });
         }
