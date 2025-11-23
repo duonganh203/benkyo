@@ -128,3 +128,48 @@ export interface MoocDeckQuizInterface {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface QuizHubChoice {
+    _id: string;
+    text: string;
+}
+
+export interface QuizHubQuestion {
+    _id: string;
+    questionText: string;
+    choices: QuizHubChoice[];
+    correctAnswer: number;
+}
+
+export interface QuizHub {
+    _id: string;
+    title: string;
+    description?: string;
+    class: string;
+    mooc: string;
+    moocDeck: string;
+    type: 'manual' | 'ai';
+    questions: QuizHubQuestion[];
+    createdAt: string;
+}
+
+export interface QuizResponse {
+    questionId: string;
+    selectedChoice: number;
+}
+
+export interface QuizAttempt {
+    _id: string;
+    user: string;
+    quiz: string;
+    totalQuestions: number;
+    correctAnswers: number;
+    responses: QuizResponse[];
+    startTime: string;
+    endTime: string;
+}
+
+export interface QuizAttemptResult {
+    attempt: QuizAttempt;
+    scorePercent: number;
+}

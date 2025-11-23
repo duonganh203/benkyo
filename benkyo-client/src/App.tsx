@@ -42,6 +42,8 @@ import MOOCDetail from './pages/mooc-detail';
 import DeckStudy from './pages/class-deck-study';
 import { ClassUpdateMooc } from './pages/update-mooc';
 import Requests from './pages/requests';
+import QuizHub from './pages/quiz-hub-class';
+import QuizTakingPage from './pages/do-quiz-class';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -98,6 +100,11 @@ const App = () => {
                             <Route path='/class/:classId/request' element={<ClassJoin />} />
                             <Route path='/class/:classId/mooc/:moocId' element={<MOOCDetail />} />
                             <Route path='/class/:classId/mooc/:moocId/deck/:deckId' element={<DeckStudy />} />
+                            <Route path='/class/:classId/mooc/:moocId/deck/:deckId/quiz-hub' element={<QuizHub />} />
+                            <Route
+                                path='/class/:classId/mooc/:moocId/deck/:deckId/quiz-hub/:quizId'
+                                element={<QuizTakingPage />}
+                            />
                             <Route path='/moocs/update/:moocId' element={<ClassUpdateMooc />} />
                         </Route>
                     </Routes>

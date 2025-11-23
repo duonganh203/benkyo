@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import mammoth from 'mammoth';
 
 const GOOGLE_AI_KEY = import.meta.env.VITE_GOOGLE_AI_KEY;
 const genAI = new GoogleGenerativeAI(GOOGLE_AI_KEY || '');
@@ -25,13 +26,20 @@ You are tasked with generating flashcards that adhere to the principles outlined
 
 - **front:** What is the process by which plants convert sunlight into chemical energy?
 - **back:** Photosynthesis.
+- **sourceText:** "Photosynthesis is the process by which plants convert sunlight into chemical energy..."
+- **pageNumber:** 5
 
-- THE OUTPUT MUST BE JSON FORMAT AND THE OUTPUT MUST BE AN ARRAY OF OBJECTS AND EACH OBJECT MUST HAVE A FRONT AND BACK PROPERTY
+- THE OUTPUT MUST BE JSON FORMAT AND THE OUTPUT MUST BE AN ARRAY OF OBJECTS
+- EACH OBJECT MUST HAVE: front, back, sourceText (the exact text snippet from the document), and pageNumber (approximate page/section number where the information was found)
+- Include the sourceText field with a relevant excerpt (2-3 sentences) from the document that supports the flashcard
+
 **Instructions for the Model:**
 
 - Generate flashcards that adhere to the above guidelines.
 - For simple translations, provide direct and straightforward flashcards.
-- If bidirectional learning is requested, create two separate flashcards to cover both directions of learning.`;
+- If bidirectional learning is requested, create two separate flashcards to cover both directions of learning.
+- Always include the sourceText field with the exact text from the document that the flashcard is based on.
+- Include the pageNumber or section indicator where the information was found.`;
 
 const model = genAI.getGenerativeModel({
     model: 'gemini-2.0-flash-exp',
@@ -41,21 +49,37 @@ const model = genAI.getGenerativeModel({
 export async function generateFlashcardsFromFile(
     file: File,
     numCards: number = 10
-): Promise<Array<{ front: string; back: string }>> {
+): Promise<Array<{ front: string; back: string; sourceText?: string; pageNumber?: number }>> {
     try {
-        const fileData = await fileToBase64(file);
+        let contentPart: any;
 
-        const prompt = `Create ${numCards} concise and effective flashcards from this document. Focus on the most important concepts, facts, or relationships. Each flashcard should have a clear question on the front and a concise answer on the back.`;
+        if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            const text = result.value;
 
-        const res = await model.generateContent([
-            {
+            contentPart = {
+                text: `Here is the content of the document:\n\n${text}`
+            };
+        } else {
+            const fileData = await fileToBase64(file);
+            contentPart = {
                 inlineData: {
                     data: fileData,
                     mimeType: file.type
                 }
-            },
-            prompt
-        ]);
+            };
+        }
+
+        const prompt = `Create ${numCards} concise and effective flashcards from this document. Focus on the most important concepts, facts, or relationships. Each flashcard should have a clear question on the front and a concise answer on the back.
+
+        IMPORTANT: For each flashcard, include:
+        1. "sourceText": The exact text excerpt (2-3 sentences) from the document that this flashcard is based on
+        2. "pageNumber": The approximate page or section number where this information appears
+
+        This helps users verify the information directly in the source document.`;
+
+        const res = await model.generateContent([contentPart, prompt]);
 
         const responseText = res.response.text();
 

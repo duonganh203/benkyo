@@ -16,6 +16,7 @@ import { getToast } from '@/utils/getToast';
 import { CardSchema } from '@/schemas/cardSchema';
 import AICardEditor from './ai-card-editor';
 import MemoryGame from '@/components/memory-game';
+import DocumentViewer from './document-viewer';
 
 type CardValidation = {
     front: string | null;
@@ -40,8 +41,15 @@ const AIFlashcardGenerator = () => {
 
     const [generationStage, setGenerationStage] = useState<GenerationStage>('preparing');
     const [generationProgress, setGenerationProgress] = useState<number>(0);
+    const [showDocumentViewer, setShowDocumentViewer] = useState(false);
+    const [selectedCardForView, setSelectedCardForView] = useState<number | null>(null);
 
-    const allowedFileTypes = ['application/pdf', 'application/msword', 'text/plain'];
+    const allowedFileTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain'
+    ];
 
     const { mutateAsync: batchCreateCardsMutation } = useBatchCreateCards();
 
@@ -120,6 +128,11 @@ const AIFlashcardGenerator = () => {
         }
     };
 
+    const handleViewInDocument = (index: number) => {
+        setSelectedCardForView(index);
+        setShowDocumentViewer(true);
+    };
+
     const generateFlashcards = async () => {
         if (!file) {
             getToast('error', 'Please upload a document first');
@@ -148,7 +161,9 @@ const AIFlashcardGenerator = () => {
             const formattedCards = flashcards.map((card) => ({
                 front: card.front,
                 back: card.back,
-                tags: ['AI-generated']
+                tags: ['AI-generated'],
+                sourceText: card.sourceText,
+                pageNumber: card.pageNumber
             }));
 
             setGenerationProgress(100);
@@ -403,58 +418,115 @@ const AIFlashcardGenerator = () => {
             {isGenerating && <MemoryGame />}
 
             <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
-                <DialogContent className='max-w-4xl max-h-[80vh] overflow-y-auto'>
-                    <DialogHeader>
+                <DialogContent
+                    className={`overflow-hidden transition-all duration-300 ${
+                        showDocumentViewer ? 'max-w-[95vw] h-[90vh]' : 'max-w-4xl h-[90vh]'
+                    }`}
+                >
+                    <DialogHeader className='flex-shrink-0'>
                         <DialogTitle>Review & Edit Generated Flashcards</DialogTitle>
                     </DialogHeader>
 
-                    <div className='text-sm text-muted-foreground mb-4'>
-                        Review and edit the AI-generated flashcards before adding them to your deck.
+                    <div className='flex gap-4 flex-1 min-h-0'>
+                        {/* Cards List Section */}
+                        <div
+                            className={`flex flex-col transition-all duration-300 min-h-0 ${
+                                showDocumentViewer ? 'w-1/2' : 'w-full'
+                            }`}
+                        >
+                            <div className='text-sm text-muted-foreground mb-4 flex-shrink-0'>
+                                Review and edit the AI-generated flashcards before adding them to your deck. Click "View
+                                in Document" to see the source text.
+                            </div>
+
+                            {formErrors && (
+                                <div className='bg-destructive/10 text-destructive p-3 rounded-md flex items-start gap-2 mb-4 flex-shrink-0'>
+                                    <AlertCircle className='h-5 w-5 mt-0.5 flex-shrink-0' />
+                                    <div>{formErrors}</div>
+                                </div>
+                            )}
+
+                            <form onSubmit={handleSubmit} className='flex flex-col flex-1 min-h-0 gap-4'>
+                                <div className='flex-1 min-h-0 overflow-y-auto pr-2'>
+                                    <div className='space-y-4'>
+                                        {generatedCards.map((card, index) => (
+                                            <AICardEditor
+                                                key={index}
+                                                card={card}
+                                                index={index}
+                                                validation={cardValidation[index]}
+                                                onChange={handleChange}
+                                                onTagChange={handleTagChange}
+                                                onRemove={removeCard}
+                                                onViewInDocument={handleViewInDocument}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className='flex flex-col sm:flex-row gap-3 pt-4 border-t flex-shrink-0 bg-background'>
+                                    <Button
+                                        type='button'
+                                        variant='outline'
+                                        onClick={addCard}
+                                        className='w-full sm:w-auto'
+                                    >
+                                        <Plus className='mr-1.5 h-4 w-4' />
+                                        Add Card
+                                    </Button>
+
+                                    <Button
+                                        type='submit'
+                                        className='w-full sm:w-auto sm:ml-auto'
+                                        disabled={isImporting}
+                                    >
+                                        {isImporting ? (
+                                            <>
+                                                <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+                                                Importing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Check className='h-4 w-4 mr-2' />
+                                                Save Collection
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
+
+                        {/* Document Viewer Section */}
+                        {showDocumentViewer && file && selectedCardForView !== null && (
+                            <div className='w-1/2 border-l pl-4 flex flex-col min-h-0'>
+                                <div className='flex items-center justify-between mb-4 flex-shrink-0'>
+                                    <h3 className='font-semibold'>Source Document</h3>
+                                    <Button
+                                        size='icon'
+                                        variant='ghost'
+                                        onClick={() => {
+                                            setShowDocumentViewer(false);
+                                            setSelectedCardForView(null);
+                                        }}
+                                    >
+                                        <X className='h-4 w-4' />
+                                    </Button>
+                                </div>
+                                <div className='flex-1 min-h-0 border rounded-lg overflow-hidden'>
+                                    <DocumentViewer
+                                        file={file}
+                                        searchText={generatedCards[selectedCardForView]?.sourceText}
+                                        pageNumber={generatedCards[selectedCardForView]?.pageNumber}
+                                        onClose={() => {
+                                            setShowDocumentViewer(false);
+                                            setSelectedCardForView(null);
+                                        }}
+                                        embedded={true}
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
-
-                    {formErrors && (
-                        <div className='bg-destructive/10 text-destructive p-3 rounded-md flex items-start gap-2 mb-4'>
-                            <AlertCircle className='h-5 w-5 mt-0.5 flex-shrink-0' />
-                            <div>{formErrors}</div>
-                        </div>
-                    )}
-
-                    <form onSubmit={handleSubmit} className='space-y-6'>
-                        <div className='space-y-4'>
-                            {generatedCards.map((card, index) => (
-                                <AICardEditor
-                                    key={index}
-                                    card={card}
-                                    index={index}
-                                    validation={cardValidation[index]}
-                                    onChange={handleChange}
-                                    onTagChange={handleTagChange}
-                                    onRemove={removeCard}
-                                />
-                            ))}
-                        </div>
-
-                        <div className='flex flex-col sm:flex-row gap-3 pt-2'>
-                            <Button type='button' variant='outline' onClick={addCard} className='w-full sm:w-auto'>
-                                <Plus className='mr-1.5 h-4 w-4' />
-                                Add Card
-                            </Button>
-
-                            <Button type='submit' className='w-full sm:w-auto sm:ml-auto' disabled={isImporting}>
-                                {isImporting ? (
-                                    <>
-                                        <Loader2 className='h-4 w-4 mr-2 animate-spin' />
-                                        Importing...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Check className='h-4 w-4 mr-2' />
-                                        Save Collection
-                                    </>
-                                )}
-                            </Button>
-                        </div>
-                    </form>
                 </DialogContent>
             </Dialog>
         </>

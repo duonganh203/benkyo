@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Loader2, Settings2 } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
 import useGetClassUserById from '@/hooks/queries/use-get-class-user-id';
@@ -14,6 +14,7 @@ import ClassHeader from '@/components/class-header';
 import DeckCard from '@/components/deck-card';
 import TopLearners from '@/components/top-learners';
 import StatsGrid from '@/components/stats-grid';
+import ProgressCard from '@/components/moocs-card';
 import ClassStudyDialog from '@/components/modals/ClassStudyDialog';
 import ClassResumeSessionModal from '@/components/modals/ClassResumeSessionModal';
 import ConfirmLeaveClassModal from '@/components/modals/confirm-leave-class-modal';
@@ -37,25 +38,20 @@ function ClassDetailUser() {
     const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
     const [leaving, setLeaving] = useState(false);
     const [moocPage, setMoocPage] = useState(1);
+    const [paymentPopup, setPaymentPopup] = useState<{ open: boolean; mooc?: any }>({
+        open: false,
+        mooc: undefined
+    });
 
     const moocsPerPage = 6;
+
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
     const { mutateAsync: startSession } = useStartClassDeckSession();
     const { mutateAsync: leaveClass } = useLeaveClass();
     const { data: allMoocs } = useGetAllMoocs(classId);
-    const navigate = useNavigate();
-
-    const handleMOOCClick = (moocId: string) => {
-        if (!classData) return;
-        navigate(`/class/${classData._id}/mooc/${moocId}`);
-    };
 
     if (!classId) {
-        return (
-            <div className='min-h-screen flex flex-col justify-center items-center'>
-                <p className='text-muted-foreground text-lg'>Class ID is missing.</p>
-            </div>
-        );
+        return <p>Class ID is missing.</p>;
     }
 
     if (isLoadingClass) {
@@ -67,11 +63,7 @@ function ClassDetailUser() {
     }
 
     if (!classData) {
-        return (
-            <div className='min-h-screen flex flex-col justify-center items-center'>
-                <p className='text-muted-foreground text-lg'>Class not found or invalid ID.</p>
-            </div>
-        );
+        return <p>Class not found or invalid ID.</p>;
     }
 
     const role = user?._id === classData.owner._id ? 'owner' : 'member';
@@ -80,8 +72,11 @@ function ClassDetailUser() {
 
     const allDecksRaw = classData.decks || [];
     const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
-    const scheduledDecks = allDecks.filter((deck: DeckInClass) => deck.startTime && deck.endTime);
+    const scheduledDecks = allDecks.filter((deck) => deck.startTime && deck.endTime);
 
+    const totalLearnersCount = classData.users?.length || 0;
+
+    // Top learners
     const topLearners: TopLearner[] =
         classData.userClassStates
             ?.map((ucs) => ({
@@ -94,9 +89,10 @@ function ClassDetailUser() {
             .sort((a: TopLearner, b: TopLearner) => b.points - a.points)
             .slice(0, 5) || [];
 
+    // Completion rate
     let completionRate = 0;
     if (scheduledDecks.length > 0) {
-        const totalProgress = scheduledDecks.reduce((sum, deck: DeckInClass) => {
+        const totalProgress = scheduledDecks.reduce((sum, deck) => {
             const deckProgress =
                 deck.totalCount && deck.totalCount > 0 && deck.correctCount
                     ? (deck.correctCount / deck.totalCount) * 100
@@ -106,24 +102,21 @@ function ClassDetailUser() {
         completionRate = Math.round(totalProgress / scheduledDecks.length);
     }
 
+    // Start study session
     const startStudyMode = async (deck: DeckInClass) => {
         setLoadingSession(true);
         try {
-            const res = await startSession({
-                classId: classId!,
-                deckId: deck._id
-            });
+            const res = await startSession({ classId: classId!, deckId: deck._id });
 
             setSessionCards(res.cards || []);
-
             if (res.resumed) {
                 setPendingDeck(deck);
                 setPendingSessionData(res.session);
                 setShowResumeDialog(true);
             } else {
                 setClassSession(res.session);
-                setIsResumedSession(false);
                 setStudyingDeck(deck);
+                setIsResumedSession(false);
             }
         } finally {
             setLoadingSession(false);
@@ -140,8 +133,8 @@ function ClassDetailUser() {
     const handleContinueSession = () => {
         if (pendingDeck && pendingSessionData) {
             setClassSession(pendingSessionData);
-            setIsResumedSession(true);
             setStudyingDeck(pendingDeck);
+            setIsResumedSession(true);
             setShowResumeDialog(false);
             setPendingDeck(null);
             setPendingSessionData(null);
@@ -188,35 +181,58 @@ function ClassDetailUser() {
 
     const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
     const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
+    console.log('Filtered MOOCs:', filteredMoocs);
+
+    const handleMOOCClick = (mooc: any) => {
+        if (isOwner) {
+            navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+            return;
+        }
+
+        if (mooc.isPaid) {
+            if (mooc.enrolledUsers?.includes(userId)) {
+                navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+            } else {
+                setPaymentPopup({ open: true, mooc });
+            }
+            return;
+        }
+
+        if (mooc.locked) {
+            setPaymentPopup({ open: true, mooc });
+            return;
+        }
+
+        navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+    };
+
+    console.log('isOwner:', isOwner, 'userId:', userId, 'ownerId:', classData.owner._id);
 
     return (
         <div className='min-h-screen bg-background'>
             <main className='container mx-auto px-4 py-8 max-w-7xl'>
-                <div className='mb-8'>
-                    <ClassHeader
-                        classData={{
-                            _id: classData._id,
-                            name: classData.name,
-                            description: classData.description,
-                            bannerUrl: classData.bannerUrl,
-                            visibility: classData.visibility,
-                            requiredApprovalToJoin: classData.requiredApprovalToJoin,
-                            completionRate: completionRate
-                        }}
-                        isExpanded={isExpanded}
-                        onToggleExpanded={() => setIsExpanded(!isExpanded)}
-                        totalLearnersCount={totalLearnersCount}
-                        totalDecksCount={classData.decks.length}
-                    />
-                </div>
+                <ClassHeader
+                    classData={{
+                        _id: classData._id,
+                        name: classData.name,
+                        description: classData.description,
+                        bannerUrl: classData.bannerUrl,
+                        visibility: classData.visibility,
+                        requiredApprovalToJoin: classData.requiredApprovalToJoin,
+                        completionRate
+                    }}
+                    isExpanded={isExpanded}
+                    onToggleExpanded={() => setIsExpanded(!isExpanded)}
+                    totalLearnersCount={totalLearnersCount}
+                    totalDecksCount={classData.decks.length}
+                />
 
-                <div className='mb-4 flex justify-between items-center'>
+                <div className='mb-8 flex justify-between items-center'>
                     <h2 className='text-2xl font-bold'>Class Status</h2>
                     {role === 'owner' ? (
                         <Link to={`/class/${classData._id}/management`}>
                             <Button variant='default' size='default' className='flex items-center gap-2'>
-                                <Settings2 className='h-4 w-4' />
-                                Manage Class
+                                <Settings2 className='h-4 w-4' /> Manage Class
                             </Button>
                         </Link>
                     ) : role === 'member' ? (
@@ -232,31 +248,49 @@ function ClassDetailUser() {
                     ) : null}
                 </div>
 
-                <div className='mb-8'>
-                    <StatsGrid
-                        totalLearnersCount={totalLearnersCount}
-                        createdAt={classData.createdAt}
-                        completionRate={completionRate}
-                        visited={classData.visited?.history?.length ?? 0}
-                    />
-                </div>
+                <StatsGrid
+                    totalLearnersCount={totalLearnersCount}
+                    createdAt={classData.createdAt}
+                    completionRate={completionRate}
+                    visited={classData.visited?.history?.length ?? 0}
+                />
 
+                {/* MOOCs */}
                 <div className='grid grid-cols-1 lg:grid-cols-4 gap-8'>
                     <div className='lg:col-span-3'>
-                        <div className='flex items-center justify-between mb-6'>
-                            <h2 className='text-2xl font-bold'>Available MOOCs</h2>
-                        </div>
+                        <h2 className='text-2xl font-bold mb-4'>Available MOOCs</h2>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                            {paginatedMoocs.map((mooc) => (
-                                <ProgressCard
-                                    key={mooc._id}
-                                    title={mooc.title}
-                                    description={mooc.description || 'Không có mô tả'}
-                                    progress={0}
-                                    status='available'
-                                    onClick={() => handleMOOCClick(mooc._id)}
-                                />
-                            ))}
+                            {paginatedMoocs.map((mooc: any) => {
+                                const isPaid = mooc.isPaid;
+                                const isLocked = mooc.locked;
+
+                                let status: 'available' | 'locked' | 'paid' = 'available';
+
+                                if (isPaid) {
+                                    status = 'paid';
+                                } else if (isLocked) {
+                                    status = 'locked';
+                                } else {
+                                    status = 'available';
+                                }
+
+                                const isDisabledForNonOwner = !isOwner && mooc.locked && !mooc.isPaid;
+
+                                return (
+                                    <div key={mooc._id} className='relative group'>
+                                        <ProgressCard
+                                            title={mooc.title}
+                                            description={mooc.description || 'Không có mô tả'}
+                                            progress={0}
+                                            status={status}
+                                            onClick={() => {
+                                                if (!isDisabledForNonOwner) handleMOOCClick(mooc);
+                                            }}
+                                            isOwner={isOwner}
+                                        />
+                                    </div>
+                                );
+                            })}
                         </div>
                         {hasMoreMoocs && (
                             <div className='flex justify-center mt-4'>
@@ -266,18 +300,16 @@ function ClassDetailUser() {
                             </div>
                         )}
 
+                        {/* Scheduled Decks */}
                         {scheduledDecks.length > 0 && (
-                            <div className='mb-6'>
+                            <div className='mt-8'>
                                 <h3 className='pl-2 text-xl font-semibold mb-4'>Scheduled Decks</h3>
                                 <div className='pl-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                                    {scheduledDecks.map((deck, index) => (
+                                    {scheduledDecks.map((deck, idx) => (
                                         <DeckCard
-                                            key={`scheduled-${deck._id}`}
-                                            deck={{
-                                                ...deck,
-                                                totalCount: deck.totalCount ?? deck.cardCount
-                                            }}
-                                            index={index}
+                                            key={deck._id}
+                                            deck={{ ...deck, totalCount: deck.totalCount ?? deck.cardCount }}
+                                            index={idx}
                                             onStartStudy={startStudyMode}
                                         />
                                     ))}
@@ -298,7 +330,7 @@ function ClassDetailUser() {
                         <ClassStudyDialog
                             open={!!studyingDeck}
                             onClose={closeStudyDialog}
-                            classId={classId}
+                            classId={classId!}
                             deckId={studyingDeck._id}
                             session={classSession}
                             cards={sessionCards}
