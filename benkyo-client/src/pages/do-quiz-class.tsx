@@ -53,7 +53,7 @@ const QuizTakingPage: React.FC = () => {
     const [finished, setFinished] = useState(false);
     const [userResponses, setUserResponses] = useState<{ questionId: string; selectedChoice: number }[]>([]);
 
-    const submitAttempt = useSubmitQuizAttempt(classId ?? '', moocId ?? '', deckId ?? '', quizId ?? '');
+    const submitAttempt = useSubmitQuizAttempt(classId ?? '', moocId ?? '', deckId ?? '', quiz?._id ?? '');
 
     const handleAnswerSelect = (choiceIndex: number) => {
         if (isAnswered) return;
@@ -63,10 +63,9 @@ const QuizTakingPage: React.FC = () => {
         const question = quiz?.questions[currentIndex];
         if (!question) return;
 
-        setUserResponses((prev) => [
-            ...prev.filter((r) => r.questionId !== question._id),
-            { questionId: question._id, selectedChoice: choiceIndex }
-        ]);
+        const response = { questionId: question._id, selectedChoice: choiceIndex };
+
+        setUserResponses((prev) => [...prev.filter((r) => r.questionId !== question._id), response]);
 
         if (choiceIndex === question.correctAnswer) {
             setScore((s) => s + 1);

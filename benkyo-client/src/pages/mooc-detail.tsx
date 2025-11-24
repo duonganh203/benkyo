@@ -7,7 +7,7 @@ import ProgressCard from '@/components/moocs-card';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import useMe from '@/hooks/queries/use-me';
 import ConfirmDeleteMoocModal from '@/components/modals/confirm-delete-mooc-modals';
-import useDeleteMooc from '@//hooks/queries/use-delete-mooc-class';
+import useDeleteMooc from '@/hooks/queries/use-delete-mooc-class';
 import { getToast } from '@/utils/getToast';
 import {
     DropdownMenu,
@@ -22,7 +22,6 @@ interface Deck {
     description?: string;
     cardCount?: number;
     publicStatus?: number;
-    locked?: boolean;
 }
 
 interface DeckWrapper {
@@ -38,7 +37,6 @@ const MOOCDetail: React.FC = () => {
     const { data: mooc, isLoading, isError } = useGetMoocDetail(moocId!);
     const { data: user } = useMe();
     const isOwner = mooc ? user?._id === mooc.owner?._id : false;
-
     const { mutateAsync: deleteMooc } = useDeleteMooc();
     const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
 
@@ -58,9 +56,7 @@ const MOOCDetail: React.FC = () => {
         );
     }
 
-    const handleEdit = () => {
-        navigate(`/moocs/update/${moocId}`);
-    };
+    const handleEdit = () => navigate(`/moocs/update/${moocId}`);
 
     const handleDelete = async () => {
         if (!moocId) return;
@@ -69,7 +65,7 @@ const MOOCDetail: React.FC = () => {
             getToast('success', 'MOOC deleted successfully');
             navigate(`/class/${classId}`);
         } else {
-            getToast('error', 'MOOC deleted failure');
+            getToast('error', 'MOOC deletion failed');
         }
     };
 
@@ -79,6 +75,17 @@ const MOOCDetail: React.FC = () => {
 
     const handleQuizHub = (deckId: string) => {
         navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
+    };
+
+    const getDeckStatusForUser = (deckId: string) => {
+        if (!mooc || !user?._id) return 'locked';
+        const enrolledUser = mooc.enrolledUsers.find((u: any) => u.user._id === user._id || u.user === user._id);
+        if (!enrolledUser) return 'locked';
+
+        const progress = enrolledUser.deckProgress.find((d: any) => d.deck._id === deckId || d.deck === deckId);
+        if (!progress) return 'locked';
+
+        return progress.locked ? 'locked' : 'available';
     };
 
     return (
@@ -107,7 +114,6 @@ const MOOCDetail: React.FC = () => {
                                     <MoreVertical className='h-5 w-5' />
                                 </Button>
                             </DropdownMenuTrigger>
-
                             <DropdownMenuContent align='end' className='w-32'>
                                 <DropdownMenuItem onClick={handleEdit}>
                                     <Pencil className='mr-2 h-4 w-4' />
@@ -138,40 +144,38 @@ const MOOCDetail: React.FC = () => {
 
                     <div className='grid grid-cols-1 gap-6'>
                         {Array.isArray(mooc.decks) && mooc.decks.length > 0 ? (
-                            mooc.decks.map((deckWrapper: DeckWrapper) => {
-                                const deck = deckWrapper?.deck ?? deckWrapper;
-                                if (!deck) return null;
+                            mooc.decks
+                                .sort((a: DeckWrapper, b: DeckWrapper) => (a.order ?? 0) - (b.order ?? 0))
+                                .map((deckWrapper: DeckWrapper) => {
+                                    if (!deckWrapper || !deckWrapper.deck) return null;
+                                    const deck = deckWrapper.deck;
+                                    const deckStatus = getDeckStatusForUser(deck._id);
+                                    const isAvailable = deckStatus === 'available';
 
-                                return (
-                                    <div key={deck._id} className='space-y-3'>
-                                        <ProgressCard
-                                            title={deck.name ?? 'Untitled Deck'}
-                                            description={[
-                                                deck.description,
-                                                `${deck.cardCount ?? 0} flashcards`,
-                                                `${(deck.cardCount ?? 0) * 10} pts required`
-                                            ]
-                                                .filter(Boolean)
-                                                .join(' • ')}
-                                            progress={0}
-                                            status='available'
-                                            onClick={() => handleGoToDeck(deck._id)}
-                                        />
-
-                                        <div className='flex justify-end'>
-                                            <Button
-                                                variant='outline'
-                                                size='sm'
-                                                onClick={() => handleQuizHub(deck._id)}
-                                                className='flex items-center gap-2'
-                                            >
-                                                <Zap className='w-4 h-4' />
-                                                Extra Challenge
-                                            </Button>
+                                    return (
+                                        <div key={deck._id} className='space-y-3'>
+                                            <ProgressCard
+                                                title={deck.name ?? 'Untitled Deck'}
+                                                description={`${deck.description ?? ''} • ${deck.cardCount ?? 0} flashcards • 70% points required`}
+                                                status={deckStatus}
+                                                onClick={() => isAvailable && handleGoToDeck(deck._id)}
+                                            />
+                                            {isAvailable && (
+                                                <div className='flex justify-end'>
+                                                    <Button
+                                                        variant='outline'
+                                                        size='sm'
+                                                        onClick={() => handleQuizHub(deck._id)}
+                                                        className='flex items-center gap-2'
+                                                    >
+                                                        <Zap className='w-4 h-4' />
+                                                        Extra Challenge
+                                                    </Button>
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
-                                );
-                            })
+                                    );
+                                })
                         ) : (
                             <Card className='shadow-card'>
                                 <CardContent className='p-8 text-center'>

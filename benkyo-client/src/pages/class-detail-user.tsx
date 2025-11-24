@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Loader2, Settings2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -16,6 +16,7 @@ import ClassStudyDialog from '@/components/modals/ClassStudyDialog';
 import ClassResumeSessionModal from '@/components/modals/ClassResumeSessionModal';
 
 import { getToast } from '@/utils/getToast';
+import { enrollUser } from '@/api/moocApi';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
 
 function ClassDetailUser() {
@@ -46,28 +47,27 @@ function ClassDetailUser() {
     const { mutateAsync: startSession } = useStartClassDeckSession();
     const { data: allMoocs } = useGetAllMoocs(classId);
 
-    if (!classId) {
-        return <p>Class ID is missing.</p>;
-    }
+    // Local state để có thể update enroll ngay UI
+    const [allMoocsState, setAllMoocsState] = useState<any[]>(allMoocs?.data || []);
 
-    if (isLoadingClass) {
+    useEffect(() => {
+        if (allMoocs?.data) setAllMoocsState(allMoocs.data);
+    }, [allMoocs]);
+
+    if (!classId) return <p>Class ID is missing.</p>;
+    if (isLoadingClass)
         return (
             <div className='min-h-screen flex items-center justify-center'>
                 <Loader2 className='w-6 h-6 animate-spin' />
             </div>
         );
-    }
-
-    if (!classData) {
-        return <p>Class not found or invalid ID.</p>;
-    }
+    if (!classData) return <p>Class not found or invalid ID.</p>;
 
     const isOwner = user?._id === classData.owner._id;
 
     const allDecksRaw = classData.decks || [];
     const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
     const scheduledDecks = allDecks.filter((deck) => deck.startTime && deck.endTime);
-
     const totalLearnersCount = classData.users?.length || 0;
 
     // Top learners
@@ -101,7 +101,6 @@ function ClassDetailUser() {
         setLoadingSession(true);
         try {
             const res = await startSession({ classId: classId!, deckId: deck._id });
-
             setSessionCards(res.cards || []);
             if (res.resumed) {
                 setPendingDeck(deck);
@@ -159,23 +158,22 @@ function ClassDetailUser() {
         setLoadingSession(false);
     };
 
-    const filteredMoocs = allMoocs?.data?.filter((mooc) => isOwner || mooc.publicStatus === 2) || [];
+    // Filter & paginate MOOCs
+    const filteredMoocs = allMoocsState.filter((mooc) => isOwner || mooc.publicStatus === 2) || [];
     const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
     const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
-    console.log('Filtered MOOCs:', filteredMoocs);
 
     const handleMOOCClick = (mooc: any) => {
+        const isEnrolled = mooc.enrolledUsers?.some((u: any) => u.user === userId || u.user?._id === userId);
+
         if (isOwner) {
             navigate(`/class/${classData._id}/mooc/${mooc._id}`);
             return;
         }
 
         if (mooc.isPaid) {
-            if (mooc.enrolledUsers?.includes(userId)) {
-                navigate(`/class/${classData._id}/mooc/${mooc._id}`);
-            } else {
-                setPaymentPopup({ open: true, mooc });
-            }
+            if (isEnrolled) navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+            else setPaymentPopup({ open: true, mooc });
             return;
         }
 
@@ -184,10 +182,9 @@ function ClassDetailUser() {
             return;
         }
 
-        navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+        if (isEnrolled) navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+        else getToast('info', 'Please enroll to access this MOOC');
     };
-
-    console.log('isOwner:', isOwner, 'userId:', userId, 'ownerId:', classData.owner._id);
 
     return (
         <div className='min-h-screen bg-background'>
@@ -235,34 +232,98 @@ function ClassDetailUser() {
                                 const isPaid = mooc.isPaid;
                                 const isLocked = mooc.locked;
 
-                                let status: 'available' | 'locked' | 'paid' = 'available';
+                                const enrolled = mooc.enrolledUsers?.find(
+                                    (u: any) =>
+                                        (typeof u.user === 'string' && u.user === userId) ||
+                                        (u.user &&
+                                            typeof u.user === 'object' &&
+                                            (u.user._id === userId || u.user.toString() === userId)) ||
+                                        (u.user &&
+                                            typeof u.user.toString === 'function' &&
+                                            u.user.toString() === userId)
+                                );
 
-                                if (isPaid) {
-                                    status = 'paid';
-                                } else if (isLocked) {
-                                    status = 'locked';
-                                } else {
-                                    status = 'available';
-                                }
+                                const isEnrolled = !!enrolled;
+                                let status: 'available' | 'locked' | 'paid' = 'available';
+                                if (isPaid) status = 'paid';
+                                else if (isLocked) status = 'locked';
 
                                 const isDisabledForNonOwner = !isOwner && mooc.locked && !mooc.isPaid;
+                                const totalDecks = mooc.decks?.length || 0;
+                                const userDeckProgress: any[] = enrolled?.deckProgress || [];
+                                const completedDecks =
+                                    userDeckProgress.length > 0
+                                        ? userDeckProgress.filter((dp: any) => dp.completed).length
+                                        : 0;
+                                const progressPercent =
+                                    totalDecks === 0 ? 0 : Math.round((completedDecks / totalDecks) * 100);
 
                                 return (
-                                    <div key={mooc._id} className='relative group'>
+                                    <div key={mooc._id} className='relative group space-y-2'>
                                         <ProgressCard
                                             title={mooc.title}
                                             description={mooc.description || 'Không có mô tả'}
-                                            progress={0}
+                                            progress={progressPercent}
                                             status={status}
                                             onClick={() => {
                                                 if (!isDisabledForNonOwner) handleMOOCClick(mooc);
                                             }}
                                             isOwner={isOwner}
+                                            isEnrolled={isEnrolled}
+                                            onEnroll={async () => {
+                                                if (!userId) {
+                                                    getToast('error', 'You must be logged in to enroll');
+                                                    return;
+                                                }
+                                                try {
+                                                    const res = await enrollUser(mooc._id, {
+                                                        userId,
+                                                        moocId: mooc._id
+                                                    });
+
+                                                    // Kiểm tra response thật kỹ
+                                                    if (res && res.success) {
+                                                        getToast('success', 'Enrolled successfully');
+
+                                                        // Cập nhật local state
+                                                        setAllMoocsState((prev) =>
+                                                            prev.map((m) =>
+                                                                m._id === mooc._id
+                                                                    ? {
+                                                                          ...m,
+                                                                          enrolledUsers: [
+                                                                              ...(m.enrolledUsers || []),
+                                                                              {
+                                                                                  user: userId,
+                                                                                  currentDeckIndex: 0,
+                                                                                  progressState: 0,
+                                                                                  deckProgress: []
+                                                                              }
+                                                                          ]
+                                                                      }
+                                                                    : m
+                                                            )
+                                                        );
+
+                                                        setTimeout(() => {
+                                                            navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+                                                        }, 100);
+                                                    } else {
+                                                        getToast('error', res.message || 'Enroll failed');
+                                                    }
+                                                } catch (err: any) {
+                                                    console.error('Enroll API error', err);
+                                                    const msg =
+                                                        err?.response?.data?.message || err?.message || 'Enroll failed';
+                                                    getToast('error', msg);
+                                                }
+                                            }}
                                         />
                                     </div>
                                 );
                             })}
                         </div>
+
                         {hasMoreMoocs && (
                             <div className='flex justify-center mt-4'>
                                 <Button variant='outline' onClick={() => setMoocPage((prev) => prev + 1)}>
@@ -271,7 +332,6 @@ function ClassDetailUser() {
                             </div>
                         )}
 
-                        {/* Scheduled Decks */}
                         {scheduledDecks.length > 0 && (
                             <div className='mt-8'>
                                 <h3 className='pl-2 text-xl font-semibold mb-4'>Scheduled Decks</h3>
@@ -321,6 +381,7 @@ function ClassDetailUser() {
                 onStartNew={handleStartNewSession}
                 pendingSessionData={pendingSessionData}
             />
+
             {paymentPopup.open && paymentPopup.mooc && (
                 <Dialog open={paymentPopup.open} onOpenChange={() => setPaymentPopup({ open: false, mooc: undefined })}>
                     <DialogContent className='sm:max-w-md'>
@@ -343,7 +404,6 @@ function ClassDetailUser() {
                                 variant='destructive'
                                 onClick={() => {
                                     console.log('Redirect to payment API for', paymentPopup.mooc._id);
-                                    // call payment API or navigate
                                 }}
                             >
                                 Pay Now

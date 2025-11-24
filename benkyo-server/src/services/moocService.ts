@@ -317,6 +317,7 @@ export const deleteMoocService = async (moocId: string, userId: string) => {
 export const enrollUserService = async (moocId: string, userId: string) => {
     const mooc = await Mooc.findById(moocId).populate('class', 'users');
     if (!mooc) return { success: false, message: 'MOOC not found', data: null };
+
     const classObj = mooc.class as { users: Types.ObjectId[] } | null;
     if (classObj) {
         const isMember = classObj.users.some((u) => u.toString() === userId);
@@ -326,11 +327,19 @@ export const enrollUserService = async (moocId: string, userId: string) => {
     const alreadyEnrolled = mooc.enrolledUsers.some((u: any) => u.user.toString() === userId);
     if (alreadyEnrolled) return { success: true, message: 'User already enrolled', data: mooc };
 
+    const deckProgress = mooc.decks.map((d) => ({
+        deck: d.deck,
+        completed: false,
+        locked: d.order !== 0,
+        completedAt: null
+    }));
+
     mooc.enrolledUsers.push({
         user: new Types.ObjectId(userId),
         currentDeckIndex: 0,
         progressState: 0,
-        startedAt: new Date()
+        startedAt: new Date(),
+        deckProgress
     });
 
     const saved = await mooc.save();
