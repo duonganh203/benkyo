@@ -315,23 +315,25 @@ const DeckDetail = () => {
                                 <p className='text-muted-foreground'>{deckData.description || 'No description'}</p>
                                 <div className='flex items-center gap-3 mt-2'>
                                     <LikeDeck deckData={deckData} currentUser={currentUser} onLikeApi={handleLike} />
-                                    <div className='flex items-center gap-2'>
-                                        <FacebookShareButton
-                                            url={shareUrl}
-                                            title={shareTitle}
-                                            hashtag={shareTitle}
-                                            className='inline-flex items-center justify-center'
-                                        >
-                                            <FacebookIcon size={32} round />
-                                        </FacebookShareButton>
-                                        <TwitterShareButton
-                                            url={shareUrl}
-                                            title={shareTitle}
-                                            className='inline-flex items-center justify-center'
-                                        >
-                                            <TwitterIcon size={32} round />
-                                        </TwitterShareButton>
-                                    </div>
+                                    {deckData.publicStatus === 2 && (
+                                        <div className='flex items-center gap-2'>
+                                            <FacebookShareButton
+                                                url={shareUrl}
+                                                title={shareTitle}
+                                                hashtag={shareTitle}
+                                                className='inline-flex items-center justify-center'
+                                            >
+                                                <FacebookIcon size={32} round />
+                                            </FacebookShareButton>
+                                            <TwitterShareButton
+                                                url={shareUrl}
+                                                title={shareTitle}
+                                                className='inline-flex items-center justify-center'
+                                            >
+                                                <TwitterIcon size={32} round />
+                                            </TwitterShareButton>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
