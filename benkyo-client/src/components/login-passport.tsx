@@ -14,14 +14,16 @@ const LoginPassport = () => {
         const name = searchParams.get('name');
         const avatar = searchParams.get('avatar');
         const isPro = searchParams.get('isPro');
+        const balance = searchParams.get('balance');
         const proType = searchParams.get('proType');
-        if (token && refreshToken && id && email && name && avatar && isPro && proType) {
+        if (token && refreshToken && id && email && name && avatar && isPro && proType && balance) {
             setUser({
                 _id: id,
                 email,
                 username: name,
                 avatar: avatar,
                 isPro: isPro == 'true' ? true : false,
+                balance: Number(balance),
                 proType: proType
             });
             setToken(token);
