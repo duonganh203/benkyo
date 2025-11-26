@@ -34,7 +34,7 @@ interface DeckData {
 }
 
 export const ClassUpdateMooc = () => {
-    const { moocId, classId } = useParams<{ moocId: string }>();
+    const { moocId } = useParams<{ moocId: string }>();
     const navigate = useNavigate();
 
     const { data: mooc, isLoading: moocLoading } = useGetMoocDetail(moocId!);
@@ -42,7 +42,9 @@ export const ClassUpdateMooc = () => {
 
     const updateMoocMutation = useUpdateMooc();
     const deleteCardMutation = useDeleteCard();
-    const { data: availableDecks } = useGetDeckToAddClass(mooc.class);
+
+    // dùng classId từ mooc sau khi đã load
+    const { data: availableDecks } = useGetDeckToAddClass(mooc?.class as string);
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
