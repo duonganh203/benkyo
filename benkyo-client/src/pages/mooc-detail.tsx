@@ -1,3 +1,4 @@
+// MOOCDetail.tsx
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -57,7 +58,6 @@ const MOOCDetail: React.FC = () => {
     }
 
     const handleEdit = () => navigate(`/moocs/update/${moocId}`);
-
     const handleDelete = async () => {
         if (!moocId) return;
         const res = await deleteMooc(moocId);
@@ -68,29 +68,51 @@ const MOOCDetail: React.FC = () => {
             getToast('error', 'MOOC deletion failed');
         }
     };
+    const handleGoToDeck = (deckId: string) => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}`);
+    const handleQuizHub = (deckId: string) => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
 
-    const handleGoToDeck = (deckId: string) => {
-        navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}`);
+    const isUserEnrolled = (mooc: any) => {
+        if (!mooc?.enrolledUsers || !user?._id) return false;
+        return mooc.enrolledUsers.some((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === user._id.toString();
+        });
     };
 
-    const handleQuizHub = (deckId: string) => {
-        navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
+    const getDeckProgressForUser = (deckId: string) => {
+        if (!mooc || !user?._id) return null;
+        const enrolledUser = mooc.enrolledUsers.find((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === user._id.toString();
+        });
+        if (!enrolledUser) return null;
+        return enrolledUser.deckProgress.find((d: any) => {
+            const did = d.deck?._id ? d.deck._id : d.deck;
+            return did?.toString() === deckId.toString();
+        });
     };
 
     const getDeckStatusForUser = (deckId: string) => {
-        if (!mooc || !user?._id) return 'locked';
-        const enrolledUser = mooc.enrolledUsers.find((u: any) => u.user._id === user._id || u.user === user._id);
-        if (!enrolledUser) return 'locked';
-
-        const progress = enrolledUser.deckProgress.find((d: any) => d.deck._id === deckId || d.deck === deckId);
+        if (isOwner) return 'available';
+        if (!isUserEnrolled(mooc)) return 'locked';
+        const progress = getDeckProgressForUser(deckId);
         if (!progress) return 'locked';
-
         return progress.locked ? 'locked' : 'available';
+    };
+
+    const isMoocCompletedByUser = () => {
+        if (isOwner) return true;
+        if (!mooc || !user?._id) return false;
+        const enrolledUser = mooc.enrolledUsers.find((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === user._id.toString();
+        });
+        if (!enrolledUser) return false;
+        return enrolledUser.deckProgress.every((d: any) => d.completed);
     };
 
     return (
         <div className='min-h-screen bg-background'>
-            {/* Header */}
             <header className='bg-card border-b border-border py-6 px-4'>
                 <div className='max-w-4xl mx-auto flex items-start justify-between'>
                     <div className='flex items-start gap-4'>
@@ -102,29 +124,19 @@ const MOOCDetail: React.FC = () => {
                             <p className='text-lg text-muted-foreground'>{mooc.description}</p>
                         </div>
                     </div>
-
                     {isOwner && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant='ghost'
-                                    size='icon'
-                                    className='text-muted-foreground hover:text-foreground'
-                                >
+                                <Button variant='ghost' size='icon'>
                                     <MoreVertical className='h-5 w-5' />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align='end' className='w-32'>
                                 <DropdownMenuItem onClick={handleEdit}>
-                                    <Pencil className='mr-2 h-4 w-4' />
-                                    Edit
+                                    <Pencil className='mr-2 h-4 w-4' /> Edit
                                 </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => setOpenDeleteModal(true)}
-                                    className='text-destructive focus:text-destructive'
-                                >
-                                    <Trash2 className='mr-2 h-4 w-4' />
-                                    Delete
+                                <DropdownMenuItem onClick={() => setOpenDeleteModal(true)} className='text-destructive'>
+                                    <Trash2 className='mr-2 h-4 w-4' /> Delete
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -132,7 +144,6 @@ const MOOCDetail: React.FC = () => {
                 </div>
             </header>
 
-            {/* Decks Section */}
             <section className='py-8 px-4'>
                 <div className='max-w-4xl mx-auto'>
                     <div className='mb-8'>
@@ -147,7 +158,6 @@ const MOOCDetail: React.FC = () => {
                             mooc.decks
                                 .sort((a: DeckWrapper, b: DeckWrapper) => (a.order ?? 0) - (b.order ?? 0))
                                 .map((deckWrapper: DeckWrapper) => {
-                                    if (!deckWrapper || !deckWrapper.deck) return null;
                                     const deck = deckWrapper.deck;
                                     const deckStatus = getDeckStatusForUser(deck._id);
                                     const isAvailable = deckStatus === 'available';
@@ -156,7 +166,9 @@ const MOOCDetail: React.FC = () => {
                                         <div key={deck._id} className='space-y-3'>
                                             <ProgressCard
                                                 title={deck.name ?? 'Untitled Deck'}
-                                                description={`${deck.description ?? ''} • ${deck.cardCount ?? 0} flashcards • 70% points required`}
+                                                description={`${deck.description ?? ''} • ${
+                                                    deck.cardCount ?? 0
+                                                } flashcards • 70% points required`}
                                                 status={deckStatus}
                                                 onClick={() => isAvailable && handleGoToDeck(deck._id)}
                                             />
@@ -168,8 +180,7 @@ const MOOCDetail: React.FC = () => {
                                                         onClick={() => handleQuizHub(deck._id)}
                                                         className='flex items-center gap-2'
                                                     >
-                                                        <Zap className='w-4 h-4' />
-                                                        Extra Challenge
+                                                        <Zap className='w-4 h-4' /> Extra Challenge
                                                     </Button>
                                                 </div>
                                             )}
@@ -188,6 +199,12 @@ const MOOCDetail: React.FC = () => {
                             </Card>
                         )}
                     </div>
+
+                    {isMoocCompletedByUser() && mooc.nextMoocId && (
+                        <Button onClick={() => navigate(`/class/${classId}/mooc/${mooc.nextMoocId}`)}>
+                            Go to Next MOOC
+                        </Button>
+                    )}
                 </div>
             </section>
 

@@ -97,7 +97,7 @@ export interface EnrollPayload {
 }
 
 export interface UpdateProgressPayload {
-    moocId: string;
+    userId: string;
     deckId: string;
     completed: boolean;
 }

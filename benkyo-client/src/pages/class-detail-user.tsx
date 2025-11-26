@@ -47,9 +47,8 @@ function ClassDetailUser() {
     const { mutateAsync: startSession } = useStartClassDeckSession();
     const { data: allMoocs } = useGetAllMoocs(classId);
 
-    // Local state để có thể update enroll ngay UI
+    // Local state để update UI ngay khi enroll
     const [allMoocsState, setAllMoocsState] = useState<any[]>(allMoocs?.data || []);
-
     useEffect(() => {
         if (allMoocs?.data) setAllMoocsState(allMoocs.data);
     }, [allMoocs]);
@@ -95,6 +94,29 @@ function ClassDetailUser() {
         }, 0);
         completionRate = Math.round(totalProgress / scheduledDecks.length);
     }
+
+    // ================= Helper =================
+    const isUserEnrolled = (mooc: any) => {
+        if (!mooc?.enrolledUsers || !userId) return false;
+        return mooc.enrolledUsers.some((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === userId.toString();
+        });
+    };
+
+    const getDeckProgressForUser = (mooc: any, deckId: string) => {
+        if (!mooc || !userId) return null;
+        const enrolledUser = mooc.enrolledUsers.find((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === userId.toString();
+        });
+        if (!enrolledUser) return null;
+        return enrolledUser.deckProgress.find((d: any) => {
+            const did = d.deck?._id ? d.deck._id : d.deck;
+            return did?.toString() === deckId.toString();
+        });
+    };
+    // ==========================================
 
     // Start study session
     const startStudyMode = async (deck: DeckInClass) => {
@@ -158,33 +180,33 @@ function ClassDetailUser() {
         setLoadingSession(false);
     };
 
-    // Filter & paginate MOOCs
-    const filteredMoocs = allMoocsState.filter((mooc) => isOwner || mooc.publicStatus === 2) || [];
-    const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
-    const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
-
+    // ================= MOOC click =================
     const handleMOOCClick = (mooc: any) => {
-        const isEnrolled = mooc.enrolledUsers?.some((u: any) => u.user === userId || u.user?._id === userId);
+        const enrolled = isUserEnrolled(mooc);
 
         if (isOwner) {
             navigate(`/class/${classData._id}/mooc/${mooc._id}`);
             return;
         }
 
-        if (mooc.isPaid) {
-            if (isEnrolled) navigate(`/class/${classData._id}/mooc/${mooc._id}`);
-            else setPaymentPopup({ open: true, mooc });
-            return;
-        }
-
-        if (mooc.locked) {
+        if (mooc.isPaid && !enrolled) {
             setPaymentPopup({ open: true, mooc });
             return;
         }
 
-        if (isEnrolled) navigate(`/class/${classData._id}/mooc/${mooc._id}`);
-        else getToast('info', 'Please enroll to access this MOOC');
+        if (mooc.locked && !enrolled) {
+            getToast('info', 'Please complete previous MOOC to unlock this one.');
+            return;
+        }
+
+        navigate(`/class/${classData._id}/mooc/${mooc._id}`);
     };
+    // ================================================
+
+    // Filter & paginate MOOCs
+    const filteredMoocs = allMoocsState.filter((mooc) => isOwner || mooc.publicStatus === 2) || [];
+    const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
+    const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
 
     return (
         <div className='min-h-screen bg-background'>
@@ -229,97 +251,66 @@ function ClassDetailUser() {
                         <h2 className='text-2xl font-bold mb-4'>Available MOOCs</h2>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                             {paginatedMoocs.map((mooc: any) => {
-                                const isPaid = mooc.isPaid;
-                                const isLocked = mooc.locked;
-
-                                const enrolled = mooc.enrolledUsers?.find(
-                                    (u: any) =>
-                                        (typeof u.user === 'string' && u.user === userId) ||
-                                        (u.user &&
-                                            typeof u.user === 'object' &&
-                                            (u.user._id === userId || u.user.toString() === userId)) ||
-                                        (u.user &&
-                                            typeof u.user.toString === 'function' &&
-                                            u.user.toString() === userId)
-                                );
-
-                                const isEnrolled = !!enrolled;
-                                let status: 'available' | 'locked' | 'paid' = 'available';
-                                if (isPaid) status = 'paid';
-                                else if (isLocked) status = 'locked';
-
-                                const isDisabledForNonOwner = !isOwner && mooc.locked && !mooc.isPaid;
+                                const enrolled = isUserEnrolled(mooc);
                                 const totalDecks = mooc.decks?.length || 0;
-                                const userDeckProgress: any[] = enrolled?.deckProgress || [];
                                 const completedDecks =
-                                    userDeckProgress.length > 0
-                                        ? userDeckProgress.filter((dp: any) => dp.completed).length
-                                        : 0;
+                                    mooc.decks?.filter((d: any) => getDeckProgressForUser(mooc, d._id)?.completed)
+                                        .length || 0;
                                 const progressPercent =
                                     totalDecks === 0 ? 0 : Math.round((completedDecks / totalDecks) * 100);
 
+                                let status: 'available' | 'locked' | 'paid' = 'available';
+                                if (!enrolled && mooc.isPaid) status = 'paid';
+                                else if (!enrolled && mooc.locked) status = 'locked';
+
                                 return (
-                                    <div key={mooc._id} className='relative group space-y-2'>
-                                        <ProgressCard
-                                            title={mooc.title}
-                                            description={mooc.description || 'Không có mô tả'}
-                                            progress={progressPercent}
-                                            status={status}
-                                            onClick={() => {
-                                                if (!isDisabledForNonOwner) handleMOOCClick(mooc);
-                                            }}
-                                            isOwner={isOwner}
-                                            isEnrolled={isEnrolled}
-                                            onEnroll={async () => {
-                                                if (!userId) {
-                                                    getToast('error', 'You must be logged in to enroll');
-                                                    return;
+                                    <ProgressCard
+                                        key={mooc._id}
+                                        title={mooc.title}
+                                        description={mooc.description || 'No description'}
+                                        progress={progressPercent}
+                                        status={status}
+                                        onClick={() => handleMOOCClick(mooc)}
+                                        isOwner={isOwner}
+                                        isEnrolled={enrolled}
+                                        onEnroll={async () => {
+                                            if (!userId) {
+                                                getToast('error', 'You must be logged in to enroll');
+                                                return;
+                                            }
+                                            try {
+                                                const res = await enrollUser(mooc._id, { userId, moocId: mooc._id });
+                                                if (res?.success) {
+                                                    getToast('success', 'Enrolled successfully');
+                                                    setAllMoocsState((prev) =>
+                                                        prev.map((m) =>
+                                                            m._id === mooc._id
+                                                                ? {
+                                                                      ...m,
+                                                                      locked: false,
+                                                                      enrolledUsers: m.enrolledUsers?.some(
+                                                                          (u: any) => u.user === userId
+                                                                      )
+                                                                          ? m.enrolledUsers
+                                                                          : [
+                                                                                ...(m.enrolledUsers || []),
+                                                                                { user: userId, deckProgress: [] }
+                                                                            ]
+                                                                  }
+                                                                : m
+                                                        )
+                                                    );
+                                                    navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+                                                } else {
+                                                    getToast('error', res.message || 'Enroll failed');
                                                 }
-                                                try {
-                                                    const res = await enrollUser(mooc._id, {
-                                                        userId,
-                                                        moocId: mooc._id
-                                                    });
-
-                                                    // Kiểm tra response thật kỹ
-                                                    if (res && res.success) {
-                                                        getToast('success', 'Enrolled successfully');
-
-                                                        // Cập nhật local state
-                                                        setAllMoocsState((prev) =>
-                                                            prev.map((m) =>
-                                                                m._id === mooc._id
-                                                                    ? {
-                                                                          ...m,
-                                                                          enrolledUsers: [
-                                                                              ...(m.enrolledUsers || []),
-                                                                              {
-                                                                                  user: userId,
-                                                                                  currentDeckIndex: 0,
-                                                                                  progressState: 0,
-                                                                                  deckProgress: []
-                                                                              }
-                                                                          ]
-                                                                      }
-                                                                    : m
-                                                            )
-                                                        );
-
-                                                        setTimeout(() => {
-                                                            navigate(`/class/${classData._id}/mooc/${mooc._id}`);
-                                                        }, 100);
-                                                    } else {
-                                                        getToast('error', res.message || 'Enroll failed');
-                                                    }
-                                                } catch (err: any) {
-                                                    console.error('Enroll API error', err);
-                                                    const msg =
-                                                        err?.response?.data?.message || err?.message || 'Enroll failed';
-                                                    getToast('error', msg);
-                                                }
-                                            }}
-                                        />
-                                    </div>
+                                            } catch (err: any) {
+                                                const msg =
+                                                    err?.response?.data?.message || err?.message || 'Enroll failed';
+                                                getToast('error', msg);
+                                            }
+                                        }}
+                                    />
                                 );
                             })}
                         </div>

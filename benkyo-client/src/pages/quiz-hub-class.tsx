@@ -15,7 +15,6 @@ const QuizHub: React.FC = () => {
     const { data, isLoading, isError } = useGetQuizzesByDeck(classId!, moocId!, deckId!);
     const quizzes: QuizHubType[] = data ?? [];
     const mainQuiz = quizzes[0];
-    console.log('Quizzes fetched:', quizzes);
 
     const handleBackToMOOC = () => navigate(`/class/${classId}/mooc/${moocId}`);
     const handleStartQuiz = (quizId: string) =>
