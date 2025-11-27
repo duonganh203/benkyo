@@ -288,7 +288,10 @@ export const getClassManagement = async (req: Request, res: Response) => {
 export const getClassMembers = async (req: Request, res: Response) => {
     const classId = req.params._id;
     const userId = req.user._id;
-    const members = await classService.getClassMembersService(classId, userId);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+
+    const members = await classService.getClassMembersService(classId, userId, page, limit);
 
     res.json(members);
 };
@@ -325,8 +328,19 @@ export const getClassRequestJoin = async (req: Request, res: Response) => {
 export const getClassVisited = async (req: Request, res: Response) => {
     const classId = req.params._id;
     const userId = req.user._id;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
 
-    const visited = await classService.getClassVisitedService(classId, userId);
+    const visited = await classService.getClassVisitedService(classId, userId, page, limit);
 
     res.json(visited);
+};
+
+export const leaveClass = async (req: Request, res: Response) => {
+    const classId = req.params.classId;
+    const userId = req.user._id;
+
+    const result = await classService.leaveClassService(classId, userId);
+
+    res.json(result);
 };

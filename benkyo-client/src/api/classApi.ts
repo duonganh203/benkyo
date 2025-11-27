@@ -213,9 +213,16 @@ export const cancelInviteApi = async (classId: string, userId: string) => {
     return response.data as { message: string };
 };
 
-export const getClassMemberApi = async (classId: string) => {
-    const response = await api.get(`/class/${classId}/members`);
-    return response.data as ClassMembersResponse;
+export const getClassMemberApi = async (classId: string, page: number = 1, limit: number = 20) => {
+    const response = await api.get(`/class/${classId}/members`, {
+        params: { page, limit }
+    });
+    return response.data as {
+        data: ClassMembersResponse;
+        page: number;
+        hasMore: boolean;
+        total: number;
+    };
 };
 
 export const getClassDeckApi = async (classId: string) => {
@@ -240,9 +247,21 @@ export const getClassRequestJoinApi = async (classId: string) => {
     return response.data as ClassRequestJoinResponse;
 };
 
-export const getClassVisitedApi = async (classId: string) => {
-    const response = await api.get(`/class/${classId}/visited`);
-    return response.data as ClassVisitedResponse;
+export const getClassVisitedApi = async (classId: string, page: number = 1, limit: number = 20) => {
+    const response = await api.get(`/class/${classId}/visited`, {
+        params: { page, limit }
+    });
+    return response.data as {
+        data: ClassVisitedResponse;
+        page: number;
+        hasMore: boolean;
+        total: number;
+    };
+};
+
+export const leaveClassApi = async (classId: string) => {
+    const response = await api.post(`/class/${classId}/leave`);
+    return response.data as { message: string };
 };
 
 export const createMoocDeckQuizApi = async (

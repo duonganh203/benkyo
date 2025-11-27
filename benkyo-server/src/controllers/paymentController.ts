@@ -7,11 +7,13 @@ import {
     saveTransaction,
     getDashboardMetricsService,
     getMonthlyRevenueService,
-    getQuarterlyRevenueService
+    getQuarterlyRevenueService,
+    createTopupTransaction
 } from '~/services/paymentService';
 
 export const webhook = async (req: Request, res: Response) => {
     const transactionData = {
+        type: 'PACKAGE' as const,
         tid: req.body.data.tid,
         description: req.body.data.description,
         amount: req.body.data.amount,
@@ -31,6 +33,12 @@ export const getInformationQR = async (req: Request, res: Response) => {
     const { packageId } = req.params;
     const payment = await getTransaction(req.user._id, packageId);
     return res.json(payment);
+};
+
+export const createTopup = async (req: Request, res: Response) => {
+    const { amount } = req.body as { amount: number };
+    const data = await createTopupTransaction(req.user._id, amount);
+    return res.json(data);
 };
 
 export const getIsPaid = async (req: Request, res: Response) => {

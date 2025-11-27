@@ -57,7 +57,8 @@ export const loginService = async (userData: z.infer<typeof loginValidation>, op
             email: user.email,
             avatar: user.avatar,
             isPro: user.isPro,
-            proType: user.proType
+            proType: user.proType,
+            balance: user.balance ?? 0
         }
     };
 };

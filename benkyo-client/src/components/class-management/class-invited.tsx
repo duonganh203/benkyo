@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Mail, UserX } from 'lucide-react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,7 +19,9 @@ export const ClassInvited = () => {
         hasNextPage,
         fetchNextPage,
         refetch
-    } = useGetClassInvited(classData?._id || '', 5);
+    } = useGetClassInvited(classData?._id || '', 10);
+
+    const invitedUsers = pagedInvited?.pages.flatMap((page) => page.data || []) ?? [];
     const { mutateAsync: cancelInvite } = useCancelInvite();
 
     const invitedUsers = useMemo(() => {
@@ -87,7 +90,7 @@ export const ClassInvited = () => {
             <CardHeader>
                 <CardTitle className='flex items-center gap-2'>
                     <Mail className='w-5 h-5' />
-                    Invited Users ({invitedUsers?.length || 0})
+                    Invited Users ({invitedUsers.length || 0})
                 </CardTitle>
             </CardHeader>
             <CardContent>

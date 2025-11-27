@@ -2,13 +2,6 @@ import { create } from 'zustand';
 import { getClassInvitedApi } from '@/api/classApi';
 import type { ClassInvitedResponse } from '@/types/class';
 
-type ClassInvitedPaged = {
-    data: ClassInvitedResponse;
-    page: number;
-    hasMore: boolean;
-    total: number;
-};
-
 interface ClassInvitedStore {
     invited: ClassInvitedPaged;
     isLoading: boolean;
@@ -31,8 +24,8 @@ export const useClassInvitedStore = create<ClassInvitedStore>((set) => ({
     fetchInvitedUsers: async (classId: string, page: number = 1, limit: number = 20) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await getClassInvitedApi(classId, page, limit);
-            set({ invited: response, isLoading: false });
+            const response = await getClassInvitedApi(classId);
+            set({ invitedUsers: response.data || [], isLoading: false });
         } catch {
             set({ error: 'Failed to fetch invited users', isLoading: false });
         }

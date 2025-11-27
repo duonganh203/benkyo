@@ -1405,19 +1405,49 @@ export const getClassMonthlyAccessStatsService = async (classId: string, request
     return monthlyStats;
 };
 
-export const getClassMembersService = async (classId: string, userId: Types.ObjectId) => {
+export const getClassMembersService = async (classId: string, userId: Types.ObjectId, page: number, limit: number) => {
     await assertOwner(classId, userId);
 
-    const classData = await Class.findById(classId).populate({
-        path: 'users',
-        select: '_id email name avatar'
-    });
+    const classData = await Class.findById(classId).select('users').lean();
 
     if (!classData) {
         throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
     }
 
-    return classData.users || [];
+    const allUserIds = (classData.users ?? []) as Types.ObjectId[];
+    const total = allUserIds.length;
+
+    const safePage = page > 0 ? page : 1;
+    const safeLimit = limit > 0 ? limit : 5;
+    const start = (safePage - 1) * safeLimit;
+    const end = start + safeLimit;
+
+    const pageUserIds = allUserIds.slice(start, end);
+
+    if (pageUserIds.length === 0) {
+        return {
+            data: [],
+            page: safePage,
+            hasMore: false,
+            total
+        };
+    }
+
+    const users = await User.find({ _id: { $in: pageUserIds } })
+        .select('_id name email avatar')
+        .lean();
+
+    const order = new Map(pageUserIds.map((id, index) => [id.toString(), index]));
+    const sortedUsers = users.sort((a, b) => (order.get(a._id.toString()) ?? 0) - (order.get(b._id.toString()) ?? 0));
+
+    const hasMore = end < total;
+
+    return {
+        data: sortedUsers,
+        page: safePage,
+        hasMore,
+        total
+    };
 };
 
 export const getClassDecksService = async (classId: string, userId: Types.ObjectId) => {
@@ -1500,19 +1530,57 @@ export const getClassRequestJoinService = async (classId: string, userId: Types.
     return classData.joinRequests || [];
 };
 
-export const getClassVisitedService = async (classId: string, userId: Types.ObjectId) => {
+export const getClassVisitedService = async (classId: string, userId: Types.ObjectId, page: number, limit: number) => {
     await assertOwner(classId, userId);
 
-    const classData = await Class.findById(classId).populate({
-        path: 'visited.userId',
-        select: '_id email name avatar'
-    });
+    const classData = await Class.findById(classId).select('visited').lean();
 
     if (!classData) {
         throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
     }
 
-    return classData.visited || [];
+    const visited = classData.visited ?? [];
+    const total = visited.length;
+
+    const safePage = page > 0 ? page : 1;
+    const safeLimit = limit > 0 ? limit : 20;
+    const start = (safePage - 1) * safeLimit;
+    const end = start + safeLimit;
+
+    const pageVisited = visited
+        .slice()
+        .sort((a, b) => new Date(b.lastVisit).getTime() - new Date(a.lastVisit).getTime())
+        .slice(start, end);
+
+    if (pageVisited.length === 0) {
+        return {
+            data: [],
+            page: safePage,
+            hasMore: false,
+            total
+        };
+    }
+
+    const userIds = pageVisited.map((x) => x.userId as Types.ObjectId);
+    const users = await User.find({ _id: { $in: userIds } })
+        .select('_id name email avatar')
+        .lean();
+    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
+
+    const data = pageVisited.map((entry) => ({
+        _id: entry.userId,
+        user: userMap.get(entry.userId.toString()) ?? null,
+        lastVisit: entry.lastVisit
+    }));
+
+    const hasMore = end < total;
+
+    return {
+        data,
+        page: safePage,
+        hasMore,
+        total
+    };
 };
 
 export const getClassManagementService = async (classId: string, userId: Types.ObjectId) => {
@@ -1548,4 +1616,33 @@ export const getClassManagementService = async (classId: string, userId: Types.O
         updatedAt: existingClass.updatedAt,
         overdueMemberCount
     };
+};
+
+export const leaveClassService = async (classId: string, userId: Types.ObjectId) => {
+    const cls = await Class.findById(classId).select('owner users joinRequests invitedUsers');
+    if (!cls) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+
+    if (cls.owner.equals(userId)) {
+        throw new ForbiddenRequestsException('Owner cannot leave their own class', ErrorCode.FORBIDDEN);
+    }
+
+    const isMember = (cls.users ?? []).some((u) => u.equals(userId));
+    if (!isMember) {
+        throw new NotFoundException('You are not a member of this class', ErrorCode.NOT_FOUND);
+    }
+
+    await Class.updateOne(
+        { _id: classId },
+        {
+            $pull: {
+                users: userId,
+                joinRequests: { user: userId },
+                invitedUsers: { user: userId }
+            }
+        }
+    );
+
+    await UserClassState.deleteMany({ class: classId, user: userId });
+
+    return { message: 'Left class successfully' };
 };

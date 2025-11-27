@@ -77,6 +77,17 @@ export function NavUser({ user }: { user: User }) {
                                 </div>
                             </div>
                         </DropdownMenuLabel>
+                        <DropdownMenuLabel className='px-3 pb-2 text-xs flex items-center justify-between text-muted-foreground'>
+                            <span>Balance</span>
+                            <span className='font-semibold text-emerald-500'>{user.balance} đ</span>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem onClick={() => navigate('/wallet/topup')}>
+                                <CreditCard />
+                                Top up wallet
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         {!user.isPro && (
                             <DropdownMenuGroup>

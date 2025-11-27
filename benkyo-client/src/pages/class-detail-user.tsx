@@ -7,6 +7,7 @@ import useGetClassUserById from '@/hooks/queries/use-get-class-user-id';
 import useStartClassDeckSession from '@/hooks/queries/use-start-class-deck-session';
 import useGetAllMoocs from '@/hooks/queries/use-get-all-mooc-class';
 import useMe from '@/hooks/queries/use-me';
+import useLeaveClass from '@/hooks/queries/use-leave-class';
 import ClassHeader from '@/components/class-header';
 import DeckCard from '@/components/deck-card';
 import TopLearners from '@/components/top-learners';
@@ -17,6 +18,7 @@ import ClassResumeSessionModal from '@/components/modals/ClassResumeSessionModal
 
 import { getToast } from '@/utils/getToast';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
+import ConfirmLeaveClassModal from '@/components/modals/confirm-leave-class-modal';
 
 function ClassDetailUser() {
     const { data: user } = useMe();
@@ -39,12 +41,15 @@ function ClassDetailUser() {
         open: false,
         mooc: undefined
     });
+    const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+    const [leaving, setLeaving] = useState(false);
 
     const moocsPerPage = 6;
 
     const { data: classData, isLoading: isLoadingClass } = useGetClassUserById(classId ?? '');
     const { mutateAsync: startSession } = useStartClassDeckSession();
     const { data: allMoocs } = useGetAllMoocs(classId);
+    const { mutateAsync: leaveClass } = useLeaveClass();
 
     if (!classId) {
         return <p>Class ID is missing.</p>;
@@ -159,6 +164,17 @@ function ClassDetailUser() {
         setLoadingSession(false);
     };
 
+    const handleConfirmLeaveClass = async () => {
+        if (!classId) return;
+        try {
+            setLeaving(true);
+            await leaveClass({ classId });
+        } finally {
+            setLeaving(false);
+            setShowLeaveConfirm(false);
+        }
+    };
+
     const filteredMoocs = allMoocs?.data?.filter((mooc) => isOwner || mooc.publicStatus === 2) || [];
     const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
     const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
@@ -210,13 +226,26 @@ function ClassDetailUser() {
 
                 <div className='mb-8 flex justify-between items-center'>
                     <h2 className='text-2xl font-bold'>Class Status</h2>
-                    {isOwner && (
-                        <Link to={`/class/${classData._id}/management`}>
-                            <Button variant='default' size='default' className='flex items-center gap-2'>
-                                <Settings2 className='h-4 w-4' /> Manage Class
+                    <div className='flex items-center gap-2'>
+                        {isOwner && (
+                            <Link to={`/class/${classData._id}/management`}>
+                                <Button variant='default' size='default' className='flex items-center gap-2'>
+                                    <Settings2 className='h-4 w-4' /> Manage Class
+                                </Button>
+                            </Link>
+                        )}
+                        {!isOwner && (
+                            <Button
+                                variant='destructive'
+                                size='default'
+                                className='flex items-center gap-2'
+                                onClick={() => setShowLeaveConfirm(true)}
+                                disabled={leaving}
+                            >
+                                {leaving ? 'Processing...' : 'Leave Class'}
                             </Button>
-                        </Link>
-                    )}
+                        )}
+                    </div>
                 </div>
 
                 <StatsGrid
@@ -320,6 +349,13 @@ function ClassDetailUser() {
                 onContinue={handleContinueSession}
                 onStartNew={handleStartNewSession}
                 pendingSessionData={pendingSessionData}
+            />
+            <ConfirmLeaveClassModal
+                open={showLeaveConfirm}
+                onClose={() => setShowLeaveConfirm(false)}
+                onConfirm={handleConfirmLeaveClass}
+                isSubmitting={leaving}
+                classTitle={classData.name}
             />
             {paymentPopup.open && paymentPopup.mooc && (
                 <Dialog open={paymentPopup.open} onOpenChange={() => setPaymentPopup({ open: false, mooc: undefined })}>

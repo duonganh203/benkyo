@@ -29,6 +29,7 @@ export const ClassSetting = () => {
     const { mutateAsync: updateClass, isPending: isUpdating } = useUpdateClass();
     const { mutateAsync: deleteClass, isPending: isDeleting } = useClassDelete();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isUploadingBanner, setIsUploadingBanner] = useState(false);
 
     const form = useForm<ClassUpdateForm>({
         resolver: zodResolver(classSchema),
@@ -64,12 +65,15 @@ export const ClassSetting = () => {
     const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            setIsUploadingBanner(true);
             try {
                 const bannerUrl = await uploadToCloudinary(file);
                 form.setValue('bannerUrl', bannerUrl);
                 getToast('success', 'Banner uploaded successfully');
             } catch {
                 getToast('error', 'Failed to upload image');
+            } finally {
+                setIsUploadingBanner(false);
             }
         }
     };
@@ -141,15 +145,31 @@ export const ClassSetting = () => {
                                             <FormItem>
                                                 <FormLabel>Visibility</FormLabel>
                                                 <FormControl>
-                                                    <Select value={field.value} onValueChange={field.onChange}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder='Select visibility' />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value='private'>Private</SelectItem>
-                                                            <SelectItem value='public'>Public</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
+                                                    <div className='space-y-2'>
+                                                        <Select value={field.value} onValueChange={field.onChange}>
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder='Select visibility' />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value='private'>Private</SelectItem>
+                                                                <SelectItem value='public'>Public</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <div className='text-xs text-muted-foreground pl-1'>
+                                                            <p>
+                                                                <strong>Private</strong>: Only invited students can
+                                                                access this class.
+                                                            </p>
+                                                            <p>
+                                                                <strong>Public</strong>: Anyone with the class link can
+                                                                join and view it.
+                                                            </p>
+                                                            <p>
+                                                                Choose <strong>Private</strong> if you want stricter
+                                                                control over who can join this class.
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -164,15 +184,21 @@ export const ClassSetting = () => {
                                                 <FormLabel>Class Banner</FormLabel>
                                                 <div className='space-y-4'>
                                                     <div className='w-full h-32 overflow-hidden rounded-lg border border-border'>
-                                                        <img
-                                                            src={
-                                                                form.watch('bannerUrl') ||
-                                                                classData.bannerUrl ||
-                                                                '/default-class-banner.jpg'
-                                                            }
-                                                            alt='Class Banner'
-                                                            className='w-full h-full object-cover'
-                                                        />
+                                                        {isUploadingBanner ? (
+                                                            <div className='w-full h-full flex items-center justify-center text-sm text-muted-foreground'>
+                                                                Uploading banner...
+                                                            </div>
+                                                        ) : (
+                                                            <img
+                                                                src={
+                                                                    form.watch('bannerUrl') ||
+                                                                    classData.bannerUrl ||
+                                                                    '/default-class-banner.jpg'
+                                                                }
+                                                                alt='Class Banner'
+                                                                className='w-full h-full object-cover'
+                                                            />
+                                                        )}
                                                     </div>
                                                     <div>
                                                         <Button
@@ -182,9 +208,10 @@ export const ClassSetting = () => {
                                                             onClick={() =>
                                                                 document.getElementById('banner-upload')?.click()
                                                             }
+                                                            disabled={isUploadingBanner || isUpdating}
                                                         >
                                                             <Upload className='w-4 h-4 mr-2' />
-                                                            Upload Banner
+                                                            {isUploadingBanner ? 'Uploading...' : 'Upload Banner'}
                                                         </Button>
                                                         <Input
                                                             id='banner-upload'
@@ -208,7 +235,8 @@ export const ClassSetting = () => {
                                                 <div>
                                                     <FormLabel>Require Approval to Join</FormLabel>
                                                     <p className='text-sm text-muted-foreground'>
-                                                        Students need approval before joining the class
+                                                        When enabled, students must send a join request and wait for
+                                                        your approval before joining the class.
                                                     </p>
                                                 </div>
                                                 <FormControl>
@@ -227,9 +255,13 @@ export const ClassSetting = () => {
                                         >
                                             Cancel
                                         </Button>
-                                        <Button type='submit' className='flex-1' disabled={isUpdating}>
+                                        <Button
+                                            type='submit'
+                                            className='flex-1'
+                                            disabled={isUpdating || isUploadingBanner}
+                                        >
                                             <Save className='w-4 h-4 mr-2' />
-                                            {isUpdating ? 'Updating...' : 'Save Changes'}
+                                            {isUpdating || isUploadingBanner ? 'Updating...' : 'Save Changes'}
                                         </Button>
                                     </div>
 

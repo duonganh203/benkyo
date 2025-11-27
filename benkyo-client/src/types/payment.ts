@@ -30,3 +30,15 @@ export interface PackageInterface {
     features: string[];
     isActive: boolean;
 }
+
+export interface TopupInterface {
+    _id: string;
+    user: {
+        _id: string;
+        name: string;
+    };
+    amount: number;
+    isPaid: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
