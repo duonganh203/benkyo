@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, X, Trash2 } from 'lucide-react';
+import { Plus, X, Trash2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +15,8 @@ import useUpdateMooc from '@/hooks/queries/use-update-mooc-in-class';
 import { useGetAllDeckCards } from '@/hooks/queries/use-get-all-card-in-class';
 import useDeleteCard from '@/hooks/queries/use-delete-card';
 import useDeleteDeck from '@/hooks/queries/use-delete-deck';
+import useGetDeckToAddClass from '@/hooks/queries/use-get-decks-to-class';
+import { getDeckCards } from '@/api/deckApi';
 
 interface CardData {
     _id?: string;
@@ -36,8 +38,13 @@ export const ClassUpdateMooc = () => {
     const navigate = useNavigate();
 
     const { data: mooc, isLoading: moocLoading } = useGetMoocDetail(moocId!);
+    console.log(mooc);
+
     const updateMoocMutation = useUpdateMooc();
     const deleteCardMutation = useDeleteCard();
+
+    // dùng classId từ mooc sau khi đã load
+    const { data: availableDecks } = useGetDeckToAddClass(mooc?.class as string);
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -48,6 +55,7 @@ export const ClassUpdateMooc = () => {
 
     const [decks, setDecks] = useState<DeckData[]>([]);
     const [newTagInputs, setNewTagInputs] = useState<{ [key: string]: string }>({});
+    const [deckSearch, setDeckSearch] = useState('');
 
     const deckRefs = useRef<Array<HTMLDivElement | null>>([]);
     const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -224,6 +232,38 @@ export const ClassUpdateMooc = () => {
         );
     };
 
+    const handleSelectImportDeck = async (deckIndex: number, deckId: string) => {
+        try {
+            const cards = await getDeckCards(deckId);
+            const mappedCards = cards.map((c: any) => ({
+                // không có _id => backend hiểu là card mới
+                front: c.front,
+                back: c.back,
+                tags: c.tags ?? []
+            }));
+
+            setDecks((prev) => {
+                const next = [...prev];
+                const existing = next[deckIndex]?.cards || [];
+
+                const existingSet = new Set(existing.map((c) => `${c.front.trim()}:::${c.back.trim()}`));
+                const uniqueImported = mappedCards.filter(
+                    (c) => !existingSet.has(`${c.front.trim()}:::${c.back.trim()}`)
+                );
+
+                next[deckIndex] = {
+                    ...next[deckIndex],
+                    cards: [...existing, ...uniqueImported]
+                };
+                return next;
+            });
+
+            getToast('success', 'Imported cards from selected deck');
+        } catch (error: any) {
+            getToast('error', error?.message || 'Failed to import cards from deck');
+        }
+    };
+
     /** ======================
      *  Submit
      *  ===================== */
@@ -363,6 +403,69 @@ export const ClassUpdateMooc = () => {
                                         value={deck.description}
                                         onChange={(e) => updateDeck(deckIndex, 'description', e.target.value)}
                                     />
+                                </div>
+
+                                <div className='space-y-1 pt-1'>
+                                    <Label className='text-sm font-medium'>Import from existing deck (optional)</Label>
+                                    <p className='text-xs text-muted-foreground'>
+                                        You can copy cards from an existing class deck, then edit them below.
+                                    </p>
+                                    <Select
+                                        value=''
+                                        onValueChange={(deckId) => handleSelectImportDeck(deckIndex, deckId)}
+                                    >
+                                        <SelectTrigger className='w-56'>
+                                            <SelectValue placeholder='Choose deck to import from' />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <div className='p-2 pb-1 border-b border-border'>
+                                                <Input
+                                                    placeholder='Search deck...'
+                                                    value={deckSearch}
+                                                    onChange={(e) => setDeckSearch(e.target.value)}
+                                                    autoFocus
+                                                />
+                                            </div>
+                                            {availableDecks && availableDecks.length > 0 ? (
+                                                availableDecks
+                                                    .filter((d) =>
+                                                        d.name.toLowerCase().includes(deckSearch.toLowerCase())
+                                                    )
+                                                    .map((d) => (
+                                                        <SelectItem
+                                                            key={d._id}
+                                                            value={d._id}
+                                                            className='max-w-60 p-0 cursor-pointer'
+                                                        >
+                                                            <div className='flex items-center w-60'>
+                                                                <span className='pl-2 truncate flex-1'>{d.name}</span>
+                                                                <Button
+                                                                    variant='ghost'
+                                                                    size='icon'
+                                                                    className='p-0 ml-auto relative'
+                                                                    onMouseDown={(e) => {
+                                                                        e.preventDefault();
+                                                                        e.stopPropagation();
+                                                                        window.open(`/deck/${d._id}`, '_blank');
+                                                                    }}
+                                                                >
+                                                                    <Eye className='w-4 h-4' />
+                                                                </Button>
+                                                            </div>
+                                                        </SelectItem>
+                                                    ))
+                                            ) : (
+                                                <div className='px-2 py-1 text-sm text-muted-foreground'>
+                                                    No decks available to import
+                                                </div>
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                    {deck.cards.length > 0 && (
+                                        <p className='text-xs text-muted-foreground'>
+                                            Total cards: {deck.cards.length}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Cards */}

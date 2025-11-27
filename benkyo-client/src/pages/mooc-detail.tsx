@@ -23,7 +23,7 @@ interface Deck {
     description?: string;
     cardCount?: number;
     publicStatus?: number;
-    locked?: boolean; // <-- add this
+    locked?: boolean;
 }
 
 interface DeckWrapper {
@@ -141,7 +141,9 @@ const MOOCDetail: React.FC = () => {
                                         <div key={deck._id} className='space-y-3'>
                                             <ProgressCard
                                                 title={deck.name ?? 'Untitled Deck'}
-                                                description={`${deck.description ?? ''} • ${deck.cardCount ?? 0} flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
+                                                description={`${deck.description ?? ''} • ${
+                                                    deck.cardCount ?? 0
+                                                } flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
                                                 progress={0}
                                                 status={deckStatus}
                                                 onClick={() => isAvailable && handleGoToDeck(deck._id)}
