@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -55,6 +55,11 @@ export const ClassCreateMooc = () => {
     };
 
     const removeDeck = (index: number) => setDecks(decks.filter((_, i) => i !== index));
+    const removeCard = (deckIndex: number, cardIndex: number) => {
+        const newDecks = [...decks];
+        newDecks[deckIndex].cards = newDecks[deckIndex].cards.filter((_, i) => i !== cardIndex);
+        setDecks(newDecks);
+    };
 
     const updateDeck = (index: number, field: keyof DeckData, value: any) => {
         const newDecks = [...decks];
@@ -272,7 +277,7 @@ export const ClassCreateMooc = () => {
                                         />
                                     </div>
                                     <Button variant='ghost' size='icon' onClick={() => removeDeck(deckIndex)}>
-                                        <X className='w-5 h-5 text-destructive' />
+                                        <Trash2 className='w-5 h-5 text-destructive' />
                                     </Button>
                                 </div>
 
@@ -292,6 +297,16 @@ export const ClassCreateMooc = () => {
                                                 cardRefs.current[`${deckIndex}-${cardIndex}`] = el;
                                             }}
                                         >
+                                            <div className='flex justify-end'>
+                                                <button
+                                                    onClick={() => removeCard(deckIndex, cardIndex)}
+                                                    className='text-destructive hover:text-red-500'
+                                                    title='Delete card'
+                                                >
+                                                    <X className='w-4 h-4' />
+                                                </button>
+                                            </div>
+
                                             <Input
                                                 placeholder='Front side'
                                                 value={card.front}
