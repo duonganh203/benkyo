@@ -45,7 +45,7 @@ jobs:
             - name: Setup SSH
               uses: webfactory/ssh-agent@v0.5.3
               with:
-                  ssh-private-key: ${{secrets.SSH_PRIVATE_KEY }}
+                  ssh-private-key: ${{secrets.SSH_PRIVATE_KEY}}
 
             - name: Copy docker-compose.yml
               run: scp -o StrictHostKeyChecking=no -r docker-compose.yml ${{secrets.SSH_USERNAME}}@${{secrets.SSH_HOST}}:/home/${{secrets.SSH_USERNAME}}/benkyo/docker-compose.yml
@@ -54,6 +54,6 @@ jobs:
               run: |
                   ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
                   cd /home/${{ secrets.SSH_USERNAME }}/benkyo
-                  sudo docker-compose down --rmi all
-                  sudo docker-compose up -d
+                  docker-compose down --rmi all
+                  docker-compose up -d
                   EOF
