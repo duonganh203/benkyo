@@ -283,21 +283,25 @@ export const submitClassQuizAttemptService = async (
     responses: QuizResponse[]
 ) => {
     const mooc = await Mooc.findById(moocId);
+    if (!mooc) {
+        throw new NotFoundException('Mooc not found', ErrorCode.NOT_FOUND);
+    }
+
     const quiz = await Quiz.findById(quizId);
-
-    if (!mooc) throw new NotFoundException('Mooc not found', ErrorCode.NOT_FOUND);
-    if (!quiz) throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
-
+    if (!quiz) {
+        throw new NotFoundException('Quiz not found', ErrorCode.NOT_FOUND);
+    }
     let correctAnswers = 0;
     responses.forEach((res) => {
-        const question = (quiz.questions || []).find((q: any) => q._id.toString() === String(res.questionId));
+        const question = (quiz.questions || []).find((q: any) => q._id.toString() === res.questionId);
         if (question && question.correctAnswer === res.selectedChoice) {
             correctAnswers++;
         }
     });
 
-    const totalQuestions = (quiz.questions || []).length || 0;
+    const totalQuestions = (quiz.questions || []).length;
     const scorePercent = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
+
     const attempt = new QuizAttempt({
         user: userId,
         quiz: quizId,
@@ -309,5 +313,45 @@ export const submitClassQuizAttemptService = async (
     });
     await attempt.save();
 
-    return { attempt, scorePercent };
+    const enrolled = mooc.enrolledUsers.find((u: any) => u.user.equals(userId));
+    if (!enrolled) {
+        throw new NotFoundException('User not enrolled in this MOOC', ErrorCode.NOT_FOUND);
+    }
+
+    const PASS_SCORE = 60;
+    const currentDeckProgress = enrolled.deckProgress.find((d: any) => d.deck.toString() === deckId);
+    if (!currentDeckProgress) {
+        throw new NotFoundException('Deck progress not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (scorePercent >= PASS_SCORE) {
+        currentDeckProgress.completed = true;
+        currentDeckProgress.completedAt = new Date();
+
+        const currentOrder = mooc.decks.find((d) => d.deck.toString() === deckId)?.order ?? 0;
+        const nextDeck = mooc.decks.find((d) => d.order === currentOrder + 1);
+
+        if (nextDeck) {
+            const nextProgress = enrolled.deckProgress.find((p) => p.deck.toString() === nextDeck.deck.toString());
+            if (nextProgress) {
+                nextProgress.locked = false;
+            }
+        }
+        const allCompleted = enrolled.deckProgress.every((d: any) => d.completed);
+        enrolled.progressState = allCompleted ? 2 : 1;
+        if (allCompleted) enrolled.completedAt = new Date();
+    }
+
+    await mooc.save();
+
+    return {
+        success: true,
+        message: scorePercent >= PASS_SCORE ? 'Quiz passed' : 'Quiz failed',
+        data: {
+            attempt,
+            scorePercent,
+            deckProgress: currentDeckProgress,
+            moocProgressState: enrolled.progressState
+        }
+    };
 };

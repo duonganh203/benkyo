@@ -8,6 +8,9 @@ import useGetQuizzesByDeck from '@/hooks/queries/use-get-quizzes-by-deck';
 import { QuizHub } from '@/types/quiz';
 import { useSubmitQuizAttempt } from '@/hooks/queries/use-submit-quiz-attempt';
 import { toast } from 'sonner';
+import useMe from '@/hooks/queries/use-me';
+import useUpdateMoocProgress from '@/hooks/queries/use-update-mooc-progress';
+import { useQueryClient } from '@tanstack/react-query';
 
 type Choice = { _id: string; text: string };
 type Quiz = QuizHub;
@@ -53,7 +56,10 @@ const QuizTakingPage: React.FC = () => {
     const [finished, setFinished] = useState(false);
     const [userResponses, setUserResponses] = useState<{ questionId: string; selectedChoice: number }[]>([]);
 
-    const submitAttempt = useSubmitQuizAttempt(classId ?? '', moocId ?? '', deckId ?? '', quizId ?? '');
+    const submitAttempt = useSubmitQuizAttempt(classId ?? '', moocId ?? '', deckId ?? '', quiz?._id ?? '');
+    const queryClient = useQueryClient();
+    const { data: me } = useMe();
+    const updateProgress = useUpdateMoocProgress();
 
     const handleAnswerSelect = (choiceIndex: number) => {
         if (isAnswered) return;
@@ -63,10 +69,9 @@ const QuizTakingPage: React.FC = () => {
         const question = quiz?.questions[currentIndex];
         if (!question) return;
 
-        setUserResponses((prev) => [
-            ...prev.filter((r) => r.questionId !== question._id),
-            { questionId: question._id, selectedChoice: choiceIndex }
-        ]);
+        const response = { questionId: question._id, selectedChoice: choiceIndex };
+
+        setUserResponses((prev) => [...prev.filter((r) => r.questionId !== question._id), response]);
 
         if (choiceIndex === question.correctAnswer) {
             setScore((s) => s + 1);
@@ -84,17 +89,30 @@ const QuizTakingPage: React.FC = () => {
     };
 
     useEffect(() => {
-        if (finished && quiz && userResponses.length === quiz.questions.length) {
+        if (finished && quiz && userResponses.length === quiz.questions.length && me?._id) {
+            // 1️⃣ Gửi điểm lên backend
             submitAttempt.mutate(userResponses, {
-                onSuccess: () => {
+                onSuccess: async () => {
                     toast.success('✅ Your quiz attempt has been successfully saved!');
+
+                    // 2️⃣ Update progress để mở MOOC tiếp theo
+                    await updateProgress.mutateAsync({
+                        moocId: moocId!,
+                        payload: {
+                            userId: me._id,
+                            deckId: deckId!,
+                            completed: true
+                        }
+                    });
+
+                    queryClient.invalidateQueries({ queryKey: ['mooc-detail', moocId] });
                 },
                 onError: () => {
                     toast.error('❌ Failed to save your attempt. Please try again.');
                 }
             });
         }
-    }, [finished, quiz, userResponses]);
+    }, [finished, quiz, userResponses, me, moocId, deckId]);
 
     const handleBack = () => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
     const handleRestart = () => {

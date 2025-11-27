@@ -336,6 +336,7 @@ const MoocSchema = new Schema({
                 {
                     deck: { type: Types.ObjectId, ref: 'Deck', required: true },
                     completed: { type: Boolean, default: false },
+                    locked: { type: Boolean, default: false },
                     completedAt: { type: Date }
                 }
             ],

@@ -315,37 +315,61 @@ export const deleteMoocService = async (moocId: string, userId: string) => {
 };
 
 export const enrollUserService = async (moocId: string, userId: string) => {
+    // Lấy MOOC và populate class
     const mooc = await Mooc.findById(moocId).populate('class', 'users');
-    if (!mooc) return { success: false, message: 'MOOC not found', data: null };
+
+    if (!mooc) {
+        return { success: false, message: 'MOOC not found', data: null };
+    }
+
+    // Kiểm tra user có thuộc class không
     const classObj = mooc.class as { users: Types.ObjectId[] } | null;
     if (classObj) {
         const isMember = classObj.users.some((u) => u.toString() === userId);
-        if (!isMember) return { success: false, message: 'User is not a member of this class', data: null };
+        if (!isMember) {
+            return { success: false, message: 'User is not a member of this class', data: null };
+        }
     }
 
+    // Kiểm tra user đã enroll chưa
     const alreadyEnrolled = mooc.enrolledUsers.some((u: any) => u.user.toString() === userId);
     if (alreadyEnrolled) return { success: true, message: 'User already enrolled', data: mooc };
 
+    // Tạo deckProgress
+    const deckProgress = mooc.decks.map((d) => ({
+        deck: d.deck,
+        completed: false,
+        locked: d.order !== 0,
+        completedAt: null
+    }));
+
+    // Thêm user vào enrolledUsers
     mooc.enrolledUsers.push({
         user: new Types.ObjectId(userId),
         currentDeckIndex: 0,
         progressState: 0,
-        startedAt: new Date()
+        startedAt: new Date(),
+        deckProgress
     });
 
+    // Lưu MOOC
     const saved = await mooc.save();
+
     return { success: true, message: 'User enrolled successfully', data: saved };
 };
 
 export const updateProgressService = async (moocId: string, userId: string, deckId: string, completed: boolean) => {
-    const mooc = await Mooc.findById(moocId);
-    if (!mooc) return { success: false, message: 'MOOC not found', data: null };
+    const mooc = await Mooc.findById(moocId).populate('class', 'users');
+    if (!mooc) {
+        return { success: false, message: 'MOOC not found', data: null };
+    }
 
     const enrolled = mooc.enrolledUsers.find((u: any) => u.user.toString() === userId);
-    if (!enrolled) return { success: false, message: 'User not enrolled in this MOOC', data: null };
+    if (!enrolled) {
+        return { success: false, message: 'User not enrolled in this MOOC', data: null };
+    }
 
-    const deckProgress = enrolled.deckProgress.find((d: any) => d.deck.toString() === deckId);
-
+    let deckProgress = enrolled.deckProgress.find((d: any) => d.deck.toString() === deckId);
     if (deckProgress) {
         deckProgress.completed = completed;
         deckProgress.completedAt = completed ? new Date() : undefined;
@@ -353,18 +377,75 @@ export const updateProgressService = async (moocId: string, userId: string, deck
         enrolled.deckProgress.push({
             deck: new Types.ObjectId(deckId),
             completed,
-            completedAt: completed ? new Date() : undefined
+            completedAt: completed ? new Date() : undefined,
+            locked: false
         });
+        deckProgress = enrolled.deckProgress[enrolled.deckProgress.length - 1];
     }
 
     const allCompleted = enrolled.deckProgress.every((d: any) => d.completed);
     if (allCompleted) {
         enrolled.progressState = 2;
         enrolled.completedAt = new Date();
+        let classId: string | null = null;
+        if (mooc.class) {
+            if (typeof mooc.class === 'string' || mooc.class instanceof Types.ObjectId) {
+                classId = mooc.class.toString();
+            } else {
+                classId = (mooc.class as any)._id ? (mooc.class as any)._id.toString() : (mooc.class as any).toString();
+            }
+        }
+        if (!classId) {
+            const parentClass = await Class.findOne({ moocs: moocId });
+            if (parentClass) {
+                classId = parentClass._id.toString();
+            }
+        }
+
+        if (classId) {
+            await unlockNextMoocForUser(mooc, userId);
+        }
     } else {
         enrolled.progressState = 1;
     }
-
     const saved = await mooc.save();
+
     return { success: true, message: 'Progress updated successfully', data: saved };
+};
+
+export const unlockNextMoocForUser = async (mooc: any, userId: string) => {
+    if (!mooc || !mooc.class) return;
+    const moocsInClass = await Mooc.find({ class: mooc.class }).sort({ createdAt: 1 });
+
+    if (!moocsInClass || moocsInClass.length === 0) return;
+    const currentIndex = moocsInClass.findIndex((m) => m._id.toString() === mooc._id.toString());
+    if (currentIndex < 0 || currentIndex === moocsInClass.length - 1) return;
+    const nextMooc = moocsInClass[currentIndex + 1];
+    if (!nextMooc) return;
+
+    const nextMoocDoc = await Mooc.findById(nextMooc._id);
+    if (!nextMoocDoc) return;
+    const enrolled = nextMoocDoc.enrolledUsers.find((en: any) => en.user.toString() === userId);
+    if (!enrolled) {
+        if (!nextMoocDoc.isPaid) {
+            nextMoocDoc.enrolledUsers.push({
+                user: new Types.ObjectId(userId),
+                currentDeckIndex: 0,
+                progressState: 0,
+                startedAt: new Date(),
+                deckProgress: nextMoocDoc.decks.map((d: any) => ({
+                    deck: d.deck,
+                    completed: false,
+                    locked: false,
+                    completedAt: null
+                }))
+            });
+        } else {
+            return;
+        }
+    } else {
+        enrolled.deckProgress.forEach((d: any) => (d.locked = false));
+    }
+
+    await nextMoocDoc.save();
 };
