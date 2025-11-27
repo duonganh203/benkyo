@@ -23,7 +23,6 @@ jobs:
               run: |
                   cd benkyo-client
                   envsubst < .env.example > .env
-                  cat .env
             - name: Build image
               run: |
                   docker build ./benkyo-client/ -t ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-fe:latest
