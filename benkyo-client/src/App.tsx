@@ -44,6 +44,7 @@ import { ClassUpdateMooc } from './pages/update-mooc';
 import Requests from './pages/requests';
 import QuizHub from './pages/quiz-hub-class';
 import QuizTakingPage from './pages/do-quiz-class';
+import WalletTopup from './pages/wallet-topup';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -87,6 +88,7 @@ const App = () => {
                             <Route path='/quizzes' element={<Quizzes />} />
                             <Route path='/ai-chat' element={<AIChat />} />
                             <Route path='/payment/:packageId' element={<Payment />} />
+                            <Route path='/wallet/topup' element={<WalletTopup />} />
                             <Route path='/package' element={<Packages />} />
                             <Route path='/top-learners' element={<TopLearners />} />
                             <Route path='/community' element={<Community />} />
