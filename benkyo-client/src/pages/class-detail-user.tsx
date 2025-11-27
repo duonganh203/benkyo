@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Loader2, Settings2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -17,6 +17,7 @@ import ClassStudyDialog from '@/components/modals/ClassStudyDialog';
 import ClassResumeSessionModal from '@/components/modals/ClassResumeSessionModal';
 
 import { getToast } from '@/utils/getToast';
+import { enrollUser } from '@/api/moocApi';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
 import ConfirmLeaveClassModal from '@/components/modals/confirm-leave-class-modal';
 
@@ -51,28 +52,26 @@ function ClassDetailUser() {
     const { data: allMoocs } = useGetAllMoocs(classId);
     const { mutateAsync: leaveClass } = useLeaveClass();
 
-    if (!classId) {
-        return <p>Class ID is missing.</p>;
-    }
+    // Local state để update UI ngay khi enroll
+    const [allMoocsState, setAllMoocsState] = useState<any[]>(allMoocs?.data || []);
+    useEffect(() => {
+        if (allMoocs?.data) setAllMoocsState(allMoocs.data);
+    }, [allMoocs]);
 
-    if (isLoadingClass) {
+    if (!classId) return <p>Class ID is missing.</p>;
+    if (isLoadingClass)
         return (
             <div className='min-h-screen flex items-center justify-center'>
                 <Loader2 className='w-6 h-6 animate-spin' />
             </div>
         );
-    }
-
-    if (!classData) {
-        return <p>Class not found or invalid ID.</p>;
-    }
+    if (!classData) return <p>Class not found or invalid ID.</p>;
 
     const isOwner = user?._id === classData.owner._id;
 
     const allDecksRaw = classData.decks || [];
     const allDecks = allDecksRaw.filter((deck, index, self) => self.findIndex((d) => d._id === deck._id) === index);
     const scheduledDecks = allDecks.filter((deck) => deck.startTime && deck.endTime);
-
     const totalLearnersCount = classData.users?.length || 0;
 
     // Top learners
@@ -101,12 +100,34 @@ function ClassDetailUser() {
         completionRate = Math.round(totalProgress / scheduledDecks.length);
     }
 
+    // ================= Helper =================
+    const isUserEnrolled = (mooc: any) => {
+        if (!mooc?.enrolledUsers || !userId) return false;
+        return mooc.enrolledUsers.some((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === userId.toString();
+        });
+    };
+
+    const getDeckProgressForUser = (mooc: any, deckId: string) => {
+        if (!mooc || !userId) return null;
+        const enrolledUser = mooc.enrolledUsers.find((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === userId.toString();
+        });
+        if (!enrolledUser) return null;
+        return enrolledUser.deckProgress.find((d: any) => {
+            const did = d.deck?._id ? d.deck._id : d.deck;
+            return did?.toString() === deckId.toString();
+        });
+    };
+    // ==========================================
+
     // Start study session
     const startStudyMode = async (deck: DeckInClass) => {
         setLoadingSession(true);
         try {
             const res = await startSession({ classId: classId!, deckId: deck._id });
-
             setSessionCards(res.cards || []);
             if (res.resumed) {
                 setPendingDeck(deck);
@@ -181,29 +202,31 @@ function ClassDetailUser() {
     console.log('Filtered MOOCs:', filteredMoocs);
 
     const handleMOOCClick = (mooc: any) => {
+        const enrolled = isUserEnrolled(mooc);
+
         if (isOwner) {
             navigate(`/class/${classData._id}/mooc/${mooc._id}`);
             return;
         }
 
-        if (mooc.isPaid) {
-            if (mooc.enrolledUsers?.includes(userId)) {
-                navigate(`/class/${classData._id}/mooc/${mooc._id}`);
-            } else {
-                setPaymentPopup({ open: true, mooc });
-            }
+        if (mooc.isPaid && !enrolled) {
+            setPaymentPopup({ open: true, mooc });
             return;
         }
 
-        if (mooc.locked) {
-            setPaymentPopup({ open: true, mooc });
+        if (mooc.locked && !enrolled) {
+            getToast('info', 'Please complete previous MOOC to unlock this one.');
             return;
         }
 
         navigate(`/class/${classData._id}/mooc/${mooc._id}`);
     };
+    // ================================================
 
-    console.log('isOwner:', isOwner, 'userId:', userId, 'ownerId:', classData.owner._id);
+    // Filter & paginate MOOCs
+    const filteredMoocs = allMoocsState.filter((mooc) => isOwner || mooc.publicStatus === 2) || [];
+    const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
+    const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
 
     return (
         <div className='min-h-screen bg-background'>
@@ -261,37 +284,70 @@ function ClassDetailUser() {
                         <h2 className='text-2xl font-bold mb-4'>Available MOOCs</h2>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                             {paginatedMoocs.map((mooc: any) => {
-                                const isPaid = mooc.isPaid;
-                                const isLocked = mooc.locked;
+                                const enrolled = isUserEnrolled(mooc);
+                                const totalDecks = mooc.decks?.length || 0;
+                                const completedDecks =
+                                    mooc.decks?.filter((d: any) => getDeckProgressForUser(mooc, d._id)?.completed)
+                                        .length || 0;
+                                const progressPercent =
+                                    totalDecks === 0 ? 0 : Math.round((completedDecks / totalDecks) * 100);
 
                                 let status: 'available' | 'locked' | 'paid' = 'available';
-
-                                if (isPaid) {
-                                    status = 'paid';
-                                } else if (isLocked) {
-                                    status = 'locked';
-                                } else {
-                                    status = 'available';
-                                }
-
-                                const isDisabledForNonOwner = !isOwner && mooc.locked && !mooc.isPaid;
+                                if (!enrolled && mooc.isPaid) status = 'paid';
+                                else if (!enrolled && mooc.locked) status = 'locked';
 
                                 return (
-                                    <div key={mooc._id} className='relative group'>
-                                        <ProgressCard
-                                            title={mooc.title}
-                                            description={mooc.description || 'Không có mô tả'}
-                                            progress={0}
-                                            status={status}
-                                            onClick={() => {
-                                                if (!isDisabledForNonOwner) handleMOOCClick(mooc);
-                                            }}
-                                            isOwner={isOwner}
-                                        />
-                                    </div>
+                                    <ProgressCard
+                                        key={mooc._id}
+                                        title={mooc.title}
+                                        description={mooc.description || 'No description'}
+                                        progress={progressPercent}
+                                        status={status}
+                                        onClick={() => handleMOOCClick(mooc)}
+                                        isOwner={isOwner}
+                                        isEnrolled={enrolled}
+                                        onEnroll={async () => {
+                                            if (!userId) {
+                                                getToast('error', 'You must be logged in to enroll');
+                                                return;
+                                            }
+                                            try {
+                                                const res = await enrollUser(mooc._id, { userId, moocId: mooc._id });
+                                                if (res?.success) {
+                                                    getToast('success', 'Enrolled successfully');
+                                                    setAllMoocsState((prev) =>
+                                                        prev.map((m) =>
+                                                            m._id === mooc._id
+                                                                ? {
+                                                                      ...m,
+                                                                      locked: false,
+                                                                      enrolledUsers: m.enrolledUsers?.some(
+                                                                          (u: any) => u.user === userId
+                                                                      )
+                                                                          ? m.enrolledUsers
+                                                                          : [
+                                                                                ...(m.enrolledUsers || []),
+                                                                                { user: userId, deckProgress: [] }
+                                                                            ]
+                                                                  }
+                                                                : m
+                                                        )
+                                                    );
+                                                    navigate(`/class/${classData._id}/mooc/${mooc._id}`);
+                                                } else {
+                                                    getToast('error', res.message || 'Enroll failed');
+                                                }
+                                            } catch (err: any) {
+                                                const msg =
+                                                    err?.response?.data?.message || err?.message || 'Enroll failed';
+                                                getToast('error', msg);
+                                            }
+                                        }}
+                                    />
                                 );
                             })}
                         </div>
+
                         {hasMoreMoocs && (
                             <div className='flex justify-center mt-4'>
                                 <Button variant='outline' onClick={() => setMoocPage((prev) => prev + 1)}>
@@ -300,7 +356,6 @@ function ClassDetailUser() {
                             </div>
                         )}
 
-                        {/* Scheduled Decks */}
                         {scheduledDecks.length > 0 && (
                             <div className='mt-8'>
                                 <h3 className='pl-2 text-xl font-semibold mb-4'>Scheduled Decks</h3>
@@ -379,7 +434,6 @@ function ClassDetailUser() {
                                 variant='destructive'
                                 onClick={() => {
                                     console.log('Redirect to payment API for', paymentPopup.mooc._id);
-                                    // call payment API or navigate
                                 }}
                             >
                                 Pay Now
