@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Lock, PlayCircle, CreditCard } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ProgressCardProps {
     title: string;
@@ -9,6 +10,8 @@ interface ProgressCardProps {
     progress?: number;
     status: 'completed' | 'locked' | 'available' | 'in-progress' | 'paid';
     onClick?: () => void;
+    onEnroll?: () => void;
+    isEnrolled?: boolean;
     testScore?: number;
     isOwner?: boolean;
 }
@@ -19,6 +22,8 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
     progress,
     status,
     onClick,
+    onEnroll,
+    isEnrolled,
     testScore,
     isOwner
 }) => {
@@ -83,12 +88,20 @@ const ProgressCard: React.FC<ProgressCardProps> = ({
                         <div className='w-full bg-muted rounded-full h-2'>
                             <div
                                 className={`h-2 rounded-full transition-all duration-300 ${
-                                    status === 'completed' ? 'gradient-success' : 'gradient-primary'
+                                    status === 'completed'
+                                        ? 'bg-gradient-to-r from-green-400 to-green-600'
+                                        : 'bg-gradient-to-r from-blue-400 to-blue-600'
                                 }`}
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
                     </div>
+                )}
+
+                {!isOwner && !isEnrolled && status === 'available' && onEnroll && (
+                    <Button size='sm' variant='outline' className='mt-3 w-full' onClick={onEnroll}>
+                        Enroll
+                    </Button>
                 )}
 
                 {testScore !== undefined && (

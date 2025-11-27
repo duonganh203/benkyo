@@ -1,3 +1,4 @@
+// MOOCDetail.tsx
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import ProgressCard from '@/components/moocs-card';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import useMe from '@/hooks/queries/use-me';
 import ConfirmDeleteMoocModal from '@/components/modals/confirm-delete-mooc-modals';
-import useDeleteMooc from '@//hooks/queries/use-delete-mooc-class';
+import useDeleteMooc from '@/hooks/queries/use-delete-mooc-class';
 import { getToast } from '@/utils/getToast';
 import {
     DropdownMenu,
@@ -22,7 +23,7 @@ interface Deck {
     description?: string;
     cardCount?: number;
     publicStatus?: number;
-    locked?: boolean;
+    locked?: boolean; // added so deck.locked is typed
 }
 
 interface DeckWrapper {
@@ -38,7 +39,6 @@ const MOOCDetail: React.FC = () => {
     const { data: mooc, isLoading, isError } = useGetMoocDetail(moocId!);
     const { data: user } = useMe();
     const isOwner = mooc ? user?._id === mooc.owner?._id : false;
-
     const { mutateAsync: deleteMooc } = useDeleteMooc();
     const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
 
@@ -58,10 +58,7 @@ const MOOCDetail: React.FC = () => {
         );
     }
 
-    const handleEdit = () => {
-        navigate(`/moocs/update/${moocId}`);
-    };
-
+    const handleEdit = () => navigate(`/moocs/update/${moocId}`);
     const handleDelete = async () => {
         if (!moocId) return;
         const res = await deleteMooc(moocId);
@@ -69,21 +66,25 @@ const MOOCDetail: React.FC = () => {
             getToast('success', 'MOOC deleted successfully');
             navigate(`/class/${classId}`);
         } else {
-            getToast('error', 'MOOC deleted failure');
+            getToast('error', 'MOOC deletion failed');
         }
     };
+    const handleGoToDeck = (deckId: string) => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}`);
+    const handleQuizHub = (deckId: string) => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
 
-    const handleGoToDeck = (deckId: string) => {
-        navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}`);
-    };
-
-    const handleQuizHub = (deckId: string) => {
-        navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
+    const isMoocCompletedByUser = () => {
+        if (isOwner) return true;
+        if (!mooc || !user?._id) return false;
+        const enrolledUser = mooc.enrolledUsers.find((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === user._id.toString();
+        });
+        if (!enrolledUser) return false;
+        return enrolledUser.deckProgress.every((d: any) => d.completed);
     };
 
     return (
         <div className='min-h-screen bg-background'>
-            {/* Header */}
             <header className='bg-card border-b border-border py-6 px-4'>
                 <div className='max-w-4xl mx-auto flex items-start justify-between'>
                     <div className='flex items-start gap-4'>
@@ -95,30 +96,19 @@ const MOOCDetail: React.FC = () => {
                             <p className='text-lg text-muted-foreground'>{mooc.description}</p>
                         </div>
                     </div>
-
                     {isOwner && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant='ghost'
-                                    size='icon'
-                                    className='text-muted-foreground hover:text-foreground'
-                                >
+                                <Button variant='ghost' size='icon'>
                                     <MoreVertical className='h-5 w-5' />
                                 </Button>
                             </DropdownMenuTrigger>
-
                             <DropdownMenuContent align='end' className='w-32'>
                                 <DropdownMenuItem onClick={handleEdit}>
-                                    <Pencil className='mr-2 h-4 w-4' />
-                                    Edit
+                                    <Pencil className='mr-2 h-4 w-4' /> Edit
                                 </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => setOpenDeleteModal(true)}
-                                    className='text-destructive focus:text-destructive'
-                                >
-                                    <Trash2 className='mr-2 h-4 w-4' />
-                                    Delete
+                                <DropdownMenuItem onClick={() => setOpenDeleteModal(true)} className='text-destructive'>
+                                    <Trash2 className='mr-2 h-4 w-4' /> Delete
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -126,7 +116,6 @@ const MOOCDetail: React.FC = () => {
                 </div>
             </header>
 
-            {/* Decks Section */}
             <section className='py-8 px-4'>
                 <div className='max-w-4xl mx-auto'>
                     <div className='mb-8'>
@@ -152,7 +141,9 @@ const MOOCDetail: React.FC = () => {
                                         <div key={deck._id} className='space-y-3'>
                                             <ProgressCard
                                                 title={deck.name ?? 'Untitled Deck'}
-                                                description={`${deck.description ?? ''} • ${deck.cardCount ?? 0} flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
+                                                description={`${deck.description ?? ''} • ${
+                                                    deck.cardCount ?? 0
+                                                } flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
                                                 progress={0}
                                                 status={deckStatus}
                                                 onClick={() => isAvailable && handleGoToDeck(deck._id)}
@@ -185,6 +176,12 @@ const MOOCDetail: React.FC = () => {
                             </Card>
                         )}
                     </div>
+
+                    {isMoocCompletedByUser() && mooc.nextMoocId && (
+                        <Button onClick={() => navigate(`/class/${classId}/mooc/${mooc.nextMoocId}`)}>
+                            Go to Next MOOC
+                        </Button>
+                    )}
                 </div>
             </section>
 
