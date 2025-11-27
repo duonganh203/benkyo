@@ -1,12 +1,15 @@
 import { create } from 'zustand';
 import { getClassVisitedApi } from '@/api/classApi';
+import type { ClassVisitedResponse } from '@/types/class';
 
 interface VisitHistory {
-    userId: {
+    _id: string;
+    user: {
         _id: string;
         email: string;
         name: string;
-    };
+        avatar?: string;
+    } | null;
     lastVisit: string;
 }
 
@@ -26,7 +29,7 @@ export const useClassVisitedStore = create<ClassVisitedStore>((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await getClassVisitedApi(classId);
-            set({ visitedHistory: response || [], isLoading: false });
+            set({ visitedHistory: (response.data as ClassVisitedResponse) || [], isLoading: false });
         } catch {
             set({ error: 'Failed to fetch visited users', isLoading: false });
         }
