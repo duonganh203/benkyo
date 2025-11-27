@@ -238,6 +238,11 @@ export const getClassVisitedApi = async (classId: string) => {
     return response.data as ClassVisitedResponse;
 };
 
+export const leaveClassApi = async (classId: string) => {
+    const response = await api.post(`/class/${classId}/leave`);
+    return response.data as { message: string };
+};
+
 export const createMoocDeckQuizApi = async (
     classId: string,
     data: {
