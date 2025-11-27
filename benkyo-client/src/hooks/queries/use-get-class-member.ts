@@ -1,12 +1,23 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { getClassMemberApi } from '@/api/classApi';
+import type { ClassMembersResponse } from '@/types/class';
+import type { ApiError } from '@/types/api';
 
-export const useGetClassMember = (classId: string) => {
-    return useQuery({
-        queryKey: ['class-member', classId],
-        queryFn: () => getClassMemberApi(classId),
+type PaginatedMembers = {
+    data: ClassMembersResponse;
+    page: number;
+    hasMore: boolean;
+    total: number;
+};
+
+export const useGetClassMember = (classId: string, limit: number = 5) => {
+    return useInfiniteQuery<PaginatedMembers, AxiosError<ApiError>>({
+        queryKey: ['class-member', classId, limit],
+        queryFn: ({ pageParam = 1 }) => getClassMemberApi(classId, pageParam as number, limit),
         enabled: !!classId,
-        retry: false
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined)
     });
 };
 
