@@ -8,10 +8,21 @@ interface ClassMember {
     name: string;
 }
 
+// shape returned by getClassMemberApi
+interface ClassMembersResponse {
+    data: ClassMember[];
+    page: number;
+    hasMore: boolean;
+    total: number;
+}
+
 interface ClassMemberStore {
     members: ClassMember[];
     isLoading: boolean;
     error: string | null;
+    page?: number;
+    hasMore?: boolean;
+    total?: number;
     fetchMembers: (classId: string) => Promise<void>;
     clearMembers: () => void;
 }
@@ -23,8 +34,14 @@ export const useClassMemberStore = create<ClassMemberStore>((set) => ({
     fetchMembers: async (classId: string) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await getClassMemberApi(classId);
-            set({ members: response || [], isLoading: false });
+            const response: ClassMembersResponse = await getClassMemberApi(classId);
+            set({
+                members: response.data || [],
+                isLoading: false,
+                page: response.page,
+                hasMore: response.hasMore,
+                total: response.total
+            });
         } catch {
             set({ error: 'Failed to fetch members', isLoading: false });
         }
