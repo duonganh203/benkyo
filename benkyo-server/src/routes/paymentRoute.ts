@@ -6,7 +6,8 @@ import {
     getAllPackages,
     getDashboardMetrics,
     getMonthlyRevenue,
-    getQuarterlyRevenue
+    getQuarterlyRevenue,
+    createTopup
 } from '~/controllers/paymentController';
 import { errorHandler } from '~/errorHandler';
 import authMiddleware from '~/middlewares/authMiddleware';
@@ -20,5 +21,6 @@ paymentRoutes.get('/checkPaid/:transactionId', [authMiddleware], errorHandler(ge
 paymentRoutes.get('/getDashboardMetrics', [authMiddleware], errorHandler(getDashboardMetrics));
 paymentRoutes.get('/monthlyRevenue', [authMiddleware], errorHandler(getMonthlyRevenue));
 paymentRoutes.get('/quarterlyRevenue', [authMiddleware], errorHandler(getQuarterlyRevenue));
+paymentRoutes.post('/topup', [authMiddleware], errorHandler(createTopup));
 
 export default paymentRoutes;

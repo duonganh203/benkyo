@@ -377,3 +377,93 @@ export const getLikedDecksByUserService = async (userId: string) => {
         };
     });
 };
+
+export const getDeckStatisticsService = async (userId: string, deckId: string) => {
+    const deck = await Deck.findById(deckId);
+    if (!deck) {
+        throw new NotFoundException('Deck not found', ErrorCode.NOT_FOUND);
+    }
+
+    if (!deck.owner.equals(userId) && !deck.isPublic) {
+        const classWithDeck = await Class.findOne({
+            'decks.deck': deck._id,
+            users: userId
+        });
+        if (!classWithDeck) {
+            throw new ForbiddenRequestsException(
+                'You do not have permission to view this deck stats',
+                ErrorCode.FORBIDDEN
+            );
+        }
+    }
+
+    // Get card counts by state
+    const cards = await Card.find({ deck: deckId }).lean();
+
+    const cardCounts = {
+        new: 0,
+        learning: 0,
+        review: 0,
+        relearning: 0,
+        total: cards.length
+    };
+
+    // We need to fetch revlogs to determine current state if not stored on card directly
+    // However, the Card schema doesn't seem to store state directly in the root,
+    // but the frontend code suggests `card.learning.state`.
+    // Let's check how `getDeckCards` returns data or if we need to aggregate from Revlog or UserDeckState.
+    // Looking at `duplicateDeckService`, it sets `state: 0` on new cards.
+    // But wait, `CardSchema` doesn't have `state` field in the root.
+    // It seems `getDeckCards` might be aggregating this.
+    // Let's look at `UserDeckState` which has `stats`.
+
+    const userDeckState = await UserDeckState.findOne({ user: userId, deck: deckId });
+
+    if (userDeckState && userDeckState.stats) {
+        cardCounts.new = userDeckState.stats.newCards || 0;
+        cardCounts.learning = userDeckState.stats.learningCards || 0;
+        cardCounts.review = userDeckState.stats.reviewCards || 0;
+        // UserDeckState stats doesn't seem to have relearning, maybe it's grouped?
+        // Let's try to calculate from cards if possible, but Card schema is minimal.
+        // Actually, let's stick to what UserDeckState provides for now, or aggregate from Revlogs if needed.
+        // But for a simple start, let's use UserDeckState stats.
+    }
+
+    // Calculate retention rate (total correct / total reviews)
+    const totalReviews = await Revlog.countDocuments({ user: userId, card: { $in: cards.map((c) => c._id) } });
+    const successfulReviews = await Revlog.countDocuments({
+        user: userId,
+        card: { $in: cards.map((c) => c._id) },
+        grade: { $gte: 3 } // Assuming 3, 4 are passing grades (Good, Easy)
+    });
+
+    const retentionRate = totalReviews > 0 ? (successfulReviews / totalReviews) * 100 : 0;
+
+    // Get review activity for last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const reviewsLast30Days = await Revlog.aggregate([
+        {
+            $match: {
+                user: new Types.ObjectId(userId),
+                card: { $in: cards.map((c) => c._id) },
+                created_at: { $gte: thirtyDaysAgo }
+            }
+        },
+        {
+            $group: {
+                _id: { $dateToString: { format: '%Y-%m-%d', date: '$created_at' } },
+                count: { $sum: 1 }
+            }
+        },
+        { $sort: { _id: 1 } }
+    ]);
+
+    return {
+        cardCounts,
+        retentionRate,
+        totalReviews,
+        reviewsLast30Days
+    };
+};

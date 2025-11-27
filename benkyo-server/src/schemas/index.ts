@@ -48,6 +48,7 @@ const UserSchema = new Schema({
     proExpiryDate: { type: Date, default: null, required: false },
     proType: { type: String, enum: Object.values(PackageType), default: PackageType.BASIC },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    balance: { type: Number, default: 0 },
     fsrsParams: {
         request_retention: { type: Number, default: 0.9 },
         maximum_interval: { type: Number, default: 36500 },
@@ -227,6 +228,7 @@ const StudySessionSchema = new Schema({
 
 const TransactionSchema = new Schema(
     {
+        type: { type: String, enum: ['PACKAGE', 'TOPUP'], default: 'PACKAGE' },
         tid: { type: String },
         amount: { type: Number },
         when: { type: Date },
@@ -238,7 +240,7 @@ const TransactionSchema = new Schema(
         isPaid: { type: Boolean, default: false, required: true },
         expiredAt: { type: Date, required: true, default: () => new Date(Date.now() + 30 * 60 * 1000) },
         user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-        package: { type: Schema.Types.ObjectId, ref: 'Package', required: true }
+        package: { type: Schema.Types.ObjectId, ref: 'Package' }
     },
     { timestamps: true }
 );

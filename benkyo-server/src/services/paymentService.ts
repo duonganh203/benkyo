@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { TransactionType, Transaction, User, Package, PackageType } from '~/schemas';
+import { BadRequestsException } from '~/exceptions/badRequests';
 import { startOfYear, endOfYear } from 'date-fns';
 type CreateTransactionPayload = Omit<
     TransactionType,
@@ -22,6 +23,57 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
         });
         return;
     }
+    const existedUser = await User.findById(userId);
+    if (!existedUser) {
+        console.error('[Transaction Error] User not found:', {
+            userId,
+            description
+        });
+        return;
+    }
+
+    if (description.toLowerCase().includes('topup')) {
+        console.log('Processing topup transaction:', transactionData);
+        const amount = transactionData.amount;
+
+        if (!amount || amount <= 0) {
+            console.error('[Topup Error] Invalid amount (must be positive):', amount);
+            return;
+        }
+
+        const existedTopupTx = await Transaction.findOne({
+            user: userId,
+            type: 'TOPUP',
+            isPaid: false
+        });
+
+        if (!existedTopupTx) {
+            console.error('[Topup Error] Pending topup transaction not found for user:', {
+                userId,
+                description
+            });
+            return;
+        }
+
+        existedTopupTx.set({
+            ...transactionData,
+            isPaid: true,
+            amount,
+            type: 'TOPUP'
+        });
+        await existedTopupTx.save();
+
+        existedUser.balance = (existedUser.balance || 0) + amount;
+        await existedUser.save();
+
+        console.log('[Topup Success] User topped up successfully:', {
+            userId,
+            amount,
+            newBalance: existedUser.balance
+        });
+
+        return 'Topup success';
+    }
 
     const possiblePackages = ['basic', 'pro', 'premium'];
     const tokens = description.toLowerCase().split(/[^a-zA-Z0-9]/);
@@ -38,15 +90,6 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
     const packageType = possiblePackages.find((pkg) => foundPackage.includes(pkg))!;
     const normalizedPackage = packageType.charAt(0).toUpperCase() + packageType.slice(1).toLowerCase();
 
-    const existedUser = await User.findById(userId);
-    if (!existedUser) {
-        console.error('[Transaction Error] User not found:', {
-            userId,
-            description
-        });
-        return;
-    }
-
     const existedPackage = await Package.findOne({
         type: normalizedPackage,
         price: transactionData.amount,
@@ -62,7 +105,7 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
         return;
     }
 
-    const existedTransaction = await Transaction.findOne({ user: userId });
+    const existedTransaction = await Transaction.findOne({ user: userId, package: existedPackage._id, isPaid: false });
     if (!existedTransaction) {
         console.error('[Transaction Error] Transaction not found for user:', {
             userId,
@@ -74,7 +117,8 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
     existedTransaction.set({
         ...transactionData,
         isPaid: true,
-        package: existedPackage._id
+        package: existedPackage._id,
+        type: 'PACKAGE'
     });
     await existedTransaction.save();
 
@@ -101,6 +145,25 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
     });
 
     return 'Transaction success & User upgraded successfully';
+};
+
+export const createTopupTransaction = async (userId: string, amount: number) => {
+    if (!amount || amount <= 0) {
+        throw new BadRequestsException('Invalid topup amount', ErrorCode.BAD_REQUEST);
+    }
+
+    const transaction = await new Transaction({
+        user: userId,
+        amount,
+        isPaid: false,
+        type: 'TOPUP'
+    }).save();
+
+    return {
+        _id: transaction._id,
+        amount: transaction.amount,
+        isPaid: transaction.isPaid
+    };
 };
 
 export const getTransaction = async (userId: string, packageId: string) => {

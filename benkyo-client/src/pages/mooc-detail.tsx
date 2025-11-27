@@ -157,18 +157,20 @@ const MOOCDetail: React.FC = () => {
                         {Array.isArray(mooc.decks) && mooc.decks.length > 0 ? (
                             mooc.decks
                                 .sort((a: DeckWrapper, b: DeckWrapper) => (a.order ?? 0) - (b.order ?? 0))
-                                .map((deckWrapper: DeckWrapper) => {
+                                .map((deckWrapper: DeckWrapper, idx: number) => {
+                                    if (!deckWrapper || !deckWrapper.deck) return null;
                                     const deck = deckWrapper.deck;
-                                    const deckStatus = getDeckStatusForUser(deck._id);
+                                    console.log('Deck object:', deck);
+                                    console.log(`Deck ${idx} id: ${deck._id}, locked:`, deck.locked);
+                                    const deckStatus = deck.locked === true ? 'locked' : 'available';
                                     const isAvailable = deckStatus === 'available';
 
                                     return (
                                         <div key={deck._id} className='space-y-3'>
                                             <ProgressCard
                                                 title={deck.name ?? 'Untitled Deck'}
-                                                description={`${deck.description ?? ''} • ${
-                                                    deck.cardCount ?? 0
-                                                } flashcards • 70% points required`}
+                                                description={`${deck.description ?? ''} • ${deck.cardCount ?? 0} flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
+                                                progress={0}
                                                 status={deckStatus}
                                                 onClick={() => isAvailable && handleGoToDeck(deck._id)}
                                             />
@@ -180,7 +182,8 @@ const MOOCDetail: React.FC = () => {
                                                         onClick={() => handleQuizHub(deck._id)}
                                                         className='flex items-center gap-2'
                                                     >
-                                                        <Zap className='w-4 h-4' /> Extra Challenge
+                                                        <Zap className='w-4 h-4' />
+                                                        Extra Challenge
                                                     </Button>
                                                 </div>
                                             )}

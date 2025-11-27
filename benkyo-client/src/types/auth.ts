@@ -5,6 +5,7 @@ export interface User {
     avatar: string;
     isPro: boolean;
     proType: string;
+    balance: number;
     fsrsParams?: {
         request_retention: number;
         maximum_interval: number;

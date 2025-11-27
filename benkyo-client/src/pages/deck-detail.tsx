@@ -48,6 +48,8 @@ import ConfirmDeleteCardModal from '@/components/modals/confirm-delete-card-moda
 import { useDeleteCardModal } from '@/hooks/stores/use-delete-card-modal';
 import LikeDeck from '@/components/rating-deck';
 import useToggleLikeDeck from '@/hooks/queries/use-toggle-like-deck';
+import DeckStatistics from '@/components/deck-statistics';
+import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon } from 'react-share';
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -258,6 +260,9 @@ const DeckDetail = () => {
         }
     };
 
+    const shareUrl = useMemo(() => `${window.location.origin}/deck/${id}3`, [id]);
+    const shareTitle = 'Join me in learning this deck! \n' + deckData?.name + '\n' + shareUrl;
+
     if (isDeckLoading) {
         return (
             <div className='container max-w-5xl mx-auto py-8 px-4'>
@@ -308,7 +313,28 @@ const DeckDetail = () => {
                             <div>
                                 <h1 className='text-2xl font-bold'>{deckData.name}</h1>
                                 <p className='text-muted-foreground'>{deckData.description || 'No description'}</p>
-                                <LikeDeck deckData={deckData} currentUser={currentUser} onLikeApi={handleLike} />
+                                <div className='flex items-center gap-3 mt-2'>
+                                    <LikeDeck deckData={deckData} currentUser={currentUser} onLikeApi={handleLike} />
+                                    {deckData.publicStatus === 2 && (
+                                        <div className='flex items-center gap-2'>
+                                            <FacebookShareButton
+                                                url={shareUrl}
+                                                title={shareTitle}
+                                                hashtag={shareTitle}
+                                                className='inline-flex items-center justify-center'
+                                            >
+                                                <FacebookIcon size={32} round />
+                                            </FacebookShareButton>
+                                            <TwitterShareButton
+                                                url={shareUrl}
+                                                title={shareTitle}
+                                                className='inline-flex items-center justify-center'
+                                            >
+                                                <TwitterIcon size={32} round />
+                                            </TwitterShareButton>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <Badge
@@ -639,14 +665,7 @@ const DeckDetail = () => {
                         </TabsContent>
 
                         <TabsContent value='stats' className='animate-fade-in'>
-                            <Card className='hover:shadow-md transition-shadow'>
-                                <CardContent className='p-6'>
-                                    <h2 className='text-xl font-semibold mb-4'>Deck Statistics</h2>
-                                    <p className='text-muted-foreground'>
-                                        Statistics coming soon. This feature is under development.
-                                    </p>
-                                </CardContent>
-                            </Card>
+                            <DeckStatistics deckId={id!} />
                         </TabsContent>
 
                         {currentUser && deckData.owner._id === currentUser._id && (
