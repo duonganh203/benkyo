@@ -196,11 +196,6 @@ function ClassDetailUser() {
         }
     };
 
-    const filteredMoocs = allMoocs?.data?.filter((mooc) => isOwner || mooc.publicStatus === 2) || [];
-    const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
-    const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
-    console.log('Filtered MOOCs:', filteredMoocs);
-
     const handleMOOCClick = (mooc: any) => {
         const enrolled = isUserEnrolled(mooc);
 
