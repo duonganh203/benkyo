@@ -308,8 +308,10 @@ export const getClassDecks = async (req: Request, res: Response) => {
 export const getClassInvited = async (req: Request, res: Response) => {
     const classId = req.params._id;
     const userId = req.user._id;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
 
-    const invited = await classService.getClassInvitedService(classId, userId);
+    const invited = await classService.getClassInvitedService(classId, userId, page, limit);
 
     res.json(invited);
 };
