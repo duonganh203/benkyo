@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import useClassManagementStore from '@/hooks/stores/use-class-management-store';
 import useGetClassRequestJoin from '@/hooks/queries/use-get-class-request-join';
+import { useMemo } from 'react';
+import type { ClassRequestJoinResponse } from '@/types/class';
 import { getToast } from '@/utils/getToast';
 import { UserCheck, UserX, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -22,7 +24,7 @@ const JoinRequestsSection = ({ onAccept, onReject }: JoinRequestsSectionProps) =
         return null;
     }
 
-    const { data: joinRequests, isLoading, isError, error } = useGetClassRequestJoin(classData._id);
+    const { data: pagedJoinRequests, isLoading, isError, error } = useGetClassRequestJoin(classData._id, 5);
 
     if (!user) {
         navigate('/login');
@@ -49,6 +51,11 @@ const JoinRequestsSection = ({ onAccept, onReject }: JoinRequestsSectionProps) =
             </Card>
         );
     }
+
+    const joinRequests: ClassRequestJoinResponse = useMemo(() => {
+        if (!pagedJoinRequests) return [] as ClassRequestJoinResponse;
+        return pagedJoinRequests.pages.flatMap((page) => page.data) as ClassRequestJoinResponse;
+    }, [pagedJoinRequests]);
 
     if (!joinRequests || joinRequests.length === 0) {
         return null;

@@ -1480,19 +1480,59 @@ export const getClassInvitedService = async (classId: string, userId: Types.Obje
     return classData.invitedUsers || [];
 };
 
-export const getClassRequestJoinService = async (classId: string, userId: Types.ObjectId) => {
+export const getClassRequestJoinService = async (
+    classId: string,
+    userId: Types.ObjectId,
+    page: number,
+    limit: number
+) => {
     await assertOwner(classId, userId);
 
-    const classData = await Class.findById(classId).populate({
-        path: 'joinRequests.user',
-        select: '_id email name avatar'
-    });
+    const classData = await Class.findById(classId).select('joinRequests').lean();
 
     if (!classData) {
         throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
     }
 
-    return classData.joinRequests || [];
+    const joinRequests = classData.joinRequests ?? [];
+    const total = joinRequests.length;
+
+    const safePage = page > 0 ? page : 1;
+    const safeLimit = limit > 0 ? limit : 20;
+    const start = (safePage - 1) * safeLimit;
+    const end = start + safeLimit;
+
+    const pageRequests = joinRequests.slice(start, end);
+
+    if (pageRequests.length === 0) {
+        return {
+            data: [],
+            page: safePage,
+            hasMore: false,
+            total
+        };
+    }
+
+    const userIds = pageRequests.map((x) => x.user as Types.ObjectId);
+    const users = await User.find({ _id: { $in: userIds } })
+        .select('_id name email avatar')
+        .lean();
+    const userMap = new Map(users.map((u) => [u._id.toString(), u]));
+
+    const data = pageRequests.map((entry) => ({
+        _id: entry.user,
+        user: userMap.get(entry.user.toString()) ?? null,
+        requestDate: entry.requestDate
+    }));
+
+    const hasMore = end < total;
+
+    return {
+        data,
+        page: safePage,
+        hasMore,
+        total
+    };
 };
 
 export const getClassVisitedService = async (classId: string, userId: Types.ObjectId, page: number, limit: number) => {

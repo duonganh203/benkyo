@@ -317,8 +317,10 @@ export const getClassInvited = async (req: Request, res: Response) => {
 export const getClassRequestJoin = async (req: Request, res: Response) => {
     const classId = req.params._id;
     const userId = req.user._id;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
 
-    const requests = await classService.getClassRequestJoinService(classId, userId);
+    const requests = await classService.getClassRequestJoinService(classId, userId, page, limit);
 
     res.json(requests);
 };
