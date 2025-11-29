@@ -311,6 +311,7 @@ const UserClassStateSchema = new Schema(
     },
     { timestamps: true }
 );
+
 const MoocSchema = new Schema({
     title: { type: String, required: true },
     description: { type: String },
@@ -335,9 +336,11 @@ const MoocSchema = new Schema({
             deckProgress: [
                 {
                     deck: { type: Types.ObjectId, ref: 'Deck', required: true },
+                    progress: { type: Number, default: 0 },
                     completed: { type: Boolean, default: false },
                     locked: { type: Boolean, default: false },
-                    completedAt: { type: Date }
+                    completedAt: { type: Date },
+                    lastSeenIndex: { type: Number, default: 0 }
                 }
             ],
             startedAt: { type: Date },

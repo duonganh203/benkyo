@@ -8,55 +8,72 @@ import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
 import useMe from '@/hooks/queries/use-me';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import { getToast } from '@/utils/getToast';
+import useUpdateDeckProgress from '@/hooks/queries/use-update-progress-for-use';
 
 const DeckStudy: React.FC = () => {
-    type TempDeck = {
-        _id: string;
-        name: string;
-        description?: string;
-        cardCount?: number;
-    };
-
-    type TempMooc = {
-        _id: string;
-        title: string;
-        owner?: { _id: string };
-        publicStatus?: number;
-        decks?: { deck: TempDeck }[];
-    };
-
     const { classId, deckId, moocId } = useParams<{
         classId: string;
         deckId: string;
         moocId: string;
     }>();
-
     const navigate = useNavigate();
     const { data: user } = useMe();
     const { data: mooc, isLoading: isMoocLoading } = useGetMoocDetail(moocId!) as {
-        data?: TempMooc;
+        data?: any;
         isLoading: boolean;
     };
     const { data: cardsData, isLoading: isCardsLoading } = useGetDeckCards(deckId ?? '');
     const totalCards = Array.isArray(cardsData) ? cardsData.length : 0;
-    const currentDeck = mooc?.decks?.map((d) => d.deck)?.find((deck) => String(deck._id) === String(deckId));
-    const deckTitle = currentDeck?.name || 'Deck Title';
-    const storageKey = `deck-${deckId}-currentIndex`;
-    const [currentCardIndex, setCurrentCardIndex] = useState(() => {
-        const saved = sessionStorage.getItem(storageKey);
-        return saved ? Number(saved) : 0;
-    });
+
+    const storageKey = `deck-${deckId}-lastSeenIndex`;
+
+    // Lấy lastSeenIndex từ sessionStorage ngay khi khởi tạo state
+    const savedIndex = typeof window !== 'undefined' ? sessionStorage.getItem(storageKey) : null;
+    const initialIndex = savedIndex !== null ? Number(savedIndex) : 0;
+
+    const [currentCardIndex, setCurrentCardIndex] = useState(initialIndex);
+    const [furthestCardIndex, setFurthestCardIndex] = useState(initialIndex);
+    const [progressPercent, setProgressPercent] = useState(
+        totalCards > 0 ? Math.floor(((initialIndex + 1) / totalCards) * 100) : 0
+    );
     const [studyCompleted, setStudyCompleted] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-    useEffect(() => {
-        setCurrentCardIndex(0);
-        setStudyCompleted(false);
-        sessionStorage.removeItem(storageKey);
-    }, [deckId]);
+    const updateProgress = useUpdateDeckProgress();
 
+    // Khi dữ liệu backend sẵn sàng, ưu tiên giá trị backend nếu lớn hơn sessionStorage
     useEffect(() => {
-        sessionStorage.setItem(storageKey, String(currentCardIndex));
-    }, [currentCardIndex]);
+        if (!mooc || !user?._id || !deckId) return;
+
+        const enrolledUser = mooc.enrolledUsers.find((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === user._id.toString();
+        });
+        if (!enrolledUser) return;
+
+        const deckProg = enrolledUser.deckProgress.find((d: any) => {
+            const did = d.deck?._id ? d.deck._id : d.deck;
+            return did?.toString() === deckId;
+        });
+
+        const backendIndex = deckProg?.lastSeenIndex ?? 0;
+
+        if (backendIndex > initialIndex) {
+            setCurrentCardIndex(backendIndex);
+            setFurthestCardIndex(backendIndex);
+            setProgressPercent(totalCards > 0 ? Math.floor(((backendIndex + 1) / totalCards) * 100) : 0);
+        }
+
+        setIsInitialLoad(false);
+    }, [mooc, user, deckId, totalCards, initialIndex]);
+
+    // Lưu furthestCardIndex vào sessionStorage
+    useEffect(() => {
+        sessionStorage.setItem(storageKey, String(furthestCardIndex));
+    }, [furthestCardIndex, storageKey]);
+
+    const isOwner = user?._id === mooc?.owner?._id;
+    const canAccess = isOwner || mooc?.publicStatus === 2;
 
     if (!deckId || !classId || !moocId) {
         return (
@@ -74,9 +91,6 @@ const DeckStudy: React.FC = () => {
         );
     }
 
-    const isOwner = user?._id === mooc?.owner?._id;
-    const canAccess = isOwner || mooc?.publicStatus === 2;
-
     if (!canAccess) {
         return (
             <div className='min-h-screen flex items-center justify-center'>
@@ -86,10 +100,30 @@ const DeckStudy: React.FC = () => {
     }
 
     const handleBack = () => navigate(-1);
-    const handleTakeTest = () => navigate(`/test/${deckId}`);
+    const handleQuizHub = (deckId: string) => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
+
+    const handleCardChange = (i: number) => {
+        setCurrentCardIndex(i);
+
+        // chỉ update backend nếu index mới lớn hơn furthestCardIndex
+        if (!isInitialLoad && i > furthestCardIndex) {
+            updateProgress.mutate({
+                moocId,
+                deckId,
+                lastSeenIndex: i,
+                totalCards
+            });
+            setFurthestCardIndex(i);
+        }
+
+        // progressPercent dựa trên furthestCardIndex
+        const newFurthest = Math.max(furthestCardIndex, i);
+        const percent = totalCards > 0 ? Math.floor(((newFurthest + 1) / totalCards) * 100) : 0;
+        setProgressPercent(percent);
+    };
 
     const handleFinishStudy = () => {
-        if (currentCardIndex === totalCards - 1) {
+        if (progressPercent === 100) {
             setStudyCompleted(true);
             getToast('success', 'You have completed this deck!');
         } else {
@@ -99,38 +133,33 @@ const DeckStudy: React.FC = () => {
 
     const handleRestart = () => {
         setCurrentCardIndex(0);
+        setFurthestCardIndex(0);
+        setProgressPercent(0);
         setStudyCompleted(false);
+        sessionStorage.removeItem(storageKey);
     };
+
     if (totalCards === 0) {
         return (
             <div className='min-h-screen bg-background flex flex-col'>
-                {/* Header */}
                 <header>
                     <div className='max-w-4xl mx-auto flex justify-between items-center py-4 px-4'>
                         <Button variant='outline' onClick={handleBack} className='flex items-center gap-2'>
                             <ChevronLeft className='h-5 w-5' /> Back
                         </Button>
-
                         <div className='text-center flex-1'>
-                            <h1 className='text-xl font-semibold text-foreground'>{deckTitle}</h1>
+                            <h1 className='text-xl font-semibold text-foreground'>Deck Title</h1>
                             <p className='text-sm text-muted-foreground'>Study Mode</p>
                         </div>
                         <div className='w-[70px]' />
                     </div>
                 </header>
-
-                {/* Main content */}
                 <main className='flex-1 flex items-center justify-center px-4'>
                     <Card className='max-w-md w-full text-center shadow-lg border bg-card p-6'>
                         <CardContent>
                             <BookOpen className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-                            <h2 className='text-2xl font-semibold text-foreground mb-2'>{deckTitle}</h2>
-                            <p className='text-lg text-muted-foreground'>
-                                There are no flashcards available in this deck yet.
-                            </p>
-                            <p className='text-sm text-muted-foreground mt-2'>
-                                Please check back later or ask the MOOC owner to add some cards.
-                            </p>
+                            <h2 className='text-2xl font-semibold text-foreground mb-2'>No Cards</h2>
+                            <p className='text-lg text-muted-foreground'>No flashcards available in this deck.</p>
                         </CardContent>
                     </Card>
                 </main>
@@ -154,7 +183,11 @@ const DeckStudy: React.FC = () => {
                             <Button variant='outline' onClick={handleRestart}>
                                 Review Again
                             </Button>
-                            <Button variant='outline' onClick={handleTakeTest} className='flex items-center gap-2'>
+                            <Button
+                                variant='outline'
+                                onClick={() => handleQuizHub(deckId)}
+                                className='flex items-center gap-2'
+                            >
                                 <Target className='w-4 h-4' /> Take the Test
                             </Button>
                         </div>
@@ -163,6 +196,7 @@ const DeckStudy: React.FC = () => {
             </div>
         );
     }
+
     return (
         <div className='min-h-screen bg-background'>
             <header>
@@ -170,12 +204,10 @@ const DeckStudy: React.FC = () => {
                     <Button variant='outline' onClick={handleBack} className='flex items-center gap-2'>
                         <ChevronLeft className='h-5 w-5' /> Back
                     </Button>
-
                     <div className='text-center flex-1'>
-                        <h1 className='text-xl font-semibold text-foreground'>{deckTitle}</h1>
+                        <h1 className='text-xl font-semibold text-foreground'>Deck Study</h1>
                         <p className='text-sm text-muted-foreground'>Study Mode</p>
                     </div>
-
                     <div className='w-20' />
                 </div>
             </header>
@@ -184,18 +216,16 @@ const DeckStudy: React.FC = () => {
                 <div className='w-full max-w-2xl'>
                     <FlashcardViewer
                         cards={Array.isArray(cardsData) ? cardsData : []}
-                        initialIndex={currentCardIndex}
-                        onCardChange={setCurrentCardIndex}
+                        currentIndex={currentCardIndex}
+                        onCardChange={handleCardChange}
                     />
                 </div>
-
                 <Button
                     onClick={handleFinishStudy}
-                    className='mt-6 px-8 py-3 rounded-full text-lg font-semibold text-white 
-          bg-gradient-to-r from-green-500 to-emerald-600 
-          hover:from-green-600 hover:to-emerald-700 
-          transition-all duration-300 shadow-lg hover:shadow-xl 
-          flex items-center gap-2'
+                    disabled={progressPercent < 100}
+                    className={`mt-6 px-8 py-3 rounded-full text-lg font-semibold text-white 
+                        bg-gradient-to-r ${progressPercent === 100 ? 'from-green-500 to-emerald-600' : 'from-gray-400 to-gray-500'} 
+                        transition-all duration-300 shadow-lg flex items-center gap-2`}
                 >
                     <Target className='w-5 h-5' /> Finish Study
                 </Button>

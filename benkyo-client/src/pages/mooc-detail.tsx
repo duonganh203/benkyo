@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { BookOpen, Zap, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { BookOpen, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import ProgressCard from '@/components/moocs-card';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import useMe from '@/hooks/queries/use-me';
@@ -23,7 +23,7 @@ interface Deck {
     description?: string;
     cardCount?: number;
     publicStatus?: number;
-    locked?: boolean; // added so deck.locked is typed
+    locked?: boolean;
 }
 
 interface DeckWrapper {
@@ -70,7 +70,35 @@ const MOOCDetail: React.FC = () => {
         }
     };
     const handleGoToDeck = (deckId: string) => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}`);
-    const handleQuizHub = (deckId: string) => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
+
+    const isUserEnrolled = (mooc: any) => {
+        if (!mooc?.enrolledUsers || !user?._id) return false;
+        return mooc.enrolledUsers.some((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === user._id.toString();
+        });
+    };
+
+    const getDeckProgressForUser = (deckId: string) => {
+        if (!mooc || !user?._id) return null;
+        const enrolledUser = mooc.enrolledUsers.find((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === user._id.toString();
+        });
+        if (!enrolledUser) return null;
+        return enrolledUser.deckProgress.find((d: any) => {
+            const did = d.deck?._id ? d.deck._id : d.deck;
+            return did?.toString() === deckId.toString();
+        });
+    };
+
+    const getDeckStatusForUser = (deckId: string) => {
+        if (isOwner) return 'available';
+        if (!isUserEnrolled(mooc)) return 'locked';
+        const progress = getDeckProgressForUser(deckId);
+        if (!progress) return 'locked';
+        return progress.locked ? 'locked' : 'available';
+    };
 
     const isMoocCompletedByUser = () => {
         if (isOwner) return true;
@@ -118,6 +146,9 @@ const MOOCDetail: React.FC = () => {
 
             <section className='py-8 px-4'>
                 <div className='max-w-4xl mx-auto'>
+                    <Button variant='outline' onClick={() => navigate(`/class/${classId}`)}>
+                        ← Back to class
+                    </Button>
                     <div className='mb-8'>
                         <h2 className='text-2xl font-bold text-foreground mb-2'>Learning Decks</h2>
                         <p className='text-muted-foreground'>
@@ -129,38 +160,38 @@ const MOOCDetail: React.FC = () => {
                         {Array.isArray(mooc.decks) && mooc.decks.length > 0 ? (
                             mooc.decks
                                 .sort((a: DeckWrapper, b: DeckWrapper) => (a.order ?? 0) - (b.order ?? 0))
-                                .map((deckWrapper: DeckWrapper, idx: number) => {
+                                .map((deckWrapper: DeckWrapper) => {
                                     if (!deckWrapper || !deckWrapper.deck) return null;
                                     const deck = deckWrapper.deck;
-                                    console.log('Deck object:', deck);
-                                    console.log(`Deck ${idx} id: ${deck._id}, locked:`, deck.locked);
-                                    const deckStatus = deck.locked === true ? 'locked' : 'available';
+
+                                    // Lấy progress của user cho deck này
+                                    let progress = 0;
+                                    if (!isOwner && user?._id) {
+                                        const enrolledUser = mooc.enrolledUsers.find((u: any) => {
+                                            const uid = u.user?._id ? u.user._id : u.user;
+                                            return uid?.toString() === user._id.toString();
+                                        });
+                                        if (enrolledUser) {
+                                            const deckProg = enrolledUser.deckProgress.find((d: any) => {
+                                                const did = d.deck?._id ? d.deck._id : d.deck;
+                                                return did?.toString() === deck._id.toString();
+                                            });
+                                            if (deckProg) progress = deckProg.progress ?? 0;
+                                        }
+                                    }
+
+                                    const deckStatus = getDeckStatusForUser(deck._id);
                                     const isAvailable = deckStatus === 'available';
 
                                     return (
                                         <div key={deck._id} className='space-y-3'>
                                             <ProgressCard
                                                 title={deck.name ?? 'Untitled Deck'}
-                                                description={`${deck.description ?? ''} • ${
-                                                    deck.cardCount ?? 0
-                                                } flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
-                                                progress={0}
+                                                description={`${deck.description ?? ''} • ${deck.cardCount ?? 0} flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
+                                                progress={progress} // ❤️ đây là progress %
                                                 status={deckStatus}
                                                 onClick={() => isAvailable && handleGoToDeck(deck._id)}
                                             />
-                                            {isAvailable && (
-                                                <div className='flex justify-end'>
-                                                    <Button
-                                                        variant='outline'
-                                                        size='sm'
-                                                        onClick={() => handleQuizHub(deck._id)}
-                                                        className='flex items-center gap-2'
-                                                    >
-                                                        <Zap className='w-4 h-4' />
-                                                        Extra Challenge
-                                                    </Button>
-                                                </div>
-                                            )}
                                         </div>
                                     );
                                 })
