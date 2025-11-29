@@ -7,7 +7,8 @@ import { Badge } from './ui/badge';
 
 interface FlashcardViewerProps {
     cards: CardInterface[];
-    currentIndex?: number; // controlled index
+    currentIndex?: number;
+    initialIndex?: number; // controlled index
     onCardChange?: (index: number) => void;
 }
 
