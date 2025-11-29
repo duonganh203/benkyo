@@ -42,7 +42,8 @@ export const classDelete = async (req: Request, res: Response) => {
 export const getMyClassList = async (req: Request, res: Response) => {
     const userId = req.user._id;
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 5;
+    // Default page size updated from 5 -> 6
+    const limit = parseInt(req.query.limit as string) || 6;
     const search = req.query.search as string;
 
     const classData = await classService.getMyClassListService(userId, page, limit, search);
@@ -53,7 +54,8 @@ export const getMyClassList = async (req: Request, res: Response) => {
 export const getSuggestedClassList = async (req: Request, res: Response) => {
     const userId = req.user._id;
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 5;
+    // Default page size updated from 5 -> 6
+    const limit = parseInt(req.query.limit as string) || 6;
     const search = req.query.search as string;
 
     const classData = await classService.getSuggestedListService(userId, page, limit, search);
