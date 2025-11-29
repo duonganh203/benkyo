@@ -238,7 +238,7 @@ const DocumentViewer = ({ file, searchText, pageNumber, onClose, embedded = fals
                             {searchText && (
                                 <div className='bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 rounded sticky top-0 z-10'>
                                     <p className='text-xs font-semibold text-yellow-800 dark:text-yellow-200 mb-2'>
-                                        📍 Source excerpt from AI:
+                                        Source excerpt from AI:
                                     </p>
                                     <p className='text-sm text-yellow-900 dark:text-yellow-100 italic'>
                                         "{searchText}"
