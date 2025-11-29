@@ -338,6 +338,7 @@ export const enrollUserService = async (moocId: string, userId: string) => {
     // Tạo deckProgress
     const deckProgress = mooc.decks.map((d) => ({
         deck: d.deck,
+        progress: 0,
         completed: false,
         locked: d.order !== 0,
         completedAt: null
@@ -435,6 +436,7 @@ export const unlockNextMoocForUser = async (mooc: any, userId: string) => {
                 startedAt: new Date(),
                 deckProgress: nextMoocDoc.decks.map((d: any) => ({
                     deck: d.deck,
+                    progress: 0,
                     completed: false,
                     locked: false,
                     completedAt: null
@@ -448,4 +450,55 @@ export const unlockNextMoocForUser = async (mooc: any, userId: string) => {
     }
 
     await nextMoocDoc.save();
+};
+
+export const updateDeckProgressForUserService = async (
+    moocId: string,
+    userId: string,
+    deckId: string,
+    lastSeenIndex: number,
+    totalCards: number
+) => {
+    const mooc = await Mooc.findById(moocId);
+    if (!mooc) return { success: false, message: 'MOOC not found' };
+
+    const enrolled = mooc.enrolledUsers.find((u: any) => u.user.toString() === userId.toString());
+    if (!enrolled) return { success: false, message: 'User not enrolled in this MOOC' };
+
+    const deckProgressIndex = enrolled.deckProgress.findIndex((d: any) => d.deck.toString() === deckId.toString());
+
+    let deckProgress;
+    const progressPercent = totalCards > 0 ? Math.floor(((lastSeenIndex + 1) / totalCards) * 100) : 0;
+
+    if (deckProgressIndex === -1) {
+        // Tạo mới subdocument
+        deckProgress = enrolled.deckProgress.create({
+            deck: new Types.ObjectId(deckId),
+            lastSeenIndex,
+            progress: progressPercent,
+            completed: false,
+            locked: false,
+            completedAt: null
+        });
+        enrolled.deckProgress.push(deckProgress);
+    } else {
+        deckProgress = enrolled.deckProgress[deckProgressIndex];
+        deckProgress.lastSeenIndex = lastSeenIndex;
+        deckProgress.progress = progressPercent;
+
+        // ⚡ bắt buộc markModified để Mongoose nhận ra đã thay đổi
+        enrolled.markModified(`deckProgress.${deckProgressIndex}`);
+    }
+
+    await mooc.save();
+
+    return {
+        success: true,
+        message: 'Deck progress updated',
+        data: {
+            deck: deckProgress.deck,
+            lastSeenIndex: deckProgress.lastSeenIndex,
+            progress: deckProgress.progress
+        }
+    };
 };

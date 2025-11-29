@@ -118,5 +118,5 @@ export const submitClassQuizAttempt = async (req: Request, res: Response) => {
 
     const result = await submitClassQuizAttemptService(userId, classId, moocId, deckId, quizId, responses);
 
-    return res.status(200).json({ success: true, data: result });
+    return res.status(200).json({ success: true, message: result.message, data: result });
 };

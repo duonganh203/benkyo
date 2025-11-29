@@ -109,18 +109,6 @@ function ClassDetailUser() {
         });
     };
 
-    const getDeckProgressForUser = (mooc: any, deckId: string) => {
-        if (!mooc || !userId) return null;
-        const enrolledUser = mooc.enrolledUsers.find((u: any) => {
-            const uid = u.user?._id ? u.user._id : u.user;
-            return uid?.toString() === userId.toString();
-        });
-        if (!enrolledUser) return null;
-        return enrolledUser.deckProgress.find((d: any) => {
-            const did = d.deck?._id ? d.deck._id : d.deck;
-            return did?.toString() === deckId.toString();
-        });
-    };
     // ==========================================
 
     // Start study session
@@ -223,6 +211,20 @@ function ClassDetailUser() {
     const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
     const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
 
+    const getMoocProgressForUser = (mooc: any) => {
+        if (!userId || !mooc?.enrolledUsers?.length || !mooc?.decks?.length) return 0;
+        const enrolledUser = mooc.enrolledUsers.find((u: any) => {
+            const uid = u.user?._id ? u.user._id : u.user;
+            return uid?.toString() === userId.toString();
+        });
+        if (!enrolledUser) return 0;
+
+        const totalDecks = mooc.decks.length;
+        const completedDecks = enrolledUser.deckProgress?.filter((d: any) => d.completed).length || 0;
+
+        return Math.round((completedDecks / totalDecks) * 100);
+    };
+
     return (
         <div className='min-h-screen bg-background'>
             <main className='container mx-auto px-4 py-8 max-w-7xl'>
@@ -280,12 +282,7 @@ function ClassDetailUser() {
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                             {paginatedMoocs.map((mooc: any) => {
                                 const enrolled = isUserEnrolled(mooc);
-                                const totalDecks = mooc.decks?.length || 0;
-                                const completedDecks =
-                                    mooc.decks?.filter((d: any) => getDeckProgressForUser(mooc, d._id)?.completed)
-                                        .length || 0;
-                                const progressPercent =
-                                    totalDecks === 0 ? 0 : Math.round((completedDecks / totalDecks) * 100);
+                                const progressPercent = getMoocProgressForUser(mooc);
 
                                 let status: 'available' | 'locked' | 'paid' = 'available';
                                 if (!enrolled && mooc.isPaid) status = 'paid';

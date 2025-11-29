@@ -90,25 +90,34 @@ const QuizTakingPage: React.FC = () => {
 
     useEffect(() => {
         if (finished && quiz && userResponses.length === quiz.questions.length && me?._id) {
-            // 1️⃣ Gửi điểm lên backend
+            // Gửi điểm lên backend
             submitAttempt.mutate(userResponses, {
-                onSuccess: async () => {
-                    toast.success('✅ Your quiz attempt has been successfully saved!');
+                onSuccess: async (res: any) => {
+                    const message = res?.message || 'Quiz submitted';
+                    const isPass = message.toLowerCase().includes('passed');
 
-                    // 2️⃣ Update progress để mở MOOC tiếp theo
-                    await updateProgress.mutateAsync({
-                        moocId: moocId!,
-                        payload: {
-                            userId: me._id,
-                            deckId: deckId!,
-                            completed: true
-                        }
-                    });
+                    if (isPass) {
+                        toast.success('🎉 You passed the quiz!');
+                    } else {
+                        toast.error('❌ You failed the quiz.');
+                    }
 
-                    queryClient.invalidateQueries({ queryKey: ['mooc-detail', moocId] });
+                    // Nếu PASS thì mới update mooc progress
+                    if (isPass) {
+                        await updateProgress.mutateAsync({
+                            moocId: moocId!,
+                            payload: {
+                                userId: me._id,
+                                deckId: deckId!,
+                                completed: true
+                            }
+                        });
+
+                        queryClient.invalidateQueries({ queryKey: ['mooc-detail', moocId] });
+                    }
                 },
                 onError: () => {
-                    toast.error('❌ Failed to save your attempt. Please try again.');
+                    toast.error('❌ Failed to submit your quiz. Please try again.');
                 }
             });
         }

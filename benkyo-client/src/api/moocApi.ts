@@ -65,3 +65,17 @@ export const updateMoocProgress = async (moocId: string, payload: UpdateProgress
         data?: MoocInterface;
     };
 };
+
+export const updateDeckProgressForUser = async (
+    moocId: string,
+    deckId: string,
+    lastSeenIndex: number,
+    totalCards: number
+) => {
+    const { data } = await api.patch(`/moocs/${moocId}/decks/${deckId}/progress`, { lastSeenIndex, totalCards });
+    return data as {
+        success: boolean;
+        message: string;
+        data?: { deck: string; lastSeenIndex: number; progress: number };
+    };
+};

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { CardInterface } from '@/types/card';
 import { Button } from './ui/button';
@@ -7,25 +7,23 @@ import { Badge } from './ui/badge';
 
 interface FlashcardViewerProps {
     cards: CardInterface[];
-    initialIndex?: number;
+    currentIndex?: number;
+    initialIndex?: number; // controlled index
     onCardChange?: (index: number) => void;
 }
 
-const FlashcardViewer = ({ cards, initialIndex = 0, onCardChange }: FlashcardViewerProps) => {
-    const [currentIndex, setCurrentIndex] = useState(initialIndex);
+const FlashcardViewer: React.FC<FlashcardViewerProps> = ({ cards, currentIndex = 0, onCardChange }) => {
     const [isFlipped, setIsFlipped] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
 
+    if (!cards || cards.length === 0) return null;
+
     const currentCard = cards[currentIndex];
 
-    useEffect(() => {
-        setCurrentIndex(0);
-        setIsFlipped(false);
-    }, [cards]);
-
+    // Reset flip khi đổi card
     useEffect(() => {
         setIsFlipped(false);
-    }, [currentIndex]);
+    }, [currentIndex, cards]);
 
     const handleFlip = () => {
         if (isAnimating) return;
@@ -36,20 +34,17 @@ const FlashcardViewer = ({ cards, initialIndex = 0, onCardChange }: FlashcardVie
 
     const handleNext = () => {
         if (currentIndex < cards.length - 1) {
-            const newIndex = currentIndex + 1;
-            setCurrentIndex(newIndex);
-            onCardChange?.(newIndex);
+            onCardChange?.(currentIndex + 1);
         }
     };
 
     const handlePrevious = () => {
         if (currentIndex > 0) {
-            const newIndex = currentIndex - 1;
-            setCurrentIndex(newIndex);
-            onCardChange?.(newIndex);
+            onCardChange?.(currentIndex - 1);
         }
     };
 
+    // Keyboard navigation
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             switch (event.key) {
@@ -71,19 +66,15 @@ const FlashcardViewer = ({ cards, initialIndex = 0, onCardChange }: FlashcardVie
 
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [currentIndex]);
+    }, [currentIndex, cards]);
 
     return (
         <div className='w-full'>
             <div className='flex items-center justify-between mb-6'>
-                <div className='flex items-center gap-4'>
-                    <h2 className='text-2xl font-bold'>Flashcard Preview</h2>
-                </div>
-                <div className='flex items-center gap-4'>
-                    <span className='text-sm text-muted-foreground'>
-                        {currentIndex + 1} / {cards.length}
-                    </span>
-                </div>
+                <h2 className='text-2xl font-bold'>Flashcard Preview</h2>
+                <span className='text-sm text-muted-foreground'>
+                    {currentIndex + 1} / {cards.length}
+                </span>
             </div>
 
             <div className='flex justify-center mb-6 w-full'>
@@ -93,6 +84,7 @@ const FlashcardViewer = ({ cards, initialIndex = 0, onCardChange }: FlashcardVie
                             isFlipped ? 'rotate-y-180' : ''
                         }`}
                     >
+                        {/* Front */}
                         <div className='absolute inset-0 backface-hidden'>
                             <Card
                                 className='w-full h-full cursor-pointer hover:shadow-lg transition-shadow'
@@ -107,7 +99,7 @@ const FlashcardViewer = ({ cards, initialIndex = 0, onCardChange }: FlashcardVie
                                         dangerouslySetInnerHTML={{ __html: currentCard.front }}
                                     />
                                     <div className='mt-6 flex flex-wrap gap-2'>
-                                        {currentCard.tags.map((tag: string) => (
+                                        {currentCard.tags.map((tag) => (
                                             <Badge key={tag} variant='outline' className='text-xs'>
                                                 {tag}
                                             </Badge>
@@ -117,6 +109,7 @@ const FlashcardViewer = ({ cards, initialIndex = 0, onCardChange }: FlashcardVie
                             </Card>
                         </div>
 
+                        {/* Back */}
                         <div className='absolute inset-0 backface-hidden rotate-y-180'>
                             <Card
                                 className='w-full h-full cursor-pointer hover:shadow-lg transition-shadow bg-muted/30'
@@ -131,7 +124,7 @@ const FlashcardViewer = ({ cards, initialIndex = 0, onCardChange }: FlashcardVie
                                         dangerouslySetInnerHTML={{ __html: currentCard.back }}
                                     />
                                     <div className='mt-6 flex flex-wrap gap-2'>
-                                        {currentCard.tags.map((tag: string) => (
+                                        {currentCard.tags.map((tag) => (
                                             <Badge key={tag} variant='outline' className='text-xs'>
                                                 {tag}
                                             </Badge>
@@ -144,6 +137,7 @@ const FlashcardViewer = ({ cards, initialIndex = 0, onCardChange }: FlashcardVie
                 </div>
             </div>
 
+            {/* Navigation */}
             <div className='flex items-center justify-center gap-4 mb-6'>
                 <Button
                     variant='outline'
@@ -151,18 +145,15 @@ const FlashcardViewer = ({ cards, initialIndex = 0, onCardChange }: FlashcardVie
                     disabled={currentIndex === 0}
                     className='flex items-center gap-2'
                 >
-                    <ChevronLeft className='h-4 w-4' />
-                    Previous
+                    <ChevronLeft className='h-4 w-4' /> Previous
                 </Button>
-
                 <Button
                     variant='outline'
                     onClick={handleNext}
                     disabled={currentIndex === cards.length - 1}
                     className='flex items-center gap-2'
                 >
-                    Next
-                    <ChevronRight className='h-4 w-4' />
+                    Next <ChevronRight className='h-4 w-4' />
                 </Button>
             </div>
 

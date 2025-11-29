@@ -43,28 +43,13 @@ const ClassCard = ({
                 style={{
                     backgroundImage: `url(${classItem.bannerUrl || '/default-class-banner.svg'})`
                 }}
-            >
-                <div className='absolute bottom-0 left-0 right-0 px-4 py-2 bg-gradient-to-t from-black/60 to-transparent'>
-                    <h3 className='text-white text-base font-bold truncate'>{classItem.name}</h3>
-                    <p className='text-sm text-gray-200 line-clamp-2'>{classItem.description}</p>
-                </div>
-            </div>
+            ></div>
             <div className='flex-1 p-4 flex flex-col justify-between bg-white dark:bg-gray-900'>
                 <div>
-                    {variant === 'my-class' && (
-                        <>
-                            <div className='flex justify-between text-xs mb-1 font-medium'>
-                                <span>Progress</span>
-                                <span>{classItem.progress ?? 0}%</span>
-                            </div>
-                            <div className='w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700'>
-                                <div
-                                    className='bg-blue-600 h-2 rounded-full'
-                                    style={{ width: `${classItem.progress ?? 0}%` }}
-                                />
-                            </div>
-                        </>
-                    )}
+                    <div className='bottom-0 left-0 right-0'>
+                        <h3 className='text-white text-base font-bold truncate'>{classItem.name}</h3>
+                        <p className='text-sm text-gray-200 line-clamp-2'>{classItem.description}</p>
+                    </div>
                     <div className='flex items-center text-xs text-gray-500 mt-4'>
                         <Calendar className='h-3 w-3 mr-1.5' />
                         Last active:{' '}
