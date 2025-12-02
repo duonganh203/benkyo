@@ -544,8 +544,8 @@ export default function Profile() {
                                 <div className='col-span-full p-10 border-2 border-dashed rounded-xl bg-gray-50 dark:bg-gray-700 dark:border-gray-600'>
                                     <p className='text-center text-lg text-gray-500 dark:text-gray-300 font-medium'>
                                         {search
-                                            ? `Không tìm thấy bộ đề nào khớp với từ khóa "${search}".`
-                                            : 'Bạn chưa thích bộ đề nào cả. Hãy tìm kiếm và thích một bộ đề!'}
+                                            ? `No test sets were found matching the keyword"${search}".`
+                                            : 'You do not like any set of questions yet. Search and like a set of questions!'}
                                     </p>
                                 </div>
                             )}
