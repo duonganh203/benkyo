@@ -1,69 +1,52 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Users, BookOpen, CheckCircle, Clock, AlertCircle, TrendingUp } from 'lucide-react';
+import { Users, BookOpenCheck, Target, Activity, Clock } from 'lucide-react';
 import { useGetClassMemberLearningStatus } from '@/hooks/queries/use-get-class-member-learning-status';
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import useClassManagementStore from '@/hooks/stores/use-class-management-store';
 import { useNavigate } from 'react-router-dom';
 import { getToast } from '@/utils/getToast';
 
-type Status = 'completed' | 'in_progress' | 'not_started';
-
-interface DeckStatus {
-    deckId: string;
-    deckName: string;
-    status: Status;
-    progress: number;
-    completedCards: number;
-    totalCards: number;
-    lastStudyDate?: string | null;
-    endTime?: string | null;
-    isOverdue?: boolean;
-    hoursUntilDeadline?: number;
-}
-
-interface MemberStatus {
-    userId: string;
-    userName: string;
-    userEmail?: string;
-    userAvatar?: string | null;
-    overallProgress: number;
-    completedDecks: number;
-    inProgressDecks: number;
-    notStartedDecks: number;
-    studyStreak: number;
-    deckStatuses: DeckStatus[];
-    lastStudyDate?: string | null;
-}
-
-const getStatusColor = (status: 'completed' | 'in_progress' | 'not_started') => {
-    switch (status) {
-        case 'completed':
-            return 'bg-green-100 text-green-800 border-green-200';
-        case 'in_progress':
-            return 'bg-blue-100 text-blue-800 border-blue-200';
-        case 'not_started':
-            return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+type ClassMemberQuizStats = {
+    name: string;
+    email: string;
+    stats: {
+        attempts: number;
+        totalCorrect: number;
+        totalQuestions: number;
+        accuracy: number;
+        lastAttempt: string | null;
+    };
 };
 
-const getStatusIcon = (status: 'completed' | 'in_progress' | 'not_started') => {
-    switch (status) {
-        case 'completed':
-            return <CheckCircle className='w-4 h-4' />;
-        case 'in_progress':
-            return <Clock className='w-4 h-4' />;
-        case 'not_started':
-            return <BookOpen className='w-4 h-4' />;
-    }
+type ClassQuizOverviewResponse = {
+    quizCount: number;
+    totalAttempts: number;
+    activeMembers: number;
+    overallAccuracy: number;
+    members: ClassMemberQuizStats[];
 };
 
-const formatStudyDate = (dateString?: string | null) => {
-    if (!dateString) return 'Not studied';
-    const t = new Date(dateString).getTime();
-    if (Number.isNaN(t) || t === 0) return 'Not studied';
-    return new Date(dateString).toLocaleDateString();
+const clamp01 = (x: number) => Math.max(0, Math.min(1, Number.isFinite(x) ? x : 0));
+const fmtPct = (x: number) => `${Math.round(clamp01(x) * 100)}%`;
+
+const formatDateTime = (iso?: string | null) => {
+    if (!iso) return '—';
+    const t = new Date(iso).getTime();
+    if (Number.isNaN(t) || t === 0) return '—';
+    return new Date(iso).toLocaleString();
+};
+
+const initials = (name?: string) => {
+    const parts = String(name ?? '')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+    if (parts.length === 0) return '?';
+    const a = parts[0]?.[0] ?? '';
+    const b = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : '';
+    return (a + b).toUpperCase();
 };
 
 export const ClassMemberLearningStatus = () => {
@@ -77,7 +60,7 @@ export const ClassMemberLearningStatus = () => {
                 <CardHeader>
                     <CardTitle className='flex items-center gap-2'>
                         <Users className='w-5 h-5' />
-                        Member Learning Status
+                        Class Member Progress
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -87,13 +70,8 @@ export const ClassMemberLearningStatus = () => {
         );
     }
 
-    const {
-        data: memberStatuses,
-        isLoading,
-        isError,
-        error
-    } = useGetClassMemberLearningStatus(classData._id) as {
-        data?: MemberStatus[];
+    const { data, isLoading, isError, error } = useGetClassMemberLearningStatus(classData._id) as {
+        data?: ClassQuizOverviewResponse;
         isLoading: boolean;
         isError: boolean;
         error?: Error | null;
@@ -106,7 +84,7 @@ export const ClassMemberLearningStatus = () => {
     }
 
     if (isError) {
-        getToast('error', `${error?.message}`);
+        getToast('error', `${error?.message ?? 'Something went wrong'}`);
         console.log(error);
         return null;
     }
@@ -117,23 +95,23 @@ export const ClassMemberLearningStatus = () => {
                 <CardHeader>
                     <CardTitle className='flex items-center gap-2'>
                         <Users className='w-5 h-5' />
-                        Member Learning Status
+                        Class Member Progress
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className='text-center py-8 text-muted-foreground'>Loading member learning status...</div>
+                    <div className='text-center py-8 text-muted-foreground'>Loading class progress...</div>
                 </CardContent>
             </Card>
         );
     }
 
-    if (!memberStatuses || memberStatuses.length === 0) {
+    if (!data || !data.members || data.members.length === 0) {
         return (
             <Card>
                 <CardHeader>
                     <CardTitle className='flex items-center gap-2'>
                         <Users className='w-5 h-5' />
-                        Member Learning Status
+                        Class Member Progress
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -146,129 +124,138 @@ export const ClassMemberLearningStatus = () => {
         );
     }
 
+    const overallAcc = clamp01(data.overallAccuracy);
+
     return (
         <Card>
             <CardHeader>
-                <CardTitle className='flex items-center gap-2'>
-                    <Users className='w-5 h-5' />
-                    Member Learning Status
+                <CardTitle className='flex items-center justify-between'>
+                    <div className='flex items-center gap-2'>
+                        <Users className='w-5 h-5' />
+                        <span>Class Member Progress</span>
+                    </div>
+
+                    <Badge variant='outline' className='text-xs'>
+                        {data.activeMembers}/{data.members.length} active
+                    </Badge>
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <div className='space-y-6'>
-                    {memberStatuses!.map((member: MemberStatus) => (
-                        <div key={member.userId} className='border rounded-lg p-4'>
-                            <div className='flex items-center gap-3 mb-4'>
-                                <div className='w-10 h-10 rounded-full overflow-hidden'>
-                                    <img
-                                        src={member.userAvatar || '/default-avatar.png'}
-                                        alt={member.userName}
-                                        className='w-full h-full object-cover'
-                                    />
-                                </div>
-                                <div className='flex-1'>
-                                    <h3 className='font-semibold text-lg'>{member.userName}</h3>
-                                    <p className='text-sm text-muted-foreground'>{member.userEmail}</p>
-                                </div>
-                                <div className='text-right'>
-                                    <div className='text-2xl font-bold text-blue-600'>{member.overallProgress}%</div>
-                                    <div className='text-xs text-muted-foreground'>Overall Progress</div>
-                                </div>
-                            </div>
 
-                            <div className='grid grid-cols-4 gap-4 mb-4'>
-                                <div className='text-center'>
-                                    <div className='text-lg font-semibold text-green-600'>{member.completedDecks}</div>
-                                    <div className='text-xs text-muted-foreground'>Completed</div>
-                                </div>
-                                <div className='text-center'>
-                                    <div className='text-lg font-semibold text-blue-600'>{member.inProgressDecks}</div>
-                                    <div className='text-xs text-muted-foreground'>In Progress</div>
-                                </div>
-                                <div className='text-center'>
-                                    <div className='text-lg font-semibold text-gray-600'>{member.notStartedDecks}</div>
-                                    <div className='text-xs text-muted-foreground'>Not Started</div>
-                                </div>
-                                <div className='text-center'>
-                                    <div className='text-lg font-semibold text-purple-600'>{member.studyStreak}</div>
-                                    <div className='text-xs text-muted-foreground'>Study Streak</div>
-                                </div>
-                            </div>
+            <CardContent className='space-y-6'>
+                <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+                    <div className='p-4 bg-muted/30 rounded-lg border'>
+                        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                            <BookOpenCheck className='w-4 h-4' />
+                            Quiz count
+                        </div>
+                        <div className='mt-2 text-2xl font-bold text-foreground'>{data.quizCount}</div>
+                    </div>
 
-                            <div className='mb-4'>
-                                <div className='flex justify-between text-sm mb-1'>
-                                    <span>Overall Progress</span>
-                                    <span>{member.overallProgress}%</span>
-                                </div>
-                                <Progress value={member.overallProgress} className='h-2' />
-                            </div>
+                    <div className='p-4 bg-muted/30 rounded-lg border'>
+                        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                            <Activity className='w-4 h-4' />
+                            Total attempts
+                        </div>
+                        <div className='mt-2 text-2xl font-bold text-foreground'>{data.totalAttempts}</div>
+                    </div>
 
-                            <div className='space-y-3'>
-                                <h4 className='font-medium text-sm text-muted-foreground'>Deck Progress</h4>
-                                {member.deckStatuses.map((deck: DeckStatus) => (
-                                    <div key={deck.deckId} className='border rounded-lg p-3'>
-                                        <div className='flex items-center justify-between mb-2'>
+                    <div className='p-4 bg-muted/30 rounded-lg border'>
+                        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                            <Users className='w-4 h-4' />
+                            Active members
+                        </div>
+                        <div className='mt-2 text-2xl font-bold text-foreground'>{data.activeMembers}</div>
+                    </div>
+
+                    <div className='p-4 bg-muted/30 rounded-lg border'>
+                        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                            <Target className='w-4 h-4' />
+                            Overall accuracy
+                        </div>
+
+                        <div className='mt-2 flex items-end justify-between'>
+                            <div className='text-2xl font-bold text-foreground'>{fmtPct(overallAcc)}</div>
+                            <span className='text-xs text-muted-foreground'>Avg</span>
+                        </div>
+
+                        <div className='mt-3'>
+                            <Progress value={overallAcc * 100} className='h-2' />
+                        </div>
+                    </div>
+                </div>
+
+                <div className='space-y-4'>
+                    {data.members.map((m) => {
+                        const acc = clamp01(m.stats?.accuracy ?? 0);
+                        const attempts = m.stats?.attempts ?? 0;
+                        const totalCorrect = m.stats?.totalCorrect ?? 0;
+                        const totalQuestions = m.stats?.totalQuestions ?? 0;
+                        const lastAttempt = m.stats?.lastAttempt ?? null;
+
+                        return (
+                            <div
+                                key={m.email}
+                                className='p-4 bg-muted/30 rounded-lg border transition hover:bg-muted/40'
+                            >
+                                <div className='flex items-start justify-between gap-4'>
+                                    <div className='flex items-center gap-4 flex-1 min-w-0'>
+                                        <div className='w-10 h-10 rounded-full bg-muted flex items-center justify-center font-semibold'>
+                                            {initials(m.name)}
+                                        </div>
+
+                                        <div className='flex-1 min-w-0'>
                                             <div className='flex items-center gap-2'>
-                                                {getStatusIcon(deck.status)}
-                                                <span className='font-medium text-sm'>{deck.deckName}</span>
+                                                <div className='font-medium text-foreground truncate'>{m.name}</div>
                                                 <Badge
-                                                    variant='outline'
-                                                    className={`text-xs ${getStatusColor(deck.status)}`}
+                                                    variant={attempts > 0 ? 'outline' : 'secondary'}
+                                                    className='text-xs'
                                                 >
-                                                    {deck.status.replace('_', ' ')}
+                                                    {attempts > 0 ? 'Active' : 'No attempts'}
                                                 </Badge>
                                             </div>
-                                            <div className='text-right'>
-                                                <div className='text-sm font-medium'>{deck.progress}%</div>
-                                                <div className='text-xs text-muted-foreground'>
-                                                    {deck.completedCards}/{deck.totalCards} cards
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div className='mb-2'>
-                                            <Progress value={deck.progress} className='h-1' />
-                                        </div>
+                                            <div className='text-sm text-muted-foreground truncate'>{m.email}</div>
 
-                                        <div className='flex items-center justify-between text-xs text-muted-foreground'>
-                                            <div className='flex items-center gap-4'>
-                                                {deck.lastStudyDate && (
-                                                    <span>Last studied: {formatStudyDate(deck.lastStudyDate)}</span>
-                                                )}
-                                                {deck.endTime && (
-                                                    <span>Due: {new Date(deck.endTime).toLocaleDateString()}</span>
-                                                )}
-                                            </div>
-                                            <div className='flex items-center gap-2'>
-                                                {deck.isOverdue && (
-                                                    <div className='flex items-center gap-1 text-red-600'>
-                                                        <AlertCircle className='w-3 h-3' />
-                                                        <span>Overdue</span>
-                                                    </div>
-                                                )}
-                                                {deck.hoursUntilDeadline !== undefined &&
-                                                    deck.hoursUntilDeadline <= 24 && (
-                                                        <div className='flex items-center gap-1 text-orange-600'>
-                                                            <Clock className='w-3 h-3' />
-                                                            <span>{deck.hoursUntilDeadline}h left</span>
-                                                        </div>
-                                                    )}
+                                            <div className='flex items-center gap-2 mt-1 text-xs text-muted-foreground'>
+                                                <Clock className='w-3 h-3' />
+                                                <span>Last attempt: {formatDateTime(lastAttempt)}</span>
                                             </div>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
 
-                            {member.lastStudyDate && (
-                                <div className='mt-4 pt-4 border-t'>
-                                    <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                                        <TrendingUp className='w-4 h-4' />
-                                        <span>Last studied: {formatStudyDate(member.lastStudyDate)}</span>
+                                    <div className='text-right shrink-0'>
+                                        <div className='text-xl font-bold text-primary'>{fmtPct(acc)}</div>
+                                        <div className='text-xs text-muted-foreground'>Accuracy</div>
                                     </div>
                                 </div>
-                            )}
-                        </div>
-                    ))}
+
+                                <div className='grid grid-cols-3 gap-3 mt-4'>
+                                    <div className='p-3 bg-background/60 rounded-md border'>
+                                        <div className='text-lg font-semibold text-foreground'>{attempts}</div>
+                                        <div className='text-[11px] text-muted-foreground'>Attempts</div>
+                                    </div>
+                                    <div className='p-3 bg-background/60 rounded-md border'>
+                                        <div className='text-lg font-semibold text-foreground'>{totalCorrect}</div>
+                                        <div className='text-[11px] text-muted-foreground'>Correct</div>
+                                    </div>
+                                    <div className='p-3 bg-background/60 rounded-md border'>
+                                        <div className='text-lg font-semibold text-foreground'>{totalQuestions}</div>
+                                        <div className='text-[11px] text-muted-foreground'>Questions</div>
+                                    </div>
+                                </div>
+
+                                <div className='mt-4'>
+                                    <div className='flex justify-between text-xs text-muted-foreground mb-1'>
+                                        <span>Accuracy</span>
+                                        <span className='text-foreground font-medium'>
+                                            {totalCorrect}/{totalQuestions}
+                                        </span>
+                                    </div>
+                                    <Progress value={acc * 100} className='h-2' />
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </CardContent>
         </Card>
