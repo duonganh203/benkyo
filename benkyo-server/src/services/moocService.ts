@@ -289,13 +289,13 @@ export const updateMoocService = async (moocId: string, data: any) => {
 export const deleteMoocService = async (moocId: string, userId: string) => {
     const mooc = await Mooc.findById(moocId);
     if (!mooc) {
-        return { success: false, message: 'MOOC không tồn tại', data: null };
+        return { success: false, message: 'MOOC does not exist', data: null };
     }
 
     if (mooc.owner.toString() !== userId) {
         return {
             success: false,
-            message: 'Bạn không có quyền xóa MOOC này',
+            message: 'You do not have permission to delete this MOOC',
             data: null
         };
     }

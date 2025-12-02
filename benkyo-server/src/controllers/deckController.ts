@@ -17,7 +17,8 @@ import {
     getLikedDecksByUserService,
     getUserPublicDecksService,
     updateDeckService,
-    getDeckStatisticsService
+    getDeckStatisticsService,
+    getPublicDeckRequestNotificationsService
 } from '~/services/deckService';
 import {
     createDeckValidation,
@@ -154,4 +155,10 @@ export const getDeckStatistics = async (req: Request, res: Response) => {
 
     const result = await getDeckStatisticsService(userId, id);
     res.json(result);
+};
+
+export const getPublicDeckRequestNotifications = async (req: Request, res: Response) => {
+    const adminId = req.user._id;
+    const result = await getPublicDeckRequestNotificationsService(adminId);
+    res.status(200).json(result);
 };
