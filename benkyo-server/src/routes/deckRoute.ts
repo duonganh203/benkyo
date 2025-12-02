@@ -17,7 +17,8 @@ import {
     getLikedDecksByUser,
     getUserPublicDecks,
     updateDeck,
-    getDeckStatistics
+    getDeckStatistics,
+    getPublicDeckRequestNotifications
 } from '~/controllers/deckController';
 import { errorHandler } from '~/errorHandler';
 import adminAuthMiddleware from '~/middlewares/adminAuthMiddleware';
@@ -31,6 +32,7 @@ deckRoutes.get('/public-requests', [adminAuthMiddleware], errorHandler(getAllReq
 deckRoutes.get('/deckStats', [adminAuthMiddleware], errorHandler(getDeckStats));
 deckRoutes.get('/public-requests/:id', [adminAuthMiddleware], errorHandler(getRequestPulbicDeck));
 deckRoutes.patch('/public-requests/:id', [adminAuthMiddleware], errorHandler(reviewPublicServiceDeck));
+deckRoutes.get('/notifications', [adminAuthMiddleware], errorHandler(getPublicDeckRequestNotifications));
 deckRoutes.get('/my-decks', [authMiddleware], errorHandler(getAllDecks));
 deckRoutes.get('/public-deck', [authMiddleware], errorHandler(getPublicDecks));
 deckRoutes.get('/liked', [authMiddleware], errorHandler(getLikedDecksByUser));

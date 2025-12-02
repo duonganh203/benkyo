@@ -18,7 +18,7 @@ import { ErrorCode } from '~/exceptions/root';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { Types } from 'mongoose';
-
+import { PublicDeckRequestNotificationType } from '~/types/deckTypes';
 export const createDeckService = async (userId: string, deckData: z.infer<typeof createDeckValidation>) => {
     const { name, description } = deckData;
 
@@ -465,5 +465,29 @@ export const getDeckStatisticsService = async (userId: string, deckId: string) =
         retentionRate,
         totalReviews,
         reviewsLast30Days
+    };
+};
+export const getPublicDeckRequestNotificationsService = async (adminId: Types.ObjectId) => {
+    const pendingDecks = await Deck.find({ publicStatus: 1 }).populate('owner', 'name avatar').lean();
+
+    const notifications: PublicDeckRequestNotificationType[] = pendingDecks.map((deck: any) => ({
+        id: deck._id.toString(),
+        notificationType: 'public_deck_request',
+        sortTime: deck.updatedAt || deck.createdAt,
+        priority: 2,
+        actorId: deck.owner._id.toString(),
+        actorName: deck.owner?.name || 'Unknown',
+        actorAvatar: deck.owner?.avatar,
+        deckId: deck._id.toString(),
+        deckTitle: deck.name || '',
+        message: `${deck.owner?.name || 'Someone'} requested to public deck "${deck.name || ''}"`,
+        isRead: false
+    }));
+
+    notifications.sort((a, b) => b.sortTime.getTime() - a.sortTime.getTime());
+
+    return {
+        all: notifications,
+        total: notifications.length
     };
 };

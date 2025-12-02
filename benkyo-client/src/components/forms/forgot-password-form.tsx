@@ -10,16 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { OtpModal } from '../modals/otp-modal';
 import { useForgotPassword } from '@/hooks/queries/use-forget-password';
-
+import { getToast } from '@/utils/getToast';
 const ForgotPasswordSchema = z.object({
     email: z.string().email('Please enter a valid email address')
 });
 
 type ForgotPasswordData = z.infer<typeof ForgotPasswordSchema>;
-
-const getToast = (type: string, message: string) => {
-    console.log(`${type}: ${message}`);
-};
 
 export function ForgotPasswordForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
     const { mutate: forgotPassword, isPending } = useForgotPassword();
@@ -39,10 +35,16 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
             onSuccess: () => {
                 setSubmittedEmail(data.email);
                 setShowOtpModal(true);
-                getToast('success', 'OTP sent to your email!');
+                getToast('success', 'OTP has been sent to your email!');
             },
             onError: (error) => {
-                getToast('error', error.response?.data?.message || 'Something went wrong!');
+                const message = error.response?.data?.message;
+
+                if (message === 'User not found!') {
+                    getToast('error', 'This email is not registered!');
+                } else {
+                    getToast('error', message || 'Something went wrong!');
+                }
             }
         });
     };
