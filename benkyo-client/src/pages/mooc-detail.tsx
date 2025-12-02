@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { BookOpen, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import ProgressCard from '@/components/moocs-card';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import useMe from '@/hooks/queries/use-me';
@@ -115,15 +115,24 @@ const MOOCDetail: React.FC = () => {
         <div className='min-h-screen bg-background'>
             <header className='bg-card border-b border-border py-6 px-4'>
                 <div className='max-w-4xl mx-auto flex items-start justify-between'>
-                    <div className='flex items-start gap-4'>
-                        <div className='p-3 bg-primary/10 rounded-lg'>
-                            <BookOpen className='w-8 h-8 text-primary' />
+                    <div className='flex items-center gap-4'>
+                        <button
+                            onClick={() => navigate(`/class/${classId}`)}
+                            className='p-2 rounded-md hover:bg-accent transition-colors'
+                        >
+                            <ArrowLeft className='w-5 h-5 text-foreground cursor-pointer' />
+                        </button>
+
+                        <div className='p-3 bg-primary/10 rounded-xl flex items-center justify-center'>
+                            <BookOpen className='w-7 h-7 text-primary' />
                         </div>
-                        <div>
-                            <h1 className='text-3xl font-bold text-foreground mb-2'>{mooc.title}</h1>
-                            <p className='text-lg text-muted-foreground'>{mooc.description}</p>
+
+                        <div className='flex flex-col'>
+                            <h1 className='text-2xl font-bold text-foreground leading-tight'>{mooc.title}</h1>
+                            <p className='text-base text-muted-foreground leading-snug'>{mooc.description}</p>
                         </div>
                     </div>
+
                     {isOwner && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -146,9 +155,6 @@ const MOOCDetail: React.FC = () => {
 
             <section className='py-8 px-4'>
                 <div className='max-w-4xl mx-auto'>
-                    <Button variant='outline' onClick={() => navigate(`/class/${classId}`)}>
-                        ← Back to class
-                    </Button>
                     <div className='mb-8'>
                         <h2 className='text-2xl font-bold text-foreground mb-2'>Learning Decks</h2>
                         <p className='text-muted-foreground'>
@@ -188,7 +194,7 @@ const MOOCDetail: React.FC = () => {
                                             <ProgressCard
                                                 title={deck.name ?? 'Untitled Deck'}
                                                 description={`${deck.description ?? ''} • ${deck.cardCount ?? 0} flashcards • ${deckWrapper.pointsRequired ?? 0} points required`}
-                                                progress={progress} // ❤️ đây là progress %
+                                                progress={progress}
                                                 status={deckStatus}
                                                 onClick={() => isAvailable && handleGoToDeck(deck._id)}
                                             />
