@@ -17,9 +17,9 @@ import ClassStudyDialog from '@/components/modals/ClassStudyDialog';
 import ClassResumeSessionModal from '@/components/modals/ClassResumeSessionModal';
 
 import { getToast } from '@/utils/getToast';
-import { enrollUser } from '@/api/moocApi';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
 import ConfirmLeaveClassModal from '@/components/modals/confirm-leave-class-modal';
+import useEnrollUser from '@/hooks/queries/use-enroll-mooc';
 
 function ClassDetailUser() {
     const { data: user } = useMe();
@@ -51,6 +51,8 @@ function ClassDetailUser() {
     const { mutateAsync: startSession } = useStartClassDeckSession();
     const { data: allMoocs } = useGetAllMoocs(classId);
     const { mutateAsync: leaveClass } = useLeaveClass();
+
+    const enrollMutation = useEnrollUser();
 
     // Local state để update UI ngay khi enroll
     const [allMoocsState, setAllMoocsState] = useState<any[]>(allMoocs?.data || []);
@@ -298,42 +300,60 @@ function ClassDetailUser() {
                                         onClick={() => handleMOOCClick(mooc)}
                                         isOwner={isOwner}
                                         isEnrolled={enrolled}
-                                        onEnroll={async () => {
+                                        onEnroll={() => {
                                             if (!userId) {
                                                 getToast('error', 'You must be logged in to enroll');
                                                 return;
                                             }
-                                            try {
-                                                const res = await enrollUser(mooc._id, { userId, moocId: mooc._id });
-                                                if (res?.success) {
-                                                    getToast('success', 'Enrolled successfully');
-                                                    setAllMoocsState((prev) =>
-                                                        prev.map((m) =>
-                                                            m._id === mooc._id
-                                                                ? {
-                                                                      ...m,
-                                                                      locked: false,
-                                                                      enrolledUsers: m.enrolledUsers?.some(
-                                                                          (u: any) => u.user === userId
-                                                                      )
-                                                                          ? m.enrolledUsers
-                                                                          : [
-                                                                                ...(m.enrolledUsers || []),
-                                                                                { user: userId, deckProgress: [] }
-                                                                            ]
-                                                                  }
-                                                                : m
-                                                        )
-                                                    );
-                                                    navigate(`/class/${classData._id}/mooc/${mooc._id}`);
-                                                } else {
-                                                    getToast('error', res.message || 'Enroll failed');
+
+                                            enrollMutation.mutate(
+                                                { moocId: mooc._id, userId },
+                                                {
+                                                    onSuccess: (data) => {
+                                                        // <-- nhận data từ mutation
+                                                        if (data.success) {
+                                                            getToast(
+                                                                'success',
+                                                                data.message || 'Enrolled successfully'
+                                                            );
+
+                                                            // update local state ngay lập tức
+                                                            setAllMoocsState((prev) =>
+                                                                prev.map((m) =>
+                                                                    m._id === mooc._id
+                                                                        ? {
+                                                                              ...m,
+                                                                              locked: false,
+                                                                              enrolledUsers: m.enrolledUsers?.some(
+                                                                                  (u: any) => u.user === userId
+                                                                              )
+                                                                                  ? m.enrolledUsers
+                                                                                  : [
+                                                                                        ...(m.enrolledUsers || []),
+                                                                                        {
+                                                                                            user: userId,
+                                                                                            deckProgress: []
+                                                                                        }
+                                                                                    ]
+                                                                          }
+                                                                        : m
+                                                                )
+                                                            );
+
+                                                            navigate(`/class/${classId}/mooc/${mooc._id}`);
+                                                        } else {
+                                                            getToast('error', data.message || 'Enroll failed');
+                                                        }
+                                                    },
+                                                    onError: (err) => {
+                                                        const msg =
+                                                            (err?.response?.data as any)?.message ||
+                                                            err?.message ||
+                                                            'Enroll failed';
+                                                        getToast('error', msg);
+                                                    }
                                                 }
-                                            } catch (err: any) {
-                                                const msg =
-                                                    err?.response?.data?.message || err?.message || 'Enroll failed';
-                                                getToast('error', msg);
-                                            }
+                                            );
                                         }}
                                     />
                                 );

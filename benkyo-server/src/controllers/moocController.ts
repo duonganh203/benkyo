@@ -116,7 +116,7 @@ export const enrollUser = async (req: Request, res: Response) => {
 
     const result = await enrollUserService(id, userId);
 
-    res.status(200).json({ data: result });
+    res.status(200).json(result);
 };
 
 export const updateProgress = async (req: Request, res: Response) => {

@@ -34,14 +34,17 @@ const QuizTakingPage: React.FC = () => {
         deckId: string;
         quizId?: string;
     }>();
+
     const navigate = useNavigate();
 
+    // Fetch quizzes
     const { data: rawData, isError } = useGetQuizzesByDeck(classId ?? '', moocId ?? '', deckId ?? '') as {
         data?: unknown;
         isError: boolean;
     };
 
     const quizzes = resolveQuizzes(rawData);
+
     const quiz: Quiz | null =
         quizzes && quizzes.length > 0
             ? quizId
@@ -49,6 +52,7 @@ const QuizTakingPage: React.FC = () => {
                 : quizzes[0]
             : null;
 
+    // States
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
     const [score, setScore] = useState(0);
@@ -57,12 +61,15 @@ const QuizTakingPage: React.FC = () => {
     const [userResponses, setUserResponses] = useState<{ questionId: string; selectedChoice: number }[]>([]);
 
     const submitAttempt = useSubmitQuizAttempt(classId ?? '', moocId ?? '', deckId ?? '', quiz?._id ?? '');
+
     const queryClient = useQueryClient();
     const { data: me } = useMe();
     const updateProgress = useUpdateMoocProgress();
 
+    // Handle answer selection
     const handleAnswerSelect = (choiceIndex: number) => {
         if (isAnswered) return;
+
         setSelectedAnswer(choiceIndex);
         setIsAnswered(true);
 
@@ -88,9 +95,9 @@ const QuizTakingPage: React.FC = () => {
         }, 1000);
     };
 
+    // Submit quiz when finished
     useEffect(() => {
         if (finished && quiz && userResponses.length === quiz.questions.length && me?._id) {
-            // Gửi điểm lên backend
             submitAttempt.mutate(userResponses, {
                 onSuccess: async (res: any) => {
                     const message = res?.message || 'Quiz submitted';
@@ -102,7 +109,7 @@ const QuizTakingPage: React.FC = () => {
                         toast.error('❌ You failed the quiz.');
                     }
 
-                    // Nếu PASS thì mới update mooc progress
+                    // Update progress only if passed
                     if (isPass) {
                         await updateProgress.mutateAsync({
                             moocId: moocId!,
@@ -113,9 +120,12 @@ const QuizTakingPage: React.FC = () => {
                             }
                         });
 
-                        queryClient.invalidateQueries({ queryKey: ['mooc-detail', moocId] });
+                        queryClient.invalidateQueries({
+                            queryKey: ['mooc-detail', moocId]
+                        });
                     }
                 },
+
                 onError: () => {
                     toast.error('❌ Failed to submit your quiz. Please try again.');
                 }
@@ -123,7 +133,9 @@ const QuizTakingPage: React.FC = () => {
         }
     }, [finished, quiz, userResponses, me, moocId, deckId]);
 
+    // Navigation
     const handleBack = () => navigate(`/class/${classId}/mooc/${moocId}/deck/${deckId}/quiz-hub`);
+
     const handleRestart = () => {
         setCurrentIndex(0);
         setSelectedAnswer(null);
@@ -133,13 +145,14 @@ const QuizTakingPage: React.FC = () => {
         setUserResponses([]);
     };
 
+    // Error or no quiz
     if (isError || !quiz) {
         return (
             <div className='flex min-h-screen items-center justify-center px-4'>
                 <Card className='p-6 text-center max-w-lg'>
                     <div className='flex justify-center gap-4'>
                         <Button onClick={() => navigate(-1)} variant='outline'>
-                            Quay lại
+                            Go Back
                         </Button>
                     </div>
                 </Card>
@@ -179,6 +192,7 @@ const QuizTakingPage: React.FC = () => {
                                     {currentQuestion.choices.map((choice: Choice, index: number) => {
                                         const isCorrect = index === currentQuestion.correctAnswer;
                                         const isSelected = index === selectedAnswer;
+
                                         const variant = !isAnswered
                                             ? 'outline'
                                             : isSelected
@@ -186,6 +200,7 @@ const QuizTakingPage: React.FC = () => {
                                                   ? 'outline'
                                                   : 'destructive'
                                               : 'outline';
+
                                         const addedClass =
                                             isAnswered && isSelected
                                                 ? isCorrect
@@ -215,21 +230,21 @@ const QuizTakingPage: React.FC = () => {
                             </>
                         ) : (
                             <div className='text-center space-y-4'>
-                                <h2 className='text-3xl font-bold mb-2'>🎉 Hoàn thành!</h2>
+                                <h2 className='text-3xl font-bold mb-2'>🎉 Completed!</h2>
                                 <p className='text-muted-foreground'>
-                                    Bạn trả lời đúng <span className='font-semibold text-primary'>{score}</span> /{' '}
-                                    {totalQuestions} câu.
+                                    You answered <span className='font-semibold text-primary'>{score}</span> /{' '}
+                                    {totalQuestions} correctly.
                                 </p>
 
                                 <div className='text-2xl font-bold'>
-                                    Điểm: {Math.round((score / totalQuestions) * 100)}%
+                                    Score: {Math.round((score / totalQuestions) * 100)}%
                                 </div>
 
                                 <div className='flex justify-center gap-4 mt-6'>
                                     <Button onClick={handleRestart} variant='outline'>
-                                        Làm lại
+                                        Retry
                                     </Button>
-                                    <Button onClick={handleBack}>Quay lại Hub</Button>
+                                    <Button onClick={handleBack}>Back to Hub</Button>
                                 </div>
                             </div>
                         )}

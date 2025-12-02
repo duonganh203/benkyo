@@ -93,7 +93,6 @@ export interface UpdateMoocPayload {
 
 export interface EnrollPayload {
     userId: string;
-    moocId: string;
 }
 
 export interface UpdateProgressPayload {
