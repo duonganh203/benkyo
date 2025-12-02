@@ -1,7 +1,7 @@
 import { ForbiddenRequestsException } from '~/exceptions/forbiddenRequests';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { Deck, PublicStatus, User, UserClassState, Card, Quiz, Class } from '~/schemas';
+import { Deck, PublicStatus, User, UserClassState, Card, Quiz, Class, QuizAttempt } from '~/schemas';
 import { sendToUser } from '~/utils/socketServer';
 import { ClassStateType } from '~/validations/classValidation';
 import {
@@ -1247,90 +1247,125 @@ export const getClassInvitedUsersService = async (classId: string, userId: Types
 
 export const getClassMemberLearningStatusService = async (classId: string, requesterId: Types.ObjectId) => {
     void requesterId;
-    const existingClass = await Class.findById(classId)
-        .populate({
-            path: 'users',
-            select: '_id name email avatar'
-        })
-        .populate({
-            path: 'decks.deck',
-            select: '_id name description cardCount'
-        })
-        .lean<ClassType>();
 
-    if (!existingClass) throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
+    const classObjectId = new Types.ObjectId(classId);
 
-    const memberStatuses: MemberLearningStatusType[] = [];
+    const existingClass = await Class.findById(classObjectId)
+        .populate({ path: 'users', select: '_id name email avatar' })
+        .select('_id users')
+        .lean(); // .lean<ClassType>() nếu bạn có ClassType
 
-    for (const member of existingClass.users) {
-        const userClassStates = await UserClassState.find({
-            user: member._id,
-            class: classId
-        }).populate('deck', '_id name description cardCount');
-
-        const deckStatuses = existingClass.decks.map((classDeck) => {
-            const ucs = userClassStates.find((ucs) => ucs.deck.toString() === classDeck.deck.toString());
-
-            const totalCards = classDeck.deck.cardCount ?? 0;
-            const completedCards = ucs?.completedCardIds?.length || 0;
-            const progress = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
-
-            let status: 'completed' | 'in_progress' | 'not_started';
-            if (progress === 100) status = 'completed';
-            else if (completedCards > 0) status = 'in_progress';
-            else status = 'not_started';
-
-            const endTime = classDeck.endTime ? new Date(classDeck.endTime) : new Date(0);
-            const startTime = classDeck.startTime ? new Date(classDeck.startTime) : new Date(0);
-            const isOverdue = endTime ? new Date() > endTime : false;
-            const hoursOverdue = isOverdue ? Math.floor((Date.now() - endTime.getTime()) / (1000 * 60 * 60)) : 0;
-            const hoursUntilDeadline = !isOverdue ? Math.floor((endTime.getTime() - Date.now()) / (1000 * 60 * 60)) : 0;
-
-            return {
-                deckId: classDeck.deck._id.toString(),
-                deckName: classDeck.deck.name,
-                description: classDeck.description,
-                status,
-                progress,
-                totalCards,
-                completedCards,
-                lastStudyDate: ucs?.updatedAt ?? new Date(0),
-                startTime,
-                endTime,
-                isOverdue,
-                hoursOverdue,
-                hoursUntilDeadline
-            };
-        });
-
-        const completedDecks = deckStatuses.filter((ds) => ds.status === 'completed').length;
-        const inProgressDecks = deckStatuses.filter((ds) => ds.status === 'in_progress').length;
-        const notStartedDecks = deckStatuses.filter((ds) => ds.status === 'not_started').length;
-        const totalDecks = deckStatuses.length;
-        const overallProgress = totalDecks > 0 ? Math.round((completedDecks / totalDecks) * 100) : 0;
-
-        const updatedAtTimes = userClassStates.map((ucs) => ucs.updatedAt?.getTime()).filter(Boolean);
-        const lastStudyDate = updatedAtTimes.length > 0 ? new Date(Math.max(...updatedAtTimes)) : new Date(0);
-
-        const studyStreak = userClassStates.length;
-
-        memberStatuses.push({
-            userId: member._id.toString(),
-            userName: member.name,
-            userEmail: member.email,
-            userAvatar: member.avatar,
-            totalDecks,
-            completedDecks,
-            inProgressDecks,
-            notStartedDecks,
-            overallProgress,
-            lastStudyDate,
-            studyStreak,
-            deckStatuses
-        });
+    if (!existingClass) {
+        throw new NotFoundException('Class not found', ErrorCode.NOT_FOUND);
     }
 
-    return memberStatuses;
+    const membersBase = (existingClass.users ?? []).map((u: any) => ({
+        _id: u._id as Types.ObjectId,
+        name: u.name as string,
+        email: u.email as string
+    }));
+
+    const userIds = membersBase.map((m) => m._id);
+
+    // 1) quizCount
+    const quizDocs = await Quiz.find({ class: classObjectId }).select('_id').lean();
+    const quizIds = quizDocs.map((q) => q._id as Types.ObjectId);
+    const quizCount = quizIds.length;
+
+    // Nếu lớp chưa có quiz nào -> trả members với stats = 0
+    if (quizIds.length === 0) {
+        return {
+            quizCount: 0,
+            totalAttempts: 0,
+            activeMembers: 0,
+            overallAccuracy: 0,
+            members: membersBase.map((m) => ({
+                name: m.name,
+                email: m.email,
+                stats: {
+                    attempts: 0,
+                    totalCorrect: 0,
+                    totalQuestions: 0,
+                    accuracy: 0,
+                    lastAttempt: null
+                }
+            }))
+        };
+    }
+
+    // 2) Aggregate attempts theo user (đúng quizzes thuộc class)
+    const perUserAgg: Array<{
+        _id: Types.ObjectId;
+        attempts: number;
+        totalCorrect: number;
+        totalQuestions: number;
+        lastAttempt: Date | null;
+    }> = await QuizAttempt.aggregate([
+        {
+            $match: {
+                quiz: { $in: quizIds },
+                user: { $in: userIds }
+            }
+        },
+        {
+            $group: {
+                _id: '$user',
+                attempts: { $sum: 1 },
+                totalCorrect: { $sum: '$correctAnswers' },
+                totalQuestions: { $sum: '$totalQuestions' },
+                lastAttempt: {
+                    $max: {
+                        $ifNull: ['$endTime', '$startTime']
+                    }
+                }
+            }
+        }
+    ]);
+
+    const byUserId = new Map(perUserAgg.map((r) => [String(r._id), r]));
+
+    // 3) Build response
+    let totalAttempts = 0;
+    let totalCorrect = 0;
+    let totalQuestions = 0;
+    let activeMembers = 0;
+
+    const members = membersBase.map((m) => {
+        const row = byUserId.get(String(m._id));
+
+        const attempts = row?.attempts ?? 0;
+        const userCorrect = row?.totalCorrect ?? 0;
+        const userQuestions = row?.totalQuestions ?? 0;
+        const accuracy = userQuestions > 0 ? userCorrect / userQuestions : 0;
+        const lastAttempt = row?.lastAttempt ?? null;
+
+        totalAttempts += attempts;
+        totalCorrect += userCorrect;
+        totalQuestions += userQuestions;
+        if (attempts > 0) activeMembers += 1;
+
+        return {
+            name: m.name,
+            email: m.email,
+            stats: {
+                attempts,
+                totalCorrect: userCorrect,
+                totalQuestions: userQuestions,
+                accuracy,
+                lastAttempt
+            }
+        };
+    });
+
+    const overallAccuracy = totalQuestions > 0 ? totalCorrect / totalQuestions : 0;
+
+    return {
+        quizCount,
+        totalAttempts,
+        activeMembers,
+        overallAccuracy,
+        members
+    };
 };
 
 export const getClassMonthlyAccessStatsService = async (classId: string, requesterId: Types.ObjectId) => {
