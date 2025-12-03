@@ -57,9 +57,12 @@ export const DeckFSRSSettingsForm = ({ deck }: DeckFSRSSettingsFormProps) => {
         };
     };
 
-    const form = useForm<FSRSParams>({
+    const form = useForm<FSRSParams & { show_weights: boolean }>({
         resolver: zodResolver(FSRSParamsSchema),
-        defaultValues: getUserFsrsParams()
+        defaultValues: {
+            ...getUserFsrsParams(),
+            show_weights: false
+        }
     });
 
     // Reset form when deck or user changes
@@ -89,8 +92,9 @@ export const DeckFSRSSettingsForm = ({ deck }: DeckFSRSSettingsFormProps) => {
             getToast('success', 'FSRS parameters updated successfully!');
             // Reset form dirty state after successful save
             form.reset(data);
-        } catch (error: any) {
-            getToast('error', error?.response?.data?.message || 'Failed to update FSRS parameters');
+        } catch (error) {
+            console.error(error);
+            getToast('error', 'Failed to update FSRS parameters');
         }
     };
 
@@ -114,6 +118,7 @@ export const DeckFSRSSettingsForm = ({ deck }: DeckFSRSSettingsFormProps) => {
                 form.setValue('w', numbers, { shouldDirty: true });
             }
         } catch (error) {
+            console.error(error);
             // Invalid input, don't update
         }
     };
@@ -288,60 +293,83 @@ export const DeckFSRSSettingsForm = ({ deck }: DeckFSRSSettingsFormProps) => {
                                         </FormItem>
                                     )}
                                 />
-                            </div>
-                        </div>
 
-                        <Separator />
-
-                        {/* Algorithm Weights */}
-                        <div className='space-y-4'>
-                            <div className='flex items-center gap-2'>
-                                <h3 className='text-lg font-semibold'>Algorithm Weights</h3>
-                                <Badge variant='outline' className='text-xs'>
-                                    Expert level
-                                </Badge>
-                                <FSRSInfoButton variant='icon' className='h-6 w-6' />
-                            </div>
-
-                            <FormField
-                                control={form.control}
-                                name='w'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Weight Parameters (19 values)</FormLabel>
-                                        <FormControl>
-                                            <textarea
-                                                rows={3}
-                                                value={wArrayInput}
-                                                onChange={(e) => handleWArrayChange(e.target.value)}
-                                                className='w-full p-2 border rounded-md text-sm font-mono'
-                                                placeholder='Enter 19 comma-separated numbers...'
-                                            />
-                                        </FormControl>
-                                        <div className='flex items-center gap-2'>
-                                            <Badge
-                                                variant={isWArrayValid ? 'default' : 'destructive'}
-                                                className='text-xs'
-                                            >
-                                                {isWArrayValid ? '✓ Valid' : '✗ Invalid'} ({field.value?.length || 0}/19
-                                                values)
-                                            </Badge>
+                                <FormField
+                                    control={form.control}
+                                    name='show_weights'
+                                    render={({ field }) => (
+                                        <FormItem className='md:col-span-2'>
+                                            <div className='flex items-center justify-between'>
+                                                <FormLabel>Show Algorithm Weights Configuration</FormLabel>
+                                                <FormControl>
+                                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                                </FormControl>
+                                            </div>
                                             <p className='text-xs text-muted-foreground'>
-                                                Advanced FSRS algorithm weights. Only modify if you understand the
-                                                implications.
+                                                Enable advanced FSRS algorithm weights customization (expert level)
                                             </p>
-                                        </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </div>
+
+                        {form.watch('show_weights') && (
+                            <>
+                                <Separator />
+
+                                {/* Algorithm Weights */}
+                                <div className='space-y-4'>
+                                    <div className='flex items-center gap-2'>
+                                        <h3 className='text-lg font-semibold'>Algorithm Weights</h3>
+                                        <Badge variant='outline' className='text-xs'>
+                                            Expert level
+                                        </Badge>
+                                        <FSRSInfoButton variant='icon' className='h-6 w-6' />
+                                    </div>
+
+                                    <FormField
+                                        control={form.control}
+                                        name='w'
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Weight Parameters (19 values)</FormLabel>
+                                                <FormControl>
+                                                    <textarea
+                                                        rows={3}
+                                                        value={wArrayInput}
+                                                        onChange={(e) => handleWArrayChange(e.target.value)}
+                                                        className='w-full p-2 border rounded-md text-sm font-mono'
+                                                        placeholder='Enter 19 comma-separated numbers...'
+                                                    />
+                                                </FormControl>
+                                                <div className='flex items-center gap-2'>
+                                                    <Badge
+                                                        variant={isWArrayValid ? 'default' : 'destructive'}
+                                                        className='text-xs'
+                                                    >
+                                                        {isWArrayValid ? '✓ Valid' : '✗ Invalid'} (
+                                                        {field.value?.length || 0}/19 values)
+                                                    </Badge>
+                                                    <p className='text-xs text-muted-foreground'>
+                                                        Advanced FSRS algorithm weights. Only modify if you understand
+                                                        the implications.
+                                                    </p>
+                                                </div>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                            </>
+                        )}
 
                         {/* Action Buttons */}
                         <div className='flex flex-col sm:flex-row gap-3 pt-4'>
                             <Button
                                 type='submit'
-                                disabled={isPending || !isDirty || !isWArrayValid}
+                                disabled={isPending || !isDirty || (form.watch('show_weights') && !isWArrayValid)}
                                 className='flex items-center gap-2'
                             >
                                 <Save className='h-4 w-4' />
