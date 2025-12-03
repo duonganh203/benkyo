@@ -8,11 +8,11 @@ import { Badge } from './ui/badge';
 interface FlashcardViewerProps {
     cards: CardInterface[];
     currentIndex?: number;
-    initialIndex?: number; // controlled index
+    initialIndex?: number;
     onCardChange?: (index: number) => void;
 }
 
-const FlashcardViewer: React.FC<FlashcardViewerProps> = ({ cards, currentIndex = 0, onCardChange }) => {
+const FlashcardViewerClass: React.FC<FlashcardViewerProps> = ({ cards, currentIndex = 0, onCardChange }) => {
     const [isFlipped, setIsFlipped] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
 
@@ -166,4 +166,4 @@ const FlashcardViewer: React.FC<FlashcardViewerProps> = ({ cards, currentIndex =
     );
 };
 
-export default FlashcardViewer;
+export default FlashcardViewerClass;

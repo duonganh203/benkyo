@@ -39,7 +39,7 @@ import useDuplicateDeck from '@/hooks/queries/use-duplicate-deck';
 import { useGenerateQuizModal } from '@/hooks/stores/use-generate-quiz-modal';
 import { useSendRequestPublicDeckModal } from '@/hooks/stores/use-send-request-public-deck-modal';
 import useMe from '@/hooks/queries/use-me';
-import FlashcardViewer from '@/components/flashcard-viewer';
+
 import { DeckFSRSSettingsForm } from '@/components/forms/deck-fsrs-settings-form';
 import { UpdateDeckModal } from '@/components/modals/update-deck-modal';
 import { useUpdateDeckModal } from '@/hooks/stores/use-update-deck-modal';
@@ -50,6 +50,7 @@ import LikeDeck from '@/components/rating-deck';
 import useToggleLikeDeck from '@/hooks/queries/use-toggle-like-deck';
 import DeckStatistics from '@/components/deck-statistics';
 import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon } from 'react-share';
+import FlashcardViewer from '@/components/flashcard-view';
 const DeckDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
