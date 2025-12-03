@@ -1,4 +1,4 @@
-import { Mooc, Class, Deck, Card, PublicStatus } from '~/schemas';
+import { Mooc, Class, Deck, Card, PublicStatus, User } from '~/schemas';
 import { Types } from 'mongoose';
 
 export const createMoocService = async (data: {
@@ -500,5 +500,78 @@ export const updateDeckProgressForUserService = async (
             lastSeenIndex: deckProgress.lastSeenIndex,
             progress: deckProgress.progress
         }
+    };
+};
+
+export const purchaseMoocService = async (moocId: string, userId: string) => {
+    const user = await User.findById(userId);
+    if (!user) {
+        return {
+            success: false,
+            message: 'User not found',
+            data: null
+        };
+    }
+    const mooc: any = await Mooc.findById(moocId).populate('decks.deck');
+    if (!mooc) {
+        return {
+            success: false,
+            message: 'MOOC not found',
+            data: null
+        };
+    }
+
+    if (!mooc.isPaid) {
+        return {
+            success: true,
+            message: 'This MOOC is free; no payment required',
+            data: mooc
+        };
+    }
+
+    const alreadyEnrolled = mooc.enrolledUsers.some((u: any) => u.user.toString() === userId.toString());
+    if (alreadyEnrolled) {
+        return {
+            success: false,
+            message: 'You already own this MOOC',
+            data: null
+        };
+    }
+
+    if (user.balance < mooc.price) {
+        return {
+            success: false,
+            message: 'Not enough balance',
+            data: null
+        };
+    }
+
+    user.balance -= mooc.price;
+    await user.save();
+
+    const deckProgress = mooc.decks.map((d: any) => ({
+        deck: d.deck._id,
+        progress: 0,
+        completed: false,
+        locked: d.order !== 0,
+        completedAt: null
+    }));
+
+    mooc.enrolledUsers.push({
+        user: new Types.ObjectId(userId),
+        currentDeckIndex: 0,
+        progressState: 0,
+        startedAt: new Date(),
+        deckProgress
+    });
+
+    mooc.locked = false;
+
+    await mooc.save();
+
+    return {
+        success: true,
+        message: 'Purchase successful',
+        data: mooc
     };
 };

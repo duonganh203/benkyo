@@ -7,7 +7,8 @@ import {
     deleteMooc,
     enrollUser,
     updateProgress,
-    updateDeckProgressForUser
+    updateDeckProgressForUser,
+    purchaseMoocController
 } from '~/controllers/moocController';
 import { errorHandler } from '~/errorHandler';
 import authMiddleware from '~/middlewares/authMiddleware';
@@ -23,5 +24,7 @@ moocRoutes.post('/:id/enroll', [authMiddleware], errorHandler(enrollUser));
 moocRoutes.put('/:id/progress', [authMiddleware], errorHandler(updateProgress));
 
 moocRoutes.patch('/:moocId/decks/:deckId/progress', [authMiddleware], errorHandler(updateDeckProgressForUser));
+
+moocRoutes.post('/:moocId/purchase', [authMiddleware], errorHandler(purchaseMoocController));
 
 export default moocRoutes;

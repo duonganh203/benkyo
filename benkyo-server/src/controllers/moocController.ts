@@ -7,7 +7,8 @@ import {
     deleteMoocService,
     enrollUserService,
     updateProgressService,
-    updateDeckProgressForUserService
+    updateDeckProgressForUserService,
+    purchaseMoocService
 } from '~/services/moocService';
 export const createMooc = async (req: Request, res: Response) => {
     const { classId } = req.params;
@@ -134,6 +135,19 @@ export const updateDeckProgressForUser = async (req: Request, res: Response) => 
     const { lastSeenIndex, totalCards } = req.body;
 
     const result = await updateDeckProgressForUserService(moocId, userId, deckId, lastSeenIndex, totalCards);
+
+    return res.json(result);
+};
+
+export const purchaseMoocController = async (req: Request, res: Response) => {
+    const userId = req.user._id;
+    const { moocId } = req.params;
+
+    const result = await purchaseMoocService(moocId, userId);
+
+    if (!result.success) {
+        return res.status(400).json(result);
+    }
 
     return res.json(result);
 };

@@ -79,3 +79,12 @@ export const updateDeckProgressForUser = async (
         data?: { deck: string; lastSeenIndex: number; progress: number };
     };
 };
+
+export const purchaseMooc = async (moocId: string) => {
+    const { data } = await api.post(`/moocs/${moocId}/purchase`);
+    return data as {
+        success: boolean;
+        message: string;
+        data?: MoocInterface;
+    };
+};
