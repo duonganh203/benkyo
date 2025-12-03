@@ -20,6 +20,7 @@ import { getToast } from '@/utils/getToast';
 import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/types/class';
 import ConfirmLeaveClassModal from '@/components/modals/confirm-leave-class-modal';
 import useEnrollUser from '@/hooks/queries/use-enroll-mooc';
+import usePurchaseMooc from '@/hooks/queries/use-purchase-mooc';
 
 function ClassDetailUser() {
     const { data: user } = useMe();
@@ -51,10 +52,10 @@ function ClassDetailUser() {
     const { mutateAsync: startSession } = useStartClassDeckSession();
     const { data: allMoocs } = useGetAllMoocs(classId);
     const { mutateAsync: leaveClass } = useLeaveClass();
+    const { mutateAsync: purchaseMoocMutation, isPending: purchasing } = usePurchaseMooc();
 
     const enrollMutation = useEnrollUser();
 
-    // Local state để update UI ngay khi enroll
     const [allMoocsState, setAllMoocsState] = useState<any[]>(allMoocs?.data || []);
     useEffect(() => {
         if (allMoocs?.data) setAllMoocsState(allMoocs.data);
@@ -89,7 +90,6 @@ function ClassDetailUser() {
             .sort((a, b) => b.points - a.points)
             .slice(0, 5) || [];
 
-    // Completion rate
     let completionRate = 0;
     if (scheduledDecks.length > 0) {
         const totalProgress = scheduledDecks.reduce((sum, deck) => {
@@ -102,7 +102,6 @@ function ClassDetailUser() {
         completionRate = Math.round(totalProgress / scheduledDecks.length);
     }
 
-    // ================= Helper =================
     const isUserEnrolled = (mooc: any) => {
         if (!mooc?.enrolledUsers || !userId) return false;
         return mooc.enrolledUsers.some((u: any) => {
@@ -111,9 +110,6 @@ function ClassDetailUser() {
         });
     };
 
-    // ==========================================
-
-    // Start study session
     const startStudyMode = async (deck: DeckInClass) => {
         setLoadingSession(true);
         try {
@@ -206,9 +202,7 @@ function ClassDetailUser() {
 
         navigate(`/class/${classData._id}/mooc/${mooc._id}`);
     };
-    // ================================================
 
-    // Filter & paginate MOOCs
     const filteredMoocs = allMoocsState.filter((mooc) => isOwner || mooc.publicStatus === 2) || [];
     const paginatedMoocs = filteredMoocs.slice(0, moocPage * moocsPerPage);
     const hasMoreMoocs = paginatedMoocs.length < filteredMoocs.length;
@@ -444,11 +438,24 @@ function ClassDetailUser() {
                             </Button>
                             <Button
                                 variant='destructive'
-                                onClick={() => {
-                                    console.log('Redirect to payment API for', paymentPopup.mooc._id);
+                                disabled={purchasing}
+                                onClick={async () => {
+                                    try {
+                                        const res = await purchaseMoocMutation({ moocId: paymentPopup.mooc._id });
+
+                                        if (res.success) {
+                                            // Đóng popup
+                                            setPaymentPopup({ open: false, mooc: undefined });
+
+                                            // Mở trang MOOC sau khi mua
+                                            navigate(`/class/${classId}/mooc/${paymentPopup.mooc._id}`);
+                                        }
+                                    } catch (err) {
+                                        console.error('Purchase error:', err);
+                                    }
                                 }}
                             >
-                                Pay Now
+                                {purchasing ? 'Processing...' : 'Pay Now'}
                             </Button>
                         </DialogFooter>
                     </DialogContent>
