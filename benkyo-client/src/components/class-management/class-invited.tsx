@@ -9,7 +9,7 @@ import useCancelInvite from '@/hooks/queries/use-cancel-invite';
 import useGetClassInvited from '@/hooks/queries/use-get-class-invited';
 import { getToast } from '@/utils/getToast';
 
-export const ClassInvited = () => {
+export const ClassInvited = ({ onInvitedChange }: { onInvitedChange: () => void }) => {
     const { classData } = useClassManagementStore();
     const {
         data: pagedInvited,
@@ -48,7 +48,10 @@ export const ClassInvited = () => {
             getToast('error', 'Class data not available');
             return;
         }
-        cancelInvite({ classId: classData._id, userId }).then(() => refetch());
+        cancelInvite({ classId: classData._id, userId }).then(() => {
+            refetch();
+            onInvitedChange();
+        });
     };
 
     if (isLoading) {
