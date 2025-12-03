@@ -3,12 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronLeft, BookOpen, Target } from 'lucide-react';
-import FlashcardViewer from '@/components/flashcard-viewer';
+
 import useGetDeckCards from '@/hooks/queries/use-get-deck-cards';
 import useMe from '@/hooks/queries/use-me';
 import { useGetMoocDetail } from '@/hooks/queries/use-get-mooc-detail';
 import { getToast } from '@/utils/getToast';
 import useUpdateDeckProgress from '@/hooks/queries/use-update-progress-for-use';
+import FlashcardViewerClass from '@/components/flashcard-viewer-class';
 
 const DeckStudy: React.FC = () => {
     const { classId, deckId, moocId } = useParams<{
@@ -214,7 +215,7 @@ const DeckStudy: React.FC = () => {
 
             <main className='py-12 px-4 flex flex-col items-center gap-6'>
                 <div className='w-full max-w-2xl'>
-                    <FlashcardViewer
+                    <FlashcardViewerClass
                         cards={Array.isArray(cardsData) ? cardsData : []}
                         currentIndex={currentCardIndex}
                         onCardChange={handleCardChange}
