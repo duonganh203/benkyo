@@ -21,10 +21,11 @@ import { ClassStudySession, ClassStudyCard, TopLearner, DeckInClass } from '@/ty
 import ConfirmLeaveClassModal from '@/components/modals/confirm-leave-class-modal';
 import useEnrollUser from '@/hooks/queries/use-enroll-mooc';
 import usePurchaseMooc from '@/hooks/queries/use-purchase-mooc';
-
+import useAuthStore from '@/hooks/stores/use-auth-store';
 function ClassDetailUser() {
     const { data: user } = useMe();
     const userId = user?._id;
+    const auth = useAuthStore((authStore) => authStore);
 
     const { classId } = useParams<{ classId: string }>();
     const navigate = useNavigate();
@@ -258,7 +259,7 @@ function ClassDetailUser() {
                                 onClick={() => setShowLeaveConfirm(true)}
                                 disabled={leaving}
                             >
-                                {leaving ? 'Processing...' : 'Leave Class'}
+                                {leaving ? 'Processing...' : 'Leave Classs'}
                             </Button>
                         )}
                     </div>
@@ -441,13 +442,18 @@ function ClassDetailUser() {
                                 disabled={purchasing}
                                 onClick={async () => {
                                     try {
-                                        const res = await purchaseMoocMutation({ moocId: paymentPopup.mooc._id });
+                                        const res = await purchaseMoocMutation({ moocId: paymentPopup.mooc._id }).then(
+                                            (res) => res
+                                        );
 
                                         if (res.success) {
-                                            // Đóng popup
                                             setPaymentPopup({ open: false, mooc: undefined });
+                                            if (!auth.user) return;
+                                            auth.setUser({
+                                                ...auth.user,
+                                                balance: auth.user.balance - paymentPopup.mooc.price
+                                            });
 
-                                            // Mở trang MOOC sau khi mua
                                             navigate(`/class/${classId}/mooc/${paymentPopup.mooc._id}`);
                                         }
                                     } catch (err) {

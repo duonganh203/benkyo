@@ -55,12 +55,16 @@ export const ClassMember = ({ onMemberChange }: ClassMemberProps) => {
             return;
         }
 
-        setIsInviting(true);
-        await inviteMember({ classId: classData._id, inviteEmail: inviteEmail.trim() });
+        try {
+            await inviteMember({ classId: classData._id, inviteEmail: inviteEmail.trim() });
+        } catch (error) {
+            console.log('Error when invite member to class');
+        } finally {
+            setIsInviting(false);
+        }
         setInviteEmail('');
         refetchMembersOnce();
         onMemberChange?.();
-        setIsInviting(false);
     };
 
     const handleRemoveMember = async (userId: string) => {

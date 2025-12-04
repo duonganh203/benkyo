@@ -137,7 +137,7 @@ const Notifications = () => {
                     </div>
                 ) : (
                     <Tabs defaultValue='all' className='w-full'>
-                        <TabsList className='grid w-full grid-cols-4'>
+                        <TabsList className='grid w-full grid-cols-3'>
                             <TabsTrigger value='all' className='relative'>
                                 All
                                 {totalNotifications > 0 && (
@@ -161,15 +161,6 @@ const Notifications = () => {
                                 {totalJoinRequests > 0 && (
                                     <Badge variant='secondary' className='ml-1 text-xs'>
                                         {totalJoinRequests}
-                                    </Badge>
-                                )}
-                            </TabsTrigger>
-                            <TabsTrigger value='schedule' className='relative'>
-                                <Clock className='w-4 h-4 mr-1' />
-                                Schedule Alerts
-                                {totalSchedule > 0 && (
-                                    <Badge variant='destructive' className='ml-1 text-xs'>
-                                        {totalSchedule}
                                     </Badge>
                                 )}
                             </TabsTrigger>
