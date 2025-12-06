@@ -2,8 +2,10 @@ import { Sparkles, ArrowRight, CheckCircle2, Play } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
+    const navigate = useNavigate();
     return (
         <section className='relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden'>
             <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
@@ -23,7 +25,10 @@ const HeroSection = () => {
                         </p>
 
                         <div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
-                            <Button className='flex items-center justify-center gap-2 px-8 py-4 text-lg rounded-full font-semibold shadow-xl shadow-primary-200 dark:shadow-none hover:-translate-y-1'>
+                            <Button
+                                onClick={() => navigate('/home')}
+                                className='flex items-center justify-center gap-2 px-8 py-4 text-lg rounded-full font-semibold shadow-xl shadow-primary-200 dark:shadow-none hover:-translate-y-1'
+                            >
                                 Start learning now
                                 <ArrowRight size={20} />
                             </Button>
