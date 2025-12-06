@@ -579,7 +579,7 @@ const DeckDetail = () => {
                                                             <div dangerouslySetInnerHTML={{ __html: card.back }} />
                                                         </div>
                                                     </div>
-                                                    <div className='p-3 bg-background flex flex-wrap items-center justify-between gap-2 border-t'>
+                                                    <div className='p-3 bg-background/30 backdrop-blur-sm dark:bg-background/30 flex flex-wrap items-center justify-between gap-2 border-t'>
                                                         <div className='flex flex-wrap items-center gap-2'>
                                                             {card.tags.map((tag: string) => (
                                                                 <Badge key={tag} variant='outline' className='text-xs'>

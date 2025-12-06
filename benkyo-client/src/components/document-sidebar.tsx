@@ -120,7 +120,7 @@ const DocumentSidebar = ({
                                 className={cn(
                                     'relative rounded-lg border-2 border-dashed p-8 text-center transition-colors',
                                     dragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25',
-                                    'bg-background cursor-pointer'
+                                    'bg-background/40 backdrop-blur-sm cursor-pointer'
                                 )}
                                 onDragEnter={handleDrag}
                                 onDragLeave={handleDrag}
