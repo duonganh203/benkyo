@@ -11,7 +11,7 @@ const Marketing = () => {
     return (
         <>
             <Header />
-            <div className='max-w-[1416px] mx-auto min-h-screen'>
+            <div className='max-w-[1416px] mx-auto'>
                 <HeroSection />
                 <FeaturesSection />
                 <HowItWorkSection />
