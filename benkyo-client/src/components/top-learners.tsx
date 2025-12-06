@@ -71,7 +71,7 @@ const TopLearners = ({ topLearners }: TopLearnersProps) => {
                                         <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
                                 </Avatar>
-                                <div className='absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-lg'>
+                                <div className='absolute -top-2 -right-2 bg-background/40 backdrop-blur-sm rounded-full p-1 shadow-lg'>
                                     {getRankIcon(index + 1)}
                                 </div>
                             </div>

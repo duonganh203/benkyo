@@ -54,7 +54,7 @@ const TestimonialSection = () => {
                         <Card
                             key={testimonial.name}
                             className={cn(
-                                'backdrop-blur-sm bg-white/90 dark:bg-background/10 border border-blue-100 dark:border-blue-900/20 shadow-sm dark:shadow-black/10 transition-all duration-700',
+                                'bg-background/40 backdrop-blur-sm border border-blue-100 dark:border-blue-900/20 shadow-sm dark:shadow-black/10 transition-all duration-700',
                                 cardsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8',
                                 index === 0 ? 'delay-100' : index === 1 ? 'delay-300' : 'delay-500'
                             )}

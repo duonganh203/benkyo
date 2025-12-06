@@ -486,7 +486,7 @@ export default function Profile() {
                                 (paginatedDecks as LikedDeckItem[]).map((deck) => (
                                     <Card
                                         key={deck.id}
-                                        className='group flex flex-col sm:flex-row gap-4 p-5 rounded-xl shadow-md border border-gray-200 transition-all duration-300 hover:shadow-xl hover:border-blue-500 cursor-pointer bg-white dark:bg-gray-800 dark:border-gray-700'
+                                        className='group flex flex-col sm:flex-row gap-4 p-5 rounded-xl shadow-md border border-gray-200 transition-all duration-300 hover:shadow-xl hover:border-blue-500 cursor-pointer bg-background/40 backdrop-blur-sm dark:bg-gray-800 dark:border-gray-700'
                                         onClick={() => navigate(`/deck/${deck.id}`)}
                                     >
                                         {/* Icon Deck - Đã thay thế số thứ tự bằng Icon BookOpen */}

@@ -68,7 +68,7 @@ const QRCodeClass = ({ classId, size = 200 }: QRCodeClassProps) => {
         <div>
             <div
                 ref={containerRef}
-                className='bg-white p-4 rounded-lg cursor-pointer'
+                className='bg-background/40 backdrop-blur-sm p-4 rounded-lg cursor-pointer'
                 onClick={handleCopy}
                 title='Click To Coppy'
             >
