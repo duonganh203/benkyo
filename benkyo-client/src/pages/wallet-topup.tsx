@@ -125,7 +125,7 @@ const WalletTopup = () => {
                             <img
                                 src={qrUrl}
                                 alt='Wallet top-up QR'
-                                className='h-56 w-56 rounded-lg border bg-white object-contain p-2'
+                                className='h-56 w-56 rounded-lg border bg-background/40 backdrop-blur-sm object-contain p-2'
                             />
 
                             <p className='text-xs text-muted-foreground'>

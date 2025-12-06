@@ -151,7 +151,7 @@ const Quiz = () => {
                     <div className='w-full flex flex-col items-center max-w-3xl'>
                         <div className='mb-6 flex justify-between w-full px-4 py-2 rounded-full bg-blue-50 border-blue-500 border-1 dark:bg-blue-950 dark:border-blue-800'>
                             <span className='font-medium'>Total Questions: {quiz.questions.length}</span>
-                            <Badge className='font-medium text-red-600 bg-white dark:bg-gray-900 dark:text-red-400'>
+                            <Badge className='font-medium text-red-600 bg-background/40 backdrop-blur-sm dark:bg-gray-900 dark:text-red-400'>
                                 Time Left: {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
                             </Badge>
                         </div>

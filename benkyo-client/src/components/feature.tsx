@@ -43,7 +43,7 @@ const FeaturesSection = () => {
                         <div
                             key={feature.title}
                             className={cn(
-                                'bg-white dark:bg-slate-900/60 rounded-lg p-6 shadow-sm dark:shadow-black/10 transition-all duration-500 hover:shadow-md dark:hover:shadow-black/20',
+                                'bg-background/40 backdrop-blur-sm rounded-lg p-6 shadow-sm dark:shadow-black/10 transition-all duration-500 hover:shadow-md dark:hover:shadow-black/20',
                                 cardsInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8',
                                 index === 0 ? 'delay-100' : index === 1 ? 'delay-200' : 'delay-300'
                             )}
