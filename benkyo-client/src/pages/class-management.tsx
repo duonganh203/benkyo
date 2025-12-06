@@ -73,7 +73,7 @@ const UserClassManagement = () => {
 
     return (
         <div className='max-w-5xl mx-auto px-4 py-8'>
-            <div className='sticky top-0 z-50 bg-background pb-4'>
+            <div className='sticky top-0 z-50 bg-transparent pb-4'>
                 <ClassTabHeader classItem={classItem} currentTab={currentTab} setTab={setCurrentTab} />
             </div>
 

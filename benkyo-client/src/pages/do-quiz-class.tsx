@@ -165,7 +165,7 @@ const QuizTakingPage: React.FC = () => {
     const progressPercent = ((currentIndex + 1) / totalQuestions) * 100;
 
     return (
-        <div className='min-h-screen bg-background px-4 py-8'>
+        <div className='min-h-screen bg-transparent px-4 py-8'>
             <div className='max-w-3xl mx-auto'>
                 <Button variant='ghost' className='mb-4 flex items-center gap-2' onClick={handleBack}>
                     <ArrowLeft className='w-4 h-4' /> Back to Quiz Hub
