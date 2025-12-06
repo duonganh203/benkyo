@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import useCreateWalletTopup from '@/hooks/queries/use-get-wallet-topup';
 import useMe from '@/hooks/queries/use-me';
+import useCheckIsPaid from '@/hooks/queries/use-check-paid';
+import useAuthStore from '@/hooks/stores/use-auth-store';
+import { useQueryClient } from '@tanstack/react-query';
 
 const bankId = import.meta.env.VITE_PAYMENT_BANK_ID;
 const accountNo = import.meta.env.VITE_PAYMENT_BANK_ACCOUNT_NO;
@@ -13,10 +16,17 @@ const type = 'topup';
 
 const WalletTopup = () => {
     const { data: currentUser } = useMe();
+    const queryClient = useQueryClient();
+    const { user, setUser } = useAuthStore();
     const [amount, setAmount] = useState(presetAmounts[0]);
     const [qrUrl, setQrUrl] = useState<string | null>(null);
+    const [topupId, setTopupId] = useState<string | null>(null);
+    const [pendingAmount, setPendingAmount] = useState<number | null>(null);
+    const [timeLeft, setTimeLeft] = useState<number>(0); // seconds
+    const [isExpired, setIsExpired] = useState<boolean>(false);
 
     const { mutate: createTopup, isPending } = useCreateWalletTopup();
+    const { refetch: checkIsPaid } = useCheckIsPaid(topupId ?? '');
 
     const buildVietQRUrl = (value: number) => {
         return `https://img.vietqr.io/image/${bankId}-${accountNo}-qr_only.jpg?amount=${value}&addInfo=${currentUser?._id} ${type}`;
@@ -29,10 +39,17 @@ const WalletTopup = () => {
         }
 
         setQrUrl(null);
+        setTopupId(null);
+        setIsExpired(false);
+        setTimeLeft(0);
 
         createTopup(value, {
-            onSuccess: () => {
+            onSuccess: (data) => {
+                setTopupId(data._id);
+                setPendingAmount(value);
                 setQrUrl(buildVietQRUrl(value));
+                setIsExpired(false);
+                setTimeLeft(30 * 60);
             },
             onError: () => {
                 toast.error('Failed to create top-up transaction. Please try again.');
@@ -44,6 +61,51 @@ const WalletTopup = () => {
         e.preventDefault();
         triggerTopup(amount);
     };
+
+    useEffect(() => {
+        if (!qrUrl || isExpired || timeLeft <= 0) return;
+
+        const timerId = setInterval(() => {
+            setTimeLeft((prev) => {
+                const next = prev - 1;
+                if (next <= 0) {
+                    clearInterval(timerId);
+                    setIsExpired(true);
+                    return 0;
+                }
+                return next;
+            });
+        }, 1000);
+
+        return () => clearInterval(timerId);
+    }, [qrUrl, isExpired, timeLeft]);
+
+    useEffect(() => {
+        if (!topupId || isExpired) return;
+
+        const intervalId = setInterval(() => {
+            checkIsPaid().then(({ data }) => {
+                if (data?.isPaid) {
+                    const inc = pendingAmount ?? amount;
+                    if (user) {
+                        setUser({ ...user, balance: (user.balance || 0) + inc });
+                    }
+                    queryClient.invalidateQueries({ queryKey: ['me'] });
+                    toast.success('Top-up successful!', {
+                        description: `Your balance has been updated by +${inc.toLocaleString('vi-VN')} đ`
+                    });
+                    setTopupId(null);
+                    setPendingAmount(null);
+                    setQrUrl(null);
+                    setIsExpired(false);
+                    setTimeLeft(0);
+                    clearInterval(intervalId);
+                }
+            });
+        }, 5000);
+
+        return () => clearInterval(intervalId);
+    }, [topupId, isExpired]);
 
     return (
         <div className='min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-6'>
@@ -122,15 +184,44 @@ const WalletTopup = () => {
                     {qrUrl && (
                         <div className='mt-2 flex flex-col items-center gap-3 rounded-xl border bg-muted/30 p-4'>
                             <p className='text-sm font-medium'>Scan this QR code to complete your top-up</p>
-                            <img
-                                src={qrUrl}
-                                alt='Wallet top-up QR'
-                                className='h-56 w-56 rounded-lg border bg-white object-contain p-2'
-                            />
+
+                            <div className='relative'>
+                                <img
+                                    src={qrUrl}
+                                    alt='Wallet top-up QR'
+                                    className={`h-56 w-56 rounded-lg border bg-white object-contain p-2 ${isExpired ? 'opacity-50' : ''}`}
+                                />
+                                {isExpired && (
+                                    <div className='absolute inset-0 flex items-center justify-center'>
+                                        <span className='rounded bg-black/70 px-3 py-1 text-xs font-medium text-white'>
+                                            QR expired
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className='text-sm font-mono'>
+                                {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:
+                                {String(timeLeft % 60).padStart(2, '0')}
+                            </div>
 
                             <p className='text-xs text-muted-foreground'>
                                 Amount: <span className='font-semibold'>{amount.toLocaleString('vi-VN')} đ</span>
                             </p>
+
+                            {isExpired && (
+                                <Button
+                                    type='button'
+                                    variant='outline'
+                                    size='sm'
+                                    onClick={() => {
+                                        triggerTopup(amount);
+                                        toast.info('QR regenerated. Please scan within 30 minutes');
+                                    }}
+                                >
+                                    Regenerate QR
+                                </Button>
+                            )}
                         </div>
                     )}
                 </div>
