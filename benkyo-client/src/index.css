@@ -198,6 +198,14 @@ body {
     }
 }
 
+/* Constrain layout to viewport to prevent stray scrollbars */
+html,
+body,
+#root {
+    width: 100%;
+    overflow-x: hidden;
+}
+
 /*
   ---break---
 */
@@ -641,4 +649,3 @@ body {
 .text-basic {
     color: inherit;
 }
-
