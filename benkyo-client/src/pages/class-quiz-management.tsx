@@ -89,8 +89,8 @@ const ClassQuizManagement = () => {
     };
 
     return (
-        <div className='min-h-screen bg-background'>
-            <div className='bg-background border-b border-border'>
+        <div className='min-h-screen bg-transparent'>
+            <div className='bg-transparent border-b border-border'>
                 <div className='container mx-auto px-4 py-6'>
                     <div className='flex items-center justify-between'>
                         <div>

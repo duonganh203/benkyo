@@ -13,8 +13,8 @@ const ProtectedRoute = () => {
     return (
         <SidebarProvider>
             <AppSidebar />
-            <SidebarInset>
-                <main className='flex-1 bg-primary/2'>
+            <SidebarInset className='bg-transparent'>
+                <main className='flex-1 bg-transparent'>
                     <Outlet />
                 </main>
             </SidebarInset>

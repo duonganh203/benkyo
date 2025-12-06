@@ -47,7 +47,7 @@ const AIChat = () => {
     };
 
     return (
-        <div className='min-h-screen bg-background flex flex-col'>
+        <div className='min-h-screen bg-transparent flex flex-col'>
             <div className='flex flex-1 h-[calc(100vh-4rem)] overflow-hidden'>
                 <main className='w-[80%] flex flex-col'>
                     <div className='border-b p-4 flex items-center justify-between'>

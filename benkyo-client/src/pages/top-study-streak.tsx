@@ -40,7 +40,7 @@ const TopLearners = () => {
     };
 
     return (
-        <div className='min-h-screen flex flex-col mx-auto max-w-[1200px] bg-background text-foreground'>
+        <div className='min-h-screen flex flex-col mx-auto max-w-[1200px] bg-transparent text-foreground'>
             <main className='container flex-1 py-8 px-4 md:px-6'>
                 {/* Hero Section */}
                 <div className='relative z-10 mb-10'>

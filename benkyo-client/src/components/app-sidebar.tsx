@@ -108,8 +108,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     );
 
     return (
-        <Sidebar variant='inset' className='border-r-0' {...props}>
-            <SidebarHeader className='border-b border-sidebar-border bg-sidebar/50 backdrop-blur-sm'>
+        <Sidebar
+            variant='inset'
+            className='border-r-0 [&_[data-sidebar=sidebar]]:bg-transparent [&_[data-sidebar=sidebar]]:border-none [&_[data-sidebar=sidebar]]:backdrop-blur-0'
+            {...props}
+        >
+            <SidebarHeader className='border-b border-sidebar-border bg-transparent backdrop-blur-0'>
                 <SidebarMenuButton size='lg' asChild className='mb-2'>
                     <div className='flex items-center'>
                         <Link to='/home' className='flex flex-1 items-center gap-3 group'>
@@ -212,7 +216,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
             </SidebarContent>
 
-            <SidebarFooter className='border-t border-sidebar-border bg-sidebar/50 backdrop-blur-sm'>
+            <SidebarFooter className='border-t border-sidebar-border bg-transparent backdrop-blur-0'>
                 <NavUser user={user!} />
             </SidebarFooter>
 
