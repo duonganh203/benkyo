@@ -69,7 +69,7 @@ const ClassCreate = () => {
     };
 
     return (
-        <div className='flex justify-center items-start min-h-screen px-4 py-10 bg-background/10 backdrop-blur-sm'>
+        <div className='flex justify-center items-start min-h-screen px-4 py-10'>
             <div className='w-full max-w-2xl min-h-[600px] px-4 py-6'>
                 <Card className='shadow-xl border border-border rounded-2xl'>
                     <CardHeader>
