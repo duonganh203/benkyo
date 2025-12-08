@@ -91,9 +91,6 @@ const DeckDetail = () => {
     const { mutateAsync: deleteDeckMutate, isPending: isDeletingDeck } = useDeleteDeck(id!);
     const { mutateAsync: duplicateDeck, isPending: isDuplicating } = useDuplicateDeck(id!);
 
-    console.log(deckData?.owner._id, 'deckData?.owner._id');
-    console.log(currentUser?._id, 'currentUser?._id');
-
     const queryClient = useQueryClient();
 
     const allTags = useMemo(() => {

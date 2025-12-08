@@ -1,45 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useStudyFlagStore } from '@/hooks/stores/use-study-store';
-import getStudyStreak from './use-get-study-streak';
+import { useStudyFlagStore } from '../stores/use-study-store';
+import useGetStudyStreak from './use-get-study-streak';
 
 export function useStudyStreakTimer() {
     const { justStudied, latestStreak, setJustStudied } = useStudyFlagStore();
-    const location = useLocation();
+    const { data: streakData } = useGetStudyStreak();
     const [streak, setStreak] = useState<number | null>(null);
     const [visible, setVisible] = useState(false);
-    const { data: streakData } = getStudyStreak();
-    const toRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
-        if (justStudied) {
-            const loadStreak = async () => {
-                if (latestStreak !== null) setStreak(latestStreak);
-                else {
-                    try {
-                        if (streakData) {
-                            setStreak(streakData.studyStreak);
-                        } else {
-                            setStreak(null);
-                        }
-                    } catch {
-                        setStreak(null);
-                    }
-                }
-            };
-            loadStreak();
+        if (!justStudied) return;
 
-            setVisible(true);
-            toRef.current = setTimeout(() => {
-                setVisible(false);
-                setJustStudied(false);
-            }, 3_000);
-        }
+        const resolved = latestStreak ?? streakData?.studyStreak ?? null;
+        setStreak(resolved);
+
+        setVisible(true);
+        timeoutRef.current = setTimeout(() => {
+            setVisible(false);
+            setJustStudied(false);
+        }, 3000);
 
         return () => {
-            if (toRef.current) clearTimeout(toRef.current);
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
         };
-    }, [justStudied, latestStreak, setJustStudied, location.pathname]);
+    }, [justStudied, latestStreak, streakData, setJustStudied]);
 
     return visible ? streak : null;
 }
