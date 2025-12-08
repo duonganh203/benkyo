@@ -112,7 +112,7 @@ const MOOCDetail: React.FC = () => {
     };
 
     return (
-        <div className='min-h-screen bg-background'>
+        <div className='min-h-screen bg-transparent'>
             <header className='bg-card border-b border-border py-6 px-4'>
                 <div className='max-w-4xl mx-auto flex items-start justify-between'>
                     <div className='flex items-center gap-4'>

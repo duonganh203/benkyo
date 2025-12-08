@@ -38,7 +38,7 @@ const ClassHeader = ({
                 backgroundPosition: 'center'
             }}
         >
-            <div className='absolute inset-0 bg-black/20' />
+            <div className='absolute inset-0 bg-background/40 backdrop-blur-sm' />
             <div className='relative z-10 p-8 text-white h-full flex flex-col'>
                 <div className='flex justify-between items-start'>
                     <div className='animate-fade-in-up'>
@@ -49,7 +49,7 @@ const ClassHeader = ({
                         variant='ghost'
                         size='icon'
                         onClick={onToggleExpanded}
-                        className='bg-white/20 hover:bg-white/30 rounded-full p-3 transition-all duration-300 hover:scale-110 text-white cursor-pointer'
+                        className='bg-background/40 backdrop-blur-sm rounded-full p-3 transition-all duration-300 hover:scale-110 text-white cursor-pointer'
                     >
                         {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                     </Button>

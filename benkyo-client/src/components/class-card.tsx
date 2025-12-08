@@ -44,7 +44,7 @@ const ClassCard = ({
                     backgroundImage: `url(${classItem.bannerUrl || '/default-class-banner.svg'})`
                 }}
             ></div>
-            <div className='flex-1 p-4 flex flex-col justify-between bg-white dark:bg-gray-900'>
+            <div className='flex-1 p-4 flex flex-col justify-between bg-background/40 backdrop-blur-sm'>
                 <div>
                     <div className='bottom-0 left-0 right-0'>
                         <h3 className='text-white text-base font-bold truncate'>{classItem.name}</h3>

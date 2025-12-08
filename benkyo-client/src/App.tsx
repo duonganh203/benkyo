@@ -1,4 +1,5 @@
 import './index.css';
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AxiosError } from 'axios';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -9,7 +10,7 @@ import Marketing from './pages/marketing';
 import ProtectedRoute from './components/layouts/protected-route';
 import AuthRoute from './components/layouts/auth-route';
 import GlobalLayout from './components/layouts/global-layout';
-import { ThemeProvider } from './components/providers/theme-provider';
+import { ThemeProvider, useTheme } from './components/providers/theme-provider';
 import DeckDetail from './pages/deck-detail';
 import ModalProvider from './components/providers/modal-provider';
 import { Toaster } from './components/ui/sonner';
@@ -44,6 +45,7 @@ import Requests from './pages/requests';
 import QuizHub from './pages/quiz-hub-class';
 import QuizTakingPage from './pages/do-quiz-class';
 import WalletTopup from './pages/wallet-topup';
+import Background3D from './components/background3D';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -56,61 +58,91 @@ const queryClient = new QueryClient({
     }
 });
 
+const AppContent = () => {
+    const { theme } = useTheme();
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    useEffect(() => {
+        const media = window.matchMedia('(prefers-color-scheme: dark)');
+
+        const update = () => {
+            setIsDarkMode(theme === 'system' ? media.matches : theme === 'dark');
+        };
+
+        update();
+
+        if (theme === 'system') {
+            media.addEventListener('change', update);
+        }
+
+        return () => {
+            media.removeEventListener('change', update);
+        };
+    }, [theme]);
+
+    return (
+        <>
+            <Background3D isDarkMode={isDarkMode} />
+            <Router>
+                <Routes>
+                    <Route element={<AuthRoute />}>
+                        <Route path='/login' element={<LoginForm />} />
+                        <Route path='/register' element={<RegisterForm />} />
+                        <Route path='/passport' element={<LoginPassport />} />
+                        <Route path='/forgotPassword' element={<ForgotPasswordForm />} />
+                        <Route path='/resetPassword' element={<ResetPasswordForm />} />
+                    </Route>
+                    <Route element={<GlobalLayout />}>
+                        <Route path='/' element={<Marketing />} />
+                    </Route>
+                    <Route element={<ProtectedRoute />}>
+                        <Route path='/home' element={<ProgressPage />} />
+                        <Route path='/deck/:id' element={<DeckDetail />} />
+                        <Route path='/deck/:deckId/create-card' element={<CreateCard />} />
+                        <Route path='/deck/:deckId/edit-card/:cardId' element={<UpdateCard />} />
+                        <Route path='/flashcards/:id/details' element={<CardDetails />} />
+                        <Route path='/profile' element={<Profile />} />
+                        <Route path='/my-decks' element={<Library />} />
+                        <Route path='/my-decks/requests' element={<Requests />} />
+                        <Route path='/study/:id' element={<StudyCard />} />
+                        <Route path='do-quiz/:quizId' element={<Quiz />} />
+                        <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />
+                        <Route path='/quizzes' element={<Quizzes />} />
+                        <Route path='/ai-chat' element={<AIChat />} />
+                        <Route path='/payment/:packageId' element={<Payment />} />
+                        <Route path='/wallet/topup' element={<WalletTopup />} />
+                        <Route path='/package' element={<Packages />} />
+                        <Route path='/top-learners' element={<TopLearners />} />
+                        <Route path='/community' element={<Community />} />
+                        <Route path='/class/create' element={<ClassCreate />} />
+                        <Route path='/class/list' element={<ClassList />} />
+                        <Route path='/class/:classId/management' element={<ClassManagement />} />
+                        <Route path='/notification' element={<Notifications />} />
+                        <Route path='/class/:classId' element={<ClassDetailUser />} />
+                        <Route path='/class/:classId/request' element={<ClassJoin />} />
+                        <Route path='/class/:classId/mooc/:moocId' element={<MOOCDetail />} />
+                        <Route path='/class/:classId/mooc/:moocId/deck/:deckId' element={<DeckStudy />} />
+                        <Route path='/class/:classId/mooc/:moocId/deck/:deckId/quiz-hub' element={<QuizHub />} />
+                        <Route
+                            path='/class/:classId/mooc/:moocId/deck/:deckId/quiz-hub/:quizId'
+                            element={<QuizTakingPage />}
+                        />
+                        <Route path='/moocs/update/:moocId' element={<ClassUpdateMooc />} />
+                    </Route>
+                </Routes>
+                <ModalProvider />
+                <InviteDialog />
+            </Router>
+            <Toaster closeButton richColors position='top-right' />
+        </>
+    );
+};
+
 const App = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
-                <Router>
-                    <Routes>
-                        <Route element={<AuthRoute />}>
-                            <Route path='/login' element={<LoginForm />} />
-                            <Route path='/register' element={<RegisterForm />} />
-                            <Route path='/passport' element={<LoginPassport />} />
-                            <Route path='/forgotPassword' element={<ForgotPasswordForm />} />
-                            <Route path='/resetPassword' element={<ResetPasswordForm />} />
-                        </Route>
-                        <Route element={<GlobalLayout />}>
-                            <Route path='/' element={<Marketing />} />
-                        </Route>
-                        <Route element={<ProtectedRoute />}>
-                            <Route path='/home' element={<ProgressPage />} />
-                            <Route path='/deck/:id' element={<DeckDetail />} />
-                            <Route path='/deck/:deckId/create-card' element={<CreateCard />} />
-                            <Route path='/deck/:deckId/edit-card/:cardId' element={<UpdateCard />} />
-                            <Route path='/flashcards/:id/details' element={<CardDetails />} />
-                            <Route path='/profile' element={<Profile />} />
-                            <Route path='/my-decks' element={<Library />} />
-                            <Route path='/my-decks/requests' element={<Requests />} />
-                            <Route path='/study/:id' element={<StudyCard />} />
-                            <Route path='do-quiz/:quizId' element={<Quiz />} />
-                            <Route path='quiz/attempt/:quizAttemptId' element={<QuizResults />} />
-                            <Route path='/quizzes' element={<Quizzes />} />
-                            <Route path='/ai-chat' element={<AIChat />} />
-                            <Route path='/payment/:packageId' element={<Payment />} />
-                            <Route path='/wallet/topup' element={<WalletTopup />} />
-                            <Route path='/package' element={<Packages />} />
-                            <Route path='/top-learners' element={<TopLearners />} />
-                            <Route path='/community' element={<Community />} />
-                            <Route path='/class/create' element={<ClassCreate />} />
-                            <Route path='/class/list' element={<ClassList />} />
-                            <Route path='/class/:classId/management' element={<ClassManagement />} />
-                            <Route path='/notification' element={<Notifications />} />
-                            <Route path='/class/:classId' element={<ClassDetailUser />} />
-                            <Route path='/class/:classId/request' element={<ClassJoin />} />
-                            <Route path='/class/:classId/mooc/:moocId' element={<MOOCDetail />} />
-                            <Route path='/class/:classId/mooc/:moocId/deck/:deckId' element={<DeckStudy />} />
-                            <Route path='/class/:classId/mooc/:moocId/deck/:deckId/quiz-hub' element={<QuizHub />} />
-                            <Route
-                                path='/class/:classId/mooc/:moocId/deck/:deckId/quiz-hub/:quizId'
-                                element={<QuizTakingPage />}
-                            />
-                            <Route path='/moocs/update/:moocId' element={<ClassUpdateMooc />} />
-                        </Route>
-                    </Routes>
-                    <ModalProvider />
-                    <InviteDialog />
-                </Router>
-                <Toaster closeButton richColors position='top-right' />
+                <AppContent />
             </ThemeProvider>
         </QueryClientProvider>
     );

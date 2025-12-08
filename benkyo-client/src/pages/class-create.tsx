@@ -69,7 +69,7 @@ const ClassCreate = () => {
     };
 
     return (
-        <div className='flex justify-center items-start min-h-screen px-4 py-10 bg-background'>
+        <div className='flex justify-center items-start min-h-screen px-4 py-10'>
             <div className='w-full max-w-2xl min-h-[600px] px-4 py-6'>
                 <Card className='shadow-xl border border-border rounded-2xl'>
                     <CardHeader>
@@ -154,7 +154,7 @@ const ClassCreate = () => {
                                             </FormLabel>
                                             <div className='flex flex-col space-y-4'>
                                                 {isUploadingBanner ? (
-                                                    <div className='w-full h-[150px] flex items-center justify-center rounded-lg border border-border bg-muted text-sm text-muted-foreground'>
+                                                    <div className='w-full h-[150px] flex items-center justify-center rounded-lg border border-border bg-muted-foreground/10 backdrop-blur-sm text-sm text-muted-foreground'>
                                                         Uploading banner...
                                                     </div>
                                                 ) : previewBanner ? (
@@ -223,7 +223,7 @@ const ClassCreate = () => {
                                     </Button>
                                     <Button
                                         type='submit'
-                                        className='flex-1 bg-green-600 hover:bg-green-700'
+                                        className='flex-1 bg-background/40 backdrop-blur-sm text-primary hover:bg-background/60'
                                         disabled={isSubmitting}
                                     >
                                         {isSubmitting ? 'Creating...' : 'Create Class'}

@@ -142,7 +142,7 @@ const DeckStudy: React.FC = () => {
 
     if (totalCards === 0) {
         return (
-            <div className='min-h-screen bg-background flex flex-col'>
+            <div className='min-h-screen bg-transparent flex flex-col'>
                 <header>
                     <div className='max-w-4xl mx-auto flex justify-between items-center py-4 px-4'>
                         <Button variant='outline' onClick={handleBack} className='flex items-center gap-2'>
@@ -170,7 +170,7 @@ const DeckStudy: React.FC = () => {
 
     if (studyCompleted) {
         return (
-            <div className='min-h-screen bg-background flex items-center justify-center px-4'>
+            <div className='min-h-screen bg-transparent flex items-center justify-center px-4'>
                 <Card className='max-w-2xl w-full shadow-lg'>
                     <CardContent className='p-8 text-center'>
                         <div className='p-4 bg-green-100 rounded-full w-fit mx-auto mb-6'>
@@ -199,7 +199,7 @@ const DeckStudy: React.FC = () => {
     }
 
     return (
-        <div className='min-h-screen bg-background'>
+        <div className='min-h-screen bg-transparent'>
             <header>
                 <div className='max-w-4xl mx-auto flex justify-between items-center py-4 px-4'>
                     <Button variant='outline' onClick={handleBack} className='flex items-center gap-2'>

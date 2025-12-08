@@ -486,29 +486,26 @@ export default function Profile() {
                                 (paginatedDecks as LikedDeckItem[]).map((deck) => (
                                     <Card
                                         key={deck.id}
-                                        className='group flex flex-col sm:flex-row gap-4 p-5 rounded-xl shadow-md border border-gray-200 transition-all duration-300 hover:shadow-xl hover:border-blue-500 cursor-pointer bg-white dark:bg-gray-800 dark:border-gray-700'
+                                        className='group flex flex-col sm:flex-row gap-4 p-5 rounded-xl shadow-md border border-gray-200 transition-all duration-300 hover:shadow-xl hover:border-blue-500 cursor-pointer dark:border-gray-700'
                                         onClick={() => navigate(`/deck/${deck.id}`)}
                                     >
-                                        {/* Icon Deck - Đã thay thế số thứ tự bằng Icon BookOpen */}
                                         <div
                                             className='flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full 
-                                                         bg-blue-500/10 text-blue-600 font-extrabold text-lg 
+                                                         bg-background/30 backdrop-blur-sm text-blue-600 font-extrabold text-lg 
                                                          border-2 border-blue-500/30 self-start sm:self-center'
                                         >
                                             <BookOpen className='h-6 w-6' />
                                         </div>
 
-                                        {/* Nội dung chính */}
                                         <div className='flex-1 space-y-2 min-w-0'>
                                             {/* Header */}
                                             <div className='flex items-start justify-between gap-3'>
                                                 <h3 className='text-lg font-bold line-clamp-1 text-gray-800 dark:text-white group-hover:text-blue-600 transition-colors'>
                                                     {deck.name}
                                                 </h3>
-                                                {/* Card Count Tag - Styling hiện đại hơn */}
                                                 <span
                                                     className='flex-shrink-0 text-xs font-medium px-2 py-1 rounded-full 
-                                                                 bg-green-100 text-green-700 border border-green-200 dark:bg-green-900 dark:text-green-300'
+                                                                 bg-background/30 backdrop-blur-sm text-green-700 border border-green-200 dark:text-green-300'
                                                 >
                                                     {deck.cardCount} Cards
                                                 </span>
@@ -540,8 +537,7 @@ export default function Profile() {
                                     </Card>
                                 ))
                             ) : (
-                                // Empty State - Đã làm đẹp hơn
-                                <div className='col-span-full p-10 border-2 border-dashed rounded-xl bg-gray-50 dark:bg-gray-700 dark:border-gray-600'>
+                                <div className='col-span-full p-10 border-2 border-dashed rounded-xl bg-background/40 backdrop-blur-sm dark:bg-background/40 dark:border-gray-600'>
                                     <p className='text-center text-lg text-gray-500 dark:text-gray-300 font-medium'>
                                         {search
                                             ? `No test sets were found matching the keyword"${search}".`

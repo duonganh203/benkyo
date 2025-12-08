@@ -127,7 +127,7 @@ export const ClassOverview = ({ classItem, classId }: ClassOverviewProps) => (
                         <div className='flex items-center gap-6 text-white/90'>
                             <div className='flex items-center gap-2'>
                                 <span className='font-medium text-white'>ID:</span>
-                                <code className='px-2 py-1 bg-white/20 rounded text-sm font-mono text-white'>
+                                <code className='px-2 py-1 bg-background/40 backdrop-blur-sm rounded text-sm font-mono text-white'>
                                     {classItem._id}
                                 </code>
                             </div>
@@ -142,7 +142,7 @@ export const ClassOverview = ({ classItem, classId }: ClassOverviewProps) => (
                     <div className='flex items-center gap-2'>
                         <Badge
                             variant={classItem.visibility === 'public' ? 'default' : 'secondary'}
-                            className='text-sm px-3 py-1 bg-white/20 text-white border-white/30'
+                            className='text-sm px-3 py-1 bg-background/40 backdrop-blur-sm text-white border-white/30'
                         >
                             {classItem.visibility === 'public' ? (
                                 <Globe className='w-4 h-4 mr-1' />

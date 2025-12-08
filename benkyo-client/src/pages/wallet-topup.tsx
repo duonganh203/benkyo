@@ -184,26 +184,11 @@ const WalletTopup = () => {
                     {qrUrl && (
                         <div className='mt-2 flex flex-col items-center gap-3 rounded-xl border bg-muted/30 p-4'>
                             <p className='text-sm font-medium'>Scan this QR code to complete your top-up</p>
-
-                            <div className='relative'>
-                                <img
-                                    src={qrUrl}
-                                    alt='Wallet top-up QR'
-                                    className={`h-56 w-56 rounded-lg border bg-white object-contain p-2 ${isExpired ? 'opacity-50' : ''}`}
-                                />
-                                {isExpired && (
-                                    <div className='absolute inset-0 flex items-center justify-center'>
-                                        <span className='rounded bg-black/70 px-3 py-1 text-xs font-medium text-white'>
-                                            QR expired
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className='text-sm font-mono'>
-                                {String(Math.floor(timeLeft / 60)).padStart(2, '0')}:
-                                {String(timeLeft % 60).padStart(2, '0')}
-                            </div>
+                            <img
+                                src={qrUrl}
+                                alt='Wallet top-up QR'
+                                className='h-56 w-56 rounded-lg border bg-background/40 backdrop-blur-sm object-contain p-2'
+                            />
 
                             <p className='text-xs text-muted-foreground'>
                                 Amount: <span className='font-semibold'>{amount.toLocaleString('vi-VN')} đ</span>

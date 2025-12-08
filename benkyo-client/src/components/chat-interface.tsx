@@ -185,7 +185,7 @@ export default function ChatInterface({
         }
     };
     return (
-        <div className='flex flex-col h-[calc(100vh-5rem)]'>
+        <div className='flex flex-col h-[calc(100vh-4rem)]'>
             <div className='border-b p-3 flex justify-between items-center bg-muted/30'>
                 <div className='flex items-center space-x-2'>
                     <FileText className='h-4 w-4' />
@@ -353,7 +353,7 @@ export default function ChatInterface({
                 )}
             </div>
 
-            <div className='border-t p-4 bg-background'>
+            <div className='border-t p-4 bg-background/20 backdrop-blur-sm dark:bg-background/20'>
                 <form onSubmit={(e) => handleSubmit(e)} className='max-w-3xl mx-auto'>
                     <div className='relative'>
                         <Textarea
@@ -362,7 +362,7 @@ export default function ChatInterface({
                             onChange={handleTextareaChange}
                             onKeyDown={handleKeyDown}
                             placeholder='Ask a question about the document...'
-                            className='min-h-[60px] max-h-[150px] resize-none pr-12 py-3 text-base rounded-xl shadow-sm'
+                            className='min-h-[60px] max-h-[150px] resize-none pr-12 py-3 text-base rounded-xl shadow-sm '
                             disabled={isLoading}
                         />
                         <Button

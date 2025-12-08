@@ -40,7 +40,7 @@ const QuizHub: React.FC = () => {
         );
 
     return (
-        <div className='min-h-screen bg-background'>
+        <div className='min-h-screen bg-transparent'>
             {/* Header */}
             <header className='bg-card border-b border-border py-6 px-4'>
                 <div className='max-w-4xl mx-auto'>
