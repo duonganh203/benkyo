@@ -20,3 +20,8 @@ export const getTopup = async (amount: number) => {
     const response = await api.post('payment/topup', { amount });
     return response.data as TopupInterface;
 };
+
+export const buyPackageWithWallet = async (packageId: string) => {
+    const response = await api.post(`payment/buy-with-wallet/${packageId}`);
+    return response.data;
+};

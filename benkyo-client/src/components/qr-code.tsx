@@ -1,13 +1,13 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { getToast } from '@/utils/getToast';
 import useGetQRInfo from '@/hooks/queries/use-get-qr-info';
-import useCheckIsPaid from '@/hooks/queries/use-check-paid';
 import useAuthStore from '@/hooks/stores/use-auth-store';
+import { useNavigate } from 'react-router-dom';
+import useCheckIsPaid from '@/hooks/queries/use-check-paid';
 
 const bankId = import.meta.env.VITE_PAYMENT_BANK_ID;
 const accountNo = import.meta.env.VITE_PAYMENT_BANK_ACCOUNT_NO;

@@ -8,7 +8,8 @@ import {
     getDashboardMetricsService,
     getMonthlyRevenueService,
     getQuarterlyRevenueService,
-    createTopupTransaction
+    createTopupTransaction,
+    buyPackageWithWallet
 } from '~/services/paymentService';
 
 export const webhook = async (req: Request, res: Response) => {
@@ -68,4 +69,10 @@ export const getQuarterlyRevenue = async (req: Request, res: Response) => {
     const year = parseInt(req.query.year as string) || new Date().getFullYear();
     const data = await getQuarterlyRevenueService(year);
     res.json(data);
+};
+
+export const buyPackageWithWalletController = async (req: Request, res: Response) => {
+    const { packageId } = req.params;
+    const result = await buyPackageWithWallet(req.user._id, packageId);
+    return res.json(result);
 };
