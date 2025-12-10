@@ -8,6 +8,8 @@ import {
     getMonthlyRevenue,
     getQuarterlyRevenue,
     createTopup,
+    createPayout,
+    listUserTransactions,
     buyPackageWithWalletController
 } from '~/controllers/paymentController';
 import { errorHandler } from '~/errorHandler';
@@ -23,6 +25,8 @@ paymentRoutes.get('/getDashboardMetrics', [authMiddleware], errorHandler(getDash
 paymentRoutes.get('/monthlyRevenue', [authMiddleware], errorHandler(getMonthlyRevenue));
 paymentRoutes.get('/quarterlyRevenue', [authMiddleware], errorHandler(getQuarterlyRevenue));
 paymentRoutes.post('/topup', [authMiddleware], errorHandler(createTopup));
+paymentRoutes.post('/payouts', [authMiddleware], errorHandler(createPayout));
+paymentRoutes.get('/transactions', [authMiddleware], errorHandler(listUserTransactions));
 paymentRoutes.post('/buy-with-wallet/:packageId', [authMiddleware], errorHandler(buyPackageWithWalletController));
 
 export default paymentRoutes;

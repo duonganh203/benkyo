@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { getToast } from '@/utils/getToast';
 import useCreateWalletTopup from '@/hooks/queries/use-get-wallet-topup';
 import useMe from '@/hooks/queries/use-me';
 import useCheckIsPaid from '@/hooks/queries/use-check-paid';
@@ -34,7 +34,7 @@ const WalletTopup = () => {
 
     const triggerTopup = (value: number) => {
         if (value < MIN || value % STEP !== 0) {
-            toast.error('Amount must be at least 1,000 VND and divisible by 1,000.');
+            getToast('error', 'Amount must be at least 1,000 VND and divisible by 1,000.');
             return;
         }
 
@@ -52,7 +52,7 @@ const WalletTopup = () => {
                 setTimeLeft(30 * 60);
             },
             onError: () => {
-                toast.error('Failed to create top-up transaction. Please try again.');
+                getToast('error', 'Failed to create top-up transaction. Please try again.');
             }
         });
     };
@@ -91,9 +91,11 @@ const WalletTopup = () => {
                         setUser({ ...user, balance: (user.balance || 0) + inc });
                     }
                     queryClient.invalidateQueries({ queryKey: ['me'] });
-                    toast.success('Top-up successful!', {
-                        description: `Your balance has been updated by +${inc.toLocaleString('vi-VN')} đ`
-                    });
+                    getToast(
+                        'success',
+                        'Top-up successful!',
+                        `Your balance has been updated by +${inc.toLocaleString('vi-VN')} đ`
+                    );
                     setTopupId(null);
                     setPendingAmount(null);
                     setQrUrl(null);
@@ -208,7 +210,7 @@ const WalletTopup = () => {
                                     size='sm'
                                     onClick={() => {
                                         triggerTopup(amount);
-                                        toast.info('QR regenerated. Please scan within 30 minutes');
+                                        getToast('info', 'QR regenerated. Please scan within 30 minutes');
                                     }}
                                 >
                                     Regenerate QR

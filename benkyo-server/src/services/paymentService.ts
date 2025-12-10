@@ -1,12 +1,20 @@
 import 'dotenv/config';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
-import { TransactionType, Transaction, User, Package, PackageType } from '~/schemas';
+import {
+    TransactionType as TransactionDocument,
+    Transaction,
+    User,
+    Package,
+    PackageType,
+    TransactionKind,
+    TransactionStatus,
+    TransactionDirection
+} from '~/schemas';
 import { BadRequestsException } from '~/exceptions/badRequests';
 import { startOfYear, endOfYear } from 'date-fns';
-type CreateTransactionPayload = Omit<
-    TransactionType,
-    'isPaid' | 'expiredAt' | 'createdAt' | 'updatedAt' | 'user' | 'package'
+type CreateTransactionPayload = Partial<
+    Omit<TransactionDocument, 'type' | 'status' | 'expiredAt' | 'createdAt' | 'updatedAt' | 'user' | 'package'>
 > & {
     description: string;
 };
@@ -44,7 +52,7 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
         const existedTopupTx = await Transaction.findOne({
             user: userId,
             type: 'TOPUP',
-            isPaid: false
+            status: TransactionStatus.PENDING
         });
 
         if (!existedTopupTx) {
@@ -57,7 +65,7 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
 
         existedTopupTx.set({
             ...transactionData,
-            isPaid: true,
+            status: TransactionStatus.SUCCESS,
             amount,
             type: 'TOPUP'
         });
@@ -105,7 +113,11 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
         return;
     }
 
-    const existedTransaction = await Transaction.findOne({ user: userId, package: existedPackage._id, isPaid: false });
+    const existedTransaction = await Transaction.findOne({
+        user: userId,
+        package: existedPackage._id,
+        status: TransactionStatus.PENDING
+    });
     if (!existedTransaction) {
         console.error('[Transaction Error] Transaction not found for user:', {
             userId,
@@ -116,7 +128,7 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
 
     existedTransaction.set({
         ...transactionData,
-        isPaid: true,
+        status: TransactionStatus.SUCCESS,
         package: existedPackage._id,
         type: 'PACKAGE'
     });
@@ -155,19 +167,151 @@ export const createTopupTransaction = async (userId: string, amount: number) => 
     const transaction = await new Transaction({
         user: userId,
         amount,
-        isPaid: false,
+        status: TransactionStatus.PENDING,
         type: 'TOPUP'
     }).save();
 
     return {
         _id: transaction._id,
         amount: transaction.amount,
-        isPaid: transaction.isPaid
+        status: transaction.status
     };
 };
 
+const maskAccountNumber = (accountNumber?: string | null) => {
+    if (!accountNumber) return undefined;
+    if (accountNumber.length <= 4) return accountNumber;
+    return accountNumber.replace(/.(?=.{4})/g, '*');
+};
+
+type CreatePayoutPayload = {
+    amount: number;
+    currency?: string;
+    bankAbbreviation: string;
+    accountNumber: string;
+    accountName: string;
+    branch?: string;
+    paymentMethod?: string;
+    description?: string;
+    note?: string;
+};
+
+export const createPayoutRequest = async (userId: string, payload: CreatePayoutPayload) => {
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+    }
+
+    const amount = payload.amount;
+    if (!amount || amount <= 0) {
+        throw new BadRequestsException('Invalid payout amount', ErrorCode.BAD_REQUEST);
+    }
+
+    const [pending] = await Transaction.aggregate([
+        {
+            $match: {
+                user: user._id,
+                type: TransactionKind.PAYOUT,
+                status: TransactionStatus.PENDING
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                total: { $sum: '$amount' }
+            }
+        }
+    ]);
+
+    const pendingAmount = pending?.total ?? 0;
+    const availableBalance = (user.balance || 0) - pendingAmount;
+
+    if (amount > availableBalance) {
+        throw new BadRequestsException('Insufficient balance for payout', ErrorCode.BAD_REQUEST);
+    }
+
+    const transaction = await Transaction.create({
+        user: user._id,
+        type: TransactionKind.PAYOUT,
+        direction: TransactionDirection.OUT,
+        status: TransactionStatus.PENDING,
+        amount,
+        currency: payload.currency || 'VND',
+        description: payload.description || 'Payout request',
+        note: payload.note,
+        paymentMethod: payload.paymentMethod || 'BANK_TRANSFER',
+        when: new Date(),
+        payout: {
+            bankAbbreviation: payload.bankAbbreviation,
+            accountNumber: payload.accountNumber,
+            accountName: payload.accountName,
+            requestedAt: new Date()
+        }
+    });
+
+    return {
+        _id: transaction._id,
+        type: transaction.type,
+        status: transaction.status,
+        amount: transaction.amount,
+        currency: transaction.currency,
+        description: transaction.description,
+        note: transaction.note,
+        paymentMethod: transaction.paymentMethod,
+        createdAt: transaction.createdAt,
+        payout: {
+            bankAbbreviation: transaction.payout?.bankAbbreviation,
+            accountNumber: maskAccountNumber(transaction.payout?.accountNumber),
+            accountName: transaction.payout?.accountName,
+            branch: transaction.payout?.branch,
+            requestedAt: transaction.payout?.requestedAt
+        }
+    };
+};
+
+export const getUserTransactions = async (userId: string) => {
+    const transactions = await Transaction.find({ user: userId })
+        .sort({ createdAt: -1 })
+        .populate('package', 'name price type duration')
+        .lean();
+
+    return transactions.map((tx) => ({
+        _id: tx._id,
+        tid: tx.tid,
+        type: tx.type,
+        direction: tx.direction,
+        amount: tx.amount,
+        currency: tx.currency,
+        status: tx.status,
+        createdAt: tx.createdAt,
+        when: tx.when,
+        description: tx.description,
+        note: tx.note,
+        paymentMethod: tx.paymentMethod,
+        paidAt: tx.payout?.paidAt,
+        payout:
+            tx.type === TransactionKind.PAYOUT
+                ? {
+                      bankAbbreviation: tx.payout?.bankAbbreviation,
+                      accountNumber: maskAccountNumber(tx.payout?.accountNumber),
+                      accountName: tx.payout?.accountName,
+                      branch: tx.payout?.branch
+                  }
+                : undefined,
+        package:
+            tx.package && typeof tx.package === 'object'
+                ? {
+                      name: (tx.package as { name?: string }).name,
+                      price: (tx.package as { price?: number }).price,
+                      type: (tx.package as { type?: string }).type,
+                      duration: (tx.package as { duration?: string }).duration
+                  }
+                : undefined
+    }));
+};
+
 export const getTransaction = async (userId: string, packageId: string) => {
-    await Transaction.deleteMany({ expiredAt: { $lt: Date.now() }, isPaid: false, user: userId });
+    await Transaction.deleteMany({ expiredAt: { $lt: Date.now() }, status: TransactionStatus.PENDING, user: userId });
     const existPackage = await Package.findOne({ _id: packageId, isActive: true });
 
     if (!existPackage) {
@@ -176,19 +320,20 @@ export const getTransaction = async (userId: string, packageId: string) => {
     let transaction = await Transaction.findOne({
         user: userId,
         expiredAt: { $gt: Date.now() },
-        package: packageId
+        package: packageId,
+        status: { $ne: TransactionStatus.SUCCESS }
     });
 
     if (!transaction) {
         transaction = await new Transaction({
             user: userId,
-            isPaid: false,
+            status: TransactionStatus.PENDING,
             package: packageId
         }).save();
     }
 
     transaction = await Transaction.findById(transaction._id)
-        .select('_id isPaid expiredAt')
+        .select('_id status expiredAt')
         .populate('user', '_id name')
         .populate('package', 'type price ');
     return transaction;
@@ -196,7 +341,7 @@ export const getTransaction = async (userId: string, packageId: string) => {
 
 export const checkPaid = async (userId: string, transactionId: string) => {
     const transaction = await Transaction.findOne({ user: userId, _id: transactionId })
-        .select('isPaid')
+        .select('status')
         .populate('package', 'type');
 
     if (!transaction) {
