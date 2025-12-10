@@ -42,3 +42,11 @@ export interface TopupInterface {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface BuyPackageWithWalletResponse {
+    success: boolean;
+    message: string;
+    isPro: boolean;
+    proType: string;
+    proExpiryDate: string;
+}
