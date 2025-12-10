@@ -10,7 +10,8 @@ import {
     getQuarterlyRevenueService,
     createTopupTransaction,
     createPayoutRequest,
-    getUserTransactions
+    getUserTransactions,
+    buyPackageWithWallet
 } from '~/services/paymentService';
 import { TransactionDirection, TransactionKind, TransactionStatus } from '~/schemas';
 
@@ -82,4 +83,10 @@ export const getQuarterlyRevenue = async (req: Request, res: Response) => {
     const year = parseInt(req.query.year as string) || new Date().getFullYear();
     const data = await getQuarterlyRevenueService(year);
     res.json(data);
+};
+
+export const buyPackageWithWalletController = async (req: Request, res: Response) => {
+    const { packageId } = req.params;
+    const result = await buyPackageWithWallet(req.user._id, packageId);
+    return res.json(result);
 };
