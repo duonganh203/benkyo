@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { getToast } from '@/utils/getToast';
 import useCreatePayout from '@/hooks/queries/use-create-payout';
 import useTransactions from '@/hooks/queries/use-transactions';
 import useAuthStore from '@/hooks/stores/use-auth-store';
@@ -56,7 +56,6 @@ const WalletPayout = () => {
     const [bankCode, setBankCode] = useState('VCB');
     const [accountNumber, setAccountNumber] = useState('');
     const [accountName, setAccountName] = useState('');
-    const [branch, setBranch] = useState('');
     const [note, setNote] = useState('');
 
     const { mutate: submitPayout, isPending } = useCreatePayout();
@@ -86,11 +85,14 @@ const WalletPayout = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (amount < MIN_PAYOUT || amount % STEP !== 0) {
-            toast.error(`Số tiền tối thiểu ${MIN_PAYOUT.toLocaleString('vi-VN')} và bội số ${STEP}.`);
+            getToast(
+                'error',
+                `Minimum amount is ${MIN_PAYOUT.toLocaleString('vi-VN')} and must be a multiple of ${STEP}.`
+            );
             return;
         }
         if (amount > available) {
-            toast.error('Số dư không đủ sau khi trừ các yêu cầu đang chờ.');
+            getToast('error', 'Insufficient balance after pending requests.');
             return;
         }
         submitPayout(
@@ -99,13 +101,12 @@ const WalletPayout = () => {
                 bankAbbreviation: bankCode,
                 accountNumber,
                 accountName,
-                branch,
                 note,
                 paymentMethod: 'BANK_TRANSFER'
             },
             {
                 onSuccess: () => {
-                    toast.success('Tạo yêu cầu rút tiền thành công');
+                    getToast('success', 'Payout request created successfully');
                     queryClient.invalidateQueries({ queryKey: ['transactions'] });
                     queryClient.invalidateQueries({ queryKey: ['me'] });
                     if (user) {
@@ -113,7 +114,7 @@ const WalletPayout = () => {
                     }
                 },
                 onError: (err) => {
-                    toast.error(err.response?.data?.message || 'Gửi yêu cầu thất bại');
+                    getToast('error', err.response?.data?.message || 'Failed to submit request');
                 }
             }
         );
@@ -123,13 +124,13 @@ const WalletPayout = () => {
         <div className='min-h-[calc(100vh-80px)] px-4 py-6 flex flex-col gap-6 lg:flex-row'>
             <Card className='w-full lg:w-2/5 max-w-xl'>
                 <CardHeader>
-                    <CardTitle>Rút tiền</CardTitle>
-                    <p className='text-sm text-muted-foreground'>Nhập thông tin tài khoản nhận tiền.</p>
+                    <CardTitle>Payout Request</CardTitle>
+                    <p className='text-sm text-muted-foreground'>Enter your bank account information.</p>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className='space-y-4'>
                         <div>
-                            <label className='text-sm font-medium'>Số tiền (VND)</label>
+                            <label className='text-sm font-medium'>Amount (VND)</label>
                             <div className='mt-2 flex items-center gap-2'>
                                 <Button
                                     type='button'
@@ -154,18 +155,18 @@ const WalletPayout = () => {
                                 </Button>
                             </div>
                             <p className='mt-1 text-xs text-muted-foreground'>
-                                Số dư khả dụng: {currencyDisplay(available)}
+                                Available balance: {currencyDisplay(available)}
                             </p>
                             {pendingAmount > 0 && (
                                 <p className='text-xs text-muted-foreground'>
-                                    Đang chờ xử lý: {currencyDisplay(pendingAmount)}
+                                    Pending: {currencyDisplay(pendingAmount)}
                                 </p>
                             )}
                         </div>
 
                         <div className='grid gap-3 sm:grid-cols-2'>
                             <div>
-                                <label className='text-sm font-medium'>Ngân hàng</label>
+                                <label className='text-sm font-medium'>Bank</label>
                                 <select
                                     value={bankCode}
                                     onChange={(e) => setBankCode(e.target.value)}
@@ -182,31 +183,26 @@ const WalletPayout = () => {
 
                         <div className='grid gap-3 sm:grid-cols-2'>
                             <div>
-                                <label className='text-sm font-medium'>Số tài khoản</label>
+                                <label className='text-sm font-medium'>Account Number</label>
                                 <Input value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} />
                             </div>
                             <div>
-                                <label className='text-sm font-medium'>Chủ tài khoản</label>
+                                <label className='text-sm font-medium'>Account Name</label>
                                 <Input value={accountName} onChange={(e) => setAccountName(e.target.value)} />
                             </div>
                         </div>
 
                         <div>
-                            <label className='text-sm font-medium'>Chi nhánh (tuỳ chọn)</label>
-                            <Input value={branch} onChange={(e) => setBranch(e.target.value)} />
-                        </div>
-
-                        <div>
-                            <label className='text-sm font-medium'>Ghi chú</label>
+                            <label className='text-sm font-medium'>Note</label>
                             <Textarea
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
-                                placeholder='Thông tin bổ sung cho admin'
+                                placeholder='Additional information for admin'
                             />
                         </div>
 
                         <Button type='submit' className='w-full' disabled={isPending}>
-                            {isPending ? 'Đang gửi...' : 'Gửi yêu cầu rút tiền'}
+                            {isPending ? 'Submitting...' : 'Submit Payout Request'}
                         </Button>
                     </form>
                 </CardContent>
@@ -214,24 +210,24 @@ const WalletPayout = () => {
 
             <Card className='w-full flex-1'>
                 <CardHeader>
-                    <CardTitle>Lịch sử giao dịch</CardTitle>
-                    <p className='text-sm text-muted-foreground'>Tất cả giao dịch nạp, rút tiền và mua gói.</p>
+                    <CardTitle>Transaction History</CardTitle>
+                    <p className='text-sm text-muted-foreground'>All topup, payout, and package transactions.</p>
                 </CardHeader>
                 <CardContent>
                     {isLoadingTransactions ? (
-                        <p className='text-sm text-muted-foreground'>Đang tải...</p>
+                        <p className='text-sm text-muted-foreground'>Loading...</p>
                     ) : allTransactions.length === 0 ? (
-                        <p className='text-sm text-muted-foreground'>Chưa có giao dịch nào.</p>
+                        <p className='text-sm text-muted-foreground'>No transactions yet.</p>
                     ) : (
                         <div className='overflow-x-auto'>
                             <table className='w-full text-sm'>
                                 <thead>
                                     <tr className='border-b bg-muted/50'>
-                                        <th className='text-left px-3 py-2 font-semibold'>Loại</th>
-                                        <th className='text-left px-3 py-2 font-semibold'>Số tiền</th>
-                                        <th className='text-left px-3 py-2 font-semibold'>Trạng thái</th>
-                                        <th className='text-left px-3 py-2 font-semibold'>Ngày tạo</th>
-                                        <th className='text-left px-3 py-2 font-semibold'>Chi tiết</th>
+                                        <th className='text-left px-3 py-2 font-semibold'>Type</th>
+                                        <th className='text-left px-3 py-2 font-semibold'>Amount</th>
+                                        <th className='text-left px-3 py-2 font-semibold'>Status</th>
+                                        <th className='text-left px-3 py-2 font-semibold'>Date</th>
+                                        <th className='text-left px-3 py-2 font-semibold'>Details</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -243,13 +239,13 @@ const WalletPayout = () => {
                                         let typeLabel = '';
                                         let typeColor = 'secondary';
                                         if (isPayout) {
-                                            typeLabel = 'Rút tiền';
+                                            typeLabel = 'Payout';
                                             typeColor = 'destructive';
                                         } else if (isTopup) {
-                                            typeLabel = 'Nạp tiền';
+                                            typeLabel = 'Topup';
                                             typeColor = 'default';
                                         } else if (isPackage) {
-                                            typeLabel = 'Mua gói';
+                                            typeLabel = 'Package';
                                             typeColor = 'default';
                                         }
 

@@ -66,7 +66,6 @@ export interface TransactionItem {
         bankAbbreviation?: string;
         accountNumber?: string;
         accountName?: string;
-        branch?: string;
     };
     package?: {
         name?: string;

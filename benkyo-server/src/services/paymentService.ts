@@ -245,7 +245,6 @@ export const createPayoutRequest = async (userId: string, payload: CreatePayoutP
             bankAbbreviation: payload.bankAbbreviation,
             accountNumber: payload.accountNumber,
             accountName: payload.accountName,
-            branch: payload.branch,
             requestedAt: new Date()
         }
     });
