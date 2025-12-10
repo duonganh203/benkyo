@@ -55,7 +55,7 @@ const PaymentQRCode = ({ packageId }: { packageId: string }) => {
     useEffect(() => {
         if (timeLeft > 0 && timeLeft % 5 === 0) {
             checkIsPaid().then(({ data }) => {
-                if (data?.isPaid) {
+                if (data?.status === 'SUCCESS') {
                     if (user) {
                         setUser({ ...user, isPro: true, proType: data.package.type });
                     }

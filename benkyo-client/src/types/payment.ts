@@ -1,6 +1,6 @@
 export interface QRInfoInterface {
     _id: string;
-    isPaid: boolean;
+    status: string;
     user: {
         _id: string;
         name: string;
@@ -15,7 +15,7 @@ export interface QRInfoInterface {
 
 export interface IsPaidInterface {
     _id: string;
-    isPaid: boolean;
+    status: string;
     package: {
         _id: string;
         type: string;

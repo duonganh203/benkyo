@@ -6,6 +6,7 @@ import useMe from '@/hooks/queries/use-me';
 import useCheckIsPaid from '@/hooks/queries/use-check-paid';
 import useAuthStore from '@/hooks/stores/use-auth-store';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 const bankId = import.meta.env.VITE_PAYMENT_BANK_ID;
 const accountNo = import.meta.env.VITE_PAYMENT_BANK_ACCOUNT_NO;
@@ -22,11 +23,13 @@ const WalletTopup = () => {
     const [qrUrl, setQrUrl] = useState<string | null>(null);
     const [topupId, setTopupId] = useState<string | null>(null);
     const [pendingAmount, setPendingAmount] = useState<number | null>(null);
-    const [timeLeft, setTimeLeft] = useState<number>(0); // seconds
+    const [timeLeft, setTimeLeft] = useState<number>(0);
     const [isExpired, setIsExpired] = useState<boolean>(false);
 
     const { mutate: createTopup, isPending } = useCreateWalletTopup();
     const { refetch: checkIsPaid } = useCheckIsPaid(topupId ?? '');
+
+    const navigate = useNavigate();
 
     const buildVietQRUrl = (value: number) => {
         return `https://img.vietqr.io/image/${bankId}-${accountNo}-qr_only.jpg?amount=${value}&addInfo=${currentUser?._id} ${type}`;
@@ -85,7 +88,7 @@ const WalletTopup = () => {
 
         const intervalId = setInterval(() => {
             checkIsPaid().then(({ data }) => {
-                if (data?.isPaid) {
+                if (data?.status === 'SUCCESS') {
                     const inc = pendingAmount ?? amount;
                     if (user) {
                         setUser({ ...user, balance: (user.balance || 0) + inc });
@@ -102,6 +105,7 @@ const WalletTopup = () => {
                     setIsExpired(false);
                     setTimeLeft(0);
                     clearInterval(intervalId);
+                    navigate('/wallet/payout');
                 }
             });
         }, 5000);

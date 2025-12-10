@@ -164,11 +164,30 @@ export const createTopupTransaction = async (userId: string, amount: number) => 
         throw new BadRequestsException('Invalid topup amount', ErrorCode.BAD_REQUEST);
     }
 
-    const transaction = await new Transaction({
+    const existingTransaction = await Transaction.findOne({
         user: userId,
         amount,
         status: TransactionStatus.PENDING,
         type: 'TOPUP'
+    });
+
+    if (existingTransaction) {
+        existingTransaction.when = new Date();
+        await existingTransaction.save();
+
+        return {
+            _id: existingTransaction._id,
+            amount: existingTransaction.amount,
+            status: existingTransaction.status
+        };
+    }
+
+    const transaction = await new Transaction({
+        user: userId,
+        amount,
+        status: TransactionStatus.PENDING,
+        type: 'TOPUP',
+        when: new Date()
     }).save();
 
     return {
