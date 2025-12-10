@@ -8,12 +8,14 @@ import {
     getDashboardMetricsService,
     getMonthlyRevenueService,
     getQuarterlyRevenueService,
-    createTopupTransaction
+    createTopupTransaction,
+    createPayoutRequest,
+    getUserTransactions
 } from '~/services/paymentService';
+import { TransactionDirection, TransactionKind, TransactionStatus } from '~/schemas';
 
 export const webhook = async (req: Request, res: Response) => {
     const transactionData = {
-        type: 'PACKAGE' as const,
         tid: req.body.data.tid,
         description: req.body.data.description,
         amount: req.body.data.amount,
@@ -22,9 +24,11 @@ export const webhook = async (req: Request, res: Response) => {
         subAccId: req.body.data.subAccId,
         bankName: req.body.data.bankName,
         bankAbbreviation: req.body.data.bankAbbreviation,
-        corresponsiveAccount: req.body.data.corresponsiveAccount
+        corresponsiveAccount: req.body.data.corresponsiveAccount,
+        currency: 'VND',
+        status: TransactionStatus.SUCCESS,
+        direction: TransactionDirection.IN
     };
-
     const response = await saveTransaction(transactionData);
     return res.json(response);
 };
@@ -33,6 +37,16 @@ export const getInformationQR = async (req: Request, res: Response) => {
     const { packageId } = req.params;
     const payment = await getTransaction(req.user._id, packageId);
     return res.json(payment);
+};
+
+export const createPayout = async (req: Request, res: Response) => {
+    const data = await createPayoutRequest(req.user._id, req.body);
+    return res.json(data);
+};
+
+export const listUserTransactions = async (req: Request, res: Response) => {
+    const data = await getUserTransactions(req.user._id);
+    return res.json(data);
 };
 
 export const createTopup = async (req: Request, res: Response) => {

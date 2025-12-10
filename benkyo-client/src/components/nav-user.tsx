@@ -1,4 +1,4 @@
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles, Banknote } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -86,6 +86,10 @@ export function NavUser({ user }: { user: User }) {
                             <DropdownMenuItem onClick={() => navigate('/wallet/topup')}>
                                 <CreditCard />
                                 Top up wallet
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigate('/wallet/payout')}>
+                                <Banknote />
+                                Payout
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />

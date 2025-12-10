@@ -45,6 +45,7 @@ import Requests from './pages/requests';
 import QuizHub from './pages/quiz-hub-class';
 import QuizTakingPage from './pages/do-quiz-class';
 import WalletTopup from './pages/wallet-topup';
+import WalletPayout from './pages/wallet-payout';
 import Background3D from './components/background3D';
 
 const queryClient = new QueryClient({
@@ -111,6 +112,7 @@ const AppContent = () => {
                         <Route path='/ai-chat' element={<AIChat />} />
                         <Route path='/payment/:packageId' element={<Payment />} />
                         <Route path='/wallet/topup' element={<WalletTopup />} />
+                        <Route path='/wallet/payout' element={<WalletPayout />} />
                         <Route path='/package' element={<Packages />} />
                         <Route path='/top-learners' element={<TopLearners />} />
                         <Route path='/community' element={<Community />} />

@@ -37,6 +37,27 @@ enum ProgressState {
     COMPLETED = 2
 }
 
+enum TransactionDirection {
+    IN = 'IN',
+    OUT = 'OUT'
+}
+
+enum TransactionStatus {
+    PENDING = 'PENDING',
+    SUCCESS = 'SUCCESS',
+    FAILED = 'FAILED',
+    CANCELED = 'CANCELED',
+    EXPIRED = 'EXPIRED',
+    REJECTED = 'REJECTED',
+    PAID = 'PAID'
+}
+
+enum TransactionKind {
+    PACKAGE = 'PACKAGE',
+    TOPUP = 'TOPUP',
+    PAYOUT = 'PAYOUT'
+}
+
 const UserSchema = new Schema({
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, trim: true },
@@ -228,17 +249,37 @@ const StudySessionSchema = new Schema({
 
 const TransactionSchema = new Schema(
     {
-        type: { type: String, enum: ['PACKAGE', 'TOPUP'], default: 'PACKAGE' },
+        type: { type: String, enum: Object.values(TransactionKind), default: TransactionKind.PACKAGE },
         tid: { type: String },
         amount: { type: Number },
+        currency: { type: String, default: 'VND' },
+        direction: { type: String, enum: Object.values(TransactionDirection) },
+        status: { type: String, enum: Object.values(TransactionStatus), default: TransactionStatus.PENDING },
+        description: { type: String },
+        note: { type: String },
+        paymentMethod: { type: String },
         when: { type: Date },
         bank_sub_acc_id: { type: String },
         subAccId: { type: String },
         bankName: { type: String },
         bankAbbreviation: { type: String },
         corresponsiveAccount: { type: String },
-        isPaid: { type: Boolean, default: false, required: true },
         expiredAt: { type: Date, required: true, default: () => new Date(Date.now() + 30 * 60 * 1000) },
+        payout: {
+            bankName: { type: String },
+            bankAbbreviation: { type: String },
+            accountNumber: { type: String },
+            accountName: { type: String },
+            branch: { type: String },
+            requestedAt: { type: Date, default: Date.now },
+            paidAt: { type: Date },
+            paidBy: { type: Schema.Types.ObjectId, ref: 'User' },
+            paymentRef: { type: String },
+            proofUrl: { type: String },
+            rejectReason: { type: String },
+            processedAt: { type: Date }
+        },
+        meta: { type: Schema.Types.Mixed },
         user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         package: { type: Schema.Types.ObjectId, ref: 'Package' }
     },
@@ -384,4 +425,13 @@ export type TransactionType = InferSchemaType<typeof TransactionSchema>;
 export type ConversationType = InferSchemaType<typeof ConversationSchema>;
 export type ClassStateType = InferSchemaType<typeof ClassSchema>;
 export type UserClassStateType = InferSchemaType<typeof UserClassStateSchema>;
-export { Rating, State, PublicStatus, PackageType, PackageDuration };
+export {
+    Rating,
+    State,
+    PublicStatus,
+    PackageType,
+    PackageDuration,
+    TransactionDirection,
+    TransactionStatus,
+    TransactionKind
+};
