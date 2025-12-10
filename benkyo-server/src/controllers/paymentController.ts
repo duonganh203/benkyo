@@ -13,7 +13,7 @@ import {
     getUserTransactions,
     buyPackageWithWallet
 } from '~/services/paymentService';
-import { TransactionDirection, TransactionKind, TransactionStatus } from '~/schemas';
+import { TransactionDirection, TransactionStatus } from '~/schemas';
 
 export const webhook = async (req: Request, res: Response) => {
     const transactionData = {
