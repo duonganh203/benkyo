@@ -9,6 +9,8 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardFooter } from './ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
+import { useState } from 'react';
+import ReviewRequestNoteModal from './review-request-note-modal';
 
 const statusMap: Record<string, { label: string; className: string }> = {
     1: { label: 'Pending', className: 'bg-yellow-100 text-yellow-700' },
@@ -23,6 +25,7 @@ interface DeckProps {
 
 function Deck({ deck, showStatus = false }: DeckProps) {
     const { open } = useSendRequestPublicDeckModal((store) => store);
+    const [showNoteModal, setShowNoteModal] = useState(false);
     const navigate = useNavigate();
 
     const handleDeckClick = (deckId: string) => {
@@ -40,9 +43,27 @@ function Deck({ deck, showStatus = false }: DeckProps) {
         >
             <CardContent className='p-6 h-44 flex flex-col relative'>
                 {showStatus && deck.publicStatus !== undefined && (
-                    <Badge className={cn('absolute top-3 right-3', statusMap[deck.publicStatus]?.className)}>
-                        {statusMap[deck.publicStatus]?.label || 'Unknown'}
-                    </Badge>
+                    <div className='absolute top-3 right-3 flex flex-col items-end space-y-1'>
+                        <Badge
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowNoteModal(true);
+                            }}
+                            className={cn('cursor-pointer', statusMap[deck.publicStatus]?.className)}
+                        >
+                            {statusMap[deck.publicStatus]?.label}
+                        </Badge>
+
+                        <Badge
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowNoteModal(true);
+                            }}
+                            className={cn('cursor-pointer', 'bg-blue-100 text-blue-700')}
+                        >
+                            Note
+                        </Badge>
+                    </div>
                 )}
 
                 <h3 className='font-bold text-lg mb-2 line-clamp-2 text-foreground'>{deck.name}</h3>
@@ -118,6 +139,8 @@ function Deck({ deck, showStatus = false }: DeckProps) {
                     </TooltipProvider>
                 </div>
             </CardFooter>
+
+            <ReviewRequestNoteModal open={showNoteModal} onClose={() => setShowNoteModal(false)} deck={deck} />
         </Card>
     );
 }
