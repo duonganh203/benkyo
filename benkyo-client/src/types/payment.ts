@@ -12,6 +12,7 @@ export interface QRInfoInterface {
     };
     expiredAt: string;
 }
+
 export interface IsPaidInterface {
     _id: string;
     isPaid: boolean;
@@ -46,6 +47,7 @@ export interface TopupInterface {
 export type TransactionStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELED' | 'EXPIRED' | 'REJECTED' | 'PAID';
 
 export type TransactionDirection = 'IN' | 'OUT';
+
 export type TransactionKind = 'PACKAGE' | 'TOPUP' | 'PAYOUT';
 
 export interface TransactionItem {
@@ -56,17 +58,22 @@ export interface TransactionItem {
     amount: number;
     currency?: string;
     status: TransactionStatus;
+
     createdAt?: string;
     when?: string;
+
     description?: string;
     note?: string;
     paymentMethod?: string;
+
     paidAt?: string;
+
     payout?: {
         bankAbbreviation?: string;
         accountNumber?: string;
         accountName?: string;
     };
+
     package?: {
         name?: string;
         price?: number;
@@ -85,4 +92,12 @@ export interface PayoutRequestPayload {
     paymentMethod?: string;
     description?: string;
     note?: string;
+}
+
+export interface BuyPackageWithWalletResponse {
+    success: boolean;
+    message: string;
+    isPro: boolean;
+    proType: string;
+    proExpiryDate: string;
 }

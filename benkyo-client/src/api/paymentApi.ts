@@ -36,3 +36,8 @@ export const getTransactions = async () => {
     const response = await api.get('payment/transactions');
     return response.data as TransactionItem[];
 };
+
+export const buyPackageWithWallet = async (packageId: string) => {
+    const response = await api.post(`payment/buy-with-wallet/${packageId}`);
+    return response.data;
+};

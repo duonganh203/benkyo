@@ -119,6 +119,13 @@ const WalletTopup = () => {
                     </p>
                 </div>
 
+                <div className='mb-6 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg'>
+                    <p className='text-sm text-blue-800 dark:text-blue-200'>
+                        💡 <strong>Tip:</strong> You can enter any amount you want using the input field below, then
+                        click "Generate QR code" to create your payment QR.
+                    </p>
+                </div>
+
                 <div className='mb-4 flex flex-wrap justify-center gap-2'>
                     {presetAmounts.map((v) => (
                         <Button

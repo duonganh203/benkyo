@@ -569,3 +569,71 @@ export const getQuarterlyRevenueService = async (year: number) => {
 
     return Object.values(quarterlyRevenue);
 };
+
+export const buyPackageWithWallet = async (userId: string, packageId: string) => {
+    // Validate package
+    const existingPackage = await Package.findOne({ _id: packageId, isActive: true });
+    if (!existingPackage) {
+        throw new NotFoundException('Package not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+    }
+
+    // Check balance
+    if (user.balance < existingPackage.price) {
+        throw new BadRequestsException(
+            `Insufficient balance. You need ${existingPackage.price - user.balance}đ more`,
+            ErrorCode.BAD_REQUEST
+        );
+    }
+
+    // Deduct balance
+    user.balance = user.balance - existingPackage.price;
+
+    // Set pro status
+    const durationToMonths: Record<string, number> = {
+        '3T': 3,
+        '6T': 6,
+        '1Y': 12
+    };
+    const months = durationToMonths[existingPackage.duration] || 1;
+    const now = new Date();
+
+    user.isPro = true;
+    user.proType = existingPackage.type;
+    user.proExpiryDate = new Date(now.setMonth(now.getMonth() + months));
+    await user.save();
+
+    // Create transaction record for tracking
+    const transaction = await new Transaction({
+        user: userId,
+        package: packageId,
+        isPaid: true,
+        type: 'PACKAGE',
+        amount: existingPackage.price,
+        when: new Date()
+    }).save();
+
+    console.log('[Wallet Purchase Success] User upgraded with wallet:', {
+        userId,
+        package: existingPackage.type,
+        duration: existingPackage.duration,
+        amount: existingPackage.price,
+        newBalance: user.balance,
+        expiryDate: user.proExpiryDate
+    });
+
+    return {
+        success: true,
+        message: 'Package purchased successfully with wallet!',
+        isPro: user.isPro,
+        proType: user.proType,
+        proExpiryDate: user.proExpiryDate,
+        newBalance: user.balance,
+        transactionId: transaction._id
+    };
+};
