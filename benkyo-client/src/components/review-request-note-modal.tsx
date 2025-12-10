@@ -19,6 +19,7 @@ export default function ReviewRequestNoteModal({ open, onClose, deck }: ReviewRe
     if (!deck) return null;
 
     const statusKey = deck.publicStatus as 1 | 2 | 3;
+    const status = statusMap[statusKey];
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -35,7 +36,11 @@ export default function ReviewRequestNoteModal({ open, onClose, deck }: ReviewRe
 
                     <div className='flex items-center justify-between'>
                         <span className='font-medium'>Status</span>
-                        <Badge className={statusMap[statusKey].color}>{statusMap[statusKey].label}</Badge>
+                        {status ? (
+                            <Badge className={status.color}>{status.label}</Badge>
+                        ) : (
+                            <Badge className='bg-gray-200 text-gray-600'>Unknown</Badge>
+                        )}
                     </div>
 
                     <div>
