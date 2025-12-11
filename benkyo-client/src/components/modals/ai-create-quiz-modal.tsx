@@ -72,7 +72,8 @@ export const AIQuizModal = ({ open, onOpenChange, onSubmit, classId }: AIQuizMod
             let generatedQuestions = await generateQuizFromFlashcards(
                 flashcards,
                 parseInt(questionCount, 10),
-                difficulty
+                difficulty,
+                'mcq'
             );
 
             generatedQuestions = generatedQuestions.map((q: any) => ({

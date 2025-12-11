@@ -34,6 +34,16 @@ export const GenerateQuizModal = () => {
         { label: 'Hard', color: 'red' }
     ];
 
+    const [quizType, setQuizType] = useState<string>('mcq');
+    const [quizTypeError, setQuizTypeError] = useState<string | null>(null);
+
+    const quizTypes = [
+        { label: 'Multiple Choice', value: 'mcq' },
+        { label: 'True / False', value: 'true_false' },
+        { label: 'Fill in the Blank', value: 'fill_blank' },
+        { label: 'Short Answer', value: 'short_answer' }
+    ];
+
     useEffect(() => {
         if (!isGenerating) return;
 
@@ -82,55 +92,43 @@ export const GenerateQuizModal = () => {
     };
 
     const handleGenerateQuiz = async () => {
-        if (!cardsData) {
-            getToast('error', 'No Card data in this Deck');
-            return;
-        }
+        if (!cardsData) return getToast('error', 'No cards found.');
 
-        if (!selected) {
-            setSelectedError('Please select a difficulty level!');
-            return;
-        }
-        if (cardsData.length < 4) {
-            getToast('error', 'At least 4 flashcards are required to generate a quiz.');
-            return;
-        }
         setIsGenerating(true);
-        setGenerationProgress(0);
-        setGenerationStage('preparing');
-        getToast('loading', 'Generating Quiz...');
+
         try {
-            const flashcards = cardsData.map((card) => ({
-                front: card.front,
-                back: card.back
+            const flashcards = cardsData.map((c) => ({
+                front: c.front,
+                back: c.back
             }));
+
             const quizQuestions = await generateQuizFromFlashcards(
                 flashcards,
                 numQuestions,
-                selected as 'Easy' | 'Medium' | 'Hard'
+                selected as 'Easy' | 'Medium' | 'Hard',
+                quizType
             );
+
             createQuizMutation(
-                { deckId: deckId!, questions: quizQuestions },
+                {
+                    deckId: deckId!,
+                    questions: quizQuestions // ← ALWAYS MCQ
+                },
                 {
                     onSuccess: (data) => {
-                        setGenerationProgress(100);
-                        setGenerationStage('complete');
-                        getToast('success', `Successfully generated Quiz`);
+                        getToast('success', 'Quiz successfully created!');
                         close();
                         navigate(`/do-quiz/${data.id}`);
                     },
-                    onError: (error) => {
-                        getToast('error', 'Failed to generate quiz');
-                        console.error('error creating quiz:', error);
+                    onError: () => {
+                        getToast('error', 'Failed creating quiz.');
                     }
                 }
             );
         } catch (error) {
-            console.error('Error generating quiz:', error);
             getToast('error', 'Failed to generate quiz');
         } finally {
             setIsGenerating(false);
-            getToast('dismiss');
         }
     };
     return (
@@ -188,6 +186,31 @@ export const GenerateQuizModal = () => {
                                                 onValueChange={(values) => setNumQuestions(values[0])}
                                                 className='py-4'
                                             />
+                                        </div>
+
+                                        <div className='mt-4'>
+                                            <Label className='text-sm mb-1 block'>Quiz Type</Label>
+                                            <div className='grid grid-cols-2 gap-2'>
+                                                {quizTypes.map((type) => {
+                                                    const isSelected = quizType === type.value;
+                                                    return (
+                                                        <Button
+                                                            key={type.value}
+                                                            variant='outline'
+                                                            className={`${
+                                                                isSelected ? 'bg-primary text-white border-primary' : ''
+                                                            }`}
+                                                            onClick={() => {
+                                                                setQuizType(type.value);
+                                                                setQuizTypeError(null);
+                                                            }}
+                                                        >
+                                                            {type.label}
+                                                        </Button>
+                                                    );
+                                                })}
+                                            </div>
+                                            {quizTypeError && <p className='text-red-500 text-sm'>{quizTypeError}</p>}
                                         </div>
 
                                         <div className='flex gap-2'>
