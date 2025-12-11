@@ -656,3 +656,84 @@ export const buyPackageWithWallet = async (userId: string, packageId: string) =>
         transactionId: transaction._id
     };
 };
+
+export const getPendingPayoutRequests = async (userId?: string) => {
+    const query: any = {
+        type: TransactionKind.PAYOUT,
+        status: 'PENDING'
+    };
+
+    if (userId) {
+        query.user = userId;
+    }
+
+    const list = await Transaction.find(query).sort({ createdAt: -1 }).populate('user', 'name email');
+
+    return list.map((t) => ({
+        _id: t._id,
+        user: t.user,
+        type: t.type,
+        status: t.status,
+        amount: t.amount,
+        currency: t.currency,
+        description: t.description,
+        note: t.note,
+        paymentMethod: t.paymentMethod,
+        createdAt: t.createdAt,
+        payout: {
+            bankAbbreviation: t.payout?.bankAbbreviation,
+            accountNumber: t.payout?.accountNumber,
+            accountName: t.payout?.accountName,
+            branch: t.payout?.branch,
+            requestedAt: t.payout?.requestedAt,
+            paidAt: t.payout?.paidAt,
+            rejectReason: t.payout?.rejectReason
+        }
+    }));
+};
+
+export const getUserPayoutHistory = async (userId?: string) => {
+    const query: any = {
+        type: TransactionKind.PAYOUT,
+        status: {
+            $in: [TransactionStatus.REJECTED, TransactionStatus.SUCCESS]
+        }
+    };
+
+    if (userId) {
+        query.user = userId;
+    }
+
+    const transactions = await Transaction.find(query).sort({ createdAt: -1 }).populate('user', 'name email');
+
+    return transactions.map((t) => ({
+        _id: t._id,
+        user: t.user,
+        type: t.type,
+        status: t.status,
+        amount: t.amount,
+        currency: t.currency,
+        description: t.description,
+        note: t.note,
+        paymentMethod: t.paymentMethod,
+        createdAt: t.createdAt,
+        payout: {
+            bankAbbreviation: t.payout?.bankAbbreviation,
+            accountNumber: t.payout?.accountNumber,
+            accountName: t.payout?.accountName,
+            branch: t.payout?.branch,
+            requestedAt: t.payout?.requestedAt,
+            paidAt: t.payout?.paidAt,
+            paymentRef: t.payout?.paymentRef,
+            proofUrl: t.payout?.proofUrl,
+            rejectReason: t.payout?.rejectReason,
+            processedAt: t.payout?.processedAt
+        }
+    }));
+};
+
+interface RejectPayoutInput {
+    transactionId: string;
+    adminId: string;
+    reason: string;
+}
