@@ -1,5 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { getToast } from '@/utils/getToast';
 import useCreatePayout from '@/hooks/queries/use-create-payout';
 import useTransactions from '@/hooks/queries/use-transactions';
@@ -9,6 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { format } from 'date-fns';
 import { TransactionItem } from '@/types/payment';
 
@@ -29,6 +34,20 @@ const BANKS = [
     { code: 'HDB', name: 'HDBank' },
     { code: 'STB', name: 'Sacombank' }
 ];
+
+const payoutSchema = z.object({
+    amount: z
+        .number()
+        .min(MIN_PAYOUT, `Minimum amount is ${MIN_PAYOUT.toLocaleString('vi-VN')}`)
+        .refine((val) => val % STEP === 0, { message: `Amount must be a multiple of ${STEP}` }),
+    bankAbbreviation: z.string().min(1, 'Bank is required'),
+    accountNumber: z.string().min(1, 'Account number is required').min(6, 'Account number must be at least 6 digits'),
+    accountName: z.string().min(1, 'Account name is required').min(3, 'Account name must be at least 3 characters'),
+    note: z.string().optional(),
+    paymentMethod: z.string().default('BANK_TRANSFER')
+});
+
+type PayoutFormValues = z.infer<typeof payoutSchema>;
 
 const maskAccount = (value?: string) => {
     if (!value) return '';
@@ -52,11 +71,17 @@ const WalletPayout = () => {
     const { user, setUser } = useAuthStore();
     const queryClient = useQueryClient();
 
-    const [amount, setAmount] = useState<number>(MIN_PAYOUT);
-    const [bankCode, setBankCode] = useState('VCB');
-    const [accountNumber, setAccountNumber] = useState('');
-    const [accountName, setAccountName] = useState('');
-    const [note, setNote] = useState('');
+    const form = useForm<PayoutFormValues>({
+        resolver: zodResolver(payoutSchema),
+        defaultValues: {
+            amount: MIN_PAYOUT,
+            bankAbbreviation: '',
+            accountNumber: '',
+            accountName: '',
+            note: '',
+            paymentMethod: 'BANK_TRANSFER'
+        }
+    });
 
     const { mutate: submitPayout, isPending } = useCreatePayout();
     const { data: transactions, isLoading: isLoadingTransactions } = useTransactions();
@@ -82,42 +107,25 @@ const WalletPayout = () => {
         return totalBalance - pendingAmount;
     }, [user?.balance, pendingAmount]);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (amount < MIN_PAYOUT || amount % STEP !== 0) {
-            getToast(
-                'error',
-                `Minimum amount is ${MIN_PAYOUT.toLocaleString('vi-VN')} and must be a multiple of ${STEP}.`
-            );
-            return;
-        }
-        if (amount > available) {
+    const onSubmit = (values: PayoutFormValues) => {
+        if (values.amount > available) {
             getToast('error', 'Insufficient balance after pending requests.');
             return;
         }
-        submitPayout(
-            {
-                amount,
-                bankAbbreviation: bankCode,
-                accountNumber,
-                accountName,
-                note,
-                paymentMethod: 'BANK_TRANSFER'
-            },
-            {
-                onSuccess: () => {
-                    getToast('success', 'Payout request created successfully');
-                    queryClient.invalidateQueries({ queryKey: ['transactions'] });
-                    queryClient.invalidateQueries({ queryKey: ['me'] });
-                    if (user) {
-                        setUser({ ...user, balance: user.balance || 0 });
-                    }
-                },
-                onError: (err) => {
-                    getToast('error', err.response?.data?.message || 'Failed to submit request');
+        submitPayout(values, {
+            onSuccess: () => {
+                getToast('success', 'Payout request created successfully');
+                queryClient.invalidateQueries({ queryKey: ['transactions'] });
+                queryClient.invalidateQueries({ queryKey: ['me'] });
+                form.reset();
+                if (user) {
+                    setUser({ ...user, balance: user.balance || 0 });
                 }
+            },
+            onError: (err) => {
+                getToast('error', err.response?.data?.message || 'Failed to submit request');
             }
-        );
+        });
     };
 
     return (
@@ -128,83 +136,129 @@ const WalletPayout = () => {
                     <p className='text-sm text-muted-foreground'>Enter your bank account information.</p>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit} className='space-y-4'>
-                        <div>
-                            <label className='text-sm font-medium'>Amount (VND)</label>
-                            <div className='mt-2 flex items-center gap-2'>
-                                <Button
-                                    type='button'
-                                    variant='outline'
-                                    onClick={() => setAmount((v) => Math.max(MIN_PAYOUT, v - STEP))}
-                                    className='h-10 w-10'
-                                >
-                                    –
-                                </Button>
-                                <Input
-                                    value={amount.toLocaleString('vi-VN')}
-                                    onChange={(e) => setAmount(Number(e.target.value.replace(/\D/g, '')) || 0)}
-                                    className='text-right font-semibold'
-                                />
-                                <Button
-                                    type='button'
-                                    variant='outline'
-                                    onClick={() => setAmount((v) => v + STEP)}
-                                    className='h-10 w-10'
-                                >
-                                    +
-                                </Button>
-                            </div>
-                            <p className='mt-1 text-xs text-muted-foreground'>
-                                Available balance: {currencyDisplay(available)}
-                            </p>
-                            {pendingAmount > 0 && (
-                                <p className='text-xs text-muted-foreground'>
-                                    Pending: {currencyDisplay(pendingAmount)}
-                                </p>
-                            )}
-                        </div>
-
-                        <div className='grid gap-3 sm:grid-cols-2'>
-                            <div>
-                                <label className='text-sm font-medium'>Bank</label>
-                                <select
-                                    value={bankCode}
-                                    onChange={(e) => setBankCode(e.target.value)}
-                                    className='w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary'
-                                >
-                                    {BANKS.map((bank) => (
-                                        <option key={bank.code} value={bank.code}>
-                                            {bank.name} ({bank.code})
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className='grid gap-3 sm:grid-cols-2'>
-                            <div>
-                                <label className='text-sm font-medium'>Account Number</label>
-                                <Input value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} />
-                            </div>
-                            <div>
-                                <label className='text-sm font-medium'>Account Name</label>
-                                <Input value={accountName} onChange={(e) => setAccountName(e.target.value)} />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className='text-sm font-medium'>Note</label>
-                            <Textarea
-                                value={note}
-                                onChange={(e) => setNote(e.target.value)}
-                                placeholder='Additional information for admin'
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+                            <FormField
+                                control={form.control}
+                                name='amount'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Amount (VND)</FormLabel>
+                                        <FormControl>
+                                            <div className='flex items-center gap-2'>
+                                                <Button
+                                                    type='button'
+                                                    variant='outline'
+                                                    onClick={() =>
+                                                        field.onChange(Math.max(MIN_PAYOUT, field.value - STEP))
+                                                    }
+                                                    className='h-10 w-10'
+                                                >
+                                                    –
+                                                </Button>
+                                                <Input
+                                                    value={field.value.toLocaleString('vi-VN')}
+                                                    onChange={(e) =>
+                                                        field.onChange(Number(e.target.value.replace(/\D/g, '')) || 0)
+                                                    }
+                                                    className='text-right font-semibold'
+                                                />
+                                                <Button
+                                                    type='button'
+                                                    variant='outline'
+                                                    onClick={() => field.onChange(field.value + STEP)}
+                                                    className='h-10 w-10'
+                                                >
+                                                    +
+                                                </Button>
+                                            </div>
+                                        </FormControl>
+                                        <p className='text-xs text-muted-foreground'>
+                                            Available balance: {currencyDisplay(available)}
+                                        </p>
+                                        {pendingAmount > 0 && (
+                                            <p className='text-xs text-muted-foreground'>
+                                                Pending: {currencyDisplay(pendingAmount)}
+                                            </p>
+                                        )}
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
-                        </div>
 
-                        <Button type='submit' className='w-full' disabled={isPending}>
-                            {isPending ? 'Submitting...' : 'Submit Payout Request'}
-                        </Button>
-                    </form>
+                            <FormField
+                                control={form.control}
+                                name='bankAbbreviation'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Bank</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value || undefined}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder='Select bank' />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {BANKS.map((bank) => (
+                                                    <SelectItem key={bank.code} value={bank.code}>
+                                                        {bank.name} ({bank.code})
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className='grid gap-3 sm:grid-cols-2'>
+                                <FormField
+                                    control={form.control}
+                                    name='accountNumber'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Account Number</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder='Enter account number' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='accountName'
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Account Name</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder='Enter account name' {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <FormField
+                                control={form.control}
+                                name='note'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Note (Optional)</FormLabel>
+                                        <FormControl>
+                                            <Textarea placeholder='Additional information for admin' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <Button type='submit' className='w-full' disabled={isPending}>
+                                {isPending ? 'Submitting...' : 'Submit Payout Request'}
+                            </Button>
+                        </form>
+                    </Form>
                 </CardContent>
             </Card>
 
