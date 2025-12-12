@@ -11,7 +11,9 @@ import {
     createTopupTransaction,
     createPayoutRequest,
     getUserTransactions,
-    buyPackageWithWallet
+    buyPackageWithWallet,
+    getPendingPayoutRequests,
+    getUserPayoutHistory
 } from '~/services/paymentService';
 import { TransactionDirection, TransactionStatus } from '~/schemas';
 
@@ -89,4 +91,13 @@ export const buyPackageWithWalletController = async (req: Request, res: Response
     const { packageId } = req.params;
     const result = await buyPackageWithWallet(req.user._id, packageId);
     return res.json(result);
+};
+export const getPayoutHistory = async (req: any, res: Response) => {
+    const data = await getUserPayoutHistory();
+    return res.json(data);
+};
+
+export const getPendingPayout = async (req: any, res: Response) => {
+    const data = await getPendingPayoutRequests();
+    return res.json(data);
 };
