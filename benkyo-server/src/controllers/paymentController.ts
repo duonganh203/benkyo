@@ -13,10 +13,11 @@ import {
     getUserTransactions,
     buyPackageWithWallet,
     getPendingPayoutRequests,
-    getUserPayoutHistory
+    getUserPayoutHistory,
+    rejectPayoutRequest
 } from '~/services/paymentService';
 import { TransactionDirection, TransactionStatus } from '~/schemas';
-
+import { RejectPayoutInput } from '~/types/payoutTypes';
 export const webhook = async (req: Request, res: Response) => {
     const transactionData = {
         tid: req.body.data.tid,
@@ -100,4 +101,21 @@ export const getPayoutHistory = async (req: any, res: Response) => {
 export const getPendingPayout = async (req: any, res: Response) => {
     const data = await getPendingPayoutRequests();
     return res.json(data);
+};
+export const rejectPayout = async (req: any, res: Response) => {
+    console.log('🔥 DEBUG CONTROLLER rejectPayout');
+    console.log('req.user =', req.user);
+    console.log('adminId from token =', req.user?._id);
+    console.log('req.body =', req.body);
+
+    const adminId = req.user?._id;
+    const { transactionId, reason } = req.body;
+
+    const result = await rejectPayoutRequest({
+        transactionId,
+        adminId,
+        reason
+    });
+
+    return res.json(result);
 };
