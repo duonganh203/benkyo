@@ -208,7 +208,7 @@ type CreatePayoutPayload = {
     currency?: string;
     bankAbbreviation: string;
     accountNumber: string;
-    accountName: string;
+    email: string;
     branch?: string;
     paymentMethod?: string;
     description?: string;
@@ -216,76 +216,86 @@ type CreatePayoutPayload = {
 };
 
 export const createPayoutRequest = async (userId: string, payload: CreatePayoutPayload) => {
-    const user = await User.findById(userId);
-    if (!user) {
-        throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
-    }
+    console.log(payload);
 
-    const amount = payload.amount;
-    if (!amount || amount <= 0) {
-        throw new BadRequestsException('Invalid payout amount', ErrorCode.BAD_REQUEST);
-    }
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new NotFoundException('User not found', ErrorCode.NOT_FOUND);
+        }
 
-    const [pending] = await Transaction.aggregate([
-        {
-            $match: {
-                user: user._id,
-                type: TransactionKind.PAYOUT,
-                status: TransactionStatus.PENDING
+        const amount = payload.amount;
+        if (!amount || amount <= 0) {
+            throw new BadRequestsException('Invalid payout amount', ErrorCode.BAD_REQUEST);
+        }
+
+        // Kiểm tra payout PENDING
+        const existingPending = await Transaction.findOne({
+            user: user._id,
+            type: TransactionKind.PAYOUT,
+            status: TransactionStatus.PENDING,
+            amount: payload.amount
+        });
+
+        if (existingPending) {
+            throw new BadRequestsException('You already have a pending payout request', ErrorCode.BAD_REQUEST);
+        }
+
+        const availableBalance = user.balance || 0;
+        if (amount > availableBalance) {
+            throw new BadRequestsException('Insufficient balance for payout', ErrorCode.BAD_REQUEST);
+        }
+
+        const transaction = await Transaction.create({
+            user: user._id,
+            type: TransactionKind.PAYOUT,
+            direction: TransactionDirection.OUT,
+            status: TransactionStatus.PENDING,
+            amount,
+            currency: payload.currency || 'VND',
+            description: payload.description || 'Payout request',
+            note: payload.note,
+            paymentMethod: payload.paymentMethod || 'BANK_TRANSFER',
+            when: new Date(),
+            payout: {
+                bankAbbreviation: payload.bankAbbreviation,
+                accountNumber: payload.accountNumber,
+                accountName: payload.email,
+                requestedAt: new Date()
             }
-        },
-        {
-            $group: {
-                _id: null,
-                total: { $sum: '$amount' }
-            }
+        });
+
+        try {
+            await fetch(
+                process.env.N8N_PAYOUT_WEBHOOK_URL || 'https://poiseidoncoder.app.n8n.cloud/webhook-test/payout',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        transactionId: transaction._id,
+                        userId: user._id,
+                        userName: user.name,
+                        amount: transaction.amount,
+                        currency: transaction.currency,
+                        bankAbbreviation: transaction.payout?.bankAbbreviation,
+                        accountNumber: transaction.payout?.accountNumber,
+                        accountName: transaction.payout?.accountName,
+                        note: transaction.note,
+                        adminEmail: process.env.EMAIL_USER,
+                        frontendAdminUri: process.env.FRONTEND_ADMIN_URI + '/withdrawals'
+                    })
+                }
+            );
+        } catch (err) {
+            console.error('Failed to send payout notification to n8n', err);
         }
-    ]);
 
-    const pendingAmount = pending?.total ?? 0;
-    const availableBalance = (user.balance || 0) - pendingAmount;
-
-    if (amount > availableBalance) {
-        throw new BadRequestsException('Insufficient balance for payout', ErrorCode.BAD_REQUEST);
+        return transaction;
+    } catch (error) {
+        console.log(error);
     }
-
-    const transaction = await Transaction.create({
-        user: user._id,
-        type: TransactionKind.PAYOUT,
-        direction: TransactionDirection.OUT,
-        status: TransactionStatus.PENDING,
-        amount,
-        currency: payload.currency || 'VND',
-        description: payload.description || 'Payout request',
-        note: payload.note,
-        paymentMethod: payload.paymentMethod || 'BANK_TRANSFER',
-        when: new Date(),
-        payout: {
-            bankAbbreviation: payload.bankAbbreviation,
-            accountNumber: payload.accountNumber,
-            accountName: payload.accountName,
-            requestedAt: new Date()
-        }
-    });
-
-    return {
-        _id: transaction._id,
-        type: transaction.type,
-        status: transaction.status,
-        amount: transaction.amount,
-        currency: transaction.currency,
-        description: transaction.description,
-        note: transaction.note,
-        paymentMethod: transaction.paymentMethod,
-        createdAt: transaction.createdAt,
-        payout: {
-            bankAbbreviation: transaction.payout?.bankAbbreviation,
-            accountNumber: maskAccountNumber(transaction.payout?.accountNumber),
-            accountName: transaction.payout?.accountName,
-            branch: transaction.payout?.branch,
-            requestedAt: transaction.payout?.requestedAt
-        }
-    };
 };
 
 export const getUserTransactions = async (userId: string) => {
