@@ -2,8 +2,11 @@ import { useStudyStreakTimer } from '@/hooks/queries/use-study-streak-timer';
 
 import { Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
+import useAuthStore from '@/hooks/stores/use-auth-store';
 
 export const StreakIconModal = () => {
+    const user = useAuthStore((state) => state.user);
+    if (!user) return null;
     const streak = useStudyStreakTimer();
     if (!streak) return null;
     return (

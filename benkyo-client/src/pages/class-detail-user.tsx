@@ -259,7 +259,7 @@ function ClassDetailUser() {
                                 onClick={() => setShowLeaveConfirm(true)}
                                 disabled={leaving}
                             >
-                                {leaving ? 'Processing...' : 'Leave Classs'}
+                                {leaving ? 'Processing...' : 'Leave Class'}
                             </Button>
                         )}
                     </div>
