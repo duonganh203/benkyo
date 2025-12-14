@@ -117,7 +117,7 @@ export const generateEmbedding = async (text: string, retries = 5) => {
     while (attempt < retries) {
         try {
             const embeddingResult = await genAi.models.embedContent({
-                model: 'gemini-embedding-exp-03-07',
+                model: 'gemini-embedding-001',
                 contents: text,
                 config: {
                     outputDimensionality: 1024
