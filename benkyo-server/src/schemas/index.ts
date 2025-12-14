@@ -120,6 +120,17 @@ const DeckSchema = new Schema({
         enable_short_term: { type: Boolean },
         card_limit: { type: Number },
         lapses: { type: Number }
+    },
+    // FSRS Optimization tracking
+    optimization: {
+        learnedCardCount: { type: Number, default: 0 },
+        lastOptimized: { type: Date },
+        optimizationStatus: {
+            type: String,
+            enum: ['idle', 'pending', 'running', 'completed', 'failed'],
+            default: 'idle'
+        },
+        lastOptimizationMessage: { type: String }
     }
 });
 
