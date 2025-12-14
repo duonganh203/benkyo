@@ -24,7 +24,6 @@ const ClassCard = ({
     const handleJoinClass = async () => {
         const response = await requestJoin({ classId: classItem._id });
         if (response.message === 'Joined class successfully') {
-            getToast('success', response.message);
             navigate(`/class/${classItem._id}`);
         } else if (response.message === 'Join request sent successfully') {
             getToast('success', response.message);
