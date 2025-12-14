@@ -1,23 +1,55 @@
-FROM python:3.11-slim
+FROM python:3.11-alpine AS builder
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Copy requirements first for caching
+RUN apk add --no-cache --virtual .build-deps \
+    gcc \
+    g++ \
+    musl-dev \
+    linux-headers \
+    libffi-dev \
+    openblas-dev \
+    lapack-dev \
+    gfortran
+
 COPY requirements.txt .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir \
+    numpy \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+RUN apk del .build-deps
 
-# Expose port
+FROM python:3.11-alpine AS runner
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN apk add --no-cache \
+    libstdc++ \
+    openblas \
+    lapack
+
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+COPY main.py .
+
+RUN adduser -D -u 1001 appuser && \
+    chown -R appuser:appuser /app
+
+USER appuser
+
 EXPOSE 8002
 
-# Run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8002"]
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8002/health || exit 1
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8002", "--workers", "2"]
