@@ -1,38 +1,28 @@
+
 version: '3.9'
 services:
-    backend:
-        image: '${DOCKER_HUB_USERNAME}/benkyo-be:latest'
-        env_file:
-            - .env
-        environment:
-            - OPTIMIZER_SERVICE_URL=http://optimizer:8002
-        container_name: backend
-        networks:
-            - 'benkyo'
-        ports:
-            - '3000:3000'
-        depends_on:
-            - 'optimizer'
-    frontend:
-        image: '${DOCKER_HUB_USERNAME}/benkyo-fe:latest'
-        container_name: frontend
-        env_file:
-            - .env
-        depends_on:
-            - 'backend'
-        networks:
-            - 'benkyo'
-        ports:
-            - '4000:80'
-    optimizer:
-        image: '${DOCKER_HUB_USERNAME}/benkyo-optimizer:latest'
-        container_name: optimizer
-        networks:
-            - 'benkyo'
-        ports:
-            - '8002:8002'
-
+  backend:
+    image: "${DOCKER_HUB_USERNAME}/benkyo-be:latest"
+    env_file:
+      - .env
+    container_name: backend
+    networks:
+      - "benkyo"
+    ports:
+      - "3000:3000"
+  frontend:
+    image: "${DOCKER_HUB_USERNAME}/benkyo-fe:latest"
+    container_name: frontend
+    env_file:
+      - .env
+    depends_on:
+      - "backend"
+    networks:
+      - "benkyo"
+    ports:
+      - "4000:80"
+ 
 networks:
-    benkyo:
-        external: true
-        name: benkyo
+  benkyo:
+    external: true
+    name: benkyo

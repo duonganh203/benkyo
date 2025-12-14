@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import { NotFoundException } from '~/exceptions/notFound';
 import { ErrorCode } from '~/exceptions/root';
 import { updateStudyStreakService } from './streakService';
-import { incrementLearnedCardCount } from './optimizerService';
 
 interface FSRSParams {
     request_retention: number;
@@ -284,11 +283,6 @@ export const processReview = async (
 
     // Update deck statistics
     await updateDeckStatistics(userId, card.deck.toString(), currentState, newState, now);
-
-    // Track learned cards for auto-optimization (when card moves from NEW state)
-    if (currentState === State.NEW && newState !== State.NEW) {
-        await incrementLearnedCardCount(card.deck.toString(), userId);
-    }
 
     // Check for lapse threshold
     if (rating === Rating.AGAIN) {
