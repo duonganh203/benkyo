@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { RotateCcw, Save, Settings } from 'lucide-react';
+import { RotateCcw, Save, Settings, Sparkles, Loader2, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { useUpdateDeckFsrsParams } from '@/hooks/queries/use-update-deck-fsrs-params';
 import { DeckDetails } from '@/types/deck';
 import { FSRSParamsSchema } from '@/schemas/deckSchema';
@@ -17,6 +17,8 @@ import useMe from '@/hooks/queries/use-me';
 import { getToast } from '@/utils/getToast';
 import { useQueryClient } from '@tanstack/react-query';
 import { FSRSInfoButton } from '@/components/fsrs-info-button';
+import { useGetOptimizationStatus } from '@/hooks/queries/use-get-optimization-status';
+import { useTriggerOptimization } from '@/hooks/queries/use-trigger-optimization';
 
 type FSRSParams = z.infer<typeof FSRSParamsSchema>;
 
@@ -42,6 +44,8 @@ export const DeckFSRSSettingsForm = ({ deck }: DeckFSRSSettingsFormProps) => {
     const { data: currentUser } = useMe();
     const queryClient = useQueryClient();
     const { mutateAsync: updateFsrsParams, isPending } = useUpdateDeckFsrsParams();
+    const { data: optimizationStatus, isLoading: isLoadingStatus } = useGetOptimizationStatus(deck._id);
+    const { mutate: triggerOptimization, isPending: isOptimizing } = useTriggerOptimization();
 
     // Get user's FSRS params or fallback to defaults
     const getUserFsrsParams = (): FSRSParams => {
@@ -364,6 +368,127 @@ export const DeckFSRSSettingsForm = ({ deck }: DeckFSRSSettingsFormProps) => {
                                 </div>
                             </>
                         )}
+
+                        <Separator />
+
+                        {/* Optimization Section */}
+                        <div className='space-y-4'>
+                            <div className='flex items-center gap-2'>
+                                <h3 className='text-lg font-semibold'>Auto-Optimization</h3>
+                                <Badge variant='outline' className='text-xs'>
+                                    AI-Powered
+                                </Badge>
+                            </div>
+
+                            <div className='bg-muted/50 rounded-lg p-4 space-y-3'>
+                                {isLoadingStatus ? (
+                                    <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                                        <Loader2 className='h-4 w-4 animate-spin' />
+                                        Loading optimization status...
+                                    </div>
+                                ) : optimizationStatus ? (
+                                    <>
+                                        <div className='flex items-center justify-between'>
+                                            <span className='text-sm font-medium'>Progress to Next Optimization</span>
+                                            <span className='text-sm text-muted-foreground'>
+                                                {optimizationStatus.learnedCardCount} / {optimizationStatus.threshold}{' '}
+                                                cards
+                                            </span>
+                                        </div>
+                                        <div className='w-full bg-muted rounded-full h-2'>
+                                            <div
+                                                className='bg-primary h-2 rounded-full transition-all duration-300'
+                                                style={{
+                                                    width: `${Math.min((optimizationStatus.learnedCardCount / optimizationStatus.threshold) * 100, 100)}%`
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className='flex items-center gap-4 text-sm'>
+                                            <div className='flex items-center gap-2'>
+                                                <span className='text-muted-foreground'>Status:</span>
+                                                {optimizationStatus.status === 'completed' && (
+                                                    <Badge className='bg-green-500/20 text-green-700 hover:bg-green-500/30'>
+                                                        <CheckCircle className='h-3 w-3 mr-1' />
+                                                        Completed
+                                                    </Badge>
+                                                )}
+                                                {optimizationStatus.status === 'running' && (
+                                                    <Badge className='bg-blue-500/20 text-blue-700 hover:bg-blue-500/30'>
+                                                        <Loader2 className='h-3 w-3 mr-1 animate-spin' />
+                                                        Running
+                                                    </Badge>
+                                                )}
+                                                {optimizationStatus.status === 'pending' && (
+                                                    <Badge className='bg-yellow-500/20 text-yellow-700 hover:bg-yellow-500/30'>
+                                                        <Clock className='h-3 w-3 mr-1' />
+                                                        Pending
+                                                    </Badge>
+                                                )}
+                                                {optimizationStatus.status === 'failed' && (
+                                                    <Badge className='bg-red-500/20 text-red-700 hover:bg-red-500/30'>
+                                                        <XCircle className='h-3 w-3 mr-1' />
+                                                        Failed
+                                                    </Badge>
+                                                )}
+                                                {optimizationStatus.status === 'idle' && (
+                                                    <Badge variant='secondary'>Idle</Badge>
+                                                )}
+                                            </div>
+
+                                            {optimizationStatus.lastOptimized && (
+                                                <div className='flex items-center gap-2'>
+                                                    <span className='text-muted-foreground'>Last optimized:</span>
+                                                    <span>
+                                                        {new Date(
+                                                            optimizationStatus.lastOptimized
+                                                        ).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {optimizationStatus.message && optimizationStatus.status !== 'idle' && (
+                                            <p className='text-xs text-muted-foreground'>
+                                                {optimizationStatus.message}
+                                            </p>
+                                        )}
+
+                                        <Button
+                                            type='button'
+                                            variant='secondary'
+                                            size='sm'
+                                            onClick={() => triggerOptimization(deck._id)}
+                                            disabled={
+                                                isOptimizing ||
+                                                optimizationStatus.status === 'running' ||
+                                                optimizationStatus.status === 'pending'
+                                            }
+                                            className='mt-2'
+                                        >
+                                            {isOptimizing || optimizationStatus.status === 'running' ? (
+                                                <>
+                                                    <Loader2 className='h-4 w-4 mr-2 animate-spin' />
+                                                    Optimizing...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Sparkles className='h-4 w-4 mr-2' />
+                                                    Optimize Now
+                                                </>
+                                            )}
+                                        </Button>
+                                        <p className='text-xs text-muted-foreground'>
+                                            Optimization automatically runs after learning{' '}
+                                            {optimizationStatus.threshold} new cards. You can also trigger it manually
+                                            (requires at least 50 reviews).
+                                        </p>
+                                    </>
+                                ) : (
+                                    <p className='text-sm text-muted-foreground'>Optimization status unavailable.</p>
+                                )}
+                            </div>
+                        </div>
 
                         {/* Action Buttons */}
                         <div className='flex flex-col sm:flex-row gap-3 pt-4'>

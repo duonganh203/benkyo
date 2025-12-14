@@ -12,6 +12,7 @@ import packageRoutes from './packageRouter';
 import streakRoutes from './streakRoute';
 import classRoutes from './classRoute';
 import moocRoutes from './moocRoute';
+import optimizerRoutes from './optimizerRoute';
 const rootRouter: Router = Router();
 
 rootRouter.use('/auth', authRoutes);
@@ -28,5 +29,6 @@ rootRouter.use('/package', packageRoutes);
 rootRouter.use('/streak', streakRoutes);
 rootRouter.use('/class', classRoutes);
 rootRouter.use('/moocs', moocRoutes);
+rootRouter.use('/optimizer', optimizerRoutes);
 
 export default rootRouter;
