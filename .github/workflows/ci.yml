@@ -17,16 +17,15 @@ jobs:
               with:
                   node-version: '23'
 
+            - name: Install Dependencies
+              run: npm ci
+
             - name: Build benkyo-client
-              working-directory: benkyo-client
               run: |
-                  npm ci
-                  npm run lint
-                  npm run build
+                  npm run lint -w benkyo-client
+                  npm run build -w benkyo-client
 
             - name: Build benkyo-server
-              working-directory: benkyo-server
               run: |
-                  npm ci
-                  npm run lint
-                  npm run build
+                  npm run lint -w benkyo-server
+                  npm run build -w benkyo-server
