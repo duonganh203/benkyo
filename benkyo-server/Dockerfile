@@ -7,7 +7,6 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 # Copy workspace package file
 COPY benkyo-server/package.json ./benkyo-server/
-COPY benkyo-client/package.json ./benkyo-client/
 
 # Install dependencies (including devDependencies for build)
 RUN npm ci
@@ -26,10 +25,6 @@ WORKDIR /app
 # Copy root package files for production install
 COPY package.json package-lock.json ./
 COPY benkyo-server/package.json ./benkyo-server/
-COPY benkyo-client/package.json ./benkyo-client/
-
-# Disable prepare script to prevent husky execution in production (husky is a devDep)
-RUN sed -i 's/"prepare": ".*"/"prepare": ""/' benkyo-client/package.json
 
 # Install only production dependencies
 RUN npm ci --omit=dev

@@ -6,11 +6,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Copy workspace package files (REQUIRED for npm ci to work with root lockfile)
-COPY benkyo-server/package.json ./benkyo-server/
 COPY benkyo-client/package.json ./benkyo-client/
-
-# Disable prepare script to prevent husky execution in Docker
-RUN sed -i 's/"prepare": ".*"/"prepare": ""/' benkyo-client/package.json
 
 # Install dependencies (from root)
 RUN npm ci
