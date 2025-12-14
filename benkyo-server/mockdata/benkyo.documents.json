@@ -1,0 +1,15 @@
+[{
+  "_id": {
+    "$oid": "693e7decbed05538f6532460"
+  },
+  "userId": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "name": "javascript-handbook",
+  "type": "pdf",
+  "embeddingId": "55e38ae6-5835-4d12-bc39-33c7b7e55e2f",
+  "createdAt": {
+    "$date": "2025-12-14T09:05:48.446Z"
+  },
+  "__v": 0
+}]

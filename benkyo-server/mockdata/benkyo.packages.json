@@ -1,0 +1,146 @@
+[
+  {
+    "_id": {
+      "$oid": "6929f911369e1b4a56df4aa5"
+    },
+    "name": "Basic Plus Plan 3M",
+    "type": "Basic",
+    "duration": "3M",
+    "price": 29000,
+    "features": [
+      "Create private classes",
+      "Increase daily import limit by 5×",
+      "Access AI features with 5× usage capacity"
+    ],
+    "isActive": true
+  },
+  {
+    "_id": {
+      "$oid": "6929f911369e1b4a56df4aa6"
+    },
+    "name": "Basic Plus Plan 6M",
+    "type": "Basic",
+    "duration": "6M",
+    "price": 49000,
+    "features": [
+      "Create private classes",
+      "Increase daily import limit by 5×",
+      "Access AI features with 5× usage capacity"
+    ],
+    "isActive": true
+  },
+  {
+    "_id": {
+      "$oid": "6929f911369e1b4a56df4aa7"
+    },
+    "name": "Basic Plus Plan 1Y",
+    "type": "Basic",
+    "duration": "1Y",
+    "price": 79000,
+    "features": [
+      "Create private classes",
+      "Increase daily import limit by 5×",
+      "Access AI features with 5× usage capacity"
+    ],
+    "isActive": true
+  },
+  {
+    "_id": {
+      "$oid": "6929f911369e1b4a56df4aa8"
+    },
+    "name": "Pro Learning Plan 3M",
+    "type": "Pro",
+    "duration": "3M",
+    "price": 69000,
+    "features": [
+      "Unlimited class creation",
+      "Import learning materials up to 50× per day",
+      "Receive daily personalised learning emails",
+      "Weekly performance insights for all managed classes"
+    ],
+    "isActive": true
+  },
+  {
+    "_id": {
+      "$oid": "6929f911369e1b4a56df4aa9"
+    },
+    "name": "Pro Learning Plan 6M",
+    "type": "Pro",
+    "duration": "6M",
+    "price": 119000,
+    "features": [
+      "Unlimited class creation",
+      "Import learning materials up to 50× per day",
+      "Receive daily personalised learning emails",
+      "Weekly performance insights for all managed classes"
+    ],
+    "isActive": true
+  },
+  {
+    "_id": {
+      "$oid": "6929f911369e1b4a56df4aaa"
+    },
+    "name": "Pro Learning Plan 1Y",
+    "type": "Pro",
+    "duration": "1Y",
+    "price": 189000,
+    "features": [
+      "Unlimited class creation",
+      "Import learning materials up to 50× per day",
+      "Receive daily personalised learning emails",
+      "Weekly performance insights for all managed classes"
+    ],
+    "isActive": true
+  },
+  {
+    "_id": {
+      "$oid": "6929f911369e1b4a56df4aab"
+    },
+    "name": "Mastery Premium Plan 3M",
+    "type": "Premium",
+    "duration": "3M",
+    "price": 129000,
+    "features": [
+      "Unlimited class creation",
+      "No limit on importing learning materials",
+      "Daily personalised email reports",
+      "Full weekly analytics dashboard for all classes",
+      "Priority AI usage and faster processing"
+    ],
+    "isActive": true
+  },
+  {
+    "_id": {
+      "$oid": "6929f911369e1b4a56df4aac"
+    },
+    "name": "Mastery Premium Plan 6M",
+    "type": "Premium",
+    "duration": "6M",
+    "price": 199000,
+    "features": [
+      "Unlimited class creation",
+      "No limit on importing learning materials",
+      "Daily personalised email reports",
+      "Full weekly analytics dashboard for all classes",
+      "Priority AI usage and faster processing"
+    ],
+    "isActive": true
+  },
+  {
+    "_id": {
+      "$oid": "6929f911369e1b4a56df4aad"
+    },
+    "name": "Mastery Premium Plan 1Y",
+    "type": "Premium",
+    "duration": "1Y",
+    "price": 319000,
+    "features": [
+      "Unlimited class creation",
+      "No limit on importing learning materials",
+      "Daily personalised email reports",
+      "Full weekly analytics dashboard for all classes",
+      "Priority AI usage and faster processing"
+    ],
+    "isActive": true
+  }
+]

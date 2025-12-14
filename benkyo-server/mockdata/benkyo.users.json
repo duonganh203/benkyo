@@ -1,0 +1,1075 @@
+[
+  {
+    "_id": {
+      "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+    },
+    "name": "Anh Dương",
+    "email": "rankill52@gmail.com",
+    "password": "$2b$10$uNKpdP2axT1K3jMfTzzF6OQJeN4WOxio8Hh0.qo3hWP6PKJJ./AGK",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocLsOob-ZoYrINESZf74g8h77X-qtID8Elas5Q3qZhS6GCBiWL-I=s96-c",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "user",
+    "balance": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [
+      {
+        "$oid": "693ea62d8666a0014973913b"
+      }
+    ],
+    "stats": {
+      "totalReviews": 10,
+      "studyStreak": 1,
+      "longestStudyStreak": 1,
+      "lastStudyDate": {
+        "$date": "2025-12-14T11:58:52.253Z"
+      }
+    },
+    "createdAt": {
+      "$date": "2025-12-14T05:40:42.515Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T05:40:42.515Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "name": "Vo Huu Tien (K17 DN)",
+    "email": "tienvhde170284@fpt.edu.vn",
+    "password": "$2b$10$ZxtcoAeFaKV4IJ/l3pUS1.NgGAASrERhlcXWLvAHQNO2sSfUjQlia",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocL7Tt1MHdUajySBLG1v-nOTafb4UHAUtLZkih4qqBXvteuivA=s96-c",
+    "isPro": true,
+    "proExpiryDate": {
+      "$date": "2026-12-14T05:40:49.142Z"
+    },
+    "proType": "Premium",
+    "role": "user",
+    "balance": 1000000,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [
+      {
+        "$oid": "693e4ec89bdfcaf0d9f8ab3a"
+      },
+      {
+        "$oid": "693e4f359bdfcaf0d9f8ac3d"
+      },
+      {
+        "$oid": "693e4f8b9bdfcaf0d9f8aca1"
+      },
+      {
+        "$oid": "693e4fd99bdfcaf0d9f8ad40"
+      },
+      {
+        "$oid": "693e507d9bdfcaf0d9f8ad85"
+      },
+      {
+        "$oid": "693e51069bdfcaf0d9f8addc"
+      },
+      {
+        "$oid": "693e5ba19bdfcaf0d9f8af50"
+      },
+      {
+        "$oid": "693e5d059bdfcaf0d9f8afb7"
+      },
+      {
+        "$oid": "693e5deb9bdfcaf0d9f8b014"
+      },
+      {
+        "$oid": "693e62b09bdfcaf0d9f8b076"
+      },
+      {
+        "$oid": "693e639a9bdfcaf0d9f8b245"
+      },
+      {
+        "$oid": "693e64879bdfcaf0d9f8b3c4"
+      },
+      {
+        "$oid": "693e7e4e9bdfcaf0d9f8c14d"
+      },
+      {
+        "$oid": "693e7fcc9bdfcaf0d9f8c210"
+      },
+      {
+        "$oid": "693e7fec9bdfcaf0d9f8c244"
+      },
+      {
+        "$oid": "693e7ffa9bdfcaf0d9f8c26d"
+      },
+      {
+        "$oid": "693e800b9bdfcaf0d9f8c29e"
+      },
+      {
+        "$oid": "693e80199bdfcaf0d9f8c2cb"
+      },
+      {
+        "$oid": "693e80299bdfcaf0d9f8c301"
+      },
+      {
+        "$oid": "693e80389bdfcaf0d9f8c32a"
+      },
+      {
+        "$oid": "693e80469bdfcaf0d9f8c353"
+      },
+      {
+        "$oid": "693e80529bdfcaf0d9f8c37c"
+      },
+      {
+        "$oid": "693e80649bdfcaf0d9f8c3ab"
+      },
+      {
+        "$oid": "693e89939bdfcaf0d9f8c67d"
+      }
+    ],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T05:40:49.142Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T05:40:49.142Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e4de89bdfcaf0d9f8aa0e"
+    },
+    "name": "asdasdasdas Vdadasd",
+    "email": "nghetranpct675@gmail.com",
+    "password": "$2b$10$pJ.KHnqaqRw82BYrkZseeeBcwP/eUPui1LFh0qGfdAYebGipSF6Ty",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocL8iBmkMXTyN2w0wehUDcqTci670G-VvJUjgtdDGOFmWab-=s96-c",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "user",
+    "balance": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T05:40:56.078Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T05:40:56.078Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e4def9bdfcaf0d9f8aa35"
+    },
+    "name": "Tiến vo hữu",
+    "email": "nghetranpct123456@gmail.com",
+    "password": "$2b$10$506ohs9.roFBvng74tTKCeNIoTC3DbvDIp6XZ/.wMBWOAMIe.r4LG",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocK01h3ePguNCRWNhxHrBHhJu25NLrSaRqSGgz-zAVYlko3itg=s96-c",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "user",
+    "balance": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T05:41:03.778Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T05:41:03.778Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    },
+    "name": "admin vo",
+    "email": "tienvh08082003@gmail.com",
+    "password": "$2b$10$Zc3Yuu9JaCpe3Xn62a7ptuEAuuomLu11liCSb00DIoTbHaOK1gR2.",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "admin",
+    "balance": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T05:43:09.399Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T05:43:09.399Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e53229bdfcaf0d9f8ae22"
+    },
+    "name": "PoiseidonCoder",
+    "email": "poiseidoncoder@gmail.com",
+    "password": "$2b$10$7L.WXakUkr3oQphzYor4N.8MCc0V2QDLvEVMWuzvegcsDSBpT2K52",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocI7mNYI_cd_HOtK5CCvM91Blj5s3uG0m_b24JQ8nuCkqXrorQ=s96-c",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "user",
+    "balance": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T06:03:14.304Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T06:03:14.304Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e635f9bdfcaf0d9f8b1e5"
+    },
+    "name": "Truong Thi Thien Duyen (K17 DN)",
+    "email": "duyentttde170176@fpt.edu.vn",
+    "password": "$2b$10$twHYspeZ74jhvB96rXBIfeRTEUvgMSTOeAykOtHAfm9zeuOeIf56q",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocIjYveLCYMC43OT7SM0j0CWH-pbbhf4AtYvtdT0fFoxG4Ncgw=s96-c",
+    "isPro": true,
+    "proExpiryDate": {
+      "$date": "2027-12-14T07:12:31.356Z"
+    },
+    "proType": "Premium",
+    "role": "user",
+    "balance": 100000,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [
+      {
+        "$oid": "693e636d9bdfcaf0d9f8b208"
+      },
+      {
+        "$oid": "693e63bb9bdfcaf0d9f8b2c1"
+      },
+      {
+        "$oid": "693e643f9bdfcaf0d9f8b392"
+      },
+      {
+        "$oid": "693e64df9bdfcaf0d9f8b48a"
+      },
+      {
+        "$oid": "693e660c9bdfcaf0d9f8b56e"
+      }
+    ],
+    "stats": {
+      "totalReviews": 18,
+      "studyStreak": 1,
+      "longestStudyStreak": 1,
+      "lastStudyDate": {
+        "$date": "2025-12-14T07:28:48.526Z"
+      }
+    },
+    "createdAt": {
+      "$date": "2025-12-14T07:12:31.356Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T07:12:31.356Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e751e9bdfcaf0d9f8bbfb"
+    },
+    "name": "duyen truong",
+    "email": "thienduyen1209@gmail.com",
+    "password": "$2b$10$iMY8Xd6s/Pr1Kbet41kJBuneNhAu7zD9NjOknyTVvZrfE6DWW642a",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "user",
+    "balance": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T08:28:14.804Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T08:28:14.804Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e7a64bed05538f65320c9"
+    },
+    "name": "Ha Quang Hung (K17 DN)",
+    "email": "hunghqde170622@fpt.edu.vn",
+    "password": "$2b$10$3AniIsh7aOQ4FeN.OEenN.m27Ugah6h0Xw9kOBvfPtw9yQXeFHxue",
+    "avatar": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1765706985/benkyo-image/avatar/69828a29-54c8-41b8-acf9-726cfc2037da.jpg",
+    "isPro": true,
+    "proExpiryDate": {
+      "$date": "2026-12-14T08:50:44.954Z"
+    },
+    "proType": "Premium",
+    "role": "user",
+    "balance": 4900000,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [
+      {
+        "$oid": "693e7b7cbed05538f6532196"
+      },
+      {
+        "$oid": "693e7da5bed05538f653241a"
+      }
+    ],
+    "stats": {
+      "totalReviews": 9,
+      "studyStreak": 1,
+      "longestStudyStreak": 1,
+      "lastStudyDate": {
+        "$date": "2025-12-14T09:01:21.162Z"
+      }
+    },
+    "createdAt": {
+      "$date": "2025-12-14T08:50:44.954Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T08:50:44.954Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e7e50bed05538f6532472"
+    },
+    "name": "Hưng Hà",
+    "email": "hungha.intl@gmail.com",
+    "password": "$2b$10$9kKf1mgEsfLQkH3EUOmG/uqgkPKzjbODzsd3TWg3Xn9kPkcl0ZVVO",
+    "avatar": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1765706645/benkyo-image/avatar/1ffd78bb-4c75-438a-969d-edcdefaa86c8.jpg",
+    "isPro": true,
+    "proExpiryDate": null,
+    "proType": "Premium",
+    "role": "user",
+    "balance": 5000000,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:07:28.012Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:07:28.012Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+    },
+    "name": "Mai Van Thi",
+    "email": "thimvde170740@fpt.edu.vn",
+    "password": "$2b$10$Higba/qnQnW.UzmCqWXVR.j/EZ72fqXKrYviZpIwjl3JpKG5.fFd.",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocI-Z2q_Gpkz7P9O-0N2Xrk_xWrr4NDtpOJLEBU7F9SGEEi2Sxdw=s96-c",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "user",
+    "balance": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [
+      {
+        "$oid": "693ec5588666a0014973a4fe"
+      }
+    ],
+    "stats": {
+      "totalReviews": 14,
+      "studyStreak": 1,
+      "longestStudyStreak": 1,
+      "lastStudyDate": {
+        "$date": "2025-12-14T14:11:03.799Z"
+      }
+    },
+    "createdAt": {
+      "$date": "2025-12-14T11:15:42.357Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T11:15:42.357Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e9e939bdfcaf0d9f8d0b9"
+    },
+    "name": "Hung Ha",
+    "email": "hung.ha@webcatalog.io",
+    "password": "$2b$10$XH6Ipcedib5Zebdkn92UDe0y1EpeWVipB70Of0vfxIoHvLRI51MGy",
+    "avatar": "https://lh3.googleusercontent.com/a-/ALV-UjVHigm6wK7aVzcNBrA4z4NFPqN4fGLSXgITM-abH0bBBgXYnT8ZfcYqQno8SJtcKcbc01QW3wr8y1tuyOei_GB4ji5TMPQlofhhpK421bl8cx7PcCyhlDJrpAXFYiLLpTzFnvQF-sFLMa4VyQt8c2Vst7Wumia424c49JV8Y3xQXlRbh0wUhST4KXLZBJVOOnr3YHhlHjiStHsWYZdlrAKMhi0XaaHNbvuqDIZ8UCEifwGPUaLSTZcGezHpF1TjZvvgWQJ3W0irobUIz5aXvkXmInmVB9J40kVsFRDYpkKP3uGfv3k7sBV5cBkhmgc0l7Nwmx785hTrXIjdYZOVt9XVI6uRPyKQv70Ka2Ka-bpHwMvK1T8b1W1VUK0Sa55M6cAMKTuIhl7Ra1T5c14YH0TJ246XEAqODsOgcGlxODMIvpkus-A9JEIugf2ZuLOg-NJaMSZdGNJLE7ZUfaaLbwybU-nlO-AztrEm3sR_ucPHLXKfcnGL8HI-gCeYWHNDgTEl6CVhCE_oNbDcVo0R2CS2q4cVWF3Jt2eqOfAsv1T3_CGrUtCClTi_4G1VgkeYckl5afbhlI8c5wEInHitmpw4tHNKmxxBpIViatQZGIGIQY6mBz4lAJJi3Klgk5d1krGo1QqRyreYd5bTBblo6jadoWGTa1Lvi6wTCdpyv5uhPDVcBj4LdguOBYe7K2OrNHNtfJZi75WxWBAmUBeTnkk8C0SBji1EVY6CIqqheRv5z9U8A2z_Roz1lwHmqPf0QyUMn3YKamKO0rNbv5nAEX9eaIpXkrwgfdONsgGoxeT203y4MOGOdZi3G9J4C_-t948Ai3TmmJIRWL0Qm7pQ7NOYveHkI5lQm8jD1O9VCl9WAbbRlFoAcfqM0wKn02qhUrlYwPxVnnAdcKIQqJuCCiGO6Qpm_yaV_2MCmgWPSYSv2hRx8heiIvFPlDg3Tu6yPyNQaHbRH5a9FLjrsubz5rq9R6E7_IpEUWdYW0JM6CVvOAKjEFChSMEVIRDNqCrXu9nryxbI1pjoBZpBF5dMMJpP9WxjAuZEjOpx9xW-BDsHCEtUtQE_=s96-c",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "user",
+    "balance": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T11:25:07.279Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T11:25:07.279Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e9ff27e49b9aab7952156"
+    },
+    "name": "Benkyo Study",
+    "email": "benkyostudy3@gmail.com",
+    "password": "$2b$10$Sd2U2OsdtnivlqrqabpV5OR03cy3InYOB6MLfBMq.bsnO4rGXIQSK",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocK_X318QxfzLvYRGX0Aenmzx_l0lzXSFt-5Z5Uf9HHRfxtmCA=s96-c",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "user",
+    "balance": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T11:30:58.380Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T11:30:58.380Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693ea02f7e49b9aab79521c0"
+    },
+    "name": "Thi Mai Văn",
+    "email": "maivanthi2le2@gmail.com",
+    "password": "$2b$10$6MPApc0gCcTXY6akByj7HuWHMzmmySwgFZx9hlyo.583GljoNoI86",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocLPM2NwWX_SofnfH-b_03Rt6TETRey__SSRw5nExBMbMCoSkA=s96-c",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "user",
+    "balance": 450000,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T11:31:59.812Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T11:31:59.812Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693eb6148666a0014973a35a"
+    },
+    "name": "ADMIN Benkyo",
+    "email": "admin@fpt.edu.vn",
+    "password": "$2b$10$/7vvlJjNEU7V6iEulXOGxO1zUF7ejGeBBOBSIHz8kNl33pKl/Gww6",
+    "isPro": true,
+    "proExpiryDate": {
+      "$date": "9999-12-14T13:05:24.594Z"
+    },
+    "proType": "Premium",
+    "role": "user",
+    "balance": 999999999,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T13:05:24.594Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T13:05:24.595Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693eb6818666a0014973a35d"
+    },
+    "name": "User Benkyo",
+    "email": "user@fpt.edu.vn",
+    "password": "$2b$10$ZvUpgtyZm.GHwuthacV9iuBrHoqUCVvJUUiJ5xF1BMuaFDFS4z6AS",
+    "isPro": false,
+    "proExpiryDate": null,
+    "proType": "Basic",
+    "role": "user",
+    "balance": 500000,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T13:07:13.371Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T13:07:13.371Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693eb7178666a0014973a37a"
+    },
+    "name": "Member Benkyo",
+    "email": "member@fpt.edu.vn",
+    "password": "$2b$10$8vaM.qSHeZhDagp00/UT0e8iEMcl.vTkfGvvhrI65arYP30VLp6ya",
+    "isPro": true,
+    "proExpiryDate": {
+      "$date": "2029-12-14T13:09:43.498Z"
+    },
+    "proType": "Premium",
+    "role": "user",
+    "balance": 1000000,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "decks": [],
+    "stats": {
+      "totalReviews": 0,
+      "studyStreak": 0,
+      "longestStudyStreak": 0
+    },
+    "createdAt": {
+      "$date": "2025-12-14T13:09:43.498Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T13:09:43.498Z"
+    },
+    "__v": 0
+  }
+]

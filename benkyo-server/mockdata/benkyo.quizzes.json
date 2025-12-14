@@ -1,0 +1,7803 @@
+[{
+  "_id": {
+    "$oid": "693e674e9bdfcaf0d9f8b70d"
+  },
+  "deck": {
+    "$oid": "693e660c9bdfcaf0d9f8b56e"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T07:29:18.785Z"
+  },
+  "questions": [
+    {
+      "questionText": "Translate: 事務所はどこですか。",
+      "choices": [
+        {
+          "text": "Where is the office?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b70f"
+          }
+        },
+        {
+          "text": "What is the office?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b710"
+          }
+        },
+        {
+          "text": "Who is the office?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b711"
+          }
+        },
+        {
+          "text": "When is the office?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b712"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b70e"
+      }
+    },
+    {
+      "questionText": "What is the Japanese translation of: Cái cặp sách này của tôi。",
+      "choices": [
+        {
+          "text": "このかばんはわたしのです。",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b714"
+          }
+        },
+        {
+          "text": "あのかばんはわたしのです。",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b715"
+          }
+        },
+        {
+          "text": "そのかばんはわたしのです。",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b716"
+          }
+        },
+        {
+          "text": "どれかばんはわたしのです。",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b717"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b713"
+      }
+    },
+    {
+      "questionText": "How do you ask about someone's age in Japanese?",
+      "choices": [
+        {
+          "text": "〜は〜さいです",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b719"
+          }
+        },
+        {
+          "text": "〜は〜です",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b71a"
+          }
+        },
+        {
+          "text": "〜は〜ではありません",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b71b"
+          }
+        },
+        {
+          "text": "〜はどこですか",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b71c"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b718"
+      }
+    },
+    {
+      "questionText": "Translate: わたしのとけいです。",
+      "choices": [
+        {
+          "text": "It is my watch.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b71e"
+          }
+        },
+        {
+          "text": "It is my clock.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b71f"
+          }
+        },
+        {
+          "text": "It is your watch.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b720"
+          }
+        },
+        {
+          "text": "It is your clock.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b721"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b71d"
+      }
+    },
+    {
+      "questionText": "What is the term for introducing someone in Japanese?",
+      "choices": [
+        {
+          "text": "〜は〜です",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b723"
+          }
+        },
+        {
+          "text": "〜は〜さいです",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b724"
+          }
+        },
+        {
+          "text": "〜は〜ですか",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b725"
+          }
+        },
+        {
+          "text": "〜は〜ではありません",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b726"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b722"
+      }
+    },
+    {
+      "questionText": "Translate: このノートはいくらですか。",
+      "choices": [
+        {
+          "text": "How much is this notebook?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b728"
+          }
+        },
+        {
+          "text": "How much is that notebook?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b729"
+          }
+        },
+        {
+          "text": "Where is the notebook?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b72a"
+          }
+        },
+        {
+          "text": "Who has the notebook?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b72b"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b727"
+      }
+    },
+    {
+      "questionText": "Translate: 自動車の会社",
+      "choices": [
+        {
+          "text": "Automobile company",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b72d"
+          }
+        },
+        {
+          "text": "Book company",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b72e"
+          }
+        },
+        {
+          "text": "Food company",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b72f"
+          }
+        },
+        {
+          "text": "Shoe company",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b730"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b72c"
+      }
+    },
+    {
+      "questionText": "Translate: 日本語の本",
+      "choices": [
+        {
+          "text": "Japanese book",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b732"
+          }
+        },
+        {
+          "text": "English book",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b733"
+          }
+        },
+        {
+          "text": "Math book",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b734"
+          }
+        },
+        {
+          "text": "Science book",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b735"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b731"
+      }
+    },
+    {
+      "questionText": "Translate: わたしの国はベトナムです。",
+      "choices": [
+        {
+          "text": "My country is Vietnam.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b737"
+          }
+        },
+        {
+          "text": "My country is Japan.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b738"
+          }
+        },
+        {
+          "text": "My country is America.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b739"
+          }
+        },
+        {
+          "text": "My city is Vietnam.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b73a"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b736"
+      }
+    },
+    {
+      "questionText": "Translate: あのひとはだれですか。",
+      "choices": [
+        {
+          "text": "Who is that person?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b73c"
+          }
+        },
+        {
+          "text": "What is that person?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b73d"
+          }
+        },
+        {
+          "text": "Where is that person?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b73e"
+          }
+        },
+        {
+          "text": "When is that person?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b73f"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b73b"
+      }
+    },
+    {
+      "questionText": "Translate: これはマイさんのかばんですか。",
+      "choices": [
+        {
+          "text": "Is this Mai's bag?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b741"
+          }
+        },
+        {
+          "text": "Is this my bag?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b742"
+          }
+        },
+        {
+          "text": "Is that Mai's bag?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b743"
+          }
+        },
+        {
+          "text": "Is this Mai's book?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b744"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b740"
+      }
+    },
+    {
+      "questionText": "Translate: わたしの傘です。",
+      "choices": [
+        {
+          "text": "It's my umbrella.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b746"
+          }
+        },
+        {
+          "text": "It's my book.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b747"
+          }
+        },
+        {
+          "text": "It's my pen.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b748"
+          }
+        },
+        {
+          "text": "It's my bag.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b749"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b745"
+      }
+    },
+    {
+      "questionText": "Translate: これはえんぴつですか、シャープペンシルですか。",
+      "choices": [
+        {
+          "text": "Is this a pencil or a mechanical pencil?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b74b"
+          }
+        },
+        {
+          "text": "Is this a pen or a pencil?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b74c"
+          }
+        },
+        {
+          "text": "Is that a pencil or a mechanical pencil?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b74d"
+          }
+        },
+        {
+          "text": "Is this a pen or a mechanical pencil?",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b74e"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b74a"
+      }
+    },
+    {
+      "questionText": "Translate: あれはいすです。",
+      "choices": [
+        {
+          "text": "That is a chair.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b750"
+          }
+        },
+        {
+          "text": "This is a chair.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b751"
+          }
+        },
+        {
+          "text": "That is a table.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b752"
+          }
+        },
+        {
+          "text": "This is a table.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b753"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b74f"
+      }
+    },
+    {
+      "questionText": "Translate: これはほんです。",
+      "choices": [
+        {
+          "text": "This is a book.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b755"
+          }
+        },
+        {
+          "text": "This is a pen.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b756"
+          }
+        },
+        {
+          "text": "That is a book.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b757"
+          }
+        },
+        {
+          "text": "That is a pen.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b758"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b754"
+      }
+    },
+    {
+      "questionText": "Translate: わたしは八歳です。",
+      "choices": [
+        {
+          "text": "I am 8 years old.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b75a"
+          }
+        },
+        {
+          "text": "I am 18 years old.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b75b"
+          }
+        },
+        {
+          "text": "I am 28 years old.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b75c"
+          }
+        },
+        {
+          "text": "I am 80 years old.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b75d"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b759"
+      }
+    },
+    {
+      "questionText": "Translate: マイさんもいしゃです。",
+      "choices": [
+        {
+          "text": "Mai is also a doctor.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b75f"
+          }
+        },
+        {
+          "text": "Mai is a doctor.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b760"
+          }
+        },
+        {
+          "text": "Mai is a student.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b761"
+          }
+        },
+        {
+          "text": "Mai is also a student.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b762"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b75e"
+      }
+    },
+    {
+      "questionText": "Translate: わたしは医者です。",
+      "choices": [
+        {
+          "text": "I am a doctor.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b764"
+          }
+        },
+        {
+          "text": "I am a teacher.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b765"
+          }
+        },
+        {
+          "text": "I am a student.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b766"
+          }
+        },
+        {
+          "text": "I am an engineer.",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b767"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b763"
+      }
+    },
+    {
+      "questionText": "If someone says \"〜は〜さいです\", what are they likely talking about?",
+      "choices": [
+        {
+          "text": "Age",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b769"
+          }
+        },
+        {
+          "text": "Name",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b76a"
+          }
+        },
+        {
+          "text": "Location",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b76b"
+          }
+        },
+        {
+          "text": "Occupation",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b76c"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b768"
+      }
+    },
+    {
+      "questionText": "If you want to introduce yourself what would you say?",
+      "choices": [
+        {
+          "text": "〜は〜です",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b76e"
+          }
+        },
+        {
+          "text": "〜は〜さいです",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b76f"
+          }
+        },
+        {
+          "text": "〜はどこですか",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b770"
+          }
+        },
+        {
+          "text": "〜はだれですか",
+          "_id": {
+            "$oid": "693e674e9bdfcaf0d9f8b771"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e674e9bdfcaf0d9f8b76d"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7d37bed05538f6532291"
+  },
+  "deck": {
+    "$oid": "693e7b7cbed05538f6532196"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:02:47.249Z"
+  },
+  "questions": [
+    {
+      "questionText": "What is the primary role of TC39 in relation to JavaScript?",
+      "choices": [
+        {
+          "text": "To develop and maintain web browsers that support JavaScript.",
+          "_id": {
+            "$oid": "693e7d37bed05538f6532293"
+          }
+        },
+        {
+          "text": "To establish the standard (ECMAScript) and evolve the JavaScript language.",
+          "_id": {
+            "$oid": "693e7d37bed05538f6532294"
+          }
+        },
+        {
+          "text": "To provide a runtime environment for executing JavaScript code.",
+          "_id": {
+            "$oid": "693e7d37bed05538f6532295"
+          }
+        },
+        {
+          "text": "To create and distribute JavaScript libraries and frameworks.",
+          "_id": {
+            "$oid": "693e7d37bed05538f6532296"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693e7d37bed05538f6532292"
+      }
+    },
+    {
+      "questionText": "In JavaScript, which of the following values is NOT considered a falsy value?",
+      "choices": [
+        {
+          "text": "0",
+          "_id": {
+            "$oid": "693e7d37bed05538f6532298"
+          }
+        },
+        {
+          "text": "null",
+          "_id": {
+            "$oid": "693e7d37bed05538f6532299"
+          }
+        },
+        {
+          "text": "\"\"",
+          "_id": {
+            "$oid": "693e7d37bed05538f653229a"
+          }
+        },
+        {
+          "text": "{}",
+          "_id": {
+            "$oid": "693e7d37bed05538f653229b"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693e7d37bed05538f6532297"
+      }
+    },
+    {
+      "questionText": "Before ES2015, what was the scope of a variable declared using `var` inside a function?",
+      "choices": [
+        {
+          "text": "Block scope",
+          "_id": {
+            "$oid": "693e7d37bed05538f653229d"
+          }
+        },
+        {
+          "text": "Global scope",
+          "_id": {
+            "$oid": "693e7d37bed05538f653229e"
+          }
+        },
+        {
+          "text": "Function scope",
+          "_id": {
+            "$oid": "693e7d37bed05538f653229f"
+          }
+        },
+        {
+          "text": "Lexical scope",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322a0"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693e7d37bed05538f653229c"
+      }
+    },
+    {
+      "questionText": "Which statement best describes the meaning of 'dynamically typed' in the context of JavaScript?",
+      "choices": [
+        {
+          "text": "The type of a variable must be explicitly declared before it can be used.",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322a2"
+          }
+        },
+        {
+          "text": "The type of a variable is determined at compile time and cannot be changed during runtime.",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322a3"
+          }
+        },
+        {
+          "text": "A variable does not enforce a type, and you can reassign any type to a variable.",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322a4"
+          }
+        },
+        {
+          "text": "The type of a variable is implicitly determined at compile time but can be explicitly changed at runtime.",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322a5"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693e7d37bed05538f65322a1"
+      }
+    },
+    {
+      "questionText": "Which of the following is NOT a JavaScript primitive type?",
+      "choices": [
+        {
+          "text": "String",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322a7"
+          }
+        },
+        {
+          "text": "Number",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322a8"
+          }
+        },
+        {
+          "text": "Boolean",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322a9"
+          }
+        },
+        {
+          "text": "Array",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322aa"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693e7d37bed05538f65322a6"
+      }
+    },
+    {
+      "questionText": "What does `null` represent in JavaScript?",
+      "choices": [
+        {
+          "text": "A specific numeric value of zero.",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322ac"
+          }
+        },
+        {
+          "text": "The absence of a value.",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322ad"
+          }
+        },
+        {
+          "text": "An error condition that needs to be handled.",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322ae"
+          }
+        },
+        {
+          "text": "An empty string.",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322af"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693e7d37bed05538f65322ab"
+      }
+    },
+    {
+      "questionText": "What is the standard upon which JavaScript is based?",
+      "choices": [
+        {
+          "text": "TC39",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322b1"
+          }
+        },
+        {
+          "text": "HTML5",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322b2"
+          }
+        },
+        {
+          "text": "ECMAScript",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322b3"
+          }
+        },
+        {
+          "text": "Node.js",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322b4"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693e7d37bed05538f65322b0"
+      }
+    },
+    {
+      "questionText": "Which keyword introduced in ES2015 allows for block-scoped variable declarations?",
+      "choices": [
+        {
+          "text": "var",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322b6"
+          }
+        },
+        {
+          "text": "const",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322b7"
+          }
+        },
+        {
+          "text": "let",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322b8"
+          }
+        },
+        {
+          "text": "scope",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322b9"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693e7d37bed05538f65322b5"
+      }
+    },
+    {
+      "questionText": "Which of the following is a JavaScript Object type?",
+      "choices": [
+        {
+          "text": "Number",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322bb"
+          }
+        },
+        {
+          "text": "String",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322bc"
+          }
+        },
+        {
+          "text": "Boolean",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322bd"
+          }
+        },
+        {
+          "text": "Function",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322be"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693e7d37bed05538f65322ba"
+      }
+    },
+    {
+      "questionText": "What does 'dynamic' mean in the context of JavaScript?",
+      "choices": [
+        {
+          "text": "Code that is written in a specific file and used with server technologies",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322c0"
+          }
+        },
+        {
+          "text": "A dynamic language executes at runtime many of the things that a static language does at compile time.",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322c1"
+          }
+        },
+        {
+          "text": "Code that contains functions for the browser",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322c2"
+          }
+        },
+        {
+          "text": "Languages that do not compile but are interpreted in real time by the browser.",
+          "_id": {
+            "$oid": "693e7d37bed05538f65322c3"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693e7d37bed05538f65322bf"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e8e0ebed05538f653286d"
+  },
+  "mooc": {
+    "$oid": "693e8d82bed05538f6532803"
+  },
+  "moocDeck": {
+    "$oid": "693e8d82bed05538f65327f5"
+  },
+  "title": "Test final",
+  "description": "basic",
+  "type": "manual",
+  "class": {
+    "$oid": "693e8cf4bed05538f65327cc"
+  },
+  "createdBy": {
+    "$oid": "693e7e50bed05538f6532472"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T10:14:38.838Z"
+  },
+  "questions": [
+    {
+      "questionText": "Abc",
+      "choices": [
+        {
+          "text": "ab",
+          "_id": {
+            "$oid": "693e8e0ebed05538f653286f"
+          }
+        },
+        {
+          "text": "123",
+          "_id": {
+            "$oid": "693e8e0ebed05538f6532870"
+          }
+        },
+        {
+          "text": "aa",
+          "_id": {
+            "$oid": "693e8e0ebed05538f6532871"
+          }
+        },
+        {
+          "text": "123",
+          "_id": {
+            "$oid": "693e8e0ebed05538f6532872"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e8e0ebed05538f653286e"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e949b7ad295b717fd2c68"
+  },
+  "mooc": {
+    "$oid": "693e940c7ad295b717fd2bfd"
+  },
+  "moocDeck": {
+    "$oid": "693e940c7ad295b717fd2bef"
+  },
+  "title": "Test final mooc 1",
+  "description": "basic test",
+  "type": "manual",
+  "class": {
+    "$oid": "693e938a7ad295b717fd2bc9"
+  },
+  "createdBy": {
+    "$oid": "693e7e50bed05538f6532472"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T10:42:35.565Z"
+  },
+  "questions": [
+    {
+      "questionText": "ABCD",
+      "choices": [
+        {
+          "text": "A",
+          "_id": {
+            "$oid": "693e949b7ad295b717fd2c6a"
+          }
+        },
+        {
+          "text": "B",
+          "_id": {
+            "$oid": "693e949b7ad295b717fd2c6b"
+          }
+        },
+        {
+          "text": "C",
+          "_id": {
+            "$oid": "693e949b7ad295b717fd2c6c"
+          }
+        },
+        {
+          "text": "D",
+          "_id": {
+            "$oid": "693e949b7ad295b717fd2c6d"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693e949b7ad295b717fd2c69"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e94c27ad295b717fd2c8b"
+  },
+  "mooc": {
+    "$oid": "693e940c7ad295b717fd2bfd"
+  },
+  "moocDeck": {
+    "$oid": "693e940c7ad295b717fd2bef"
+  },
+  "title": "Test final",
+  "description": "Test",
+  "type": "ai",
+  "class": {
+    "$oid": "693e938a7ad295b717fd2bc9"
+  },
+  "createdBy": {
+    "$oid": "693e7e50bed05538f6532472"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T10:43:14.751Z"
+  },
+  "questions": [
+    {
+      "questionText": "Which of the following best describes what TC39 is?",
+      "choices": [
+        {
+          "text": "A JavaScript library for creating user interfaces.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c8d"
+          }
+        },
+        {
+          "text": "The committee that evolves JavaScript; includes companies involved in JavaScript and browser vendors.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c8e"
+          }
+        },
+        {
+          "text": "A JavaScript testing framework.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c8f"
+          }
+        },
+        {
+          "text": "A JavaScript code editor.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c90"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693e94c27ad295b717fd2c8c"
+      }
+    },
+    {
+      "questionText": "What does it mean for JavaScript to be a 'dynamically typed' language?",
+      "choices": [
+        {
+          "text": "Variables must be explicitly declared with a specific type.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c92"
+          }
+        },
+        {
+          "text": "The type of a variable is fixed and cannot be changed.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c93"
+          }
+        },
+        {
+          "text": "A variable does not enforce a type. You can reassign any type to a variable.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c94"
+          }
+        },
+        {
+          "text": "JavaScript code is compiled before execution.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c95"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693e94c27ad295b717fd2c91"
+      }
+    },
+    {
+      "questionText": "Before ES2015, what was the scope of variables in JavaScript primarily limited to?",
+      "choices": [
+        {
+          "text": "Global scope only.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c97"
+          }
+        },
+        {
+          "text": "Block scope.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c98"
+          }
+        },
+        {
+          "text": "File scope.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c99"
+          }
+        },
+        {
+          "text": "Function scope.",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c9a"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693e94c27ad295b717fd2c96"
+      }
+    },
+    {
+      "questionText": "Which of the following is NOT a primitive type in JavaScript?",
+      "choices": [
+        {
+          "text": "String",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c9c"
+          }
+        },
+        {
+          "text": "Boolean",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c9d"
+          }
+        },
+        {
+          "text": "Object",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c9e"
+          }
+        },
+        {
+          "text": "Number",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2c9f"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693e94c27ad295b717fd2c9b"
+      }
+    },
+    {
+      "questionText": "Which of the following values is considered a falsy value in JavaScript?",
+      "choices": [
+        {
+          "text": "1",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2ca1"
+          }
+        },
+        {
+          "text": "\"hello\"",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2ca2"
+          }
+        },
+        {
+          "text": "{}",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2ca3"
+          }
+        },
+        {
+          "text": "null",
+          "_id": {
+            "$oid": "693e94c27ad295b717fd2ca4"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693e94c27ad295b717fd2ca0"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea4359bdfcaf0d9f8dd66"
+  },
+  "deck": {
+    "$oid": "693ea3f89bdfcaf0d9f8dd1a"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693ea0d69bdfcaf0d9f8d565"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T11:49:09.977Z"
+  },
+  "questions": [
+    {
+      "questionText": "What keyword is used for variables whose value should not be changed after initial assignment?",
+      "choices": [
+        {
+          "text": "'let'",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd68"
+          }
+        },
+        {
+          "text": "'var'",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd69"
+          }
+        },
+        {
+          "text": "'const'",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd6a"
+          }
+        },
+        {
+          "text": "'def'",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd6b"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea4359bdfcaf0d9f8dd67"
+      }
+    },
+    {
+      "questionText": "If you declare an object with `const`, can you change its properties?",
+      "choices": [
+        {
+          "text": "No",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd6d"
+          }
+        },
+        {
+          "text": "Yes",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd6e"
+          }
+        },
+        {
+          "text": "Only if it's empty",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd6f"
+          }
+        },
+        {
+          "text": "Only for arrays",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd70"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea4359bdfcaf0d9f8dd6c"
+      }
+    },
+    {
+      "questionText": "Can a variable declared with 'let' be reassigned a new value?",
+      "choices": [
+        {
+          "text": "No",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd72"
+          }
+        },
+        {
+          "text": "Only in strict mode",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd73"
+          }
+        },
+        {
+          "text": "Yes",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd74"
+          }
+        },
+        {
+          "text": "Only if it is a primitive",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd75"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea4359bdfcaf0d9f8dd71"
+      }
+    },
+    {
+      "questionText": "How many keywords exist in JavaScript to declare a variable?",
+      "choices": [
+        {
+          "text": "1",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd77"
+          }
+        },
+        {
+          "text": "2",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd78"
+          }
+        },
+        {
+          "text": "3",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd79"
+          }
+        },
+        {
+          "text": "4",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd7a"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea4359bdfcaf0d9f8dd76"
+      }
+    },
+    {
+      "questionText": "What happens when you try to redeclare a variable within the same scope using 'let'?",
+      "choices": [
+        {
+          "text": "It overwrites the variable",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd7c"
+          }
+        },
+        {
+          "text": "It creates a new variable",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd7d"
+          }
+        },
+        {
+          "text": "It throws an error",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd7e"
+          }
+        },
+        {
+          "text": "It does nothing",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd7f"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea4359bdfcaf0d9f8dd7b"
+      }
+    },
+    {
+      "questionText": "Variables declared with 'var' are available before declaration. What is this concept called?",
+      "choices": [
+        {
+          "text": "Scope",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd81"
+          }
+        },
+        {
+          "text": "Closure",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd82"
+          }
+        },
+        {
+          "text": "Hoisting",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd83"
+          }
+        },
+        {
+          "text": "Inheritance",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd84"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea4359bdfcaf0d9f8dd80"
+      }
+    },
+    {
+      "questionText": "Which keyword is used when you want to allow the value of a variable to be changed later?",
+      "choices": [
+        {
+          "text": "'const'",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd86"
+          }
+        },
+        {
+          "text": "'var'",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd87"
+          }
+        },
+        {
+          "text": "'let'",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd88"
+          }
+        },
+        {
+          "text": "Neither",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd89"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea4359bdfcaf0d9f8dd85"
+      }
+    },
+    {
+      "questionText": "What is the scope of a variable declared with 'const'?",
+      "choices": [
+        {
+          "text": "Global scope",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd8b"
+          }
+        },
+        {
+          "text": "Function scope",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd8c"
+          }
+        },
+        {
+          "text": "Block scope",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd8d"
+          }
+        },
+        {
+          "text": "File scope",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd8e"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea4359bdfcaf0d9f8dd8a"
+      }
+    },
+    {
+      "questionText": "Can you redeclare a variable with the same name using 'var' in the same scope?",
+      "choices": [
+        {
+          "text": "No",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd90"
+          }
+        },
+        {
+          "text": "Yes",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd91"
+          }
+        },
+        {
+          "text": "Only in strict mode",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd92"
+          }
+        },
+        {
+          "text": "Only if its a primitive",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd93"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea4359bdfcaf0d9f8dd8f"
+      }
+    },
+    {
+      "questionText": "What is the primary purpose of JavaScript?",
+      "choices": [
+        {
+          "text": "Server-side scripting",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd95"
+          }
+        },
+        {
+          "text": "Database management",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd96"
+          }
+        },
+        {
+          "text": "Adding interactivity to websites",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd97"
+          }
+        },
+        {
+          "text": "Operating system development",
+          "_id": {
+            "$oid": "693ea4359bdfcaf0d9f8dd98"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea4359bdfcaf0d9f8dd94"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea5418666a00149738e83"
+  },
+  "deck": {
+    "$oid": "693e7da5bed05538f653241a"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T11:53:37.811Z"
+  },
+  "questions": [
+    {
+      "questionText": "Which of the following best describes 'Flextime'?",
+      "choices": [
+        {
+          "text": "A system where employees are paid overtime.",
+          "_id": {
+            "$oid": "693ea5418666a00149738e85"
+          }
+        },
+        {
+          "text": "A system allowing employees to choose their start and finish times within a range of hours.",
+          "_id": {
+            "$oid": "693ea5418666a00149738e86"
+          }
+        },
+        {
+          "text": "A system where employees work from home.",
+          "_id": {
+            "$oid": "693ea5418666a00149738e87"
+          }
+        },
+        {
+          "text": "A system where employees are required to work on weekends.",
+          "_id": {
+            "$oid": "693ea5418666a00149738e88"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738e84"
+      }
+    },
+    {
+      "questionText": "What term refers to the ability to easily adapt or change to new situations or requirements?",
+      "choices": [
+        {
+          "text": "Rigidity",
+          "_id": {
+            "$oid": "693ea5418666a00149738e8a"
+          }
+        },
+        {
+          "text": "Consistency",
+          "_id": {
+            "$oid": "693ea5418666a00149738e8b"
+          }
+        },
+        {
+          "text": "Flexibility",
+          "_id": {
+            "$oid": "693ea5418666a00149738e8c"
+          }
+        },
+        {
+          "text": "Inertia",
+          "_id": {
+            "$oid": "693ea5418666a00149738e8d"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5418666a00149738e89"
+      }
+    },
+    {
+      "questionText": "Gaining knowledge or skill through practical involvement is best described as:",
+      "choices": [
+        {
+          "text": "Education",
+          "_id": {
+            "$oid": "693ea5418666a00149738e8f"
+          }
+        },
+        {
+          "text": "Experience",
+          "_id": {
+            "$oid": "693ea5418666a00149738e90"
+          }
+        },
+        {
+          "text": "Training",
+          "_id": {
+            "$oid": "693ea5418666a00149738e91"
+          }
+        },
+        {
+          "text": "Theory",
+          "_id": {
+            "$oid": "693ea5418666a00149738e92"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738e8e"
+      }
+    },
+    {
+      "questionText": "The act of making a judgement about the value or amount of something is called:",
+      "choices": [
+        {
+          "text": "Estimation",
+          "_id": {
+            "$oid": "693ea5418666a00149738e94"
+          }
+        },
+        {
+          "text": "Evaluation",
+          "_id": {
+            "$oid": "693ea5418666a00149738e95"
+          }
+        },
+        {
+          "text": "Calculation",
+          "_id": {
+            "$oid": "693ea5418666a00149738e96"
+          }
+        },
+        {
+          "text": "Speculation",
+          "_id": {
+            "$oid": "693ea5418666a00149738e97"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738e93"
+      }
+    },
+    {
+      "questionText": "What principle ensures individuals receive the same compensation for performing the same job, regardless of gender or race?",
+      "choices": [
+        {
+          "text": "Fair Trade",
+          "_id": {
+            "$oid": "693ea5418666a00149738e99"
+          }
+        },
+        {
+          "text": "Equal Opportunity",
+          "_id": {
+            "$oid": "693ea5418666a00149738e9a"
+          }
+        },
+        {
+          "text": "Equal Pay",
+          "_id": {
+            "$oid": "693ea5418666a00149738e9b"
+          }
+        },
+        {
+          "text": "Minimum Wage",
+          "_id": {
+            "$oid": "693ea5418666a00149738e9c"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5418666a00149738e98"
+      }
+    },
+    {
+      "questionText": "An individual who works independently and is self-employed is known as:",
+      "choices": [
+        {
+          "text": "A freelancer",
+          "_id": {
+            "$oid": "693ea5418666a00149738e9e"
+          }
+        },
+        {
+          "text": "An entrepreneur",
+          "_id": {
+            "$oid": "693ea5418666a00149738e9f"
+          }
+        },
+        {
+          "text": "A consultant",
+          "_id": {
+            "$oid": "693ea5418666a00149738ea0"
+          }
+        },
+        {
+          "text": "An intern",
+          "_id": {
+            "$oid": "693ea5418666a00149738ea1"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738e9d"
+      }
+    },
+    {
+      "questionText": "The state of having paid work is referred to as:",
+      "choices": [
+        {
+          "text": "Occupation",
+          "_id": {
+            "$oid": "693ea5418666a00149738ea3"
+          }
+        },
+        {
+          "text": "Employment",
+          "_id": {
+            "$oid": "693ea5418666a00149738ea4"
+          }
+        },
+        {
+          "text": "Profession",
+          "_id": {
+            "$oid": "693ea5418666a00149738ea5"
+          }
+        },
+        {
+          "text": "Vocation",
+          "_id": {
+            "$oid": "693ea5418666a00149738ea6"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738ea2"
+      }
+    },
+    {
+      "questionText": "A person or organization that hires people to work for them is called:",
+      "choices": [
+        {
+          "text": "An employee",
+          "_id": {
+            "$oid": "693ea5418666a00149738ea8"
+          }
+        },
+        {
+          "text": "A supervisor",
+          "_id": {
+            "$oid": "693ea5418666a00149738ea9"
+          }
+        },
+        {
+          "text": "An employer",
+          "_id": {
+            "$oid": "693ea5418666a00149738eaa"
+          }
+        },
+        {
+          "text": "A manager",
+          "_id": {
+            "$oid": "693ea5418666a00149738eab"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5418666a00149738ea7"
+      }
+    },
+    {
+      "questionText": "The level of dedication and enthusiasm an employee feels toward their job and organization is known as:",
+      "choices": [
+        {
+          "text": "Job satisfaction",
+          "_id": {
+            "$oid": "693ea5418666a00149738ead"
+          }
+        },
+        {
+          "text": "Employee engagement",
+          "_id": {
+            "$oid": "693ea5418666a00149738eae"
+          }
+        },
+        {
+          "text": "Work ethic",
+          "_id": {
+            "$oid": "693ea5418666a00149738eaf"
+          }
+        },
+        {
+          "text": "Organizational commitment",
+          "_id": {
+            "$oid": "693ea5418666a00149738eb0"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738eac"
+      }
+    },
+    {
+      "questionText": "Additional advantages offered to employees beyond their regular salary are referred to as:",
+      "choices": [
+        {
+          "text": "Employee benefits",
+          "_id": {
+            "$oid": "693ea5418666a00149738eb2"
+          }
+        },
+        {
+          "text": "Perks",
+          "_id": {
+            "$oid": "693ea5418666a00149738eb3"
+          }
+        },
+        {
+          "text": "Incentives",
+          "_id": {
+            "$oid": "693ea5418666a00149738eb4"
+          }
+        },
+        {
+          "text": "Allowances",
+          "_id": {
+            "$oid": "693ea5418666a00149738eb5"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea5418666a00149738eb1"
+      }
+    },
+    {
+      "questionText": "What does EAP stand for in the context of employee well-being?",
+      "choices": [
+        {
+          "text": "Employee Advancement Program",
+          "_id": {
+            "$oid": "693ea5418666a00149738eb7"
+          }
+        },
+        {
+          "text": "Employee Assistance Program",
+          "_id": {
+            "$oid": "693ea5418666a00149738eb8"
+          }
+        },
+        {
+          "text": "Employee Achievement Plan",
+          "_id": {
+            "$oid": "693ea5418666a00149738eb9"
+          }
+        },
+        {
+          "text": "Executive Assistance Program",
+          "_id": {
+            "$oid": "693ea5418666a00149738eba"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738eb6"
+      }
+    },
+    {
+      "questionText": "A person who is hired to work for wages or salary is called:",
+      "choices": [
+        {
+          "text": "A contractor",
+          "_id": {
+            "$oid": "693ea5418666a00149738ebc"
+          }
+        },
+        {
+          "text": "An apprentice",
+          "_id": {
+            "$oid": "693ea5418666a00149738ebd"
+          }
+        },
+        {
+          "text": "An employee",
+          "_id": {
+            "$oid": "693ea5418666a00149738ebe"
+          }
+        },
+        {
+          "text": "A volunteer",
+          "_id": {
+            "$oid": "693ea5418666a00149738ebf"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5418666a00149738ebb"
+      }
+    },
+    {
+      "questionText": "The reduction in the number of employees within an organization is known as:",
+      "choices": [
+        {
+          "text": "Hiring freeze",
+          "_id": {
+            "$oid": "693ea5418666a00149738ec1"
+          }
+        },
+        {
+          "text": "Layoff",
+          "_id": {
+            "$oid": "693ea5418666a00149738ec2"
+          }
+        },
+        {
+          "text": "Downsizing",
+          "_id": {
+            "$oid": "693ea5418666a00149738ec3"
+          }
+        },
+        {
+          "text": "Attrition",
+          "_id": {
+            "$oid": "693ea5418666a00149738ec4"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5418666a00149738ec0"
+      }
+    },
+    {
+      "questionText": "The process of enhancing one's skills, knowledge, and abilities is called:",
+      "choices": [
+        {
+          "text": "Education",
+          "_id": {
+            "$oid": "693ea5418666a00149738ec6"
+          }
+        },
+        {
+          "text": "Development",
+          "_id": {
+            "$oid": "693ea5418666a00149738ec7"
+          }
+        },
+        {
+          "text": "Training",
+          "_id": {
+            "$oid": "693ea5418666a00149738ec8"
+          }
+        },
+        {
+          "text": "Learning",
+          "_id": {
+            "$oid": "693ea5418666a00149738ec9"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738ec5"
+      }
+    },
+    {
+      "questionText": "What is the purpose of a Curriculum Vitae (CV)?",
+      "choices": [
+        {
+          "text": "To provide a brief summary of skills.",
+          "_id": {
+            "$oid": "693ea5418666a00149738ecb"
+          }
+        },
+        {
+          "text": "To highlight relevant work experience only.",
+          "_id": {
+            "$oid": "693ea5418666a00149738ecc"
+          }
+        },
+        {
+          "text": "To provide a detailed summary of a person's education, skills, and experience.",
+          "_id": {
+            "$oid": "693ea5418666a00149738ecd"
+          }
+        },
+        {
+          "text": "To showcase personal hobbies.",
+          "_id": {
+            "$oid": "693ea5418666a00149738ece"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5418666a00149738eca"
+      }
+    },
+    {
+      "questionText": "The degree to which an employee's values and beliefs align with the organization's values and beliefs is:",
+      "choices": [
+        {
+          "text": "Job Satisfaction",
+          "_id": {
+            "$oid": "693ea5418666a00149738ed0"
+          }
+        },
+        {
+          "text": "Cultural fit",
+          "_id": {
+            "$oid": "693ea5418666a00149738ed1"
+          }
+        },
+        {
+          "text": "Work-life balance",
+          "_id": {
+            "$oid": "693ea5418666a00149738ed2"
+          }
+        },
+        {
+          "text": "Employee engagement",
+          "_id": {
+            "$oid": "693ea5418666a00149738ed3"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738ecf"
+      }
+    },
+    {
+      "questionText": "What is the typical function of a cubicle in an office environment?",
+      "choices": [
+        {
+          "text": "A private office space",
+          "_id": {
+            "$oid": "693ea5418666a00149738ed5"
+          }
+        },
+        {
+          "text": "A meeting room",
+          "_id": {
+            "$oid": "693ea5418666a00149738ed6"
+          }
+        },
+        {
+          "text": "A partially enclosed workspace",
+          "_id": {
+            "$oid": "693ea5418666a00149738ed7"
+          }
+        },
+        {
+          "text": "A storage area",
+          "_id": {
+            "$oid": "693ea5418666a00149738ed8"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5418666a00149738ed4"
+      }
+    },
+    {
+      "questionText": "What type of document should be included with your job application?",
+      "choices": [
+        {
+          "text": "Reference letter",
+          "_id": {
+            "$oid": "693ea5418666a00149738eda"
+          }
+        },
+        {
+          "text": "A cover letter",
+          "_id": {
+            "$oid": "693ea5418666a00149738edb"
+          }
+        },
+        {
+          "text": "Transcript",
+          "_id": {
+            "$oid": "693ea5418666a00149738edc"
+          }
+        },
+        {
+          "text": "Birth Certificate",
+          "_id": {
+            "$oid": "693ea5418666a00149738edd"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738ed9"
+      }
+    },
+    {
+      "questionText": "What is a legally binding agreement between an employer and an employee?",
+      "choices": [
+        {
+          "text": "A memorandum",
+          "_id": {
+            "$oid": "693ea5418666a00149738edf"
+          }
+        },
+        {
+          "text": "A contract",
+          "_id": {
+            "$oid": "693ea5418666a00149738ee0"
+          }
+        },
+        {
+          "text": "A proposal",
+          "_id": {
+            "$oid": "693ea5418666a00149738ee1"
+          }
+        },
+        {
+          "text": "A handshake",
+          "_id": {
+            "$oid": "693ea5418666a00149738ee2"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5418666a00149738ede"
+      }
+    },
+    {
+      "questionText": "The daily journey to work is often called:",
+      "choices": [
+        {
+          "text": "A commute",
+          "_id": {
+            "$oid": "693ea5418666a00149738ee4"
+          }
+        },
+        {
+          "text": "A pilgrimage",
+          "_id": {
+            "$oid": "693ea5418666a00149738ee5"
+          }
+        },
+        {
+          "text": "A trek",
+          "_id": {
+            "$oid": "693ea5418666a00149738ee6"
+          }
+        },
+        {
+          "text": "An expedition",
+          "_id": {
+            "$oid": "693ea5418666a00149738ee7"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea5418666a00149738ee3"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea5cc8666a00149738fcb"
+  },
+  "deck": {
+    "$oid": "693e7da5bed05538f653241a"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T11:55:56.805Z"
+  },
+  "questions": [
+    {
+      "questionText": "What is a system of working that allows employees to choose the times they start and finish work within a range of hours?",
+      "choices": [
+        {
+          "text": "Flexibility",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fcd"
+          }
+        },
+        {
+          "text": "Flextime",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fce"
+          }
+        },
+        {
+          "text": "Telecommuting",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fcf"
+          }
+        },
+        {
+          "text": "Job sharing",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fd0"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738fcc"
+      }
+    },
+    {
+      "questionText": "What is the quality of being easily adapted or changed?",
+      "choices": [
+        {
+          "text": "Rigidity",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fd2"
+          }
+        },
+        {
+          "text": "Flexibility",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fd3"
+          }
+        },
+        {
+          "text": "Inertia",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fd4"
+          }
+        },
+        {
+          "text": "Stagnation",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fd5"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738fd1"
+      }
+    },
+    {
+      "questionText": "What is knowledge or skill gained from doing, feeling, or seeing things?",
+      "choices": [
+        {
+          "text": "Education",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fd7"
+          }
+        },
+        {
+          "text": "Training",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fd8"
+          }
+        },
+        {
+          "text": "Experience",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fd9"
+          }
+        },
+        {
+          "text": "Theory",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fda"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738fd6"
+      }
+    },
+    {
+      "questionText": "What is the making of a judgement about the amount, number, or value of something; assessment?",
+      "choices": [
+        {
+          "text": "An Evaluation",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fdc"
+          }
+        },
+        {
+          "text": "An Appraisal",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fdd"
+          }
+        },
+        {
+          "text": "A Review",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fde"
+          }
+        },
+        {
+          "text": "All of the above",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fdf"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738fdb"
+      }
+    },
+    {
+      "questionText": "What is it when you are receiving the same wages as a person?",
+      "choices": [
+        {
+          "text": "Fair compensation",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fe1"
+          }
+        },
+        {
+          "text": "Equitable distribution",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fe2"
+          }
+        },
+        {
+          "text": "Equal pay",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fe3"
+          }
+        },
+        {
+          "text": "Wage parity",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fe4"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738fe0"
+      }
+    },
+    {
+      "questionText": "What is a person who works independently and is self-employed?",
+      "choices": [
+        {
+          "text": "A manager",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fe6"
+          }
+        },
+        {
+          "text": "A consultant",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fe7"
+          }
+        },
+        {
+          "text": "An employee",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fe8"
+          }
+        },
+        {
+          "text": "An entrepreneur",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fe9"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738fe5"
+      }
+    },
+    {
+      "questionText": "What is the condition of having paid work?",
+      "choices": [
+        {
+          "text": "Occupation",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738feb"
+          }
+        },
+        {
+          "text": "Vocation",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fec"
+          }
+        },
+        {
+          "text": "Employment",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fed"
+          }
+        },
+        {
+          "text": "Profession",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fee"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738fea"
+      }
+    },
+    {
+      "questionText": "What is a person or organization that employs people?",
+      "choices": [
+        {
+          "text": "An employee",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ff0"
+          }
+        },
+        {
+          "text": "An employer",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ff1"
+          }
+        },
+        {
+          "text": "A contractor",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ff2"
+          }
+        },
+        {
+          "text": "A stakeholder",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ff3"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738fef"
+      }
+    },
+    {
+      "questionText": "What is the emotional commitment the employee has to the organization and its goals?",
+      "choices": [
+        {
+          "text": "Employee satisfaction",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ff5"
+          }
+        },
+        {
+          "text": "Employee loyalty",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ff6"
+          }
+        },
+        {
+          "text": "Employee engagement",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ff7"
+          }
+        },
+        {
+          "text": "Employee retention",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ff8"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738ff4"
+      }
+    },
+    {
+      "questionText": "What are compensation, payment, or advantages received in addition to a regular salary or wages?",
+      "choices": [
+        {
+          "text": "Employee bonuses",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ffa"
+          }
+        },
+        {
+          "text": "Employee benefits",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ffb"
+          }
+        },
+        {
+          "text": "Employee incentives",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ffc"
+          }
+        },
+        {
+          "text": "Employee perks",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738ffd"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738ff9"
+      }
+    },
+    {
+      "questionText": "What is a program intended to help employees deal with personal problems that might adversely impact their job performance, health, and well-being?",
+      "choices": [
+        {
+          "text": "Employee retention program",
+          "_id": {
+            "$oid": "693ea5cc8666a00149738fff"
+          }
+        },
+        {
+          "text": "Employee assistance program",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739000"
+          }
+        },
+        {
+          "text": "Employee wellness program",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739001"
+          }
+        },
+        {
+          "text": "Employee development program",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739002"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5cc8666a00149738ffe"
+      }
+    },
+    {
+      "questionText": "What is a person employed for wages or salary?",
+      "choices": [
+        {
+          "text": "An employer",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739004"
+          }
+        },
+        {
+          "text": "A contractor",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739005"
+          }
+        },
+        {
+          "text": "An employee",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739006"
+          }
+        },
+        {
+          "text": "A freelancer",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739007"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5cc8666a00149739003"
+      }
+    },
+    {
+      "questionText": "What is the reduction in the number of employees?",
+      "choices": [
+        {
+          "text": "Hiring freeze",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739009"
+          }
+        },
+        {
+          "text": "Downsizing",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973900a"
+          }
+        },
+        {
+          "text": "Restructuring",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973900b"
+          }
+        },
+        {
+          "text": "Reorganization",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973900c"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5cc8666a00149739008"
+      }
+    },
+    {
+      "questionText": "What is the process of growth or improvement?",
+      "choices": [
+        {
+          "text": "Training",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973900e"
+          }
+        },
+        {
+          "text": "Development",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973900f"
+          }
+        },
+        {
+          "text": "Education",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739010"
+          }
+        },
+        {
+          "text": "Learning",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739011"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5cc8666a0014973900d"
+      }
+    },
+    {
+      "questionText": "What is a detailed summary of a person's education, skills, and experience?",
+      "choices": [
+        {
+          "text": "A cover letter",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739013"
+          }
+        },
+        {
+          "text": "A resume",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739014"
+          }
+        },
+        {
+          "text": "An application",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739015"
+          }
+        },
+        {
+          "text": "A curriculum vitae (CV)",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739016"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea5cc8666a00149739012"
+      }
+    },
+    {
+      "questionText": "What is the degree to which an employee fits into the culture of an organization?",
+      "choices": [
+        {
+          "text": "Team chemistry",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739018"
+          }
+        },
+        {
+          "text": "Company ethos",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739019"
+          }
+        },
+        {
+          "text": "Cultural fit",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973901a"
+          }
+        },
+        {
+          "text": "Workplace harmony",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973901b"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5cc8666a00149739017"
+      }
+    },
+    {
+      "questionText": "What is a partially enclosed workspace in an office?",
+      "choices": [
+        {
+          "text": "A workstation",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973901d"
+          }
+        },
+        {
+          "text": "A pod",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973901e"
+          }
+        },
+        {
+          "text": "A cubicle",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973901f"
+          }
+        },
+        {
+          "text": "An office",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739020"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5cc8666a0014973901c"
+      }
+    },
+    {
+      "questionText": "What document accompanies a job application, highlighting relevant skills and experience?",
+      "choices": [
+        {
+          "text": "A reference letter",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739022"
+          }
+        },
+        {
+          "text": "A cover letter",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739023"
+          }
+        },
+        {
+          "text": "A thank-you note",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739024"
+          }
+        },
+        {
+          "text": "A resume",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739025"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5cc8666a00149739021"
+      }
+    },
+    {
+      "questionText": "What is a written or spoken agreement, especially one concerning employment, sales, or tenancy, that is intended to be enforceable by law?",
+      "choices": [
+        {
+          "text": "A memorandum",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739027"
+          }
+        },
+        {
+          "text": "A contract",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739028"
+          }
+        },
+        {
+          "text": "A proposal",
+          "_id": {
+            "$oid": "693ea5cc8666a00149739029"
+          }
+        },
+        {
+          "text": "An understanding",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973902a"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea5cc8666a00149739026"
+      }
+    },
+    {
+      "questionText": "What is the term for traveling some distance between one's home and place of work on a regular basis?",
+      "choices": [
+        {
+          "text": "Excursion",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973902c"
+          }
+        },
+        {
+          "text": "Transit",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973902d"
+          }
+        },
+        {
+          "text": "Commute",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973902e"
+          }
+        },
+        {
+          "text": "Migration",
+          "_id": {
+            "$oid": "693ea5cc8666a0014973902f"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea5cc8666a0014973902b"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea6328666a0014973914c"
+  },
+  "deck": {
+    "$oid": "693e7da5bed05538f653241a"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T11:57:38.222Z"
+  },
+  "questions": [
+    {
+      "questionText": "What is the term for a system allowing employees to adjust their start and finish times within set limits?",
+      "choices": [
+        {
+          "text": "Flexitime",
+          "_id": {
+            "$oid": "693ea6328666a0014973914e"
+          }
+        },
+        {
+          "text": "Telecommuting",
+          "_id": {
+            "$oid": "693ea6328666a0014973914f"
+          }
+        },
+        {
+          "text": "Job sharing",
+          "_id": {
+            "$oid": "693ea6328666a00149739150"
+          }
+        },
+        {
+          "text": "Compressed workweek",
+          "_id": {
+            "$oid": "693ea6328666a00149739151"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6328666a0014973914d"
+      }
+    },
+    {
+      "questionText": "What is the term for the ability to adapt readily to changing conditions?",
+      "choices": [
+        {
+          "text": "Rigidity",
+          "_id": {
+            "$oid": "693ea6328666a00149739153"
+          }
+        },
+        {
+          "text": "Flexibility",
+          "_id": {
+            "$oid": "693ea6328666a00149739154"
+          }
+        },
+        {
+          "text": "Inertia",
+          "_id": {
+            "$oid": "693ea6328666a00149739155"
+          }
+        },
+        {
+          "text": "Consistency",
+          "_id": {
+            "$oid": "693ea6328666a00149739156"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6328666a00149739152"
+      }
+    },
+    {
+      "questionText": "What is knowledge or skill acquired from involvement in or exposure to particular events or activities?",
+      "choices": [
+        {
+          "text": "Theory",
+          "_id": {
+            "$oid": "693ea6328666a00149739158"
+          }
+        },
+        {
+          "text": "Education",
+          "_id": {
+            "$oid": "693ea6328666a00149739159"
+          }
+        },
+        {
+          "text": "Experience",
+          "_id": {
+            "$oid": "693ea6328666a0014973915a"
+          }
+        },
+        {
+          "text": "Intuition",
+          "_id": {
+            "$oid": "693ea6328666a0014973915b"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6328666a00149739157"
+      }
+    },
+    {
+      "questionText": "What is the process of judging the value or quality of something?",
+      "choices": [
+        {
+          "text": "Speculation",
+          "_id": {
+            "$oid": "693ea6328666a0014973915d"
+          }
+        },
+        {
+          "text": "Estimation",
+          "_id": {
+            "$oid": "693ea6328666a0014973915e"
+          }
+        },
+        {
+          "text": "Evaluation",
+          "_id": {
+            "$oid": "693ea6328666a0014973915f"
+          }
+        },
+        {
+          "text": "Calculation",
+          "_id": {
+            "$oid": "693ea6328666a00149739160"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6328666a0014973915c"
+      }
+    },
+    {
+      "questionText": "What term describes receiving the same wage for performing the same job as someone else?",
+      "choices": [
+        {
+          "text": "Minimum wage",
+          "_id": {
+            "$oid": "693ea6328666a00149739162"
+          }
+        },
+        {
+          "text": "Living wage",
+          "_id": {
+            "$oid": "693ea6328666a00149739163"
+          }
+        },
+        {
+          "text": "Equal pay",
+          "_id": {
+            "$oid": "693ea6328666a00149739164"
+          }
+        },
+        {
+          "text": "Fair wage",
+          "_id": {
+            "$oid": "693ea6328666a00149739165"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6328666a00149739161"
+      }
+    },
+    {
+      "questionText": "What is a person called who organizes and operates a business, taking on greater than normal financial risks?",
+      "choices": [
+        {
+          "text": "Manager",
+          "_id": {
+            "$oid": "693ea6328666a00149739167"
+          }
+        },
+        {
+          "text": "Entrepreneur",
+          "_id": {
+            "$oid": "693ea6328666a00149739168"
+          }
+        },
+        {
+          "text": "Investor",
+          "_id": {
+            "$oid": "693ea6328666a00149739169"
+          }
+        },
+        {
+          "text": "Employee",
+          "_id": {
+            "$oid": "693ea6328666a0014973916a"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6328666a00149739166"
+      }
+    },
+    {
+      "questionText": "What is the state of having paid work called?",
+      "choices": [
+        {
+          "text": "Unemployment",
+          "_id": {
+            "$oid": "693ea6328666a0014973916c"
+          }
+        },
+        {
+          "text": "Retirement",
+          "_id": {
+            "$oid": "693ea6328666a0014973916d"
+          }
+        },
+        {
+          "text": "Employment",
+          "_id": {
+            "$oid": "693ea6328666a0014973916e"
+          }
+        },
+        {
+          "text": "Volunteerism",
+          "_id": {
+            "$oid": "693ea6328666a0014973916f"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6328666a0014973916b"
+      }
+    },
+    {
+      "questionText": "What is a person or company that hires people to work for wages or a salary called?",
+      "choices": [
+        {
+          "text": "Employee",
+          "_id": {
+            "$oid": "693ea6328666a00149739171"
+          }
+        },
+        {
+          "text": "Customer",
+          "_id": {
+            "$oid": "693ea6328666a00149739172"
+          }
+        },
+        {
+          "text": "Vendor",
+          "_id": {
+            "$oid": "693ea6328666a00149739173"
+          }
+        },
+        {
+          "text": "Employer",
+          "_id": {
+            "$oid": "693ea6328666a00149739174"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea6328666a00149739170"
+      }
+    },
+    {
+      "questionText": "What term refers to the level of enthusiasm and dedication an employee feels toward their job?",
+      "choices": [
+        {
+          "text": "Job satisfaction",
+          "_id": {
+            "$oid": "693ea6328666a00149739176"
+          }
+        },
+        {
+          "text": "Employee benefits",
+          "_id": {
+            "$oid": "693ea6328666a00149739177"
+          }
+        },
+        {
+          "text": "Employee engagement",
+          "_id": {
+            "$oid": "693ea6328666a00149739178"
+          }
+        },
+        {
+          "text": "Work-life balance",
+          "_id": {
+            "$oid": "693ea6328666a00149739179"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea6328666a00149739175"
+      }
+    },
+    {
+      "questionText": "What are the additional payments or advantages provided to employees in addition to their regular salary?",
+      "choices": [
+        {
+          "text": "Taxes",
+          "_id": {
+            "$oid": "693ea6328666a0014973917b"
+          }
+        },
+        {
+          "text": "Employee benefits",
+          "_id": {
+            "$oid": "693ea6328666a0014973917c"
+          }
+        },
+        {
+          "text": "Deductions",
+          "_id": {
+            "$oid": "693ea6328666a0014973917d"
+          }
+        },
+        {
+          "text": "Gross pay",
+          "_id": {
+            "$oid": "693ea6328666a0014973917e"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6328666a0014973917a"
+      }
+    },
+    {
+      "questionText": "What kind of program helps employees to resolve problems that affect their job performance?",
+      "choices": [
+        {
+          "text": "Employee assistance program",
+          "_id": {
+            "$oid": "693ea6328666a00149739180"
+          }
+        },
+        {
+          "text": "Performance Improvement Plan",
+          "_id": {
+            "$oid": "693ea6328666a00149739181"
+          }
+        },
+        {
+          "text": "Wellness Program",
+          "_id": {
+            "$oid": "693ea6328666a00149739182"
+          }
+        },
+        {
+          "text": "Retirement plan",
+          "_id": {
+            "$oid": "693ea6328666a00149739183"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6328666a0014973917f"
+      }
+    },
+    {
+      "questionText": "What is a worker called who is hired to perform a job for a salary or wages?",
+      "choices": [
+        {
+          "text": "Contractor",
+          "_id": {
+            "$oid": "693ea6328666a00149739185"
+          }
+        },
+        {
+          "text": "Intern",
+          "_id": {
+            "$oid": "693ea6328666a00149739186"
+          }
+        },
+        {
+          "text": "Employee",
+          "_id": {
+            "$oid": "693ea6328666a00149739187"
+          }
+        },
+        {
+          "text": "Volunteer",
+          "_id": {
+            "$oid": "693ea6328666a00149739188"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6328666a00149739184"
+      }
+    },
+    {
+      "questionText": "What is it called when a company reduces the number of employees?",
+      "choices": [
+        {
+          "text": "Upsizing",
+          "_id": {
+            "$oid": "693ea6328666a0014973918a"
+          }
+        },
+        {
+          "text": "Downsizing",
+          "_id": {
+            "$oid": "693ea6328666a0014973918b"
+          }
+        },
+        {
+          "text": "Restructuring",
+          "_id": {
+            "$oid": "693ea6328666a0014973918c"
+          }
+        },
+        {
+          "text": "Automation",
+          "_id": {
+            "$oid": "693ea6328666a0014973918d"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6328666a00149739189"
+      }
+    },
+    {
+      "questionText": "What is the process of increasing an employee's skills and knowledge called?",
+      "choices": [
+        {
+          "text": "Stagnation",
+          "_id": {
+            "$oid": "693ea6328666a0014973918f"
+          }
+        },
+        {
+          "text": "Development",
+          "_id": {
+            "$oid": "693ea6328666a00149739190"
+          }
+        },
+        {
+          "text": "Depreciation",
+          "_id": {
+            "$oid": "693ea6328666a00149739191"
+          }
+        },
+        {
+          "text": "Obsolescence",
+          "_id": {
+            "$oid": "693ea6328666a00149739192"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6328666a0014973918e"
+      }
+    },
+    {
+      "questionText": "What is a comprehensive document detailing education, skills, and work experience, often used in academic or research settings?",
+      "choices": [
+        {
+          "text": "Resume",
+          "_id": {
+            "$oid": "693ea6328666a00149739194"
+          }
+        },
+        {
+          "text": "Cover letter",
+          "_id": {
+            "$oid": "693ea6328666a00149739195"
+          }
+        },
+        {
+          "text": "A curriculum vitae (CV)",
+          "_id": {
+            "$oid": "693ea6328666a00149739196"
+          }
+        },
+        {
+          "text": "Portfolio",
+          "_id": {
+            "$oid": "693ea6328666a00149739197"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6328666a00149739193"
+      }
+    },
+    {
+      "questionText": "What is the term describing how well an employee's values and beliefs align with the company's?",
+      "choices": [
+        {
+          "text": "Job satisfaction",
+          "_id": {
+            "$oid": "693ea6328666a00149739199"
+          }
+        },
+        {
+          "text": "Cultural fit",
+          "_id": {
+            "$oid": "693ea6328666a0014973919a"
+          }
+        },
+        {
+          "text": "Skill set",
+          "_id": {
+            "$oid": "693ea6328666a0014973919b"
+          }
+        },
+        {
+          "text": "Work ethic",
+          "_id": {
+            "$oid": "693ea6328666a0014973919c"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6328666a00149739198"
+      }
+    },
+    {
+      "questionText": "What is the name for a small, partitioned workspace within an office?",
+      "choices": [
+        {
+          "text": "Office",
+          "_id": {
+            "$oid": "693ea6328666a0014973919e"
+          }
+        },
+        {
+          "text": "Suite",
+          "_id": {
+            "$oid": "693ea6328666a0014973919f"
+          }
+        },
+        {
+          "text": "Cubicle",
+          "_id": {
+            "$oid": "693ea6328666a001497391a0"
+          }
+        },
+        {
+          "text": "Conference room",
+          "_id": {
+            "$oid": "693ea6328666a001497391a1"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6328666a0014973919d"
+      }
+    },
+    {
+      "questionText": "What document accompanies a resume to highlight relevant skills and experience?",
+      "choices": [
+        {
+          "text": "Reference list",
+          "_id": {
+            "$oid": "693ea6328666a001497391a3"
+          }
+        },
+        {
+          "text": "Transcript",
+          "_id": {
+            "$oid": "693ea6328666a001497391a4"
+          }
+        },
+        {
+          "text": "Cover letter",
+          "_id": {
+            "$oid": "693ea6328666a001497391a5"
+          }
+        },
+        {
+          "text": "Portfolio",
+          "_id": {
+            "$oid": "693ea6328666a001497391a6"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6328666a001497391a2"
+      }
+    },
+    {
+      "questionText": "What is a legally binding agreement between an employer and employee called?",
+      "choices": [
+        {
+          "text": "Memorandum",
+          "_id": {
+            "$oid": "693ea6328666a001497391a8"
+          }
+        },
+        {
+          "text": "Contract",
+          "_id": {
+            "$oid": "693ea6328666a001497391a9"
+          }
+        },
+        {
+          "text": "Proposal",
+          "_id": {
+            "$oid": "693ea6328666a001497391aa"
+          }
+        },
+        {
+          "text": "Agreement",
+          "_id": {
+            "$oid": "693ea6328666a001497391ab"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6328666a001497391a7"
+      }
+    },
+    {
+      "questionText": "What is the term for the journey from home to work and back again?",
+      "choices": [
+        {
+          "text": "Excursion",
+          "_id": {
+            "$oid": "693ea6328666a001497391ad"
+          }
+        },
+        {
+          "text": "Commute",
+          "_id": {
+            "$oid": "693ea6328666a001497391ae"
+          }
+        },
+        {
+          "text": "Trip",
+          "_id": {
+            "$oid": "693ea6328666a001497391af"
+          }
+        },
+        {
+          "text": "Voyage",
+          "_id": {
+            "$oid": "693ea6328666a001497391b0"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6328666a001497391ac"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea67a8666a001497394fa"
+  },
+  "deck": {
+    "$oid": "693e7da5bed05538f653241a"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T11:58:50.631Z"
+  },
+  "questions": [
+    {
+      "questionText": "What is a system of working that allows employees to choose the times they start and finish work within a range of hours?",
+      "choices": [
+        {
+          "text": "Remote Work",
+          "_id": {
+            "$oid": "693ea67a8666a001497394fc"
+          }
+        },
+        {
+          "text": "Flextime",
+          "_id": {
+            "$oid": "693ea67a8666a001497394fd"
+          }
+        },
+        {
+          "text": "Part-time",
+          "_id": {
+            "$oid": "693ea67a8666a001497394fe"
+          }
+        },
+        {
+          "text": "Full-time",
+          "_id": {
+            "$oid": "693ea67a8666a001497394ff"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a001497394fb"
+      }
+    },
+    {
+      "questionText": "What is the quality of being easily adapted or changed?",
+      "choices": [
+        {
+          "text": "Rigidity",
+          "_id": {
+            "$oid": "693ea67a8666a00149739501"
+          }
+        },
+        {
+          "text": "Flexibility",
+          "_id": {
+            "$oid": "693ea67a8666a00149739502"
+          }
+        },
+        {
+          "text": "Consistency",
+          "_id": {
+            "$oid": "693ea67a8666a00149739503"
+          }
+        },
+        {
+          "text": "Stability",
+          "_id": {
+            "$oid": "693ea67a8666a00149739504"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a00149739500"
+      }
+    },
+    {
+      "questionText": "Knowledge or skill gained from doing, feeling, or seeing things is called:",
+      "choices": [
+        {
+          "text": "Education",
+          "_id": {
+            "$oid": "693ea67a8666a00149739506"
+          }
+        },
+        {
+          "text": "Training",
+          "_id": {
+            "$oid": "693ea67a8666a00149739507"
+          }
+        },
+        {
+          "text": "Experience",
+          "_id": {
+            "$oid": "693ea67a8666a00149739508"
+          }
+        },
+        {
+          "text": "Learning",
+          "_id": {
+            "$oid": "693ea67a8666a00149739509"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea67a8666a00149739505"
+      }
+    },
+    {
+      "questionText": "The making of a judgement about the amount, number, or value of something is known as:",
+      "choices": [
+        {
+          "text": "Analysis",
+          "_id": {
+            "$oid": "693ea67a8666a0014973950b"
+          }
+        },
+        {
+          "text": "Evaluation",
+          "_id": {
+            "$oid": "693ea67a8666a0014973950c"
+          }
+        },
+        {
+          "text": "Calculation",
+          "_id": {
+            "$oid": "693ea67a8666a0014973950d"
+          }
+        },
+        {
+          "text": "Estimation",
+          "_id": {
+            "$oid": "693ea67a8666a0014973950e"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a0014973950a"
+      }
+    },
+    {
+      "questionText": "Receiving the same wages as a person is referred to as:",
+      "choices": [
+        {
+          "text": "Fair Pay",
+          "_id": {
+            "$oid": "693ea67a8666a00149739510"
+          }
+        },
+        {
+          "text": "Equal Pay",
+          "_id": {
+            "$oid": "693ea67a8666a00149739511"
+          }
+        },
+        {
+          "text": "Standard Pay",
+          "_id": {
+            "$oid": "693ea67a8666a00149739512"
+          }
+        },
+        {
+          "text": "Minimum Wage",
+          "_id": {
+            "$oid": "693ea67a8666a00149739513"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a0014973950f"
+      }
+    },
+    {
+      "questionText": "A person who works independently and is self-employed is:",
+      "choices": [
+        {
+          "text": "A freelancer",
+          "_id": {
+            "$oid": "693ea67a8666a00149739515"
+          }
+        },
+        {
+          "text": "An entrepreneur",
+          "_id": {
+            "$oid": "693ea67a8666a00149739516"
+          }
+        },
+        {
+          "text": "A consultant",
+          "_id": {
+            "$oid": "693ea67a8666a00149739517"
+          }
+        },
+        {
+          "text": "An intern",
+          "_id": {
+            "$oid": "693ea67a8666a00149739518"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a00149739514"
+      }
+    },
+    {
+      "questionText": "The condition of having paid work is called:",
+      "choices": [
+        {
+          "text": "Occupation",
+          "_id": {
+            "$oid": "693ea67a8666a0014973951a"
+          }
+        },
+        {
+          "text": "Employment",
+          "_id": {
+            "$oid": "693ea67a8666a0014973951b"
+          }
+        },
+        {
+          "text": "Vocation",
+          "_id": {
+            "$oid": "693ea67a8666a0014973951c"
+          }
+        },
+        {
+          "text": "Profession",
+          "_id": {
+            "$oid": "693ea67a8666a0014973951d"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a00149739519"
+      }
+    },
+    {
+      "questionText": "A person or organization that employs people is:",
+      "choices": [
+        {
+          "text": "A supervisor",
+          "_id": {
+            "$oid": "693ea67a8666a0014973951f"
+          }
+        },
+        {
+          "text": "An employer",
+          "_id": {
+            "$oid": "693ea67a8666a00149739520"
+          }
+        },
+        {
+          "text": "A manager",
+          "_id": {
+            "$oid": "693ea67a8666a00149739521"
+          }
+        },
+        {
+          "text": "A colleague",
+          "_id": {
+            "$oid": "693ea67a8666a00149739522"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a0014973951e"
+      }
+    },
+    {
+      "questionText": "The emotional commitment an employee has to the organization and its goals is:",
+      "choices": [
+        {
+          "text": "Job satisfaction",
+          "_id": {
+            "$oid": "693ea67a8666a00149739524"
+          }
+        },
+        {
+          "text": "Employee engagement",
+          "_id": {
+            "$oid": "693ea67a8666a00149739525"
+          }
+        },
+        {
+          "text": "Teamwork",
+          "_id": {
+            "$oid": "693ea67a8666a00149739526"
+          }
+        },
+        {
+          "text": "Motivation",
+          "_id": {
+            "$oid": "693ea67a8666a00149739527"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a00149739523"
+      }
+    },
+    {
+      "questionText": "Compensation, payment, or advantages received in addition to a regular salary or wages are:",
+      "choices": [
+        {
+          "text": "Raises",
+          "_id": {
+            "$oid": "693ea67a8666a00149739529"
+          }
+        },
+        {
+          "text": "Employee benefits",
+          "_id": {
+            "$oid": "693ea67a8666a0014973952a"
+          }
+        },
+        {
+          "text": "Commissions",
+          "_id": {
+            "$oid": "693ea67a8666a0014973952b"
+          }
+        },
+        {
+          "text": "Bonuses",
+          "_id": {
+            "$oid": "693ea67a8666a0014973952c"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a00149739528"
+      }
+    },
+    {
+      "questionText": "A program intended to help employees deal with personal problems is called:",
+      "choices": [
+        {
+          "text": "Health insurance",
+          "_id": {
+            "$oid": "693ea67a8666a0014973952e"
+          }
+        },
+        {
+          "text": "Employee assistance program",
+          "_id": {
+            "$oid": "693ea67a8666a0014973952f"
+          }
+        },
+        {
+          "text": "Retirement plan",
+          "_id": {
+            "$oid": "693ea67a8666a00149739530"
+          }
+        },
+        {
+          "text": "Wellness program",
+          "_id": {
+            "$oid": "693ea67a8666a00149739531"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a0014973952d"
+      }
+    },
+    {
+      "questionText": "A person employed for wages or salary is:",
+      "choices": [
+        {
+          "text": "A contractor",
+          "_id": {
+            "$oid": "693ea67a8666a00149739533"
+          }
+        },
+        {
+          "text": "An employee",
+          "_id": {
+            "$oid": "693ea67a8666a00149739534"
+          }
+        },
+        {
+          "text": "A volunteer",
+          "_id": {
+            "$oid": "693ea67a8666a00149739535"
+          }
+        },
+        {
+          "text": "An intern",
+          "_id": {
+            "$oid": "693ea67a8666a00149739536"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a00149739532"
+      }
+    },
+    {
+      "questionText": "The reduction in the number of employees is:",
+      "choices": [
+        {
+          "text": "Hiring",
+          "_id": {
+            "$oid": "693ea67a8666a00149739538"
+          }
+        },
+        {
+          "text": "Downsizing",
+          "_id": {
+            "$oid": "693ea67a8666a00149739539"
+          }
+        },
+        {
+          "text": "Promotion",
+          "_id": {
+            "$oid": "693ea67a8666a0014973953a"
+          }
+        },
+        {
+          "text": "Restructuring",
+          "_id": {
+            "$oid": "693ea67a8666a0014973953b"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a00149739537"
+      }
+    },
+    {
+      "questionText": "The process of growth or improvement is:",
+      "choices": [
+        {
+          "text": "Decline",
+          "_id": {
+            "$oid": "693ea67a8666a0014973953d"
+          }
+        },
+        {
+          "text": "Development",
+          "_id": {
+            "$oid": "693ea67a8666a0014973953e"
+          }
+        },
+        {
+          "text": "Stagnation",
+          "_id": {
+            "$oid": "693ea67a8666a0014973953f"
+          }
+        },
+        {
+          "text": "Regression",
+          "_id": {
+            "$oid": "693ea67a8666a00149739540"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a0014973953c"
+      }
+    },
+    {
+      "questionText": "A detailed summary of a person's education, skills, and experience is:",
+      "choices": [
+        {
+          "text": "A job description",
+          "_id": {
+            "$oid": "693ea67a8666a00149739542"
+          }
+        },
+        {
+          "text": "A cover letter",
+          "_id": {
+            "$oid": "693ea67a8666a00149739543"
+          }
+        },
+        {
+          "text": "A curriculum vitae (CV)",
+          "_id": {
+            "$oid": "693ea67a8666a00149739544"
+          }
+        },
+        {
+          "text": "A reference letter",
+          "_id": {
+            "$oid": "693ea67a8666a00149739545"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea67a8666a00149739541"
+      }
+    },
+    {
+      "questionText": "The degree to which an employee fits into the culture of an organization is:",
+      "choices": [
+        {
+          "text": "Job satisfaction",
+          "_id": {
+            "$oid": "693ea67a8666a00149739547"
+          }
+        },
+        {
+          "text": "Cultural fit",
+          "_id": {
+            "$oid": "693ea67a8666a00149739548"
+          }
+        },
+        {
+          "text": "Employee engagement",
+          "_id": {
+            "$oid": "693ea67a8666a00149739549"
+          }
+        },
+        {
+          "text": "Teamwork",
+          "_id": {
+            "$oid": "693ea67a8666a0014973954a"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a00149739546"
+      }
+    },
+    {
+      "questionText": "A partially enclosed workspace in an office is:",
+      "choices": [
+        {
+          "text": "An office",
+          "_id": {
+            "$oid": "693ea67a8666a0014973954c"
+          }
+        },
+        {
+          "text": "A cubicle",
+          "_id": {
+            "$oid": "693ea67a8666a0014973954d"
+          }
+        },
+        {
+          "text": "A conference room",
+          "_id": {
+            "$oid": "693ea67a8666a0014973954e"
+          }
+        },
+        {
+          "text": "A workstation",
+          "_id": {
+            "$oid": "693ea67a8666a0014973954f"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a0014973954b"
+      }
+    },
+    {
+      "questionText": "The document that accompanies a job application, highlighting relevant skills and experience, is:",
+      "choices": [
+        {
+          "text": "A resume",
+          "_id": {
+            "$oid": "693ea67a8666a00149739551"
+          }
+        },
+        {
+          "text": "A cover letter",
+          "_id": {
+            "$oid": "693ea67a8666a00149739552"
+          }
+        },
+        {
+          "text": "A reference letter",
+          "_id": {
+            "$oid": "693ea67a8666a00149739553"
+          }
+        },
+        {
+          "text": "A transcript",
+          "_id": {
+            "$oid": "693ea67a8666a00149739554"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a00149739550"
+      }
+    },
+    {
+      "questionText": "A written or spoken agreement concerning employment, sales, or tenancy, that is intended to be enforceable by law is:",
+      "choices": [
+        {
+          "text": "A contract",
+          "_id": {
+            "$oid": "693ea67a8666a00149739556"
+          }
+        },
+        {
+          "text": "A promise",
+          "_id": {
+            "$oid": "693ea67a8666a00149739557"
+          }
+        },
+        {
+          "text": "A negotiation",
+          "_id": {
+            "$oid": "693ea67a8666a00149739558"
+          }
+        },
+        {
+          "text": "A memorandum",
+          "_id": {
+            "$oid": "693ea67a8666a00149739559"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea67a8666a00149739555"
+      }
+    },
+    {
+      "questionText": "Traveling some distance between one's home and place of work on a regular basis is known as:",
+      "choices": [
+        {
+          "text": "Relocation",
+          "_id": {
+            "$oid": "693ea67a8666a0014973955b"
+          }
+        },
+        {
+          "text": "Commute",
+          "_id": {
+            "$oid": "693ea67a8666a0014973955c"
+          }
+        },
+        {
+          "text": "Telecommuting",
+          "_id": {
+            "$oid": "693ea67a8666a0014973955d"
+          }
+        },
+        {
+          "text": "Business trip",
+          "_id": {
+            "$oid": "693ea67a8666a0014973955e"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea67a8666a0014973955a"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea68b8666a00149739649"
+  },
+  "deck": {
+    "$oid": "693e7da5bed05538f653241a"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T11:59:07.983Z"
+  },
+  "questions": [
+    {
+      "questionText": "What is a system of working that allows employees to choose the times they start and finish work within a range of hours?",
+      "choices": [
+        {
+          "text": "Flextime",
+          "_id": {
+            "$oid": "693ea68b8666a0014973964b"
+          }
+        },
+        {
+          "text": "Remote Work",
+          "_id": {
+            "$oid": "693ea68b8666a0014973964c"
+          }
+        },
+        {
+          "text": "Job Sharing",
+          "_id": {
+            "$oid": "693ea68b8666a0014973964d"
+          }
+        },
+        {
+          "text": "Telecommuting",
+          "_id": {
+            "$oid": "693ea68b8666a0014973964e"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea68b8666a0014973964a"
+      }
+    },
+    {
+      "questionText": "What term describes the quality of being easily adapted or changed?",
+      "choices": [
+        {
+          "text": "Resilience",
+          "_id": {
+            "$oid": "693ea68b8666a00149739650"
+          }
+        },
+        {
+          "text": "Flexibility",
+          "_id": {
+            "$oid": "693ea68b8666a00149739651"
+          }
+        },
+        {
+          "text": "Efficiency",
+          "_id": {
+            "$oid": "693ea68b8666a00149739652"
+          }
+        },
+        {
+          "text": "Productivity",
+          "_id": {
+            "$oid": "693ea68b8666a00149739653"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea68b8666a0014973964f"
+      }
+    },
+    {
+      "questionText": "What is the term for knowledge or skill gained from doing, feeling, or seeing things?",
+      "choices": [
+        {
+          "text": "Education",
+          "_id": {
+            "$oid": "693ea68b8666a00149739655"
+          }
+        },
+        {
+          "text": "Training",
+          "_id": {
+            "$oid": "693ea68b8666a00149739656"
+          }
+        },
+        {
+          "text": "Experience",
+          "_id": {
+            "$oid": "693ea68b8666a00149739657"
+          }
+        },
+        {
+          "text": "Expertise",
+          "_id": {
+            "$oid": "693ea68b8666a00149739658"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea68b8666a00149739654"
+      }
+    },
+    {
+      "questionText": "What is the making of a judgement about the amount, number, or value of something; assessment?",
+      "choices": [
+        {
+          "text": "Appraisal",
+          "_id": {
+            "$oid": "693ea68b8666a0014973965a"
+          }
+        },
+        {
+          "text": "Review",
+          "_id": {
+            "$oid": "693ea68b8666a0014973965b"
+          }
+        },
+        {
+          "text": "Audit",
+          "_id": {
+            "$oid": "693ea68b8666a0014973965c"
+          }
+        },
+        {
+          "text": "An evaluation",
+          "_id": {
+            "$oid": "693ea68b8666a0014973965d"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea68b8666a00149739659"
+      }
+    },
+    {
+      "questionText": "What is the term for receiving the same wages as a person?",
+      "choices": [
+        {
+          "text": "Wage Equality",
+          "_id": {
+            "$oid": "693ea68b8666a0014973965f"
+          }
+        },
+        {
+          "text": "Fair Compensation",
+          "_id": {
+            "$oid": "693ea68b8666a00149739660"
+          }
+        },
+        {
+          "text": "Equal Pay",
+          "_id": {
+            "$oid": "693ea68b8666a00149739661"
+          }
+        },
+        {
+          "text": "Equitable Wages",
+          "_id": {
+            "$oid": "693ea68b8666a00149739662"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea68b8666a0014973965e"
+      }
+    },
+    {
+      "questionText": "What is a person who works independently and is self-employed called?",
+      "choices": [
+        {
+          "text": "A freelancer",
+          "_id": {
+            "$oid": "693ea68b8666a00149739664"
+          }
+        },
+        {
+          "text": "A consultant",
+          "_id": {
+            "$oid": "693ea68b8666a00149739665"
+          }
+        },
+        {
+          "text": "An entrepreneur",
+          "_id": {
+            "$oid": "693ea68b8666a00149739666"
+          }
+        },
+        {
+          "text": "An independent contractor",
+          "_id": {
+            "$oid": "693ea68b8666a00149739667"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea68b8666a00149739663"
+      }
+    },
+    {
+      "questionText": "What is the condition of having paid work?",
+      "choices": [
+        {
+          "text": "Occupation",
+          "_id": {
+            "$oid": "693ea68b8666a00149739669"
+          }
+        },
+        {
+          "text": "Vocation",
+          "_id": {
+            "$oid": "693ea68b8666a0014973966a"
+          }
+        },
+        {
+          "text": "Employment",
+          "_id": {
+            "$oid": "693ea68b8666a0014973966b"
+          }
+        },
+        {
+          "text": "Career",
+          "_id": {
+            "$oid": "693ea68b8666a0014973966c"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea68b8666a00149739668"
+      }
+    },
+    {
+      "questionText": "What is a person or organization that employs people?",
+      "choices": [
+        {
+          "text": "Supervisor",
+          "_id": {
+            "$oid": "693ea68b8666a0014973966e"
+          }
+        },
+        {
+          "text": "Manager",
+          "_id": {
+            "$oid": "693ea68b8666a0014973966f"
+          }
+        },
+        {
+          "text": "Employer",
+          "_id": {
+            "$oid": "693ea68b8666a00149739670"
+          }
+        },
+        {
+          "text": "Overseer",
+          "_id": {
+            "$oid": "693ea68b8666a00149739671"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea68b8666a0014973966d"
+      }
+    },
+    {
+      "questionText": "What term defines the emotional commitment an employee has to the organization and its goals?",
+      "choices": [
+        {
+          "text": "Job Satisfaction",
+          "_id": {
+            "$oid": "693ea68b8666a00149739673"
+          }
+        },
+        {
+          "text": "Employee engagement",
+          "_id": {
+            "$oid": "693ea68b8666a00149739674"
+          }
+        },
+        {
+          "text": "Organizational Culture",
+          "_id": {
+            "$oid": "693ea68b8666a00149739675"
+          }
+        },
+        {
+          "text": "Work Ethic",
+          "_id": {
+            "$oid": "693ea68b8666a00149739676"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea68b8666a00149739672"
+      }
+    },
+    {
+      "questionText": "What are compensation, payment, or advantages received in addition to a regular salary or wages called?",
+      "choices": [
+        {
+          "text": "Employee benefits",
+          "_id": {
+            "$oid": "693ea68b8666a00149739678"
+          }
+        },
+        {
+          "text": "Perquisites",
+          "_id": {
+            "$oid": "693ea68b8666a00149739679"
+          }
+        },
+        {
+          "text": "Incentives",
+          "_id": {
+            "$oid": "693ea68b8666a0014973967a"
+          }
+        },
+        {
+          "text": "Extras",
+          "_id": {
+            "$oid": "693ea68b8666a0014973967b"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea68b8666a00149739677"
+      }
+    },
+    {
+      "questionText": "What kind of program helps employees deal with personal problems that might adversely impact their job performance, health, and well-being?",
+      "choices": [
+        {
+          "text": "Wellness Program",
+          "_id": {
+            "$oid": "693ea68b8666a0014973967d"
+          }
+        },
+        {
+          "text": "Employee assistance program",
+          "_id": {
+            "$oid": "693ea68b8666a0014973967e"
+          }
+        },
+        {
+          "text": "Health and Safety Program",
+          "_id": {
+            "$oid": "693ea68b8666a0014973967f"
+          }
+        },
+        {
+          "text": "Personal Development Program",
+          "_id": {
+            "$oid": "693ea68b8666a00149739680"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea68b8666a0014973967c"
+      }
+    },
+    {
+      "questionText": "What is a person employed for wages or salary called?",
+      "choices": [
+        {
+          "text": "Contractor",
+          "_id": {
+            "$oid": "693ea68b8666a00149739682"
+          }
+        },
+        {
+          "text": "Employee",
+          "_id": {
+            "$oid": "693ea68b8666a00149739683"
+          }
+        },
+        {
+          "text": "Intern",
+          "_id": {
+            "$oid": "693ea68b8666a00149739684"
+          }
+        },
+        {
+          "text": "Associate",
+          "_id": {
+            "$oid": "693ea68b8666a00149739685"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea68b8666a00149739681"
+      }
+    },
+    {
+      "questionText": "What term refers to the reduction in the number of employees?",
+      "choices": [
+        {
+          "text": "Restructuring",
+          "_id": {
+            "$oid": "693ea68b8666a00149739687"
+          }
+        },
+        {
+          "text": "Downsizing",
+          "_id": {
+            "$oid": "693ea68b8666a00149739688"
+          }
+        },
+        {
+          "text": "Reorganization",
+          "_id": {
+            "$oid": "693ea68b8666a00149739689"
+          }
+        },
+        {
+          "text": "Consolidation",
+          "_id": {
+            "$oid": "693ea68b8666a0014973968a"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea68b8666a00149739686"
+      }
+    },
+    {
+      "questionText": "What is the process of growth or improvement?",
+      "choices": [
+        {
+          "text": "Refinement",
+          "_id": {
+            "$oid": "693ea68b8666a0014973968c"
+          }
+        },
+        {
+          "text": "Development",
+          "_id": {
+            "$oid": "693ea68b8666a0014973968d"
+          }
+        },
+        {
+          "text": "Advancement",
+          "_id": {
+            "$oid": "693ea68b8666a0014973968e"
+          }
+        },
+        {
+          "text": "Progression",
+          "_id": {
+            "$oid": "693ea68b8666a0014973968f"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea68b8666a0014973968b"
+      }
+    },
+    {
+      "questionText": "What is a detailed summary of a person's education, skills, and experience?",
+      "choices": [
+        {
+          "text": "A resume",
+          "_id": {
+            "$oid": "693ea68b8666a00149739691"
+          }
+        },
+        {
+          "text": "A bio",
+          "_id": {
+            "$oid": "693ea68b8666a00149739692"
+          }
+        },
+        {
+          "text": "A portfolio",
+          "_id": {
+            "$oid": "693ea68b8666a00149739693"
+          }
+        },
+        {
+          "text": "A curriculum vitae (CV)",
+          "_id": {
+            "$oid": "693ea68b8666a00149739694"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea68b8666a00149739690"
+      }
+    },
+    {
+      "questionText": "What concept measures how well an employee fits into the culture of an organization?",
+      "choices": [
+        {
+          "text": "Company alignment",
+          "_id": {
+            "$oid": "693ea68b8666a00149739696"
+          }
+        },
+        {
+          "text": "Workplace harmony",
+          "_id": {
+            "$oid": "693ea68b8666a00149739697"
+          }
+        },
+        {
+          "text": "Cultural fit",
+          "_id": {
+            "$oid": "693ea68b8666a00149739698"
+          }
+        },
+        {
+          "text": "Team synergy",
+          "_id": {
+            "$oid": "693ea68b8666a00149739699"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea68b8666a00149739695"
+      }
+    },
+    {
+      "questionText": "What is a partially enclosed workspace in an office commonly called?",
+      "choices": [
+        {
+          "text": "A station",
+          "_id": {
+            "$oid": "693ea68b8666a0014973969b"
+          }
+        },
+        {
+          "text": "A pod",
+          "_id": {
+            "$oid": "693ea68b8666a0014973969c"
+          }
+        },
+        {
+          "text": "A cubicle",
+          "_id": {
+            "$oid": "693ea68b8666a0014973969d"
+          }
+        },
+        {
+          "text": "An office unit",
+          "_id": {
+            "$oid": "693ea68b8666a0014973969e"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea68b8666a0014973969a"
+      }
+    },
+    {
+      "questionText": "What document accompanies a job application, highlighting relevant skills and experience?",
+      "choices": [
+        {
+          "text": "A reference letter",
+          "_id": {
+            "$oid": "693ea68b8666a001497396a0"
+          }
+        },
+        {
+          "text": "A cover letter",
+          "_id": {
+            "$oid": "693ea68b8666a001497396a1"
+          }
+        },
+        {
+          "text": "A personal statement",
+          "_id": {
+            "$oid": "693ea68b8666a001497396a2"
+          }
+        },
+        {
+          "text": "A transcript",
+          "_id": {
+            "$oid": "693ea68b8666a001497396a3"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea68b8666a0014973969f"
+      }
+    },
+    {
+      "questionText": "What is a written or spoken agreement, especially one concerning employment, sales, or tenancy, that is intended to be enforceable by law?",
+      "choices": [
+        {
+          "text": "A pledge",
+          "_id": {
+            "$oid": "693ea68b8666a001497396a5"
+          }
+        },
+        {
+          "text": "An accord",
+          "_id": {
+            "$oid": "693ea68b8666a001497396a6"
+          }
+        },
+        {
+          "text": "A contract",
+          "_id": {
+            "$oid": "693ea68b8666a001497396a7"
+          }
+        },
+        {
+          "text": "A memorandum",
+          "_id": {
+            "$oid": "693ea68b8666a001497396a8"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea68b8666a001497396a4"
+      }
+    },
+    {
+      "questionText": "What is the term for traveling some distance between one's home and place of work on a regular basis?",
+      "choices": [
+        {
+          "text": "Relocation",
+          "_id": {
+            "$oid": "693ea68b8666a001497396aa"
+          }
+        },
+        {
+          "text": "Commute",
+          "_id": {
+            "$oid": "693ea68b8666a001497396ab"
+          }
+        },
+        {
+          "text": "Transit",
+          "_id": {
+            "$oid": "693ea68b8666a001497396ac"
+          }
+        },
+        {
+          "text": "Travel",
+          "_id": {
+            "$oid": "693ea68b8666a001497396ad"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea68b8666a001497396a9"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea69c8666a001497397ea"
+  },
+  "deck": {
+    "$oid": "693e7da5bed05538f653241a"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T11:59:24.221Z"
+  },
+  "questions": [
+    {
+      "questionText": "Employee engagement refers solely to the employee's satisfaction with their pay and benefits.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a001497397ec"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a001497397ed"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a001497397ee"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a001497397ef"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a001497397eb"
+      }
+    },
+    {
+      "questionText": "A 'blue-collar worker' typically refers to an office employee.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a001497397f1"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a001497397f2"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a001497397f3"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a001497397f4"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a001497397f0"
+      }
+    },
+    {
+      "questionText": "Downsizing always leads to improved company morale and increased productivity.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a001497397f6"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a001497397f7"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a001497397f8"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a001497397f9"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a001497397f5"
+      }
+    },
+    {
+      "questionText": "Flextime always requires employees to be present during a set 'core hours' period.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a001497397fb"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a001497397fc"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a001497397fd"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a001497397fe"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea69c8666a001497397fa"
+      }
+    },
+    {
+      "questionText": "An entrepreneur is, by definition, always successful and profitable.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a00149739800"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a00149739801"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a00149739802"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a00149739803"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a001497397ff"
+      }
+    },
+    {
+      "questionText": "Equal pay means all employees in a company receive the exact same salary, regardless of experience or role.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a00149739805"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a00149739806"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a00149739807"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a00149739808"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a00149739804"
+      }
+    },
+    {
+      "questionText": "An employee assistance program (EAP) primarily focuses on providing financial advice to employees.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a0014973980a"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a0014973980b"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a0014973980c"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a0014973980d"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a00149739809"
+      }
+    },
+    {
+      "questionText": "Cultural fit refers exclusively to an employee's adherence to the company's dress code.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a0014973980f"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a00149739810"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a00149739811"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a00149739812"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a0014973980e"
+      }
+    },
+    {
+      "questionText": "A curriculum vitae (CV) and a resume are essentially the same document and can be used interchangeably.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a00149739814"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a00149739815"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a00149739816"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a00149739817"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a00149739813"
+      }
+    },
+    {
+      "questionText": "Co-working spaces are exclusively for freelancers and independent contractors, not employees of established companies.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a00149739819"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a0014973981a"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a0014973981b"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a0014973981c"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a00149739818"
+      }
+    },
+    {
+      "questionText": "Career counseling primarily focuses on helping individuals find any job, regardless of their long-term goals.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a0014973981e"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a0014973981f"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a00149739820"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a00149739821"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a0014973981d"
+      }
+    },
+    {
+      "questionText": "A contract of employment is only legally binding if it is notarized.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a00149739823"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a00149739824"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a00149739825"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a00149739826"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a00149739822"
+      }
+    },
+    {
+      "questionText": "A 'bonus' is always guaranteed and included in an employee's base salary.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a00149739828"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a00149739829"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a0014973982a"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a0014973982b"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a00149739827"
+      }
+    },
+    {
+      "questionText": "Experience is not a factor in employee evaluations.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a0014973982d"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a0014973982e"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a0014973982f"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a00149739830"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a0014973982c"
+      }
+    },
+    {
+      "questionText": "The primary purpose of a cover letter is to reiterate information already found in a resume or CV.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a00149739832"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a00149739833"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a00149739834"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a00149739835"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a00149739831"
+      }
+    },
+    {
+      "questionText": "Development of new skills is not considered an employee benefit.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a00149739837"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a00149739838"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a00149739839"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a0014973983a"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a00149739836"
+      }
+    },
+    {
+      "questionText": "Flexibility in the workplace never includes the option to work remotely.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a0014973983c"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a0014973983d"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a0014973983e"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a0014973983f"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a0014973983b"
+      }
+    },
+    {
+      "questionText": "A commute refers to the time spent working during a lunch break.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a00149739841"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a00149739842"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a00149739843"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a00149739844"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a00149739840"
+      }
+    },
+    {
+      "questionText": "Breaks are legally required for every type of job.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a00149739846"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a00149739847"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a00149739848"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a00149739849"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a00149739845"
+      }
+    },
+    {
+      "questionText": "An application is the only thing you need to get hired for a job.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea69c8666a0014973984b"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea69c8666a0014973984c"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea69c8666a0014973984d"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea69c8666a0014973984e"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea69c8666a0014973984a"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea6ae8666a00149739932"
+  },
+  "deck": {
+    "$oid": "693ea62d8666a0014973913b"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T11:59:42.073Z"
+  },
+  "questions": [
+    {
+      "questionText": "ECMAScript is a programming language.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739934"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739935"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739936"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739937"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739933"
+      }
+    },
+    {
+      "questionText": "TC39 is a committee that evolves JavaScript.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739939"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973993a"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973993b"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973993c"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739938"
+      }
+    },
+    {
+      "questionText": "Template literals use backticks.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973993e"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973993f"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739940"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739941"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6ae8666a0014973993d"
+      }
+    },
+    {
+      "questionText": "`var` is block scoped.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739943"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739944"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739945"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739946"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739942"
+      }
+    },
+    {
+      "questionText": "`const` variables can be reassigned.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739948"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739949"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973994a"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973994b"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739947"
+      }
+    },
+    {
+      "questionText": "Booleans are primitive types in JavaScript.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973994d"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973994e"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973994f"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739950"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6ae8666a0014973994c"
+      }
+    },
+    {
+      "questionText": "Arrays are primitive types in JavaScript.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739952"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739953"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739954"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739955"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739951"
+      }
+    },
+    {
+      "questionText": "A JavaScript literal is a value written in the source code.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739957"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739958"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739959"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973995a"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739956"
+      }
+    },
+    {
+      "questionText": "You can create a JavaScript exception using the `raise` keyword.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973995c"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973995d"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973995e"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973995f"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6ae8666a0014973995b"
+      }
+    },
+    {
+      "questionText": "ASI stands for Asynchronous Server Interaction.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739961"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739962"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739963"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739964"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739960"
+      }
+    },
+    {
+      "questionText": "Automatic Semicolon Insertion can sometimes lead to unexpected behavior.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739966"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739967"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739968"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739969"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739965"
+      }
+    },
+    {
+      "questionText": "Single and double quotes are functionally identical for strings in Javascript.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973996b"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973996c"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973996d"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973996e"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6ae8666a0014973996a"
+      }
+    },
+    {
+      "questionText": "The Event Loop manages asynchronous operations in JavaScript.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739970"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739971"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739972"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739973"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6ae8666a0014973996f"
+      }
+    },
+    {
+      "questionText": "JavaScript has a built-in sleep function.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739975"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739976"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739977"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739978"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739974"
+      }
+    },
+    {
+      "questionText": "The call stack is where functions are executed in JavaScript.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973997a"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973997b"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973997c"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973997d"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739979"
+      }
+    },
+    {
+      "questionText": "JavaScript is only used for front-end development.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973997f"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739980"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739981"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739982"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6ae8666a0014973997e"
+      }
+    },
+    {
+      "questionText": "JavaScript is a case-insensitive language.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739984"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739985"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739986"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739987"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739983"
+      }
+    },
+    {
+      "questionText": "Comments in JavaScript start with `//` or `/* */`.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739989"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973998a"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973998b"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973998c"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739988"
+      }
+    },
+    {
+      "questionText": "JavaScript is a compiled language.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973998e"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a0014973998f"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739990"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739991"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6ae8666a0014973998d"
+      }
+    },
+    {
+      "questionText": "JavaScript uses garbage collection for memory management.",
+      "choices": [
+        {
+          "text": "True",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739993"
+          }
+        },
+        {
+          "text": "False",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739994"
+          }
+        },
+        {
+          "text": "Not given",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739995"
+          }
+        },
+        {
+          "text": "Unknown",
+          "_id": {
+            "$oid": "693ea6ae8666a00149739996"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6ae8666a00149739992"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea6c28666a00149739a08"
+  },
+  "deck": {
+    "$oid": "693e7da5bed05538f653241a"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T12:00:02.247Z"
+  },
+  "questions": [
+    {
+      "questionText": "A workplace where people from different companies can work alongside each other is known as a ___. ",
+      "choices": [
+        {
+          "text": "Corporate campus",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a0a"
+          }
+        },
+        {
+          "text": "Co-working space",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a0b"
+          }
+        },
+        {
+          "text": "Business incubator",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a0c"
+          }
+        },
+        {
+          "text": "Shared office",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a0d"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a09"
+      }
+    },
+    {
+      "questionText": "The process of reducing the number of employees within an organization is called ___. ",
+      "choices": [
+        {
+          "text": "Attrition",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a0f"
+          }
+        },
+        {
+          "text": "Restructuring",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a10"
+          }
+        },
+        {
+          "text": "Downsizing",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a11"
+          }
+        },
+        {
+          "text": "Right-sizing",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a12"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a0e"
+      }
+    },
+    {
+      "questionText": "A(n) ___ is a person who works independently and is self-employed. ",
+      "choices": [
+        {
+          "text": "Contractor",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a14"
+          }
+        },
+        {
+          "text": "Entrepreneur",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a15"
+          }
+        },
+        {
+          "text": "Freelancer",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a16"
+          }
+        },
+        {
+          "text": "Consultant",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a17"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a13"
+      }
+    },
+    {
+      "questionText": "A detailed summary of a person's education, skills, and experience is known as a ___. ",
+      "choices": [
+        {
+          "text": "Cover letter",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a19"
+          }
+        },
+        {
+          "text": "Resume",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a1a"
+          }
+        },
+        {
+          "text": "Portfolio",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a1b"
+          }
+        },
+        {
+          "text": "Curriculum Vitae (CV)",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a1c"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a18"
+      }
+    },
+    {
+      "questionText": "The degree to which an employee fits into the culture of an organization is referred to as ___. ",
+      "choices": [
+        {
+          "text": "Employee satisfaction",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a1e"
+          }
+        },
+        {
+          "text": "Cultural fit",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a1f"
+          }
+        },
+        {
+          "text": "Job alignment",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a20"
+          }
+        },
+        {
+          "text": "Organizational harmony",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a21"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a1d"
+      }
+    },
+    {
+      "questionText": "A program intended to help employees deal with personal problems that might adversely impact their job performance, health, and well-being is known as a(n) ___.",
+      "choices": [
+        {
+          "text": "Wellness program",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a23"
+          }
+        },
+        {
+          "text": "Employee Assistance Program",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a24"
+          }
+        },
+        {
+          "text": "Benefits package",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a25"
+          }
+        },
+        {
+          "text": "HR support system",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a26"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a22"
+      }
+    },
+    {
+      "questionText": "The sum of money added to a person's wages as a reward for good performance is called a ___. ",
+      "choices": [
+        {
+          "text": "Commission",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a28"
+          }
+        },
+        {
+          "text": "Bonus",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a29"
+          }
+        },
+        {
+          "text": "Tip",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a2a"
+          }
+        },
+        {
+          "text": "Royalty",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a2b"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a27"
+      }
+    },
+    {
+      "questionText": "The term for traveling some distance between one's home and place of work on a regular basis is called ___. ",
+      "choices": [
+        {
+          "text": "Telecommuting",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a2d"
+          }
+        },
+        {
+          "text": "Relocation",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a2e"
+          }
+        },
+        {
+          "text": "Commute",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a2f"
+          }
+        },
+        {
+          "text": "Remote work",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a30"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a2c"
+      }
+    },
+    {
+      "questionText": "An occupation undertaken for a significant period of a person's life and with opportunities for progress is defined as a(n) ___. ",
+      "choices": [
+        {
+          "text": "Job",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a32"
+          }
+        },
+        {
+          "text": "Career",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a33"
+          }
+        },
+        {
+          "text": "Vocation",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a34"
+          }
+        },
+        {
+          "text": "Position",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a35"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a31"
+      }
+    },
+    {
+      "questionText": "A system of working that allows employees to choose the times they start and finish work within a range of hours is called ___. ",
+      "choices": [
+        {
+          "text": "Staggered hours",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a37"
+          }
+        },
+        {
+          "text": "Compressed workweek",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a38"
+          }
+        },
+        {
+          "text": "Flextime",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a39"
+          }
+        },
+        {
+          "text": "Shift work",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a3a"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a36"
+      }
+    },
+    {
+      "questionText": "When you are receiving the same wages as a person, it is called ___.",
+      "choices": [
+        {
+          "text": "Fair trade",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a3c"
+          }
+        },
+        {
+          "text": "Fixed income",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a3d"
+          }
+        },
+        {
+          "text": "Equal pay",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a3e"
+          }
+        },
+        {
+          "text": "Base pay",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a3f"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a3b"
+      }
+    },
+    {
+      "questionText": "A written or spoken agreement, especially one concerning employment, sales, or tenancy, that is intended to be enforceable by law is called a ___. ",
+      "choices": [
+        {
+          "text": "Promise",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a41"
+          }
+        },
+        {
+          "text": "Pact",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a42"
+          }
+        },
+        {
+          "text": "Contract",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a43"
+          }
+        },
+        {
+          "text": "Memorandum",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a44"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a40"
+      }
+    },
+    {
+      "questionText": "Guidance providing assistance and support for individuals making decisions about their future education or career is known as ___.",
+      "choices": [
+        {
+          "text": "Mentorship",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a46"
+          }
+        },
+        {
+          "text": "Job shadowing",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a47"
+          }
+        },
+        {
+          "text": "Career counseling",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a48"
+          }
+        },
+        {
+          "text": "Professional development",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a49"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a45"
+      }
+    },
+    {
+      "questionText": "The quality of being easily adapted or changed is called ___.",
+      "choices": [
+        {
+          "text": "Agility",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a4b"
+          }
+        },
+        {
+          "text": "Flexibility",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a4c"
+          }
+        },
+        {
+          "text": "Adaptation",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a4d"
+          }
+        },
+        {
+          "text": "Resilience",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a4e"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a4a"
+      }
+    },
+    {
+      "questionText": "___ is the emotional commitment the employee has to the organization and its goals.",
+      "choices": [
+        {
+          "text": "Job satisfaction",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a50"
+          }
+        },
+        {
+          "text": "Employee retention",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a51"
+          }
+        },
+        {
+          "text": "Employee engagement",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a52"
+          }
+        },
+        {
+          "text": "Organizational commitment",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a53"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a4f"
+      }
+    },
+    {
+      "questionText": "___ is a partially enclosed workspace in an office.",
+      "choices": [
+        {
+          "text": "An alcove",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a55"
+          }
+        },
+        {
+          "text": "A partition",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a56"
+          }
+        },
+        {
+          "text": "A bullpen",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a57"
+          }
+        },
+        {
+          "text": "A cubicle",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a58"
+          }
+        }
+      ],
+      "correctAnswer": 4,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a54"
+      }
+    },
+    {
+      "questionText": "Knowledge or skill gained from doing, feeling, or seeing things is called ___.",
+      "choices": [
+        {
+          "text": "Expertise",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a5a"
+          }
+        },
+        {
+          "text": "Experience",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a5b"
+          }
+        },
+        {
+          "text": "Competence",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a5c"
+          }
+        },
+        {
+          "text": "Understanding",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a5d"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a59"
+      }
+    },
+    {
+      "questionText": "The making of a judgement about the amount, number, or value of something is called ___.",
+      "choices": [
+        {
+          "text": "Calculation",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a5f"
+          }
+        },
+        {
+          "text": "Estimation",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a60"
+          }
+        },
+        {
+          "text": "Valuation",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a61"
+          }
+        },
+        {
+          "text": "An evaluation",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a62"
+          }
+        }
+      ],
+      "correctAnswer": 4,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a5e"
+      }
+    },
+    {
+      "questionText": "A common term for a manual laborer is ___.",
+      "choices": [
+        {
+          "text": "A pink-collar worker",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a64"
+          }
+        },
+        {
+          "text": "A green-collar worker",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a65"
+          }
+        },
+        {
+          "text": "A blue-collar worker",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a66"
+          }
+        },
+        {
+          "text": "A gold-collar worker",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a67"
+          }
+        }
+      ],
+      "correctAnswer": 3,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a63"
+      }
+    },
+    {
+      "questionText": "The condition of having paid work is called ___.",
+      "choices": [
+        {
+          "text": "Occupation",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a69"
+          }
+        },
+        {
+          "text": "Employment",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a6a"
+          }
+        },
+        {
+          "text": "Profession",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a6b"
+          }
+        },
+        {
+          "text": "Engagement",
+          "_id": {
+            "$oid": "693ea6c28666a00149739a6c"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6c28666a00149739a68"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea6fa8666a00149739c55"
+  },
+  "deck": {
+    "$oid": "693ea62d8666a0014973913b"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T12:00:58.231Z"
+  },
+  "questions": [
+    {
+      "questionText": "JavaScript is based on the ___ standard, often abbreviated as ES.",
+      "choices": [
+        {
+          "text": "DOM",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c57"
+          }
+        },
+        {
+          "text": "ECMAScript",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c58"
+          }
+        },
+        {
+          "text": "AJAX",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c59"
+          }
+        },
+        {
+          "text": "JSON",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c5a"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6fa8666a00149739c56"
+      }
+    },
+    {
+      "questionText": "___ are a new syntax to create strings, embedding expressions into them.",
+      "choices": [
+        {
+          "text": "Variables",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c5c"
+          }
+        },
+        {
+          "text": "Arrays",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c5d"
+          }
+        },
+        {
+          "text": "Template literals",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c5e"
+          }
+        },
+        {
+          "text": "Functions",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c5f"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6fa8666a00149739c5b"
+      }
+    },
+    {
+      "questionText": "A JavaScript ___ is a value that is written in the source code.",
+      "choices": [
+        {
+          "text": "literal",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c61"
+          }
+        },
+        {
+          "text": "variable",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c62"
+          }
+        },
+        {
+          "text": "function",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c63"
+          }
+        },
+        {
+          "text": "object",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c64"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693ea6fa8666a00149739c60"
+      }
+    },
+    {
+      "questionText": "You can create a JavaScript exception using the ___ keyword.",
+      "choices": [
+        {
+          "text": "exception",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c66"
+          }
+        },
+        {
+          "text": "error",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c67"
+          }
+        },
+        {
+          "text": "throw",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c68"
+          }
+        },
+        {
+          "text": "catch",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c69"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6fa8666a00149739c65"
+      }
+    },
+    {
+      "questionText": "The JavaScript parser automatically adds a semicolon in certain situations; this is called ___.",
+      "choices": [
+        {
+          "text": "Automatic Variable Insertion (AVI)",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c6b"
+          }
+        },
+        {
+          "text": "Automatic Semicolon Insertion (ASI)",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c6c"
+          }
+        },
+        {
+          "text": "Manual Semicolon Insertion (MSI)",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c6d"
+          }
+        },
+        {
+          "text": "Automatic Function Insertion (AFI)",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c6e"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6fa8666a00149739c6a"
+      }
+    },
+    {
+      "questionText": "The committee that evolves JavaScript is called ___.",
+      "choices": [
+        {
+          "text": "TC53",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c70"
+          }
+        },
+        {
+          "text": "ECMA",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c71"
+          }
+        },
+        {
+          "text": "TC39",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c72"
+          }
+        },
+        {
+          "text": "W3C",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c73"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6fa8666a00149739c6f"
+      }
+    },
+    {
+      "questionText": "___ is function scoped, `let` is block scoped, and `const` is immutable and block scoped.",
+      "choices": [
+        {
+          "text": "let",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c75"
+          }
+        },
+        {
+          "text": "const",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c76"
+          }
+        },
+        {
+          "text": "var",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c77"
+          }
+        },
+        {
+          "text": "ECMAScript",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c78"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6fa8666a00149739c74"
+      }
+    },
+    {
+      "questionText": "Numbers, strings, booleans, null, and undefined are JavaScript's ___ types.",
+      "choices": [
+        {
+          "text": "complex",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c7a"
+          }
+        },
+        {
+          "text": "primitive",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c7b"
+          }
+        },
+        {
+          "text": "object",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c7c"
+          }
+        },
+        {
+          "text": "reference",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c7d"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6fa8666a00149739c79"
+      }
+    },
+    {
+      "questionText": "There is little to no difference between single and double ___ in JavaScript.",
+      "choices": [
+        {
+          "text": "variables",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c7f"
+          }
+        },
+        {
+          "text": "quotes",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c80"
+          }
+        },
+        {
+          "text": "operators",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c81"
+          }
+        },
+        {
+          "text": "functions",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c82"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693ea6fa8666a00149739c7e"
+      }
+    },
+    {
+      "questionText": "The ___ continuously checks the call stack and executes functions.",
+      "choices": [
+        {
+          "text": "DOM",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c84"
+          }
+        },
+        {
+          "text": "Event Loop",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c85"
+          }
+        },
+        {
+          "text": "Garbage Collector",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c86"
+          }
+        },
+        {
+          "text": "Debugger",
+          "_id": {
+            "$oid": "693ea6fa8666a00149739c87"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693ea6fa8666a00149739c83"
+      }
+    }
+  ],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693eab5d8666a0014973a08e"
+  },
+  "deck": {
+    "$oid": "693e660c9bdfcaf0d9f8b56e"
+  },
+  "type": "manual",
+  "createdBy": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T12:19:41.706Z"
+  },
+  "questions": [
+    {
+      "questionText": "Translate: わたしの国はベトナムです。",
+      "choices": [
+        {
+          "text": "My country is Vietnam.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a090"
+          }
+        },
+        {
+          "text": "I am Vietnamese.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a091"
+          }
+        },
+        {
+          "text": "Vietnam is my country.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a092"
+          }
+        },
+        {
+          "text": "This is Vietnam.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a093"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693eab5d8666a0014973a08f"
+      }
+    },
+    {
+      "questionText": "Translate: これはほんです。",
+      "choices": [
+        {
+          "text": "This is a pen.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a095"
+          }
+        },
+        {
+          "text": "This is a book.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a096"
+          }
+        },
+        {
+          "text": "That is a book.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a097"
+          }
+        },
+        {
+          "text": "It is a book.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a098"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693eab5d8666a0014973a094"
+      }
+    },
+    {
+      "questionText": "Translate: あのひとはだれですか。",
+      "choices": [
+        {
+          "text": "Who is that person?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a09a"
+          }
+        },
+        {
+          "text": "Where is that person?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a09b"
+          }
+        },
+        {
+          "text": "What is that?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a09c"
+          }
+        },
+        {
+          "text": "Who are you?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a09d"
+          }
+        }
+      ],
+      "correctAnswer": 0,
+      "_id": {
+        "$oid": "693eab5d8666a0014973a099"
+      }
+    },
+    {
+      "questionText": "Translate: 日本語の本",
+      "choices": [
+        {
+          "text": "Japanese car",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a09f"
+          }
+        },
+        {
+          "text": "Japanese language",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0a0"
+          }
+        },
+        {
+          "text": "Japanese book",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0a1"
+          }
+        },
+        {
+          "text": "My book",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0a2"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693eab5d8666a0014973a09e"
+      }
+    },
+    {
+      "questionText": "Translate: これはマイさんのかばんですか。",
+      "choices": [
+        {
+          "text": "Is this my bag?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0a4"
+          }
+        },
+        {
+          "text": "Is this Mai's bag?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0a5"
+          }
+        },
+        {
+          "text": "Is this a bag?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0a6"
+          }
+        },
+        {
+          "text": "Is that Mai's bag?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0a7"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693eab5d8666a0014973a0a3"
+      }
+    },
+    {
+      "questionText": "Translate: 事務所はどこですか。",
+      "choices": [
+        {
+          "text": "Where is the school?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0a9"
+          }
+        },
+        {
+          "text": "Where is the office?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0aa"
+          }
+        },
+        {
+          "text": "Where is my house?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0ab"
+          }
+        },
+        {
+          "text": "Where is the store?",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0ac"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693eab5d8666a0014973a0a8"
+      }
+    },
+    {
+      "questionText": "Translate: わたしの傘です。",
+      "choices": [
+        {
+          "text": "It's my pen.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0ae"
+          }
+        },
+        {
+          "text": "It's my umbrella.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0af"
+          }
+        },
+        {
+          "text": "It's my car.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0b0"
+          }
+        },
+        {
+          "text": "It's her umbrella.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0b1"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693eab5d8666a0014973a0ad"
+      }
+    },
+    {
+      "questionText": "Translate: わたしは八歳です。",
+      "choices": [
+        {
+          "text": "I am six years old.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0b3"
+          }
+        },
+        {
+          "text": "I am eight years old.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0b4"
+          }
+        },
+        {
+          "text": "I am eighty years old.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0b5"
+          }
+        },
+        {
+          "text": "I am a student.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0b6"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693eab5d8666a0014973a0b2"
+      }
+    },
+    {
+      "questionText": "Translate: わたしのとけいです。",
+      "choices": [
+        {
+          "text": "It is my clock.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0b8"
+          }
+        },
+        {
+          "text": "It is my watch.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0b9"
+          }
+        },
+        {
+          "text": "It is my phone.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0ba"
+          }
+        },
+        {
+          "text": "It is my book.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0bb"
+          }
+        }
+      ],
+      "correctAnswer": 1,
+      "_id": {
+        "$oid": "693eab5d8666a0014973a0b7"
+      }
+    },
+    {
+      "questionText": "Translate: あれはいすです。",
+      "choices": [
+        {
+          "text": "This is a chair.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0bd"
+          }
+        },
+        {
+          "text": "That is a table.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0be"
+          }
+        },
+        {
+          "text": "That is a chair.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0bf"
+          }
+        },
+        {
+          "text": "This is a table.",
+          "_id": {
+            "$oid": "693eab5d8666a0014973a0c0"
+          }
+        }
+      ],
+      "correctAnswer": 2,
+      "_id": {
+        "$oid": "693eab5d8666a0014973a0bc"
+      }
+    }
+  ],
+  "__v": 0
+}]

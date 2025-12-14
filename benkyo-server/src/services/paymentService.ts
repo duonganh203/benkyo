@@ -137,8 +137,8 @@ export const saveTransaction = async (transactionData: CreateTransactionPayload)
     await existedTransaction.save();
 
     const durationToMonths: Record<string, number> = {
-        '3T': 3,
-        '6T': 6,
+        '3M': 3,
+        '6M': 6,
         '1Y': 12
     };
     const months = durationToMonths[existedPackage.duration] || 1;
@@ -627,8 +627,8 @@ export const buyPackageWithWallet = async (userId: string, packageId: string) =>
 
     // Set pro status
     const durationToMonths: Record<string, number> = {
-        '3T': 3,
-        '6T': 6,
+        '3M': 3,
+        '6M': 6,
         '1Y': 12
     };
     const months = durationToMonths[existingPackage.duration] || 1;

@@ -33,14 +33,14 @@ const Packages = () => {
 
     const [selectedType, setSelectedType] = useState<string | null>(null);
     const [selectedOptions, setSelectedOptions] = useState<PackageInterface[]>([]);
-    const [selectedDuration, setSelectedDuration] = useState<'3T' | '6T' | '1Y'>('3T');
+    const [selectedDuration, setSelectedDuration] = useState<'3M' | '6M' | '1Y'>('3M');
     const [isDialogOpen, setDialogOpen] = useState(false);
     const navigate = useNavigate();
 
     const openDialog = (type: string, options: PackageInterface[]) => {
         setSelectedType(type);
         setSelectedOptions(options);
-        setSelectedDuration('3T');
+        setSelectedDuration('3M');
         setDialogOpen(true);
     };
 
@@ -127,7 +127,7 @@ const Packages = () => {
                         <div className='py-6'>
                             <RadioGroup
                                 value={selectedDuration}
-                                onValueChange={(val: '3T' | '6T' | '1Y') => setSelectedDuration(val)}
+                                onValueChange={(val: '3M' | '6M' | '1Y') => setSelectedDuration(val)}
                                 className='grid gap-4'
                             >
                                 {selectedOptions.map((option) => (
@@ -143,7 +143,7 @@ const Packages = () => {
                                                 <div className='font-medium'>
                                                     {option.duration === '1Y'
                                                         ? '1-Year Billing'
-                                                        : option.duration === '6T'
+                                                        : option.duration === '6M'
                                                           ? '6-Month Billing'
                                                           : '3-Month Billing'}
                                                 </div>

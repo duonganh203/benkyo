@@ -1,0 +1,1093 @@
+[{
+  "_id": {
+    "$oid": "6929fc6e85faed19615ec673"
+  },
+  "name": "Essential Vocabulary Mastery",
+  "description": "Build a strong foundation of high-frequency words with daily curated flashcards and quick",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": true,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [
+    {
+      "userId": {
+        "$oid": "693e4de19bdfcaf0d9f8a9e8"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:03:51.843Z"
+      },
+      "_id": {
+        "$oid": "693e99979bdfcaf0d9f8c9a8"
+      }
+    }
+  ],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:47:58.271Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T11:03:51.843Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764359877/benkyo-image/avatar/baner3.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fc8a85faed19615ec6a3"
+  },
+  "name": "Daily English Booster",
+  "description": "Short, focused English lessons designed for quick daily improvement.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": true,
+  "users": [
+    {
+      "$oid": "692da20fb601e4479c64b430"
+    },
+    {
+      "$oid": "692da2b7b601e4479c64b603"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:48:26.040Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-07T05:14:01.336Z"
+  },
+  "__v": 18,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764359913/benkyo-image/avatar/ffa3c4a74ee8bf1a0e24b5149862303e.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fc9a85faed19615ec6d5"
+  },
+  "name": "Rapid Learning Hub",
+  "description": "Review key concepts in minutes with fast, effective study sessions.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": true,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:48:42.779Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-01T14:07:38.357Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764359940/benkyo-image/avatar/unnamed.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fcb085faed19615ec709"
+  },
+  "name": "Smart Memory Lab",
+  "description": "Train long-term memory using smart, science-backed flashcards.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:49:04.797Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-07T05:19:35.408Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764359970/benkyo-image/avatar/images.png"
+},
+{
+  "_id": {
+    "$oid": "6929fcd885faed19615ec7b5"
+  },
+  "name": "10-Minute Learning Sprint",
+  "description": "Learn efficiently with short micro-lessons built for busy learners.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": true,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:49:44.015Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-07T05:19:32.881Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360034/benkyo-image/avatar/22.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fcfc85faed19615ec7f6"
+  },
+  "name": "IELTS Vocabulary Builder",
+  "description": "Master essential IELTS words with examples, topics, and collocations.",
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764359416/benkyo-image/avatar/2.jpg",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": true,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:50:20.353Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-07T05:19:38.045Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6929fd1f85faed19615ec827"
+  },
+  "name": "Academic English Essentials",
+  "description": "Learn advanced words used in essays and university writing.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": true,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:50:55.551Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-07T05:19:51.152Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360065/benkyo-image/avatar/33.png"
+},
+{
+  "_id": {
+    "$oid": "6929fd3785faed19615ec86b"
+  },
+  "name": "Business English Pro",
+  "description": "Vocabulary and phrases used in meetings, emails, and business presentations.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": true,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [
+    {
+      "userId": {
+        "$oid": "693e4de19bdfcaf0d9f8a9e8"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T07:14:06.188Z"
+      },
+      "_id": {
+        "$oid": "693e63be9bdfcaf0d9f8b2e3"
+      }
+    }
+  ],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:51:19.482Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T07:14:06.188Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360098/benkyo-image/avatar/44.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fd5285faed19615ec8b3"
+  },
+  "name": "English Grammar Workshop",
+  "description": "Simple explanations and practice cards for essential grammar rules.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:51:46.073Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-28T20:02:12.418Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360130/benkyo-image/avatar/212.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fd6285faed19615ec8ef"
+  },
+  "name": "English Idioms & Expressions",
+  "description": "Sound natural and fluent with common idioms used by native speakers.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": true,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:52:02.009Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-28T20:02:38.568Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360156/benkyo-image/avatar/44444444444444.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fd7b85faed19615ec936"
+  },
+  "name": "JAPANESE LEARNING",
+  "description": "JLPT N5 Core Words",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:52:27.703Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-28T20:03:09.541Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360186/benkyo-image/avatar/32132111111111111111.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fd8f85faed19615ec97d"
+  },
+  "name": "JLPT N4 Grammar Lab",
+  "description": "Learn and practice key N4 grammar structures with easy examples.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [
+    {
+      "$oid": "6929a70985faed19615ec35b"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:52:47.258Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-01T09:22:16.784Z"
+  },
+  "__v": 1,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360326/benkyo-image/avatar/41.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fd9e85faed19615ec9d3"
+  },
+  "name": "Japanese Daily Phrases",
+  "description": "Useful everyday expressions for travel and conversation.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [
+    {
+      "$oid": "6929a70985faed19615ec35b"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:53:02.801Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-01T09:22:11.595Z"
+  },
+  "__v": 1,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360296/benkyo-image/avatar/3331.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fdb185faed19615eca0f"
+  },
+  "name": "Kanji Memory Deck",
+  "description": "Memorize kanji effectively with visuals and spaced repetition.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:53:21.020Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-28T20:04:26.062Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360237/benkyo-image/avatar/321321111111222222222222.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fdc285faed19615eca4c"
+  },
+  "name": "TOPIK Beginner Vocabulary",
+  "description": "Core Korean vocabulary used in TOPIK I exam levels.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:53:38.225Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-28T20:05:50.608Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360348/benkyo-image/avatar/331.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fdd085faed19615eca8a"
+  },
+  "name": "Korean Daily Expressions",
+  "description": "Natural Korean phrases for everyday situations and conversations.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:53:52.432Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-28T20:07:03.703Z"
+  },
+  "__v": 0,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360420/benkyo-image/avatar/21.png"
+},
+{
+  "_id": {
+    "$oid": "6929fdeb85faed19615ecad0"
+  },
+  "name": "HSK 1 Vocabulary Lab",
+  "description": "Simple Mandarin words for beginners with pronunciation.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [
+    {
+      "$oid": "693068eaabdd45a18f8767e3"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:54:19.434Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-03T16:45:34.233Z"
+  },
+  "__v": 1,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360440/benkyo-image/avatar/211.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fdfb85faed19615ecb20"
+  },
+  "name": "Mandarin Daily Learning",
+  "description": "Learn practical daily Chinese expressions with ease.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [
+    {
+      "$oid": "693068eaabdd45a18f8767e3"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:54:35.768Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-03T16:48:12.486Z"
+  },
+  "__v": 1,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360457/benkyo-image/avatar/3332.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fe0e85faed19615ecb5e"
+  },
+  "name": "Modern History Essentials",
+  "description": "Key historical events summarized into quick, easy-to-review flashcards.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [
+    {
+      "$oid": "6929a70985faed19615ec35b"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:54:54.250Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-01T09:22:03.751Z"
+  },
+  "__v": 1,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360420/benkyo-image/avatar/21.png"
+},
+{
+  "_id": {
+    "$oid": "6929fe2985faed19615ecbca"
+  },
+  "name": "Economics Fundamentals",
+  "description": "Understand core economic concepts with simple, visual flashcards.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [
+    {
+      "$oid": "693e635f9bdfcaf0d9f8b1e5"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [
+    {
+      "userId": {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T08:26:58.162Z"
+      },
+      "_id": {
+        "$oid": "693e74d29bdfcaf0d9f8bba7"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T10:19:35.188Z"
+      },
+      "_id": {
+        "$oid": "693e8f379bdfcaf0d9f8c91a"
+      }
+    }
+  ],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:55:21.199Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T10:19:46.417Z"
+  },
+  "__v": 2,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360481/benkyo-image/avatar/222.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fe3a85faed19615ecc11"
+  },
+  "name": "Political Science Basics",
+  "description": "Learn political theories, systems, and key concepts.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [
+    {
+      "$oid": "692af98985faed19615ee99d"
+    },
+    {
+      "$oid": "6929a70985faed19615ec35b"
+    },
+    {
+      "$oid": "692da20fb601e4479c64b430"
+    },
+    {
+      "$oid": "692dbb20b601e4479c64c4af"
+    },
+    {
+      "$oid": "693068b6abdd45a18f876712"
+    },
+    {
+      "$oid": "69306b04de348a7f6cd8ff48"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [
+    {
+      "userId": {
+        "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T10:19:26.278Z"
+      },
+      "_id": {
+        "$oid": "693e8f2e9bdfcaf0d9f8c8f5"
+      }
+    }
+  ],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:55:38.010Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T10:19:28.277Z"
+  },
+  "__v": 9,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360519/benkyo-image/avatar/111.jpg"
+},
+{
+  "_id": {
+    "$oid": "6929fe5485faed19615ecc89"
+  },
+  "name": "Psychology Quick Notes",
+  "description": "Essential psychological concepts simplified for rapid revision.",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": false,
+  "users": [
+    {
+      "$oid": "692af98985faed19615ee99d"
+    },
+    {
+      "$oid": "6929a70985faed19615ec35b"
+    },
+    {
+      "$oid": "693068eaabdd45a18f8767e3"
+    },
+    {
+      "$oid": "69306b04de348a7f6cd8ff48"
+    },
+    {
+      "$oid": "693428db6f74fbb38721457e"
+    },
+    {
+      "$oid": "6934639fc9be43ab3826ee34"
+    },
+    {
+      "$oid": "693069c478aa99700a6fc750"
+    },
+    {
+      "$oid": "693812baf5e7b21e055e6481"
+    },
+    {
+      "$oid": "693e635f9bdfcaf0d9f8b1e5"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [
+    {
+      "userId": {
+        "$oid": "693e53229bdfcaf0d9f8ae22"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T06:04:56.061Z"
+      },
+      "_id": {
+        "$oid": "693e53889bdfcaf0d9f8aea8"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T08:26:51.796Z"
+      },
+      "_id": {
+        "$oid": "693e74cb9bdfcaf0d9f8bb84"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T10:19:17.664Z"
+      },
+      "_id": {
+        "$oid": "693e8f259bdfcaf0d9f8c8c8"
+      }
+    }
+  ],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-11-28T19:56:04.662Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T11:10:20.756Z"
+  },
+  "__v": 18,
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1764360549/benkyo-image/avatar/21121.jpg"
+},
+{
+  "_id": {
+    "$oid": "692db7d8b601e4479c64b813"
+  },
+  "name": "Intensive Toeic Course",
+  "description": "Intensive Toeic Course",
+  "owner": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "visibility": "private",
+  "requiredApprovalToJoin": false,
+  "users": [
+    {
+      "$oid": "692db7feb601e4479c64b85e"
+    },
+    {
+      "$oid": "692db8a9b601e4479c64ba97"
+    },
+    {
+      "$oid": "6929a70985faed19615ec35b"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-12-01T15:44:24.910Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-03T14:46:47.625Z"
+  },
+  "__v": 6
+},
+{
+  "_id": {
+    "$oid": "693e71ac9bdfcaf0d9f8baf4"
+  },
+  "name": "Introduction to Software Testing",
+  "description": "This class provides fundamental knowledge and hands-on practice in software testing, including common testing types such as Unit Testing, Integration Testing, System Testing, and User Acceptance Testing (UAT).\nStudents will learn how to write test cases, understand testing reports, and apply testing techniques to real-world projects.",
+  "owner": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "visibility": "private",
+  "requiredApprovalToJoin": true,
+  "users": [],
+  "userClassStates": [],
+  "invitedUsers": [
+    {
+      "user": {
+        "$oid": "693e751e9bdfcaf0d9f8bbfb"
+      },
+      "invitedAt": {
+        "$date": "2025-12-14T08:28:46.094Z"
+      },
+      "_id": {
+        "$oid": "693e753e9bdfcaf0d9f8bc40"
+      }
+    }
+  ],
+  "visited": [
+    {
+      "userId": {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T08:26:47.345Z"
+      },
+      "_id": {
+        "$oid": "693e74c79bdfcaf0d9f8bb61"
+      }
+    }
+  ],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-12-14T08:13:32.847Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T08:28:46.097Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "693e8cf4bed05538f65327cc"
+  },
+  "name": "Javascript",
+  "description": "Basic",
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1765706985/benkyo-image/avatar/69828a29-54c8-41b8-acf9-726cfc2037da.jpg",
+  "owner": {
+    "$oid": "693e7e50bed05538f6532472"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": true,
+  "users": [
+    {
+      "$oid": "693e7a64bed05538f65320c9"
+    },
+    {
+      "$oid": "693e9ff27e49b9aab7952156"
+    },
+    {
+      "$oid": "693ea02f7e49b9aab79521c0"
+    },
+    {
+      "$oid": "693ea0d69bdfcaf0d9f8d565"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [
+    {
+      "userId": {
+        "$oid": "693e7e50bed05538f6532472"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T10:12:18.623Z"
+      },
+      "_id": {
+        "$oid": "693e8d82bed05538f6532814"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e7a64bed05538f65320c9"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T10:15:14.868Z"
+      },
+      "_id": {
+        "$oid": "693e8e32bed05538f65328f4"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T10:18:59.620Z"
+      },
+      "_id": {
+        "$oid": "693e8f139bdfcaf0d9f8c883"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e53229bdfcaf0d9f8ae22"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:09:16.666Z"
+      },
+      "_id": {
+        "$oid": "693e9adc9bdfcaf0d9f8cb09"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:20:38.415Z"
+      },
+      "_id": {
+        "$oid": "693e9d869bdfcaf0d9f8ce96"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e9e939bdfcaf0d9f8d0b9"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:25:48.929Z"
+      },
+      "_id": {
+        "$oid": "693e9ebc9bdfcaf0d9f8d179"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693ea02f7e49b9aab79521c0"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:32:27.243Z"
+      },
+      "_id": {
+        "$oid": "693ea04b7e49b9aab7952210"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693ea0d69bdfcaf0d9f8d565"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:34:49.662Z"
+      },
+      "_id": {
+        "$oid": "693ea0d99bdfcaf0d9f8d5a8"
+      }
+    }
+  ],
+  "joinRequests": [
+    {
+      "user": {
+        "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+      },
+      "requestDate": {
+        "$date": "2025-12-14T11:41:00.060Z"
+      },
+      "_id": {
+        "$oid": "693ea24c9bdfcaf0d9f8dacb"
+      }
+    }
+  ],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-12-14T10:09:56.559Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T11:41:00.064Z"
+  },
+  "__v": 15
+},
+{
+  "_id": {
+    "$oid": "693e938a7ad295b717fd2bc9"
+  },
+  "name": "Javascript ",
+  "description": "Basic",
+  "bannerUrl": "https://res.cloudinary.com/dtjjcvhut/image/upload/v1765706985/benkyo-image/avatar/69828a29-54c8-41b8-acf9-726cfc2037da.jpg",
+  "owner": {
+    "$oid": "693e7e50bed05538f6532472"
+  },
+  "visibility": "public",
+  "requiredApprovalToJoin": true,
+  "users": [
+    {
+      "$oid": "693e7a64bed05538f65320c9"
+    },
+    {
+      "$oid": "693e53229bdfcaf0d9f8ae22"
+    },
+    {
+      "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+    },
+    {
+      "$oid": "693e9ff27e49b9aab7952156"
+    },
+    {
+      "$oid": "693e9e939bdfcaf0d9f8d0b9"
+    },
+    {
+      "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+    },
+    {
+      "$oid": "693ea0d69bdfcaf0d9f8d565"
+    }
+  ],
+  "userClassStates": [],
+  "invitedUsers": [],
+  "visited": [
+    {
+      "userId": {
+        "$oid": "693e7e50bed05538f6532472"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T10:40:12.979Z"
+      },
+      "_id": {
+        "$oid": "693e940c7ad295b717fd2c0e"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e7a64bed05538f65320c9"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T10:44:26.375Z"
+      },
+      "_id": {
+        "$oid": "693e950a7ad295b717fd2d4f"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:08:35.482Z"
+      },
+      "_id": {
+        "$oid": "693e9ab39bdfcaf0d9f8caa2"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e53229bdfcaf0d9f8ae22"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:09:43.555Z"
+      },
+      "_id": {
+        "$oid": "693e9af79bdfcaf0d9f8cb97"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:15:47.456Z"
+      },
+      "_id": {
+        "$oid": "693e9c639bdfcaf0d9f8cd4d"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693e9e939bdfcaf0d9f8d0b9"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:25:17.546Z"
+      },
+      "_id": {
+        "$oid": "693e9e9d9bdfcaf0d9f8d0fa"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "693ea0d69bdfcaf0d9f8d565"
+      },
+      "lastVisit": {
+        "$date": "2025-12-14T11:36:11.898Z"
+      },
+      "_id": {
+        "$oid": "693ea12b9bdfcaf0d9f8d77c"
+      }
+    }
+  ],
+  "joinRequests": [],
+  "decks": [],
+  "createdAt": {
+    "$date": "2025-12-14T10:38:02.113Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T11:36:41.607Z"
+  },
+  "__v": 16
+}]

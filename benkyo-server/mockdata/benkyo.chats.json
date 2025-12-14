@@ -1,0 +1,17 @@
+[{
+  "_id": {
+    "$oid": "693e7e2fbed05538f653246f"
+  },
+  "userId": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "documentId": {
+    "$oid": "693e7decbed05538f6532460"
+  },
+  "question": "what is javascript ?",
+  "response": "Alright, Ha Quang Hung (K17 DN). SUPER CAT here. Based on the document you provided, here's what JavaScript is:\n\nJavaScript is one of the most popular programming languages in the world 🌍. It's now widely used outside of the browser, especially with the rise of Node.js for backend development.\n\n**Key aspects of JavaScript:**\n\n*   **High-level:** Provides abstractions, managing memory automatically.\n*   **Dynamic:** Executes many things at runtime, offering features like dynamic typing and closures.\n*   **Dynamically typed:** Variables don't enforce a specific type.\n*   **Weakly typed:** Doesn't strictly enforce object types.\n*   **Interpreted:** Doesn't require a compilation stage.\n*   **Multi-paradigm:** Supports object-oriented, functional, and imperative programming styles.\n\nJavaScript is an implementation of the ECMAScript standard. You might hear terms like ES6, ES2015, ES2016, etc., which refer to different versions of this standard.\n",
+  "createdAt": {
+    "$date": "2025-12-14T09:06:55.717Z"
+  },
+  "__v": 0
+}]

@@ -1,0 +1,892 @@
+[{
+  "_id": {
+    "$oid": "693e4ec89bdfcaf0d9f8ab3d"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e4ec89bdfcaf0d9f8ab3a"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 10,
+    "newCards": 10,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T05:44:40.427Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e4f369bdfcaf0d9f8ac40"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e4f359bdfcaf0d9f8ac3d"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T05:46:30.066Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e4f8b9bdfcaf0d9f8aca4"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e4f8b9bdfcaf0d9f8aca1"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 15,
+    "newCards": 15,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T05:47:55.578Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e4fda9bdfcaf0d9f8ad43"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e4fd99bdfcaf0d9f8ad40"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 20,
+    "newCards": 20,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T05:49:14.025Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e507d9bdfcaf0d9f8ad88"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e507d9bdfcaf0d9f8ad85"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 30,
+    "newCards": 30,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T05:51:57.744Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e51069bdfcaf0d9f8addf"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e51069bdfcaf0d9f8addc"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 30,
+    "newCards": 30,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T05:54:14.589Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e5ba19bdfcaf0d9f8af53"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e5ba19bdfcaf0d9f8af50"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 30,
+    "newCards": 30,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T06:39:29.210Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e5d059bdfcaf0d9f8afba"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e5d059bdfcaf0d9f8afb7"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 30,
+    "newCards": 30,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T06:45:25.649Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e5deb9bdfcaf0d9f8b017"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e5deb9bdfcaf0d9f8b014"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 30,
+    "newCards": 30,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T06:49:15.738Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e62b09bdfcaf0d9f8b079"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e62b09bdfcaf0d9f8b076"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 30,
+    "newCards": 30,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T07:09:36.826Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e636d9bdfcaf0d9f8b20b"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "deck": {
+    "$oid": "693e636d9bdfcaf0d9f8b208"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 14,
+    "newCards": 14,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T07:12:45.205Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e639a9bdfcaf0d9f8b248"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e639a9bdfcaf0d9f8b245"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 30,
+    "newCards": 30,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T07:13:30.763Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e63bb9bdfcaf0d9f8b2c4"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "deck": {
+    "$oid": "693e63bb9bdfcaf0d9f8b2c1"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 18,
+    "newCards": 18,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T07:14:03.127Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e643f9bdfcaf0d9f8b395"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "deck": {
+    "$oid": "693e643f9bdfcaf0d9f8b392"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 15,
+    "newCards": 15,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T07:16:15.343Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e64879bdfcaf0d9f8b3c7"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e64879bdfcaf0d9f8b3c4"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 31,
+    "newCards": 31,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T07:17:27.248Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e64df9bdfcaf0d9f8b48d"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "deck": {
+    "$oid": "693e64df9bdfcaf0d9f8b48a"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 37,
+    "newCards": 37,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T07:18:55.409Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e660c9bdfcaf0d9f8b571"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "deck": {
+    "$oid": "693e660c9bdfcaf0d9f8b56e"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": {
+    "$date": "2025-12-14T07:28:48.526Z"
+  },
+  "stats": {
+    "totalCards": 18,
+    "newCards": 0,
+    "learningCards": 2,
+    "reviewCards": 16,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T07:23:56.210Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7b7cbed05538f6532199"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "deck": {
+    "$oid": "693e7b7cbed05538f6532196"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": {
+    "$date": "2025-12-14T09:01:21.162Z"
+  },
+  "stats": {
+    "totalCards": 10,
+    "newCards": 4,
+    "learningCards": 4,
+    "reviewCards": 5,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T08:55:24.403Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7da5bed05538f653243c"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "deck": {
+    "$oid": "693e7da5bed05538f653241a"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 30,
+    "newCards": 30,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:04:37.745Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7e4f9bdfcaf0d9f8c150"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e7e4e9bdfcaf0d9f8c14d"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 31,
+    "newCards": 31,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:07:27.047Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7fcc9bdfcaf0d9f8c213"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e7fcc9bdfcaf0d9f8c210"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:13:48.311Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7fec9bdfcaf0d9f8c247"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e7fec9bdfcaf0d9f8c244"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:14:20.433Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7ffa9bdfcaf0d9f8c270"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e7ffa9bdfcaf0d9f8c26d"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:14:34.396Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e800b9bdfcaf0d9f8c2a1"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e800b9bdfcaf0d9f8c29e"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:14:51.691Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e801a9bdfcaf0d9f8c2ce"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e80199bdfcaf0d9f8c2cb"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:15:06.050Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e80299bdfcaf0d9f8c304"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e80299bdfcaf0d9f8c301"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:15:21.307Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e80389bdfcaf0d9f8c32d"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e80389bdfcaf0d9f8c32a"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:15:36.591Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e80469bdfcaf0d9f8c356"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e80469bdfcaf0d9f8c353"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:15:50.326Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e80529bdfcaf0d9f8c37f"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e80529bdfcaf0d9f8c37c"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:16:02.515Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e80649bdfcaf0d9f8c3ae"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e80649bdfcaf0d9f8c3ab"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:16:20.170Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e89939bdfcaf0d9f8c680"
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "deck": {
+    "$oid": "693e89939bdfcaf0d9f8c67d"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 0,
+    "newCards": 0,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:55:31.782Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea3f89bdfcaf0d9f8dd2d"
+  },
+  "user": {
+    "$oid": "693ea0d69bdfcaf0d9f8d565"
+  },
+  "deck": {
+    "$oid": "693ea3f89bdfcaf0d9f8dd1a"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": null,
+  "stats": {
+    "totalCards": 15,
+    "newCards": 15,
+    "learningCards": 0,
+    "reviewCards": 0,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T11:48:08.660Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea62d8666a0014973913e"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "deck": {
+    "$oid": "693ea62d8666a0014973913b"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": {
+    "$date": "2025-12-14T11:58:52.253Z"
+  },
+  "stats": {
+    "totalCards": 10,
+    "newCards": 0,
+    "learningCards": 2,
+    "reviewCards": 8,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T11:57:33.493Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5588666a0014973a511"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "deck": {
+    "$oid": "693ec5588666a0014973a4fe"
+  },
+  "isOriginalOwner": false,
+  "newCardsPerDay": 20,
+  "reviewsPerDay": 100,
+  "lastStudied": {
+    "$date": "2025-12-14T14:11:03.799Z"
+  },
+  "stats": {
+    "totalCards": 15,
+    "newCards": 1,
+    "learningCards": 8,
+    "reviewCards": 6,
+    "streak": 0
+  },
+  "createdAt": {
+    "$date": "2025-12-14T14:10:32.919Z"
+  },
+  "__v": 0
+}]

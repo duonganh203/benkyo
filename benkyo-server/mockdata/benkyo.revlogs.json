@@ -1,0 +1,1590 @@
+[{
+  "_id": {
+    "$oid": "693e66c79bdfcaf0d9f8b63e"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b58d"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T07:27:03.534Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T07:27:03.534Z"
+  },
+  "duration": 3,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:03.534Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e66c99bdfcaf0d9f8b649"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b58e"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:27:05.334Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:27:05.334Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:05.334Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e66cb9bdfcaf0d9f8b654"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b58f"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T07:27:07.132Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T07:27:07.132Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:07.132Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e66cd9bdfcaf0d9f8b65f"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b590"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T07:27:09.239Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T07:27:09.239Z"
+  },
+  "duration": 2,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:09.239Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e66cf9bdfcaf0d9f8b66a"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b591"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:27:10.972Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:27:10.972Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:10.972Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e66d19bdfcaf0d9f8b675"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b592"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T07:27:13.183Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T07:27:13.183Z"
+  },
+  "duration": 2,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:13.183Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e66d39bdfcaf0d9f8b680"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b593"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:27:15.175Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:27:15.175Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:15.175Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e66d49bdfcaf0d9f8b68b"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b594"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:27:16.823Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:27:16.823Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:16.823Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e66d69bdfcaf0d9f8b696"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b595"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T07:27:18.583Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T07:27:18.583Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:18.583Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e66e29bdfcaf0d9f8b6a1"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b596"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:27:30.478Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:27:30.478Z"
+  },
+  "duration": 11,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:30.478Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e66f79bdfcaf0d9f8b6ac"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b597"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:27:51.394Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:27:51.394Z"
+  },
+  "duration": 20,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:27:51.394Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e67019bdfcaf0d9f8b6b7"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b598"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:28:01.062Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:28:01.062Z"
+  },
+  "duration": 9,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:28:01.062Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e67269bdfcaf0d9f8b6c2"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b599"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:28:38.772Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:28:38.772Z"
+  },
+  "duration": 37,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:28:38.772Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e67299bdfcaf0d9f8b6cd"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b59a"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:28:40.991Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:28:40.991Z"
+  },
+  "duration": 2,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:28:40.991Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e672a9bdfcaf0d9f8b6d8"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b59b"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:28:42.451Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:28:42.451Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:28:42.451Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e672c9bdfcaf0d9f8b6e3"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b59c"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:28:44.268Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:28:44.268Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:28:44.268Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e672e9bdfcaf0d9f8b6ee"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b59d"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:28:46.663Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:28:46.663Z"
+  },
+  "duration": 2,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:28:46.663Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e67309bdfcaf0d9f8b6fc"
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "card": {
+    "$oid": "693e664e9bdfcaf0d9f8b59e"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T07:28:48.526Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T07:28:48.526Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T07:28:48.526Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7cd1bed05538f6532208"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "card": {
+    "$oid": "693e7c76bed05538f65321c0"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T09:01:05.050Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T09:01:05.050Z"
+  },
+  "duration": 42,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T09:01:05.050Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7cd3bed05538f6532213"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "card": {
+    "$oid": "693e7c76bed05538f65321c1"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T09:01:07.264Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T09:01:07.264Z"
+  },
+  "duration": 2,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T09:01:07.264Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7cd4bed05538f653221e"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "card": {
+    "$oid": "693e7c76bed05538f65321c2"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T09:01:08.597Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T09:01:08.597Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T09:01:08.597Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7cd5bed05538f6532229"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "card": {
+    "$oid": "693e7c76bed05538f65321c3"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T09:01:09.754Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T09:01:09.754Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T09:01:09.754Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7cd7bed05538f6532234"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "card": {
+    "$oid": "693e7c76bed05538f65321c4"
+  },
+  "grade": 1,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-14T09:01:11.002Z"
+  },
+  "stability": 0.40255,
+  "difficulty": 7.1949,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 0,
+  "review": {
+    "$date": "2025-12-14T09:01:11.002Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T09:01:11.002Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7cd8bed05538f6532240"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "card": {
+    "$oid": "693e7c76bed05538f65321c5"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T09:01:12.562Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T09:01:12.562Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T09:01:12.562Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7cdcbed05538f653224b"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "card": {
+    "$oid": "693e7c76bed05538f65321c6"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2125-11-20T09:01:16.588Z"
+  },
+  "stability": 365,
+  "difficulty": 1,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 36500,
+  "review": {
+    "$date": "2025-12-14T09:01:16.588Z"
+  },
+  "duration": 0,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T09:01:16.588Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7cdebed05538f6532252"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "card": {
+    "$oid": "693e7c76bed05538f65321c7"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T09:01:18.428Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T09:01:18.428Z"
+  },
+  "duration": 2,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T09:01:18.428Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7cdfbed05538f653225d"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "card": {
+    "$oid": "693e7c76bed05538f65321c8"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T09:01:19.680Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T09:01:19.680Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T09:01:19.680Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7ce1bed05538f653226d"
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "card": {
+    "$oid": "693e7c76bed05538f65321c9"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T09:01:21.162Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T09:01:21.162Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T09:01:21.162Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea66c8666a0014973949b"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "card": {
+    "$oid": "693ea6648666a0014973944b"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T11:58:36.492Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T11:58:36.492Z"
+  },
+  "duration": 3,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T11:58:36.492Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea66e8666a001497394a6"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "card": {
+    "$oid": "693ea6648666a0014973944c"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T11:58:38.398Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T11:58:38.398Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T11:58:38.398Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea6708666a001497394b1"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "card": {
+    "$oid": "693ea6648666a0014973944d"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T11:58:40.261Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T11:58:40.261Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T11:58:40.261Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea6728666a001497394bc"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "card": {
+    "$oid": "693ea6648666a0014973944e"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T11:58:41.985Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T11:58:41.985Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T11:58:41.985Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea6738666a001497394c7"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "card": {
+    "$oid": "693ea6648666a0014973944f"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T11:58:43.446Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T11:58:43.446Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T11:58:43.446Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea6758666a001497394d2"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "card": {
+    "$oid": "693ea6648666a00149739450"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T11:58:45.045Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T11:58:45.045Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T11:58:45.045Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea6768666a001497394dd"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "card": {
+    "$oid": "693ea6648666a00149739451"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T11:58:46.799Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T11:58:46.799Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T11:58:46.799Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea6788666a001497394e8"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "card": {
+    "$oid": "693ea6648666a00149739452"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T11:58:48.330Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T11:58:48.330Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T11:58:48.330Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea67a8666a001497394f3"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "card": {
+    "$oid": "693ea6648666a00149739453"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T11:58:49.964Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T11:58:49.964Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T11:58:49.964Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ea67c8666a001497395d1"
+  },
+  "user": {
+    "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+  },
+  "card": {
+    "$oid": "693ea6648666a00149739454"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T11:58:52.253Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T11:58:52.253Z"
+  },
+  "duration": 2,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T11:58:52.253Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5618666a0014973a535"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a501"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2125-11-20T14:10:41.002Z"
+  },
+  "stability": 365,
+  "difficulty": 1,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 36500,
+  "review": {
+    "$date": "2025-12-14T14:10:41.002Z"
+  },
+  "duration": 0,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:41.002Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5628666a0014973a53c"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a502"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T14:10:42.944Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T14:10:42.944Z"
+  },
+  "duration": 2,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:42.944Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5648666a0014973a547"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a503"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T14:10:44.424Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T14:10:44.424Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:44.424Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5668666a0014973a552"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a504"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T14:10:46.214Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T14:10:46.214Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:46.214Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5678666a0014973a55d"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a505"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T14:10:47.751Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T14:10:47.751Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:47.751Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5698666a0014973a568"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a506"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T14:10:49.567Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T14:10:49.567Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:49.567Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec56a8666a0014973a573"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a507"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T14:10:50.856Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T14:10:50.856Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:50.856Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec56d8666a0014973a57e"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a508"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T14:10:53.266Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T14:10:53.266Z"
+  },
+  "duration": 2,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:53.266Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec56e8666a0014973a589"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a509"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T14:10:54.865Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T14:10:54.865Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:54.865Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5708666a0014973a594"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a50a"
+  },
+  "grade": 1,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-14T14:10:56.348Z"
+  },
+  "stability": 0.40255,
+  "difficulty": 7.1949,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 0,
+  "review": {
+    "$date": "2025-12-14T14:10:56.348Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:56.348Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5718666a0014973a5a0"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a50b"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T14:10:57.827Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T14:10:57.827Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:57.827Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5738666a0014973a5ab"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a50c"
+  },
+  "grade": 1,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-14T14:10:59.279Z"
+  },
+  "stability": 0.40255,
+  "difficulty": 7.1949,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 0,
+  "review": {
+    "$date": "2025-12-14T14:10:59.279Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:10:59.279Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5748666a0014973a5b7"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a50d"
+  },
+  "grade": 4,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-30T14:11:00.880Z"
+  },
+  "stability": 15.69105,
+  "difficulty": 3.2245015893713678,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 16,
+  "review": {
+    "$date": "2025-12-14T14:11:00.880Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:11:00.880Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5768666a0014973a5c2"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a50e"
+  },
+  "grade": 3,
+  "state": 2,
+  "due": {
+    "$date": "2025-12-17T14:11:02.221Z"
+  },
+  "stability": 3.173,
+  "difficulty": 5.282434422319005,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 3,
+  "review": {
+    "$date": "2025-12-14T14:11:02.221Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:11:02.221Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693ec5778666a0014973a5d2"
+  },
+  "user": {
+    "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+  },
+  "card": {
+    "$oid": "693ec5588666a0014973a50f"
+  },
+  "grade": 2,
+  "state": 1,
+  "due": {
+    "$date": "2025-12-15T14:11:03.799Z"
+  },
+  "stability": 1.18385,
+  "difficulty": 6.488305268471453,
+  "elapsed_days": 0,
+  "last_elapsed_days": 0,
+  "scheduled_days": 1,
+  "review": {
+    "$date": "2025-12-14T14:11:03.799Z"
+  },
+  "duration": 1,
+  "deleted": false,
+  "created_at": {
+    "$date": "2025-12-14T14:11:03.799Z"
+  },
+  "__v": 0
+}]

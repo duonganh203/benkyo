@@ -12,6 +12,7 @@ import { errorMiddleware } from './middlewares/errorsMiddleware';
 import { initPineconeIndex } from './services/pineconeService';
 import { createServer } from 'http';
 import { setupWebSocket } from './utils/socketServer';
+import { seedDatabase } from './utils/seedDatabase';
 
 // Create uploads directory if it doesn't exist
 const uploadDir = path.join(process.cwd(), 'uploads');
@@ -33,6 +34,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 connect(MONGO_URI!)
     .then(() => {
         console.log('Connected to MongoDB');
+        seedDatabase();
         // Initialize Pinecone index
         initPineconeIndex()
             .then(() => console.log('Pinecone index initialized'))
