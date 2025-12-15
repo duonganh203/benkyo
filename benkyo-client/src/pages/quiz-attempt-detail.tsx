@@ -14,8 +14,6 @@ const QuizResults = () => {
     const { quizAttemptId } = useParams<{ quizAttemptId: string }>();
     const { data: quizAttempt, isLoading } = useGetQuizAttempt(quizAttemptId!);
 
-    console.log('quiz', quizAttempt);
-
     const [aiAnalysis, setAiAnalysis] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);

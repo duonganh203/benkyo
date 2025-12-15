@@ -100,7 +100,6 @@ export async function generateFlashcardsFromFile(
             }
         } catch (error) {
             console.error('Failed to parse JSON response:', error);
-            console.log('Raw response:', responseText);
             throw new Error('Failed to generate valid flashcards');
         }
     } catch (error) {

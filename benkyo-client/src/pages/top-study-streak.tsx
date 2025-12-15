@@ -5,8 +5,6 @@ const TopLearners = () => {
     const { data } = useGetTopLearner();
     const topLearners = data || [];
 
-    console.log('Top Learners:', topLearners);
-
     const topThree = topLearners.slice(0, 3);
     const restOfList = topLearners.slice(3);
 
