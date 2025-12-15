@@ -105,13 +105,8 @@ const WalletPayout = () => {
         return payoutHistory.filter((tx) => tx.status === 'PENDING').reduce((acc, tx) => acc + (tx.amount || 0), 0);
     }, [payoutHistory]);
 
-    const available = useMemo(() => {
-        const totalBalance = user?.balance || 0;
-        return totalBalance - pendingAmount;
-    }, [user?.balance, pendingAmount]);
-
     const onSubmit = (values: PayoutFormValues) => {
-        if (values.amount > available) {
+        if (values.amount > user!.balance) {
             getToast('error', 'Insufficient balance after pending requests.');
             return;
         }
@@ -128,7 +123,7 @@ const WalletPayout = () => {
                 queryClient.invalidateQueries({ queryKey: ['transactions'] });
                 queryClient.invalidateQueries({ queryKey: ['me'] });
                 if (user) {
-                    setUser({ ...user, balance: user.balance || 0 });
+                    setUser({ ...user, balance: user.balance - pendingValues.amount });
                 }
                 setShowConfirmDialog(false);
                 setPendingValues(null);
@@ -186,7 +181,7 @@ const WalletPayout = () => {
                                             </div>
                                         </FormControl>
                                         <p className='text-xs text-muted-foreground'>
-                                            Available balance: {currencyDisplay(available)}
+                                            Available balance: {currencyDisplay(user!.balance)}
                                         </p>
                                         {pendingAmount > 0 && (
                                             <p className='text-xs text-muted-foreground'>
