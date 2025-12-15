@@ -49,7 +49,7 @@ const QuizResults = () => {
                         {[...Array(5)].map((_, i) => (
                             <div key={i} className='border rounded-lg bg-background p-4'>
                                 <div className='flex items-start gap-3'>
-                                    <Skeleton className='h-5 w-5 rounded-full flex-shrink-0' />
+                                    <Skeleton className='h-5 w-5 rounded-full shrink-0' />
                                     <Skeleton className='h-6 w-full' />
                                 </div>
                             </div>
@@ -139,9 +139,9 @@ const QuizResults = () => {
                                 <AccordionTrigger className='px-4 py-3 hover:no-underline'>
                                     <div className='flex items-start gap-3 text-left'>
                                         {isCorrect ? (
-                                            <CheckCircle className='h-5 w-5 text-green-500 mt-0.5 flex-shrink-0' />
+                                            <CheckCircle className='h-5 w-5 text-green-500 mt-0.5 shrink-0' />
                                         ) : (
-                                            <XCircle className='h-5 w-5 text-destructive mt-0.5 flex-shrink-0' />
+                                            <XCircle className='h-5 w-5 text-destructive mt-0.5 shrink-0' />
                                         )}
                                         <div className='font-medium'>
                                             Question {index + 1}: {result.questionText}

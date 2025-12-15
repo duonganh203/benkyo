@@ -50,7 +50,7 @@ const Quizzes = () => {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className='w-[300px]'>
+                                        <TableHead className='w-75'>
                                             <Skeleton className='h-4 w-24' />
                                         </TableHead>
                                         <TableHead>
@@ -108,7 +108,7 @@ const Quizzes = () => {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className='w-[300px]'>Quiz Name</TableHead>
+                                        <TableHead className='w-75'>Quiz Name</TableHead>
                                         <TableHead>Correct Answers</TableHead>
                                         <TableHead>Incorrect Answers</TableHead>
                                         <TableHead className='text-right'>Time Taken</TableHead>

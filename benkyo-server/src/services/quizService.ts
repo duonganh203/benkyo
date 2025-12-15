@@ -52,6 +52,7 @@ export const saveQuizAttemptService = async (
     const quizAttempt = new QuizAttempt({
         quiz: quizId,
         user: userId,
+        attemptType: 'PRACTICE',
         startTime: new Date(startTime),
         endTime: new Date(endTime),
         totalQuestions,
@@ -83,7 +84,7 @@ export const getQuizAttemptById = async (quizAttemptId: string, userId: string) 
 };
 
 export const getAllQuizAttemptsService = async (userId: string) => {
-    const quizAllAttempt = await QuizAttempt.find({ user: userId }).populate({
+    const quizAllAttempt = await QuizAttempt.find({ user: userId, attemptType: 'PRACTICE' }).populate({
         path: 'quiz',
         populate: {
             path: 'deck',
@@ -305,6 +306,7 @@ export const submitClassQuizAttemptService = async (
     const attempt = new QuizAttempt({
         user: userId,
         quiz: quizId,
+        attemptType: 'CLASS',
         totalQuestions,
         correctAnswers,
         responses,

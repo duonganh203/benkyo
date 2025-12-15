@@ -209,6 +209,13 @@ const QuizSchema = new Schema({
 const QuizAttemptSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     quiz: { type: Schema.Types.ObjectId, ref: 'Quiz', required: true },
+
+    attemptType: {
+        type: String,
+        enum: ['PRACTICE', 'CLASS'],
+        required: true
+    },
+
     startTime: { type: Date, default: Date.now },
     endTime: { type: Date },
     totalQuestions: { type: Number, required: true },
