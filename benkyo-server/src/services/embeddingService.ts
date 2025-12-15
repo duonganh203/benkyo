@@ -9,13 +9,14 @@ import { ConversationType } from '~/schemas/index';
 import { upsertVectors } from './pineconeService';
 
 const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY || '';
+const GOOGLE_AI_BASE_URL = process.env.GOOGLE_AI_BASE_URL;
 const MAX_CONCURRENT_EMBEDDINGS = 5;
 const SEGMENT_SIZE = 50000;
 const CHUNK_SIZE = 5000;
 const OVERLAP = 200;
 const BATCH_SIZE = 5;
 
-const genAi = new GoogleGenAI({ apiKey: GOOGLE_AI_KEY });
+const genAi = new GoogleGenAI({ apiKey: GOOGLE_AI_KEY, httpOptions: { baseUrl: GOOGLE_AI_BASE_URL } });
 
 const extractTextFromPDF = async (filePath: string) => {
     try {
