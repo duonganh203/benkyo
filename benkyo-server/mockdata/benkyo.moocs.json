@@ -1,0 +1,405 @@
+[{
+  "_id": {
+    "$oid": "693e75cd9bdfcaf0d9f8bc8c"
+  },
+  "title": "Fundamentals of Software Testing",
+  "description": "This deck covers basic terminology and fundamental concepts in software testing, including types of testing and testing objectives.",
+  "owner": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "class": {
+    "$oid": "693e71ac9bdfcaf0d9f8baf4"
+  },
+  "decks": [
+    {
+      "deck": {
+        "$oid": "693e75cd9bdfcaf0d9f8bc84"
+      },
+      "order": 0,
+      "_id": {
+        "$oid": "693e75cd9bdfcaf0d9f8bc8d"
+      }
+    }
+  ],
+  "publicStatus": 2,
+  "isPaid": true,
+  "price": 10000,
+  "currency": "VND",
+  "likes": 0,
+  "views": 0,
+  "locked": true,
+  "enrolledUsers": [],
+  "createdAt": {
+    "$date": "2025-12-14T08:31:09.319Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T08:31:09.319Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e8d82bed05538f6532803"
+  },
+  "title": "Javascript 1",
+  "description": "Basic 1",
+  "owner": {
+    "$oid": "693e7e50bed05538f6532472"
+  },
+  "class": {
+    "$oid": "693e8cf4bed05538f65327cc"
+  },
+  "decks": [
+    {
+      "deck": {
+        "$oid": "693e8d82bed05538f65327f5"
+      },
+      "order": 0,
+      "_id": {
+        "$oid": "693e8d82bed05538f6532804"
+      }
+    }
+  ],
+  "publicStatus": 2,
+  "isPaid": true,
+  "price": 50000,
+  "currency": "VND",
+  "likes": 0,
+  "views": 0,
+  "locked": false,
+  "enrolledUsers": [
+    {
+      "user": {
+        "$oid": "693e7a64bed05538f65320c9"
+      },
+      "currentDeckIndex": 0,
+      "progressState": 2,
+      "deckProgress": [
+        {
+          "deck": {
+            "$oid": "693e8d82bed05538f65327f5"
+          },
+          "progress": 100,
+          "completed": true,
+          "locked": false,
+          "completedAt": {
+            "$date": "2025-12-14T11:36:00.774Z"
+          },
+          "lastSeenIndex": 9,
+          "_id": {
+            "$oid": "693e92a67ad295b717fd2b8b"
+          }
+        }
+      ],
+      "startedAt": {
+        "$date": "2025-12-14T10:34:14.441Z"
+      },
+      "_id": {
+        "$oid": "693e92a67ad295b717fd2b8a"
+      },
+      "completedAt": {
+        "$date": "2025-12-14T11:36:00.775Z"
+      }
+    },
+    {
+      "user": {
+        "$oid": "693ea02f7e49b9aab79521c0"
+      },
+      "currentDeckIndex": 0,
+      "progressState": 0,
+      "deckProgress": [
+        {
+          "deck": {
+            "$oid": "693e8d82bed05538f65327f5"
+          },
+          "progress": 0,
+          "completed": false,
+          "locked": false,
+          "completedAt": null,
+          "lastSeenIndex": 0,
+          "_id": {
+            "$oid": "693ea0717e49b9aab7952272"
+          }
+        }
+      ],
+      "startedAt": {
+        "$date": "2025-12-14T11:33:05.156Z"
+      },
+      "_id": {
+        "$oid": "693ea0717e49b9aab7952271"
+      }
+    },
+    {
+      "user": {
+        "$oid": "693ea0d69bdfcaf0d9f8d565"
+      },
+      "currentDeckIndex": 0,
+      "progressState": 0,
+      "deckProgress": [
+        {
+          "deck": {
+            "$oid": "693e8d82bed05538f65327f5"
+          },
+          "progress": 100,
+          "completed": false,
+          "locked": false,
+          "completedAt": null,
+          "lastSeenIndex": 9,
+          "_id": {
+            "$oid": "693ea1779bdfcaf0d9f8d8ce"
+          }
+        }
+      ],
+      "startedAt": {
+        "$date": "2025-12-14T11:37:27.321Z"
+      },
+      "_id": {
+        "$oid": "693ea1779bdfcaf0d9f8d8cd"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-12-14T10:12:18.326Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T10:12:18.326Z"
+  },
+  "__v": 3
+},
+{
+  "_id": {
+    "$oid": "693e8dc4bed05538f6532837"
+  },
+  "title": "Javascript 2",
+  "description": "Basic 2",
+  "owner": {
+    "$oid": "693e7e50bed05538f6532472"
+  },
+  "class": {
+    "$oid": "693e8cf4bed05538f65327cc"
+  },
+  "decks": [
+    {
+      "deck": {
+        "$oid": "693e8dc4bed05538f6532832"
+      },
+      "order": 0,
+      "_id": {
+        "$oid": "693e8dc4bed05538f6532838"
+      }
+    }
+  ],
+  "publicStatus": 2,
+  "isPaid": false,
+  "price": 0,
+  "currency": "VND",
+  "likes": 0,
+  "views": 0,
+  "locked": true,
+  "enrolledUsers": [
+    {
+      "user": {
+        "$oid": "693e7a64bed05538f65320c9"
+      },
+      "currentDeckIndex": 0,
+      "progressState": 0,
+      "deckProgress": [
+        {
+          "deck": {
+            "$oid": "693e8dc4bed05538f6532832"
+          },
+          "progress": 0,
+          "completed": false,
+          "locked": false,
+          "completedAt": null,
+          "lastSeenIndex": 0,
+          "_id": {
+            "$oid": "693ea1209bdfcaf0d9f8d6b7"
+          }
+        }
+      ],
+      "startedAt": {
+        "$date": "2025-12-14T11:36:00.878Z"
+      },
+      "_id": {
+        "$oid": "693ea1209bdfcaf0d9f8d6b6"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-12-14T10:13:24.414Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T10:13:24.414Z"
+  },
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "693e940c7ad295b717fd2bfd"
+  },
+  "title": "Javascript 1",
+  "description": "Basic 1",
+  "owner": {
+    "$oid": "693e7e50bed05538f6532472"
+  },
+  "class": {
+    "$oid": "693e938a7ad295b717fd2bc9"
+  },
+  "decks": [
+    {
+      "deck": {
+        "$oid": "693e940c7ad295b717fd2bef"
+      },
+      "order": 0,
+      "_id": {
+        "$oid": "693e940c7ad295b717fd2bfe"
+      }
+    }
+  ],
+  "publicStatus": 2,
+  "isPaid": true,
+  "price": 50000,
+  "currency": "VND",
+  "likes": 0,
+  "views": 0,
+  "locked": false,
+  "enrolledUsers": [
+    {
+      "user": {
+        "$oid": "693e7a64bed05538f65320c9"
+      },
+      "currentDeckIndex": 0,
+      "progressState": 2,
+      "deckProgress": [
+        {
+          "deck": {
+            "$oid": "693e940c7ad295b717fd2bef"
+          },
+          "progress": 100,
+          "completed": true,
+          "locked": false,
+          "completedAt": {
+            "$date": "2025-12-14T10:45:45.457Z"
+          },
+          "lastSeenIndex": 9,
+          "_id": {
+            "$oid": "693e95207ad295b717fd2d59"
+          }
+        }
+      ],
+      "startedAt": {
+        "$date": "2025-12-14T10:44:48.082Z"
+      },
+      "_id": {
+        "$oid": "693e95207ad295b717fd2d58"
+      },
+      "completedAt": {
+        "$date": "2025-12-14T10:45:45.458Z"
+      }
+    },
+    {
+      "user": {
+        "$oid": "693ea0d69bdfcaf0d9f8d565"
+      },
+      "currentDeckIndex": 0,
+      "progressState": 0,
+      "deckProgress": [
+        {
+          "deck": {
+            "$oid": "693e940c7ad295b717fd2bef"
+          },
+          "progress": 0,
+          "completed": false,
+          "locked": false,
+          "completedAt": null,
+          "lastSeenIndex": 0,
+          "_id": {
+            "$oid": "693ea17d9bdfcaf0d9f8d91e"
+          }
+        }
+      ],
+      "startedAt": {
+        "$date": "2025-12-14T11:37:33.223Z"
+      },
+      "_id": {
+        "$oid": "693ea17d9bdfcaf0d9f8d91d"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-12-14T10:40:12.698Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T10:40:12.698Z"
+  },
+  "__v": 2
+},
+{
+  "_id": {
+    "$oid": "693e944c7ad295b717fd2c32"
+  },
+  "title": "Javascript 2",
+  "description": "Basic 2",
+  "owner": {
+    "$oid": "693e7e50bed05538f6532472"
+  },
+  "class": {
+    "$oid": "693e938a7ad295b717fd2bc9"
+  },
+  "decks": [
+    {
+      "deck": {
+        "$oid": "693e944b7ad295b717fd2c2d"
+      },
+      "order": 0,
+      "_id": {
+        "$oid": "693e944c7ad295b717fd2c33"
+      }
+    }
+  ],
+  "publicStatus": 2,
+  "isPaid": false,
+  "price": 0,
+  "currency": "VND",
+  "likes": 0,
+  "views": 0,
+  "locked": true,
+  "enrolledUsers": [
+    {
+      "user": {
+        "$oid": "693e7a64bed05538f65320c9"
+      },
+      "currentDeckIndex": 0,
+      "progressState": 0,
+      "deckProgress": [
+        {
+          "deck": {
+            "$oid": "693e944b7ad295b717fd2c2d"
+          },
+          "progress": 0,
+          "completed": false,
+          "locked": false,
+          "completedAt": null,
+          "lastSeenIndex": 0,
+          "_id": {
+            "$oid": "693e95597ad295b717fd2e48"
+          }
+        }
+      ],
+      "startedAt": {
+        "$date": "2025-12-14T10:45:45.525Z"
+      },
+      "_id": {
+        "$oid": "693e95597ad295b717fd2e47"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-12-14T10:41:16.098Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T10:41:16.098Z"
+  },
+  "__v": 1
+}]

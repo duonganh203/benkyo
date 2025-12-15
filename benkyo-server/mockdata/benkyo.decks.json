@@ -1,0 +1,1968 @@
+[
+  {
+    "_id": {
+      "$oid": "693e4f8b9bdfcaf0d9f8aca1"
+    },
+    "name": "Javascripts",
+    "description": "Javascripts Normal",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 15,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [
+      {
+        "$oid": "693e7a64bed05538f65320c9"
+      },
+      {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      }
+    ],
+    "likeCount": 2,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T05:47:55.471Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T05:48:15.998Z"
+    },
+    "__v": 2,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e4fd99bdfcaf0d9f8ad40"
+    },
+    "name": "Kanji N4",
+    "description": "Commonly used Kanji",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 20,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [
+      {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      }
+    ],
+    "likeCount": 1,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T05:49:13.917Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T05:51:32.527Z"
+    },
+    "__v": 1,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e507d9bdfcaf0d9f8ad85"
+    },
+    "name": "Minano vocabulary",
+    "description": "Minano vocabulary",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 30,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [
+      {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      }
+    ],
+    "likeCount": 1,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T05:51:57.638Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T05:53:37.208Z"
+    },
+    "__v": 1,
+    "reviewNote": "Nice",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e51069bdfcaf0d9f8addc"
+    },
+    "name": "Minano Grammar",
+    "description": "Minano Grammar",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 30,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [
+      {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      }
+    ],
+    "likeCount": 1,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T05:54:14.483Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T05:55:06.092Z"
+    },
+    "__v": 1,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e5ba19bdfcaf0d9f8af50"
+    },
+    "name": "TOEIC for beginners",
+    "description": "C1 word list by Oxford",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 30,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [
+      {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      }
+    ],
+    "likeCount": 1,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T06:39:29.096Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T06:40:48.801Z"
+    },
+    "__v": 1,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e5d059bdfcaf0d9f8afb7"
+    },
+    "name": "4000 IELTS vocabulary words",
+    "description": "4000 IELTS vocabulary words",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 30,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [
+      {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      }
+    ],
+    "likeCount": 1,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T06:45:25.535Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T06:46:27.885Z"
+    },
+    "__v": 1,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e5deb9bdfcaf0d9f8b014"
+    },
+    "name": "Everyday English",
+    "description": "Commonly used English vocabulary words in everyday life.",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 30,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [
+      {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      }
+    ],
+    "likeCount": 1,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T06:49:15.625Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T06:52:10.646Z"
+    },
+    "__v": 1,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e62b09bdfcaf0d9f8b076"
+    },
+    "name": "Advanced Mathematics",
+    "description": "Advanced Mathematics",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 30,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [
+      {
+        "$oid": "693e635f9bdfcaf0d9f8b1e5"
+      }
+    ],
+    "likeCount": 1,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T07:09:36.713Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T07:11:05.725Z"
+    },
+    "__v": 1,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e636d9bdfcaf0d9f8b208"
+    },
+    "name": "n4-26",
+    "description": "",
+    "isPublic": false,
+    "publicStatus": 0,
+    "locked": false,
+    "cardCount": 14,
+    "owner": {
+      "$oid": "693e635f9bdfcaf0d9f8b1e5"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T07:12:45.097Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T07:13:44.795Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e639a9bdfcaf0d9f8b245"
+    },
+    "name": "Natural Sciences",
+    "description": "Natural Sciences for university students",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 30,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T07:13:30.658Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T07:13:55.216Z"
+    },
+    "__v": 0,
+    "reviewNote": "good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e63bb9bdfcaf0d9f8b2c1"
+    },
+    "name": "n4-27",
+    "description": "",
+    "isPublic": false,
+    "publicStatus": 0,
+    "locked": false,
+    "cardCount": 18,
+    "owner": {
+      "$oid": "693e635f9bdfcaf0d9f8b1e5"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T07:14:03.020Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T07:15:39.609Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e643f9bdfcaf0d9f8b392"
+    },
+    "name": "PMG201C",
+    "description": "",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 15,
+    "owner": {
+      "$oid": "693e635f9bdfcaf0d9f8b1e5"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T07:16:15.235Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T07:17:52.622Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e64879bdfcaf0d9f8b3c4"
+    },
+    "name": "Korean for beginners",
+    "description": "Korean for beginners",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 31,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T07:17:27.144Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T07:18:31.369Z"
+    },
+    "__v": 0,
+    "reviewNote": "g",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e64df9bdfcaf0d9f8b48a"
+    },
+    "name": "Learn to Program with C",
+    "description": "Learn to Program using the Popular C Programming Language",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 37,
+    "owner": {
+      "$oid": "693e635f9bdfcaf0d9f8b1e5"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T07:18:55.304Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T07:56:55.518Z"
+    },
+    "__v": 0,
+    "reviewNote": "good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e660c9bdfcaf0d9f8b56e"
+    },
+    "name": "tong-hop-ngu-phap-n5-theo-giao-trinh-minna",
+    "description": "",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 18,
+    "owner": {
+      "$oid": "693e635f9bdfcaf0d9f8b1e5"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T07:23:56.106Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T07:25:02.131Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e75cd9bdfcaf0d9f8bc84"
+    },
+    "name": "Software Testing Basics",
+    "description": "This deck covers basic terminology and fundamental concepts in software testing, including types of testing and testing objectives.",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": true,
+    "cardCount": 4,
+    "owner": {
+      "$oid": "693e635f9bdfcaf0d9f8b1e5"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "w": []
+    },
+    "createdAt": {
+      "$date": "2025-12-14T08:31:09.152Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T08:31:09.152Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e7b7cbed05538f6532196"
+    },
+    "name": "Javascript",
+    "description": "Basic",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 10,
+    "owner": {
+      "$oid": "693e7a64bed05538f65320c9"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T08:55:24.320Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T08:59:53.013Z"
+    },
+    "__v": 0,
+    "reviewNote": "Hai",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e7da5bed05538f653241a"
+    },
+    "name": "4000 IELTS vocabulary words",
+    "description": "4000 IELTS vocabulary words",
+    "isPublic": false,
+    "publicStatus": 0,
+    "locked": false,
+    "cardCount": 30,
+    "owner": {
+      "$oid": "693e7a64bed05538f65320c9"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:04:37.622Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:04:37.622Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e7e4e9bdfcaf0d9f8c14d"
+    },
+    "name": "Chemistry",
+    "description": "Everything about chemistry",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 31,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:07:26.941Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:09:43.641Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e7fcc9bdfcaf0d9f8c210"
+    },
+    "name": "Core Knowledge Essentials",
+    "description": "A collection of essential concepts presented in short, easy-to-remember flashcards to support effective daily learning.",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:13:48.199Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:13:48.200Z"
+    },
+    "__v": 0,
+    "reviewNote": "Hai",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e7fec9bdfcaf0d9f8c244"
+    },
+    "name": "Fundamental Concepts Deck",
+    "description": "This deck covers key ideas and definitions to help you build a strong knowledge foundation.",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:14:20.326Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:14:20.326Z"
+    },
+    "__v": 0,
+    "reviewNote": "Hai",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e7ffa9bdfcaf0d9f8c26d"
+    },
+    "name": "Programming Basics to Advanced",
+    "description": "A structured flashcard deck covering important programming concepts, terminology, and practical examples.",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:14:34.289Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:14:34.289Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e800b9bdfcaf0d9f8c29e"
+    },
+    "name": "Programming Concepts & Terms",
+    "description": "A concise deck designed to help you quickly review and understand essential programming terminology.",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:14:51.588Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:14:51.588Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e80199bdfcaf0d9f8c2cb"
+    },
+    "name": "Essential English Vocabulary",
+    "description": "A practical flashcard deck focused on commonly used English words with clear explanations and examples.",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:15:05.946Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:15:05.946Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e80299bdfcaf0d9f8c301"
+    },
+    "name": "Daily English Practice",
+    "description": "Improve your English skills step by step with flashcards designed for daily practice and long-term memory.",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:15:21.199Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:15:21.199Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e80389bdfcaf0d9f8c32a"
+    },
+    "name": "Exam Preparation",
+    "description": "Quick Review Flashcards",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:15:36.484Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:15:36.484Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e80469bdfcaf0d9f8c353"
+    },
+    "name": "Exam-Focused Study Deck",
+    "description": "Carefully selected flashcards highlighting key points frequently tested in exams.",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:15:50.215Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:15:50.215Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e80529bdfcaf0d9f8c37c"
+    },
+    "name": "Modern / Smart Learning Style",
+    "description": "Smart Learning Flashcards",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:16:02.410Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:16:02.410Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e80649bdfcaf0d9f8c3ab"
+    },
+    "name": "Knowledge Boost Deck",
+    "description": "Each flashcard delivers a small piece of knowledge to help you learn smarter every day.",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:16:20.062Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:16:20.062Z"
+    },
+    "__v": 0,
+    "reviewNote": "Good",
+    "reviewedBy": {
+      "$oid": "693e4e6d9bdfcaf0d9f8aa96"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "693e89939bdfcaf0d9f8c67d"
+    },
+    "name": "Intensive Toeic Course",
+    "description": "Intensive Toeic Course",
+    "isPublic": false,
+    "publicStatus": 1,
+    "locked": false,
+    "cardCount": 0,
+    "owner": {
+      "$oid": "693e4de19bdfcaf0d9f8a9e8"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T09:55:31.664Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T09:55:31.664Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e8d82bed05538f65327f5"
+    },
+    "name": "Javascript",
+    "description": "Basic 1",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": true,
+    "cardCount": 10,
+    "owner": {
+      "$oid": "693e7e50bed05538f6532472"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "w": []
+    },
+    "createdAt": {
+      "$date": "2025-12-14T10:12:18.200Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T10:12:18.200Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e8dc4bed05538f6532832"
+    },
+    "name": "Javascript 2",
+    "description": "basic 2",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": true,
+    "cardCount": 1,
+    "owner": {
+      "$oid": "693e7e50bed05538f6532472"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "w": []
+    },
+    "createdAt": {
+      "$date": "2025-12-14T10:13:24.304Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T10:13:24.304Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e940c7ad295b717fd2bef"
+    },
+    "name": "Javascript 1",
+    "description": "Basic 1",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": true,
+    "cardCount": 10,
+    "owner": {
+      "$oid": "693e7e50bed05538f6532472"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "w": []
+    },
+    "createdAt": {
+      "$date": "2025-12-14T10:40:12.573Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T10:40:12.573Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693e944b7ad295b717fd2c2d"
+    },
+    "name": "Javascript 2",
+    "description": "Basic 2",
+    "isPublic": true,
+    "publicStatus": 2,
+    "locked": true,
+    "cardCount": 1,
+    "owner": {
+      "$oid": "693e7e50bed05538f6532472"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "w": []
+    },
+    "createdAt": {
+      "$date": "2025-12-14T10:41:15.984Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T10:41:15.984Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693ea3f89bdfcaf0d9f8dd1a"
+    },
+    "name": "Javascripts",
+    "description": "Javascripts Normal",
+    "isPublic": false,
+    "publicStatus": 0,
+    "locked": false,
+    "cardCount": 15,
+    "owner": {
+      "$oid": "693ea0d69bdfcaf0d9f8d565"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T11:48:08.488Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T11:48:08.488Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693ea62d8666a0014973913b"
+    },
+    "name": "test",
+    "description": "",
+    "isPublic": false,
+    "publicStatus": 0,
+    "locked": false,
+    "cardCount": 10,
+    "owner": {
+      "$oid": "693e4dda9bdfcaf0d9f8a9bd"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T11:57:33.377Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T11:58:28.414Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "693ec5588666a0014973a4fe"
+    },
+    "name": "Javascripts",
+    "description": "Javascripts Normal",
+    "isPublic": false,
+    "publicStatus": 0,
+    "locked": false,
+    "cardCount": 15,
+    "owner": {
+      "$oid": "693e9c5e9bdfcaf0d9f8ccfd"
+    },
+    "likes": [],
+    "likeCount": 0,
+    "popularity": 0,
+    "fsrsParams": {
+      "request_retention": 0.9,
+      "maximum_interval": 36500,
+      "w": [
+        0.40255,
+        1.18385,
+        3.173,
+        15.69105,
+        7.1949,
+        0.5345,
+        1.4604,
+        0.0046,
+        1.54575,
+        0.1192,
+        1.01925,
+        1.9395,
+        0.11,
+        0.29605,
+        2.2698,
+        0.2315,
+        2.9898,
+        0.51655,
+        0.6621
+      ],
+      "enable_fuzz": false,
+      "enable_short_term": true,
+      "card_limit": 20,
+      "lapses": 8
+    },
+    "createdAt": {
+      "$date": "2025-12-14T14:10:32.747Z"
+    },
+    "updatedAt": {
+      "$date": "2025-12-14T14:10:32.747Z"
+    },
+    "__v": 0
+  }
+]

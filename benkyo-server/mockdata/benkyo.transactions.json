@@ -1,0 +1,280 @@
+[{
+  "_id": {
+    "$oid": "693e79789bdfcaf0d9f8beb1"
+  },
+  "type": "PAYOUT",
+  "amount": 100000,
+  "currency": "VND",
+  "direction": "OUT",
+  "status": "PENDING",
+  "description": "Payout request",
+  "note": "",
+  "paymentMethod": "BANK_TRANSFER",
+  "when": {
+    "$date": "2025-12-14T08:46:48.884Z"
+  },
+  "payout": {
+    "bankAbbreviation": "VCB",
+    "accountNumber": "123123",
+    "requestedAt": {
+      "$date": "2025-12-14T08:46:48.884Z"
+    }
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "expiredAt": {
+    "$date": "2025-12-14T09:16:48.885Z"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T08:46:48.887Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T08:46:48.887Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e799e9bdfcaf0d9f8befb"
+  },
+  "type": "PAYOUT",
+  "amount": 10000,
+  "currency": "VND",
+  "direction": "OUT",
+  "status": "PENDING",
+  "description": "Payout request",
+  "note": "",
+  "paymentMethod": "BANK_TRANSFER",
+  "when": {
+    "$date": "2025-12-14T08:47:26.532Z"
+  },
+  "payout": {
+    "bankAbbreviation": "TCB",
+    "accountNumber": "19072119752010",
+    "requestedAt": {
+      "$date": "2025-12-14T08:47:26.532Z"
+    }
+  },
+  "user": {
+    "$oid": "693e635f9bdfcaf0d9f8b1e5"
+  },
+  "expiredAt": {
+    "$date": "2025-12-14T09:17:26.533Z"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T08:47:26.534Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T08:47:26.534Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7aa8bed05538f6532110"
+  },
+  "type": "PACKAGE",
+  "currency": "VND",
+  "status": "PENDING",
+  "payout": {
+    "requestedAt": {
+      "$date": "2025-12-14T08:51:52.902Z"
+    }
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "package": {
+    "$oid": "6929f911369e1b4a56df4aa9"
+  },
+  "expiredAt": {
+    "$date": "2025-12-14T09:21:52.902Z"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T08:51:52.903Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T08:51:52.903Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7adb9bdfcaf0d9f8c059"
+  },
+  "type": "TOPUP",
+  "amount": 20000,
+  "currency": "VND",
+  "status": "PENDING",
+  "when": {
+    "$date": "2025-12-14T08:52:43.963Z"
+  },
+  "payout": {
+    "requestedAt": {
+      "$date": "2025-12-14T08:52:43.964Z"
+    }
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "expiredAt": {
+    "$date": "2025-12-14T09:22:43.964Z"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T08:52:43.965Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T08:52:43.965Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7add9bdfcaf0d9f8c05f"
+  },
+  "type": "TOPUP",
+  "amount": 50000,
+  "currency": "VND",
+  "status": "PENDING",
+  "when": {
+    "$date": "2025-12-14T08:52:45.263Z"
+  },
+  "payout": {
+    "requestedAt": {
+      "$date": "2025-12-14T08:52:45.263Z"
+    }
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "expiredAt": {
+    "$date": "2025-12-14T09:22:45.263Z"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T08:52:45.264Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T08:52:45.264Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7acbbed05538f653213a"
+  },
+  "type": "TOPUP",
+  "amount": 10000,
+  "currency": "VND",
+  "status": "PENDING",
+  "when": {
+    "$date": "2025-12-14T08:52:27.495Z"
+  },
+  "payout": {
+    "requestedAt": {
+      "$date": "2025-12-14T08:52:27.496Z"
+    }
+  },
+  "user": {
+    "$oid": "693e7a64bed05538f65320c9"
+  },
+  "expiredAt": {
+    "$date": "2025-12-14T09:22:27.496Z"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T08:52:27.496Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T08:52:27.496Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7ade9bdfcaf0d9f8c065"
+  },
+  "type": "TOPUP",
+  "amount": 500000,
+  "currency": "VND",
+  "status": "PENDING",
+  "when": {
+    "$date": "2025-12-14T08:52:46.776Z"
+  },
+  "payout": {
+    "requestedAt": {
+      "$date": "2025-12-14T08:52:46.777Z"
+    }
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "expiredAt": {
+    "$date": "2025-12-14T09:22:46.777Z"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T08:52:46.778Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T08:52:46.778Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7ae09bdfcaf0d9f8c06b"
+  },
+  "type": "TOPUP",
+  "amount": 100000,
+  "currency": "VND",
+  "status": "PENDING",
+  "when": {
+    "$date": "2025-12-14T08:52:48.962Z"
+  },
+  "payout": {
+    "requestedAt": {
+      "$date": "2025-12-14T08:52:48.963Z"
+    }
+  },
+  "user": {
+    "$oid": "693e4de19bdfcaf0d9f8a9e8"
+  },
+  "expiredAt": {
+    "$date": "2025-12-14T09:22:48.963Z"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T08:52:48.964Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T08:52:48.964Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "693e7e72bed05538f653248a"
+  },
+  "type": "PACKAGE",
+  "currency": "VND",
+  "status": "PENDING",
+  "payout": {
+    "requestedAt": {
+      "$date": "2025-12-14T09:08:02.357Z"
+    }
+  },
+  "user": {
+    "$oid": "693e7e50bed05538f6532472"
+  },
+  "package": {
+    "$oid": "6929f911369e1b4a56df4aa9"
+  },
+  "expiredAt": {
+    "$date": "2025-12-14T09:38:02.357Z"
+  },
+  "createdAt": {
+    "$date": "2025-12-14T09:08:02.358Z"
+  },
+  "updatedAt": {
+    "$date": "2025-12-14T09:08:02.358Z"
+  },
+  "__v": 0
+}]

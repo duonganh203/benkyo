@@ -17,7 +17,7 @@ export const StreakIconModal = () => {
                 transition={{ duration: 0.6 }}
                 className='px-3 py-1.5 text-sm font-medium text-white bg-violet-500 border border-violet-200 rounded-lg shadow-md'
             >
-                You've studied for {streak} consecutive days!
+                You've studied for {streak} consecutive days!!!
             </motion.div>
 
             <motion.div className='relative w-16 h-16 cursor-pointer animate-gentle-bounce'>
