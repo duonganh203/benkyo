@@ -6,6 +6,7 @@ type AuthStore = AuthState & {
     setUser: (user: User | null) => void;
     setToken: (token: string | null) => void;
     setRefreshToken: (refreshToken: string | null) => void;
+    updateBalance: (balance: number) => void;
     logout: () => void;
 };
 
@@ -18,6 +19,10 @@ const useAuthStore = create<AuthStore>()(
             setUser: (user) => set({ user }),
             setToken: (token) => set({ token }),
             setRefreshToken: (refreshToken) => set({ refreshToken }),
+            updateBalance: (balance: number) =>
+                set((state) => ({
+                    user: state.user ? { ...state.user, balance } : state.user
+                })),
             logout: () => set({ user: null, token: null, refreshToken: null })
         }),
         {

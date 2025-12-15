@@ -32,6 +32,7 @@ export function NavUser({ user }: { user: User }) {
     const { logout } = useAuthStore((store) => store);
     const textClass = getSubscriptionTextClass(user);
     const navigate = useNavigate();
+
     return (
         <SidebarMenu>
             <SidebarMenuItem>

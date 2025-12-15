@@ -68,7 +68,7 @@ const statusTone: Record<string, string> = {
 };
 
 const WalletPayout = () => {
-    const { user, setUser } = useAuthStore();
+    const { user, setUser, updateBalance } = useAuthStore();
     const queryClient = useQueryClient();
 
     const form = useForm<PayoutFormValues>({
@@ -117,10 +117,11 @@ const WalletPayout = () => {
                 getToast('success', 'Payout request created successfully');
                 queryClient.invalidateQueries({ queryKey: ['transactions'] });
                 queryClient.invalidateQueries({ queryKey: ['me'] });
+                updateBalance((user?.balance || 0) - values.amount);
                 form.reset();
-                if (user) {
-                    setUser({ ...user, balance: user.balance || 0 });
-                }
+                // if (user) {
+                //     setUser({ ...user, balance: user.balance || 0 });
+                // }
             },
             onError: (err) => {
                 getToast('error', err.response?.data?.message || 'Failed to submit request');
