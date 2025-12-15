@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { format } from 'date-fns';
 import { TransactionItem } from '@/types/payment';
 
@@ -70,6 +71,8 @@ const statusTone: Record<string, string> = {
 const WalletPayout = () => {
     const { user, setUser } = useAuthStore();
     const queryClient = useQueryClient();
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [pendingValues, setPendingValues] = useState<PayoutFormValues | null>(null);
 
     const form = useForm<PayoutFormValues>({
         resolver: zodResolver(payoutSchema),
@@ -112,18 +115,27 @@ const WalletPayout = () => {
             getToast('error', 'Insufficient balance after pending requests.');
             return;
         }
-        submitPayout(values, {
+        setPendingValues(values);
+        setShowConfirmDialog(true);
+    };
+
+    const handleConfirmPayout = () => {
+        if (!pendingValues) return;
+
+        submitPayout(pendingValues, {
             onSuccess: () => {
                 getToast('success', 'Payout request created successfully');
                 queryClient.invalidateQueries({ queryKey: ['transactions'] });
                 queryClient.invalidateQueries({ queryKey: ['me'] });
-                form.reset();
                 if (user) {
                     setUser({ ...user, balance: user.balance || 0 });
                 }
+                setShowConfirmDialog(false);
+                setPendingValues(null);
             },
             onError: (err) => {
                 getToast('error', err.response?.data?.message || 'Failed to submit request');
+                setShowConfirmDialog(false);
             }
         });
     };
@@ -341,6 +353,61 @@ const WalletPayout = () => {
                     )}
                 </CardContent>
             </Card>
+
+            <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                <DialogContent className='sm:max-w-md'>
+                    <DialogHeader>
+                        <DialogTitle>Confirm Payout Request</DialogTitle>
+                    </DialogHeader>
+                    <div className='space-y-3'>
+                        <p className='text-sm text-muted-foreground'>
+                            Please review your payout information before submitting:
+                        </p>
+                        {pendingValues && (
+                            <div className='bg-muted p-4 rounded-md space-y-2 text-sm'>
+                                <div className='flex justify-between'>
+                                    <span className='font-semibold'>Amount:</span>
+                                    <span className='font-bold text-foreground'>
+                                        {currencyDisplay(pendingValues.amount)}
+                                    </span>
+                                </div>
+                                <div className='flex justify-between'>
+                                    <span className='font-semibold'>Bank:</span>
+                                    <span className='text-foreground'>
+                                        {BANKS.find((b) => b.code === pendingValues.bankAbbreviation)?.name ||
+                                            pendingValues.bankAbbreviation}
+                                    </span>
+                                </div>
+                                <div className='flex justify-between'>
+                                    <span className='font-semibold'>Account Number:</span>
+                                    <span className='text-foreground'>{pendingValues.accountNumber}</span>
+                                </div>
+                                <div className='flex justify-between'>
+                                    <span className='font-semibold'>Account Name:</span>
+                                    <span className='text-foreground'>{pendingValues.accountName}</span>
+                                </div>
+                                {pendingValues.note && (
+                                    <div className='flex flex-col gap-1'>
+                                        <span className='font-semibold'>Note:</span>
+                                        <span className='text-foreground text-xs'>{pendingValues.note}</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        <p className='text-xs text-muted-foreground'>
+                            Are you sure you want to submit this payout request? This action cannot be undone.
+                        </p>
+                    </div>
+                    <DialogFooter>
+                        <Button variant='outline' onClick={() => setShowConfirmDialog(false)}>
+                            Cancel
+                        </Button>
+                        <Button variant='destructive' onClick={handleConfirmPayout} disabled={isPending}>
+                            {isPending ? 'Submitting...' : 'Confirm Payout'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
