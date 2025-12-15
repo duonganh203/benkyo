@@ -70,7 +70,6 @@ export default function Profile() {
     const { setUser, user } = useAuthStore((store) => store);
 
     const { data: likedDecks, isLoading: isLikedLoading } = useLikedDecksHistory();
-    console.log('likedDecks >>>', likedDecks);
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
 

@@ -38,7 +38,6 @@ export const ClassUpdateMooc = () => {
     const navigate = useNavigate();
 
     const { data: mooc, isLoading: moocLoading } = useGetMoocDetail(moocId!);
-    console.log(mooc);
 
     const updateMoocMutation = useUpdateMooc();
     const deleteCardMutation = useDeleteCard();

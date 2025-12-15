@@ -19,7 +19,6 @@ export type UpdateDeckProgressRes = {
 const useUpdateDeckProgress = () => {
     return useMutation<UpdateDeckProgressRes, AxiosError<ApiError>, UpdateDeckProgressPayload>({
         mutationFn: ({ moocId, deckId, lastSeenIndex, totalCards }) => {
-            console.log('Calling API', { moocId, deckId, lastSeenIndex, totalCards });
             return updateDeckProgressForUser(moocId, deckId, lastSeenIndex, totalCards);
         }
     });

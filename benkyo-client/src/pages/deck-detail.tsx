@@ -251,7 +251,6 @@ const DeckDetail = () => {
         try {
             const res = await toggleLikeMutation.mutateAsync();
             getToast('success', res.liked ? 'You liked this deck!' : 'You unliked this deck!');
-            console.log('Like status:', res.liked);
         } catch (err) {
             getToast('error', 'Failed to update like!');
             console.error('Failed to update like:', err);
@@ -397,19 +396,15 @@ const DeckDetail = () => {
                                 </DropdownMenu>
                             )}
                             {currentUser && deckData.publicStatus === 2 && deckData.owner._id !== currentUser._id && (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant='outline' size='icon'>
-                                            <MoreHorizontal className='h-5 w-5' />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align='end'>
-                                        <DropdownMenuItem onClick={handleDuplicateDeck} disabled={isDuplicating}>
-                                            <Copy className='mr-2 h-4 w-4' />
-                                            <span>Duplicate Deck</span>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                <Button
+                                    variant='outline'
+                                    onClick={handleDuplicateDeck}
+                                    disabled={isDuplicating}
+                                    title='Duplicate Deck'
+                                >
+                                    <Copy className='h-5 w-5' />
+                                    <span>Duplicate Deck</span>
+                                </Button>
                             )}
                         </div>
                     </div>
