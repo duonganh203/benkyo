@@ -34,5 +34,6 @@ COPY --from=build /app/benkyo-server/dist ./benkyo-server/dist
 
 EXPOSE 3000
 
+ENV NODE_OPTIONS="--dns-result-order=ipv6first"
 # Start from the root context or adjust path
 CMD ["node", "benkyo-server/dist/index.js"]
