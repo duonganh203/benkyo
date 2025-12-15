@@ -398,6 +398,7 @@ export const getDashboardMetricsService = async (year?: string) => {
 
     const startOfYear = new Date(targetYear, 0, 1);
     const endOfYear = new Date(targetYear, 11, 31, 23, 59, 59);
+
     const startOfLastYear = new Date(previousYear, 0, 1);
     const endOfLastYear = new Date(previousYear, 11, 31, 23, 59, 59);
 
@@ -414,72 +415,103 @@ export const getDashboardMetricsService = async (year?: string) => {
             ? new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
             : new Date(targetYear, 10, 31, 23, 59, 59);
 
-    const [totalResult] = await Transaction.aggregate([
+    const revenueMatch = {
+        when: { $gte: startOfYear, $lte: endOfYear },
+        $or: [
+            { type: TransactionKind.PACKAGE },
+            {
+                type: { $in: [TransactionKind.TOPUP, TransactionKind.PAYOUT] },
+                status: 'SUCCESS'
+            }
+        ]
+    };
+
+    const revenueByType = await Transaction.aggregate([
+        { $match: revenueMatch },
+        {
+            $group: {
+                _id: '$type',
+                total: { $sum: '$amount' }
+            }
+        }
+    ]);
+
+    let packageRevenue = 0;
+    let topupRevenue = 0;
+    let payoutRevenue = 0;
+
+    revenueByType.forEach((item) => {
+        if (item._id === TransactionKind.PACKAGE) packageRevenue = item.total;
+        if (item._id === TransactionKind.TOPUP) topupRevenue = item.total;
+        if (item._id === TransactionKind.PAYOUT) payoutRevenue = item.total;
+    });
+
+    const totalRevenue = packageRevenue + topupRevenue - payoutRevenue;
+
+    const [lastYearResult] = await Transaction.aggregate([
         {
             $match: {
-                isPaid: true,
-                when: { $gte: startOfYear, $lte: endOfYear }
+                when: { $gte: startOfLastYear, $lte: endOfLastYear },
+                $or: [
+                    { type: TransactionKind.PACKAGE },
+                    {
+                        type: {
+                            $in: [TransactionKind.TOPUP, TransactionKind.PAYOUT]
+                        },
+                        status: 'SUCCESS'
+                    }
+                ]
             }
         },
         {
             $group: {
                 _id: null,
-                totalRevenue: { $sum: '$amount' }
+                total: { $sum: '$amount' }
             }
         }
     ]);
 
-    const [totalLastYear] = await Transaction.aggregate([
-        {
-            $match: {
-                isPaid: true,
-                when: { $gte: startOfLastYear, $lte: endOfLastYear }
-            }
-        },
-        {
-            $group: {
-                _id: null,
-                totalRevenue: { $sum: '$amount' }
-            }
-        }
-    ]);
+    const totalRevenueLast = lastYearResult?.total || 0;
 
-    const totalRevenue = totalResult?.totalRevenue || 0;
-    const totalRevenueLast = totalLastYear?.totalRevenue || 0;
     const totalRevenueChange =
         totalRevenueLast === 0 ? 100 : Math.round(((totalRevenue - totalRevenueLast) / totalRevenueLast) * 100);
 
     const monthsElapsed = targetYear === now.getFullYear() ? now.getMonth() + 1 : 12;
+
     const monthlyAverage = monthsElapsed > 0 ? Math.round(totalRevenue / monthsElapsed) : 0;
+
     const monthlyAverageLast = totalRevenueLast > 0 ? Math.round(totalRevenueLast / 12) : 0;
+
     const monthlyAverageChange =
         monthlyAverageLast === 0 ? 100 : Math.round(((monthlyAverage - monthlyAverageLast) / monthlyAverageLast) * 100);
 
     const usersPaid = await Transaction.distinct('user', {
-        isPaid: true,
+        type: TransactionKind.PACKAGE,
         when: { $gte: startOfYear, $lte: endOfYear }
     });
 
     const usersPaidLast = await Transaction.distinct('user', {
-        isPaid: true,
+        type: TransactionKind.PACKAGE,
         when: { $gte: startOfLastYear, $lte: endOfLastYear }
     });
 
     const arpu = usersPaid.length > 0 ? Math.round(totalRevenue / usersPaid.length) : 0;
+
     const arpuLast = usersPaidLast.length > 0 ? Math.round(totalRevenueLast / usersPaidLast.length) : 0;
+
     const arpuChange = arpuLast === 0 ? 100 : Math.round(((arpu - arpuLast) / arpuLast) * 100);
 
     const [mrrResult] = await Transaction.aggregate([
         {
             $match: {
-                isPaid: true,
+                type: TransactionKind.PACKAGE,
                 when: { $gte: startOfMonth, $lte: endOfYear }
             }
         },
         {
             $group: {
                 _id: null,
-                monthlyRecurringRevenue: { $sum: '$amount' }
+                total: { $sum: '$amount' }
             }
         }
     ]);
@@ -487,74 +519,89 @@ export const getDashboardMetricsService = async (year?: string) => {
     const [mrrLastResult] = await Transaction.aggregate([
         {
             $match: {
-                isPaid: true,
+                type: TransactionKind.PACKAGE,
                 when: { $gte: startOfLastMonth, $lte: endOfLastMonth }
             }
         },
         {
             $group: {
                 _id: null,
-                monthlyRecurringRevenue: { $sum: '$amount' }
+                total: { $sum: '$amount' }
             }
         }
     ]);
 
-    const mrr = mrrResult?.monthlyRecurringRevenue || 0;
-    const mrrLast = mrrLastResult?.monthlyRecurringRevenue || 0;
+    const mrr = mrrResult?.total || 0;
+    const mrrLast = mrrLastResult?.total || 0;
+
     const mrrChange = mrrLast === 0 ? 100 : Math.round(((mrr - mrrLast) / mrrLast) * 100);
 
     return {
         totalRevenue,
         totalRevenueChange,
+
         monthlyAverage,
         monthlyAverageChange,
+
         arpu,
         arpuChange,
+
         mrr,
-        mrrChange
+        mrrChange,
+
+        packageRevenue,
+        topupRevenue,
+        payoutRevenue
     };
 };
 
 export const getMonthlyRevenueService = async (year?: string) => {
     const targetYear = year ? parseInt(year) : new Date().getFullYear();
-    const startOfYear = new Date(targetYear, 0, 1);
+
+    const startOfYear = new Date(targetYear, 0, 1, 0, 0, 0);
     const endOfYear = new Date(targetYear, 11, 31, 23, 59, 59);
 
     const result = await Transaction.aggregate([
         {
             $match: {
-                isPaid: true,
-                when: { $gte: startOfYear, $lte: endOfYear }
+                type: 'PACKAGE',
+                status: { $in: ['PAID', 'PENDING'] },
+                when: {
+                    $gte: startOfYear,
+                    $lte: endOfYear
+                }
             }
         },
         {
             $group: {
                 _id: { $month: '$when' },
-                total: { $sum: '$amount' }
+                totalAmount: { $sum: '$amount' }
             }
         },
         {
             $project: {
+                _id: 0,
                 month: '$_id',
-                total: 1,
-                _id: 0
+                totalAmount: 1
             }
         }
     ]);
 
     const monthlyRevenue = Array.from({ length: 12 }, (_, i) => ({
-        name: new Date(0, i).toLocaleString('en-US', { month: 'short' }),
+        month: i + 1,
+        name: new Date(0, i).toLocaleString('vi-VN', { month: 'short' }),
         revenue: 0
     }));
 
     result.forEach((item) => {
-        monthlyRevenue[item.month - 1].revenue = item.total;
+        monthlyRevenue[item.month - 1].revenue = item.totalAmount;
     });
 
     return monthlyRevenue;
 };
 
 type Quarter = 'Q1' | 'Q2' | 'Q3' | 'Q4';
+
 type RevenueRecord = {
     name: Quarter;
     Basic: number;
@@ -562,16 +609,65 @@ type RevenueRecord = {
     Premium: number;
 };
 
-export const getQuarterlyRevenueService = async (year: number) => {
-    const startDate = startOfYear(new Date(year, 0, 1));
-    const endDate = endOfYear(new Date(year, 11, 31));
+export const getQuarterlyRevenueService = async (year?: number) => {
+    const targetYear = year ?? new Date().getFullYear();
 
-    const transactions = await Transaction.find({
-        isPaid: true,
-        when: { $gte: startDate, $lte: endDate }
-    })
-        .populate('package')
-        .exec();
+    const startOfYear = new Date(targetYear, 0, 1, 0, 0, 0);
+    const endOfYear = new Date(targetYear, 11, 31, 23, 59, 59);
+
+    const result = await Transaction.aggregate([
+        {
+            $match: {
+                type: 'PACKAGE',
+                status: { $in: ['PAID', 'PENDING'] },
+                when: {
+                    $gte: startOfYear,
+                    $lte: endOfYear
+                }
+            }
+        },
+        {
+            $lookup: {
+                from: 'packages',
+                localField: 'package',
+                foreignField: '_id',
+                as: 'package'
+            }
+        },
+        { $unwind: '$package' },
+        {
+            $addFields: {
+                quarter: {
+                    $switch: {
+                        branches: [
+                            {
+                                case: { $lt: [{ $month: '$when' }, 4] },
+                                then: 'Q1'
+                            },
+                            {
+                                case: { $lt: [{ $month: '$when' }, 7] },
+                                then: 'Q2'
+                            },
+                            {
+                                case: { $lt: [{ $month: '$when' }, 10] },
+                                then: 'Q3'
+                            }
+                        ],
+                        default: 'Q4'
+                    }
+                }
+            }
+        },
+        {
+            $group: {
+                _id: {
+                    quarter: '$quarter',
+                    packageType: '$package.type'
+                },
+                totalAmount: { $sum: '$amount' }
+            }
+        }
+    ]);
 
     const quarterlyRevenue: Record<Quarter, RevenueRecord> = {
         Q1: { name: 'Q1', Basic: 0, Pro: 0, Premium: 0 },
@@ -580,23 +676,14 @@ export const getQuarterlyRevenueService = async (year: number) => {
         Q4: { name: 'Q4', Basic: 0, Pro: 0, Premium: 0 }
     };
 
-    for (const tx of transactions) {
-        if (!tx.when || !(tx.when instanceof Date)) continue;
+    result.forEach((item) => {
+        const quarter = item._id.quarter as Quarter;
+        const pkgType = item._id.packageType as 'Basic' | 'Pro' | 'Premium';
 
-        const month = tx.when.getMonth();
-        const quarter: Quarter = month < 3 ? 'Q1' : month < 6 ? 'Q2' : month < 9 ? 'Q3' : 'Q4';
-
-        const populatedPackage =
-            tx.package && typeof tx.package === 'object' && 'type' in tx.package
-                ? (tx.package as { type: PackageType })
-                : null;
-
-        const pkgType = populatedPackage?.type as PackageType | undefined;
-
-        if (pkgType && quarterlyRevenue[quarter][pkgType] !== undefined) {
-            quarterlyRevenue[quarter][pkgType] += tx.amount ?? 0;
+        if (quarterlyRevenue[quarter] && pkgType in quarterlyRevenue[quarter]) {
+            quarterlyRevenue[quarter][pkgType] += item.totalAmount;
         }
-    }
+    });
 
     return Object.values(quarterlyRevenue);
 };

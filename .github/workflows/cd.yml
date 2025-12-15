@@ -25,13 +25,15 @@ jobs:
                   envsubst < .env.example > .env
             - name: Build image
               run: |
-                  docker build ./benkyo-client/ -t ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-fe:latest
-                  docker build ./benkyo-server/ -t ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-be:latest
+                  docker build -f benkyo-client/Dockerfile -t ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-fe:latest .
+                  docker build -f benkyo-server/Dockerfile -t ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-be:latest .
+                  docker build ./benkyo-optimizer/ -t ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-optimizer:latest
             - name: Push image to docker dockerhub
               run: |
                   docker login -u ${{secrets.DOCKER_HUB_USERNAME}} -p ${{secrets.DOCKER_HUB_TOKEN}}
                   docker push ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-fe:latest
                   docker push ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-be:latest
+                  docker push ${{secrets.DOCKER_HUB_USERNAME}}/benkyo-optimizer:latest
     deploy:
         name: deploy
         runs-on: ubuntu-latest
