@@ -84,6 +84,21 @@ const DeckStudy: React.FC = () => {
         );
     }
 
+    useEffect(() => {
+        if (totalCards === 1 && !isInitialLoad) {
+            setCurrentCardIndex(0);
+            setFurthestCardIndex(0);
+            setProgressPercent(100);
+
+            updateProgress.mutate({
+                moocId,
+                deckId,
+                lastSeenIndex: 0,
+                totalCards
+            });
+        }
+    }, [totalCards, isInitialLoad, moocId, deckId]);
+
     if (isMoocLoading || isCardsLoading) {
         return (
             <div className='min-h-screen flex items-center justify-center'>
