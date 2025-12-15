@@ -248,6 +248,9 @@ export const createPayoutRequest = async (userId: string, payload: CreatePayoutP
             throw new BadRequestsException('Insufficient balance for payout', ErrorCode.BAD_REQUEST);
         }
 
+        user.balance = availableBalance - amount;
+        await user.save();
+
         const transaction = await Transaction.create({
             user: user._id,
             type: TransactionKind.PAYOUT,
@@ -832,70 +835,46 @@ export const getUserPayoutHistory = async (userId?: string) => {
 };
 
 export const rejectPayoutRequest = async ({ transactionId, adminId, reason }: RejectPayoutInput) => {
-    console.log('⚡ [SERVICE] rejectPayoutRequest START');
-    console.log('INPUT =', { transactionId, adminId, reason });
-
     if (!reason) {
-        console.error('❌ Reject reason is empty');
         throw new Error('Reject reason is required');
     }
 
     const transaction = await Transaction.findById(transactionId);
-    console.log('➡ Found transaction:', transaction);
-
     if (!transaction) {
-        console.error('❌ Transaction not found:', transactionId);
         throw new Error('Transaction not found');
     }
 
     if (transaction.type !== TransactionKind.PAYOUT) {
-        console.error('❌ Wrong type:', transaction.type);
         throw new Error('This transaction is not a payout request');
     }
 
     if (transaction.status !== TransactionStatus.PENDING) {
-        console.error('❌ Status is not PENDING:', transaction.status);
         throw new Error('Only pending payout requests can be rejected');
     }
 
     const user = await User.findById(transaction.user);
-    console.log('➡ Found user:', user);
-
     if (!user) {
-        console.error('❌ User not found:', transaction.user);
         throw new Error('User not found');
     }
 
     const amount = Number(transaction.amount) || 0;
-    console.log('💰 Refund amount:', amount);
-
     user.balance = (user.balance || 0) + amount;
-    console.log('💰 New balance:', user.balance);
-
     await user.save();
-    console.log('💾 User saved');
 
     transaction.payout = transaction.payout || {
         requestedAt: new Date()
     };
-    console.log('➡ Current payout:', transaction.payout);
 
-    console.log('🔎 Validate adminId:', adminId);
     if (!Types.ObjectId.isValid(adminId)) {
-        console.error('❌ Invalid adminId:', adminId);
         throw new Error('Invalid adminId');
     }
 
     transaction.payout.rejectReason = reason;
     transaction.payout.processedAt = new Date();
     transaction.payout.paidBy = new Types.ObjectId(adminId);
-
     transaction.status = TransactionStatus.REJECTED;
 
-    console.log('💾 Saving transaction...');
     await transaction.save();
-
-    console.log('✅ [SERVICE] rejectPayoutRequest FINISHED');
 
     return {
         success: true,
