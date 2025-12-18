@@ -11,6 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { useState } from 'react';
 import ReviewRequestNoteModal from './review-request-note-modal';
+import useMe from '@/hooks/queries/use-me';
+import useAuthStore from '@/hooks/stores/use-auth-store';
 
 const statusMap: Record<string, { label: string; className: string }> = {
     1: { label: 'Pending', className: 'bg-yellow-100 text-yellow-700' },
@@ -26,6 +28,7 @@ interface DeckProps {
 function Deck({ deck, showStatus = false }: DeckProps) {
     const { open } = useSendRequestPublicDeckModal((store) => store);
     const [showNoteModal, setShowNoteModal] = useState(false);
+    const { user } = useAuthStore();
     const navigate = useNavigate();
 
     const handleDeckClick = (deckId: string) => {
@@ -91,13 +94,15 @@ function Deck({ deck, showStatus = false }: DeckProps) {
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <GraduationCap
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        navigate(`/study/${deck._id}`);
-                                    }}
-                                    className='h-5 w-5 text-primary/80 hover:text-primary rounded-md'
-                                />
+                                {deck.isPublic && deck.owner._id === user?._id && (
+                                    <GraduationCap
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/study/${deck._id}`);
+                                        }}
+                                        className='h-5 w-5 text-primary/80 hover:text-primary rounded-md'
+                                    />
+                                )}
                             </TooltipTrigger>
                             <TooltipContent>
                                 <p>Study</p>
