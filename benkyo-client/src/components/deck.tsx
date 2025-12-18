@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { useState } from 'react';
 import ReviewRequestNoteModal from './review-request-note-modal';
-import useMe from '@/hooks/queries/use-me';
 import useAuthStore from '@/hooks/stores/use-auth-store';
 
 const statusMap: Record<string, { label: string; className: string }> = {
