@@ -444,7 +444,7 @@ export const getDashboardMetricsService = async (year?: string) => {
         if (item._id === TransactionKind.PAYOUT) payoutRevenue = item.total;
     });
 
-    const totalRevenue = packageRevenue + topupRevenue - payoutRevenue;
+    const totalRevenue = packageRevenue;
 
     const [lastYearResult] = await Transaction.aggregate([
         {
