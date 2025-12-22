@@ -13,7 +13,8 @@ import {
     buyPackageWithWalletController,
     getPendingPayout,
     getPayoutHistory,
-    rejectPayout
+    rejectPayout,
+    getPackageDistributionDashboard
 } from '~/controllers/paymentController';
 import { errorHandler } from '~/errorHandler';
 import authMiddleware from '~/middlewares/authMiddleware';
@@ -33,6 +34,7 @@ paymentRoutes.get('/payout/latest', [adminAuthMiddleware], errorHandler(getPendi
 paymentRoutes.post('/payout/reject', [adminAuthMiddleware], errorHandler(rejectPayout));
 paymentRoutes.get('/payout/history', [adminAuthMiddleware], errorHandler(getPayoutHistory));
 paymentRoutes.get('/transactions', [authMiddleware], errorHandler(listUserTransactions));
+paymentRoutes.get('/dashboard-package', [adminAuthMiddleware], errorHandler(getPackageDistributionDashboard));
 paymentRoutes.post('/buy-with-wallet/:packageId', [authMiddleware], errorHandler(buyPackageWithWalletController));
 
 export default paymentRoutes;
