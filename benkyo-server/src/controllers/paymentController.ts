@@ -14,7 +14,8 @@ import {
     buyPackageWithWallet,
     getPendingPayoutRequests,
     getUserPayoutHistory,
-    rejectPayoutRequest
+    rejectPayoutRequest,
+    getPackageDistributionDashboardService
 } from '~/services/paymentService';
 import { TransactionDirection, TransactionStatus } from '~/schemas';
 import { RejectPayoutInput } from '~/types/payoutTypes';
@@ -118,4 +119,14 @@ export const rejectPayout = async (req: any, res: Response) => {
     });
 
     return res.json(result);
+};
+export const getPackageDistributionDashboard = async (req: Request, res: Response) => {
+    const { year } = req.query;
+
+    const data = await getPackageDistributionDashboardService(year ? String(year) : undefined);
+
+    res.status(200).json({
+        success: true,
+        data
+    });
 };
