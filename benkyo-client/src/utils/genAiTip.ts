@@ -117,7 +117,7 @@ Analyze the following quiz results and return the output in JSON format followin
 `;
 
 const model = genAI.getGenerativeModel({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-2.5-flash-lite',
     systemInstruction: ANALYZE_QUIZ_PERFORMANCE_PROMPT
 });
 

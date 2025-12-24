@@ -42,7 +42,7 @@ You are tasked with generating flashcards that adhere to the principles outlined
 - Include the pageNumber or section indicator where the information was found.`;
 
 const model = genAI.getGenerativeModel({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-2.5-flash-lite',
     systemInstruction: GENERATE_FLASHCARD_PROMPT
 });
 
