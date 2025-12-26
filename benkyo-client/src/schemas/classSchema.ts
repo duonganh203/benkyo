@@ -5,8 +5,8 @@ export const classSchema = z.object({
         .string()
         .regex(/^[a-f\d]{24}$/i, 'Invalid owner ID')
         .optional(),
-    name: z.string().min(1, 'Class name is required'),
-    description: z.string().min(1, 'Description is required'),
+    name: z.string().min(1, 'Class name is required').max(50, 'Class name must be at most 50 characters'),
+    description: z.string().min(1, 'Description is required').max(100, 'Description must be at most 100 characters'),
     bannerUrl: z.preprocess(
         (val) => {
             if (typeof val === 'string' && val.trim() === '') return undefined;

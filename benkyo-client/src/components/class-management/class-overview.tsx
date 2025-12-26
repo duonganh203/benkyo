@@ -116,8 +116,8 @@ export const ClassOverview = ({ classItem, classId }: ClassOverviewProps) => (
                     <div className='flex-1'>
                         <div className='mb-4'>
                             <div className='flex items-center gap-2 mb-2'>
-                                <span className='font-medium text-white'>Name:</span>
-                                <h1 className='text-3xl font-bold text-white'>{classItem.name}</h1>
+                                <span className='font-medium text-white '>Name:</span>
+                                <h1 className='text-3xl font-bold text-white line-clamp-2'>{classItem.name}</h1>
                             </div>
                             <div className='flex items-start gap-2'>
                                 <span className='font-medium text-white mt-1'>Description:</span>

@@ -29,9 +29,7 @@ const ClassHeader = ({
 }: ClassHeaderProps) => {
     return (
         <Card
-            className={`relative overflow-hidden transition-all duration-500 ease-out ${
-                isExpanded ? 'h-auto' : 'h-[200px]'
-            }`}
+            className={`relative overflow-hidden transition-all duration-500 ease-out ${isExpanded ? 'h-auto' : 'h-[200px]'}`}
             style={{
                 backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('${classData.bannerUrl || '/default-class-banner.svg'}')`,
                 backgroundSize: 'cover',
@@ -41,9 +39,9 @@ const ClassHeader = ({
             <div className='absolute inset-0 bg-background/40 backdrop-blur-sm' />
             <div className='relative z-10 p-8 text-white h-full flex flex-col'>
                 <div className='flex justify-between items-start'>
-                    <div className='animate-fade-in-up'>
-                        <h1 className='text-4xl font-bold mb-2'>{classData.name}</h1>
-                        <p className='text-lg opacity-90'>{classData.description}</p>
+                    <div className='animate-fade-in-up flex-1'>
+                        <h1 className='text-4xl font-bold mb-2 line-clamp-2'>{classData.name}</h1>
+                        <p className='text-lg opacity-90 line-clamp-2'>{classData.description}</p>
                     </div>
                     <Button
                         variant='ghost'
@@ -75,7 +73,7 @@ const ClassHeader = ({
                         <div className='grid md:grid-cols-2 gap-8 h-full'>
                             <div>
                                 <h3 className='text-xl font-semibold mb-4'>Class Description</h3>
-                                <p className='text-white/90 leading-relaxed'>{classData.description}</p>
+                                <p className='text-white/90 leading-relaxed line-clamp-2'>{classData.description}</p>
                                 <div className='mt-4 text-sm space-y-1'>
                                     <p>
                                         <strong>Category:</strong> {classData.category}
